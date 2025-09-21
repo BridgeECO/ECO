@@ -133,7 +133,7 @@ namespace ECO
             _curShowState = EShowState.SHOW;
         }
 
-        private void Hide()
+        public void Hide()
         {
             this.gameObject.SetActive(false);
             _curShowState = EShowState.HIDE;

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace ECO
@@ -19,6 +20,51 @@ namespace ECO
         {
             return Object.ReferenceEquals(comp, null);
         }
+
+
+        public static void DestroyMonoList<T>(ref List<T> monoList) where T : MonoBase
+        {
+            for (int i = 0; i < monoList.Count; i++)
+            {
+                T mono = monoList[i];
+                DestroyMono(ref mono);
+            }
+
+            monoList.Clear();
+        }
+
+        public static void DestroyMonoQueue<T>(ref Queue<T> monoQueue) where T : MonoBase
+        {
+            while (monoQueue.Count > 0)
+            {
+                T mono = monoQueue.Dequeue();
+                DestroyMono(ref mono);
+            }
+
+            monoQueue.Clear();
+        }
+
+        public static void DestroyMono<T>(ref T mono) where T : MonoBase
+        {
+            if (mono == null)
+                return;
+
+            mono.Destroy();
+
+            if (!mono.IsCreateInRuntime)
+            {
+                mono = null;
+                return;
+            }
+
+            GameObject.DestroyImmediate(mono.gameObject);
+
+            if (Application.isPlaying)
+                GameObject.Destroy(mono);
+            else
+                GameObject.DestroyImmediate(mono);
+        }
+
 
         public static bool TryGetComp<T>(out T comp, GameObject go, bool isShowErr = true)
         {
