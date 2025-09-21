@@ -1,4 +1,4 @@
-﻿public class TEXT
+﻿public static class TEXT
 {
     public const string PLAY_SCENE_NAME = "PlayScene";
     public const string TITLE_SCENE_NAME = "TitleScene";

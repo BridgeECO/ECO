@@ -1,16 +1,15 @@
-using UnityEngine;
-
-public class ButtonModule : MonoBehaviour
+﻿namespace ECO
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public class ButtonModule : MonoBase
     {
-        
-    }
+        protected override bool OnCreateMono()
+        {
+            return true;
+        }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        protected override void OnDestroyMono()
+        {
+
+        }
     }
 }
