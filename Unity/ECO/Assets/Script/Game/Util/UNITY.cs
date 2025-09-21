@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace ECO
 {
@@ -40,6 +41,88 @@ namespace ECO
             }
 
             return true;
+        }
+
+        public static bool TryFindCompWithName<T>(out T comp, string name, GameObject rootGO = null, bool isShowErr = true) where T : Component
+        {
+            comp = null;
+
+            //게임오브젝트 먼저 찾기
+            if (!TryFindGOWithName(out GameObject go, name, rootGO, isShowErr))
+                return false;
+
+            //게임오브젝트에서 Component 찾기
+            if (!TryGetComp(out comp, go, isShowErr))
+                return false;
+
+            if (comp is MonoBase monoBaseComp)
+                return monoBaseComp.Create();
+
+            return true;
+        }
+
+        public static bool TryFindGOWithName(out GameObject go, string name, GameObject rootGO = null, bool isShowErr = true)
+        {
+            if (rootGO == null)
+                go = GameObject.Find(name);
+            else
+                go = FindGOWithName(rootGO, name);
+
+            if (!IsNullGameObj(go))
+                return true;
+
+            Scene curScene = SceneManager.GetActiveScene();
+            go = FindGOInSceneWithName(curScene, name);
+
+            if (!IsNullGameObj(go))
+                return true;
+
+            for (int i = 0; i < SceneManager.sceneCount; i++)
+            {
+                go = FindGOInSceneWithName(SceneManager.GetSceneAt(i), name);
+
+                if (!IsNullGameObj(go))
+                    return true;
+            }
+
+            if (isShowErr)
+                LOG.E($"Not Found GameObject. GameObject({name})");
+
+            return false;
+        }
+        private static GameObject FindGOInSceneWithName(Scene scene, string path)
+        {
+            foreach (GameObject go in scene.GetRootGameObjects())
+            {
+                if (go.name == path)
+                    return go;
+
+                Transform tf = go.transform.Find(path);
+
+                if (tf == null)
+                    continue;
+
+                return tf.gameObject;
+            }
+
+            return null;
+        }
+
+        private static GameObject FindGOWithName(GameObject rootGO, string name)
+        {
+            for (int i = 0; i < rootGO.transform.childCount; i++)
+            {
+                Transform child = rootGO.transform.GetChild(i);
+                if (child.gameObject.name == name)
+                    return child.gameObject;
+
+                GameObject childOfchild = FindGOWithName(child.gameObject, name);
+
+                if (childOfchild != null)
+                    return childOfchild;
+            }
+
+            return null;
         }
     }
 }
