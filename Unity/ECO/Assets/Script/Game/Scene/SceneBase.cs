@@ -14,7 +14,7 @@ namespace ECO
     {
         private void OnDestroy()
         {
-            OnSceneDestroy();
+            OnDestroyScene();
         }
 
         private void Awake()
@@ -22,7 +22,7 @@ namespace ECO
             //Main이 없으면  Main 오브젝트 생성
 
             //하위에서 실패할경우
-            if (!OnSceneAwake())
+            if (!OnAwakeScene())
             {
                 this.gameObject.SetActive(false);
                 //TODO : 로그 찍기 - 임현준
@@ -32,18 +32,18 @@ namespace ECO
 
         private void Update()
         {
-            OnSceneUpdate();
+            OnUpdateScene();
         }
 
         private void FixedUpdate()
         {
-            OnSceneFixeUpdate();
+            OnFixeUpdateScene();
         }
 
-        protected abstract void OnSceneDestroy();
-        protected abstract bool OnSceneAwake();
-        protected abstract void OnSceneUpdate();
-        protected abstract void OnSceneFixeUpdate();
+        protected abstract void OnDestroyScene();
+        protected abstract bool OnAwakeScene();
+        protected abstract void OnUpdateScene();
+        protected abstract void OnFixeUpdateScene();
     }
 
 }
