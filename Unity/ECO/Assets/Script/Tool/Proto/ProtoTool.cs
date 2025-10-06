@@ -1,6 +1,9 @@
-﻿using System;
+﻿using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
+using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Reflection;
 
 namespace ECO.Tool.Proto
@@ -12,7 +15,89 @@ namespace ECO.Tool.Proto
             _enumRegister = enumRegister;
         }
 
+        public ProtoTool(IProtoEnumRegister enumRegister, ProtoConfig config)
+        {
+            _enumRegister = enumRegister;
+            _prtConfig = config;
+        }
+
         private readonly IProtoEnumRegister _enumRegister = null;
+        private readonly ProtoConfig _prtConfig = new ProtoConfig();
+
+        public void ConvertExcelToCsv(string excelPath, string csvPath)
+        {
+            //Excel 열고 있을때도 동작하도록 수정
+            string tempExcelPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".xlsx");
+            File.Copy(excelPath, tempExcelPath, true);
+
+            using (FileStream file = new FileStream(tempExcelPath, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
+            {
+                IWorkbook workbook = new XSSFWorkbook(file, true);
+                XSSFFormulaEvaluator formula = new XSSFFormulaEvaluator(workbook);
+
+                using (StreamWriter writer = new StreamWriter(csvPath))
+                {
+                    List<int> commentColIdx = new List<int>();
+
+                    for (int i = 0; i < workbook.NumberOfSheets; i++)
+                    {
+                        var sheet = workbook.GetSheetAt(i);
+                        if (!sheet.SheetName.StartsWith(_prtConfig.ExportExcelSheetSign))
+                            continue;
+
+                        // 행 루프
+                        for (int row = 0; row <= sheet.LastRowNum; row++)
+                        {
+                            List<string> rowValueList = new List<string>();
+                            IRow currentRow = sheet.GetRow(row);
+
+                            for (int col = 0; col < currentRow.LastCellNum; col++)
+                            {
+                                if (row != 0 && commentColIdx.Contains(col))
+                                    continue;
+
+                                ICell cell = currentRow.GetCell(col);
+                                CellValue cellValue = formula.Evaluate(cell);
+                                string value;
+
+                                if (cellValue.CellType == CellType.String)
+                                    value = cellValue.StringValue;
+                                else if (cellValue.CellType == CellType.Numeric)
+                                    value = cellValue.NumberValue.ToString();
+                                else
+                                    value = cell.ToString();
+
+                                //첫번째 열 비면 빈 Row로 간주
+                                if (col == 0 && string.IsNullOrEmpty(value))
+                                    break;
+
+                                //첫행이 주석 형태이면 Skip
+                                if (col == 0 && value.StartsWith(_prtConfig.CommentSign))
+                                    continue;
+
+                                if (row == 0 && value.StartsWith(_prtConfig.CommentSign))
+                                {
+                                    commentColIdx.Add(col);
+                                    continue;
+                                }
+
+                                rowValueList.Add(value);
+                            }
+
+                            if (rowValueList.Count <= 0)
+                                continue;
+
+                            // CSV 형식으로 행을 작성
+                            string line = string.Join(",", rowValueList);
+                            writer.WriteLine(line);
+                        }
+                    }
+                }
+            }
+
+            File.Delete(tempExcelPath);
+        }
+
 
         public List<PRT> ParseDataTable<PRT>(DataTable dt) where PRT : IProto, new()
         {
