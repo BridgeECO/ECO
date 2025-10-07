@@ -60,6 +60,9 @@ namespace ECO.Tool.Proto
                                     continue;
 
                                 ICell cell = currentRow.GetCell(col);
+                                if (cell == null)
+                                    continue;
+
                                 CellValue cellValue = formula.Evaluate(cell);
                                 string value;
 
@@ -76,7 +79,7 @@ namespace ECO.Tool.Proto
 
                                 //첫행이 주석 형태이면 Skip
                                 if (col == 0 && value.StartsWith(_prtConfig.CommentSign))
-                                    continue;
+                                    break;
 
                                 if (row == 0 && value.StartsWith(_prtConfig.CommentSign))
                                 {
