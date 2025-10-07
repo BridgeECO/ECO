@@ -51,6 +51,9 @@ namespace ECO.Tool.Proto
                             List<string> rowValueList = new List<string>();
                             IRow currentRow = sheet.GetRow(row);
 
+                            if (currentRow == null)
+                                continue;
+
                             for (int col = 0; col < currentRow.LastCellNum; col++)
                             {
                                 if (row != 0 && commentColIdx.Contains(col))
