@@ -12,4 +12,12 @@ namespace ECO.Tool.Proto
         public override string Message => $"Prt({typeof(PRT).Name}), Msg({_msg})";
         private string _msg = "";
     }
+
+    public class ProtoException : Exception
+    {
+        public ProtoException(string message) : base(message)
+        {
+
+        }
+    }
 }
