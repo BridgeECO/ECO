@@ -109,7 +109,7 @@ namespace ECO.Tool.Proto
             File.Delete(tempExcelPath);
         }
 
-        public void GenerateProto<PRT>(string protoName, string protoFilePath, string csvFilePath, string templateFilePath) where PRT : IProto
+        public void GenerateProto(string prtName, string protoFilePath, string csvFilePath, string templateFilePath)
         {
             string csvTxt = File.ReadAllText(csvFilePath);
             string templateTxt = File.ReadAllText(templateFilePath);
@@ -117,13 +117,13 @@ namespace ECO.Tool.Proto
             Template template = Template.Parse(templateTxt);
             if (template.HasErrors)
             {
-                throw new ProtoException<PRT>($"INVALID_TEMPLATE. Message({template.Messages}), TemplatePath({templateFilePath}), TemplateTxt({templateTxt})");
+                throw new ProtoException($"INVALID_TEMPLATE. Message({template.Messages}), TemplatePath({templateFilePath}), TemplateTxt({templateTxt})");
             }
 
             DataTable dt = MakeDataTable(csvTxt);
 
-            List<ProtoScheme> schemeList = ParseScehemeList<PRT>(dt, false);
-            string txt = template.Render(new { ProtoName = protoName, Propertys = schemeList }, memebr => memebr.Name);
+            List<ProtoScheme> schemeList = ParseScehemeList(dt, false);
+            string txt = template.Render(new { ProtoName = prtName, Propertys = schemeList }, memebr => memebr.Name);
 
             using (FileStream fileStream = new FileStream(protoFilePath, FileMode.OpenOrCreate, FileAccess.Write))
             {
@@ -163,14 +163,14 @@ namespace ECO.Tool.Proto
         private List<PRT> ParseDataTable<PRT>(DataTable dt) where PRT : IProto, new()
         {
             List<PRT> prtList = new List<PRT>();
-            List<ProtoScheme> protoSchemeList = ParseScehemeList<PRT>(dt);
+            List<ProtoScheme> protoSchemeList = ParseScehemeList(dt);
 
             for (int i = 2; i < dt.Rows.Count; i++)
             {
                 DataRow row = dt.Rows[i];
 
                 if (row.ItemArray.Length != protoSchemeList.Count)
-                    throw new ProtoException<PRT>($"NOT_MATCH_COLUMN_AND_SCHEME_CNT. RowNum({i + 1}) ColCnt({row.ItemArray.Length}), SchemeCnt({protoSchemeList.Count})");
+                    throw new ProtoException($"NOT_MATCH_COLUMN_AND_SCHEME_CNT. RowNum({i + 1}) ColCnt({row.ItemArray.Length}), SchemeCnt({protoSchemeList.Count})");
 
                 PRT prt = new PRT();
                 PropertyInfo[] propertyInfoArr = prt.GetType().GetProperties(BindingFlags.Public);
@@ -182,7 +182,7 @@ namespace ECO.Tool.Proto
                     ProtoScheme scheme = protoSchemeList[j];
                     PropertyInfo propertyInfo = prt.GetType().GetProperty(scheme.Name);
                     if (propertyInfo == null)
-                        throw new ProtoException<PRT>($"NOT_FOUND_PROPERTY. ProtoScheme({scheme}), RowNum({i + 1}), Value({value})");
+                        throw new ProtoException($"NOT_FOUND_PROPERTY. ProtoScheme({scheme}), RowNum({i + 1}), Value({value})");
 
                     Type type = scheme.Type;
 
@@ -207,7 +207,7 @@ namespace ECO.Tool.Proto
                     }
                     catch (Exception exc)
                     {
-                        throw new ProtoException<PRT>($"FAILED_SET_VALUE. ProtoScheme({scheme}), RowNum({i + 1}), Value({value}), Message({exc.Message})");
+                        throw new ProtoException($"FAILED_SET_VALUE. ProtoScheme({scheme}), RowNum({i + 1}), Value({value}), Message({exc.Message})");
                     }
                 }
 
@@ -215,7 +215,7 @@ namespace ECO.Tool.Proto
                 {
                     PropertyInfo propertyInfo = prt.GetType().GetProperty(pair.Key.Name);
                     if (propertyInfo == null)
-                        throw new ProtoException<PRT>($"NOT_FOUND_PROPERTY. ProtoScheme({pair.Key}), RowNum({i + 1}))");
+                        throw new ProtoException($"NOT_FOUND_PROPERTY. ProtoScheme({pair.Key}), RowNum({i + 1}))");
 
                     Type myType = typeof(string);
                     var arrayObj = pair.Value.ToArray();
@@ -248,11 +248,11 @@ namespace ECO.Tool.Proto
             return newValue;
         }
 
-        private List<ProtoScheme> ParseScehemeList<PRT>(DataTable dt, bool allowSameScheme = true) where PRT : IProto
+        private List<ProtoScheme> ParseScehemeList(DataTable dt, bool allowSameScheme = true)
         {
             if (dt.Rows.Count < 2)
             {
-                throw new ProtoException<PRT>($"NOT_ENOUGH_ROW_CNT. Count({dt.Rows.Count}), It Must Be Greater Than Equal 2");
+                throw new ProtoException($"NOT_ENOUGH_ROW_CNT. Count({dt.Rows.Count}), It Must Be Greater Than Equal 2");
             }
 
             DataRow headerRow = dt.Rows[0];
@@ -262,10 +262,10 @@ namespace ECO.Tool.Proto
             int typeLength = typeRow.ItemArray.Length;
 
             if (headerLength != typeLength)
-                throw new ProtoException<PRT>($"NOT_MATCH_HEADER_AND_SCHEME_CNT, HeaderCnt({headerLength}), TypeCnt({typeLength})");
+                throw new ProtoException($"NOT_MATCH_HEADER_AND_SCHEME_CNT, HeaderCnt({headerLength}), TypeCnt({typeLength})");
 
             if (headerLength <= 0)
-                throw new ProtoException<PRT>($"INVALID_HEADER_CNT");
+                throw new ProtoException($"INVALID_HEADER_CNT");
 
             List<ProtoScheme> list = new List<ProtoScheme>();
 
@@ -277,7 +277,7 @@ namespace ECO.Tool.Proto
                 (Type, Type) typeTuple = ParseType(typeStr);
 
                 if (typeTuple.Item1 == null)
-                    throw new ProtoException<PRT>($"INVALD_TYPE_STRING. TypeStr({typeStr}), ColNum({i + 1})");
+                    throw new ProtoException($"INVALD_TYPE_STRING. TypeStr({typeStr}), ColNum({i + 1})");
 
                 ProtoScheme scheme = new ProtoScheme(name, typeTuple.Item1, typeTuple.Item2);
 

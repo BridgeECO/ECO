@@ -1,0 +1,9 @@
+using ECO.Tool.Proto;
+
+namespace ECO
+{
+	public class {{ProtoName}}Proto : IProto
+	{ {{ for Property in Propertys }}
+	    public {{Property.TypeStr}} {{Property.Name}} { get; private set; } {{ end }}
+	}
+}

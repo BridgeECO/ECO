@@ -1,4 +1,4 @@
-using ECO.Tool.Proto;
+﻿using ECO.Tool.Proto;
 
 namespace ECO
 {
@@ -20,6 +20,29 @@ namespace ECO
                 string csvPath = PATH.GetProtoCsvPath(excelName);
                 _prtTool.ConvertExcelToCsv(excelPath, csvPath);
                 LOG.I($"CONVERT_EXCEL_TO_CSV_SUCCESS, ExcelPath({excelPath}), CsvPath({csvPath}");
+            }
+        }
+
+        public static void GenerateAllCsFile()
+        {
+            string csvFolderPath = PATH.GetProtoCsvFolderPath();
+            string templatePath = PATH.GetProtoTemplatePath();
+
+            foreach (var csvName in PATH.GetAllFileName(csvFolderPath, ".csv"))
+            {
+                string csvPath = PATH.GetProtoCsvPath(csvName);
+                string csPath = PATH.GetProtoCsPath(csvName);
+
+
+                try
+                {
+                    _prtTool.GenerateProto(csvName, csPath, csvPath, templatePath);
+                    LOG.I($"GENERATE_CS_SUCCESS, PrtName({csvName})");
+                }
+                catch (ProtoException exc)
+                {
+                    LOG.I($"GENERATE_CS_FAILED, PrtName({csvName}), Message({exc.Message})");
+                }
             }
         }
     }

@@ -1,4 +1,4 @@
-using UnityEditor;
+﻿using UnityEditor;
 
 namespace ECO.Editor
 {
@@ -8,6 +8,12 @@ namespace ECO.Editor
         public static void ConvertExcelToCsv()
         {
             PROTO.ConvertAllExcelToCsv();
+        }
+
+        [MenuItem("ECO/Proto/Generate Cs")]
+        public static void GenerateCs()
+        {
+            PROTO.GenerateAllCsFile();
         }
     }
 }
