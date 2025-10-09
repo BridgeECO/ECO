@@ -9,32 +9,32 @@ namespace ECO
     {
         private static HashSet<string> _logHashSet = new HashSet<string>();
 
-        public static void D(string msg) => Log(msg, CONST.DEBUG_COLOR_CODE, Debug.Log, false);
-        public static void I(string msg) => Log(msg, CONST.INFO_COLOR_CODE, Debug.Log, false);
-        public static void W(string msg) => Log(msg, CONST.WARN_COLOR_CODE, Debug.LogWarning, false);
-        public static void E(string msg) => Log(msg, CONST.ERROR_COLOR_CODE, Debug.LogError, false);
+        public static void Debug(string msg) => Log(msg, CONST.DEBUG_COLOR_CODE, UnityEngine.Debug.Log, false);
+        public static void Info(string msg) => Log(msg, CONST.INFO_COLOR_CODE, UnityEngine.Debug.Log, false);
+        public static void Warn(string msg) => Log(msg, CONST.WARN_COLOR_CODE, UnityEngine.Debug.LogWarning, false);
+        public static void Error(string msg) => Log(msg, CONST.ERROR_COLOR_CODE, UnityEngine.Debug.LogError, false);
         public static void NoHandlingEnum<TEnum>(TEnum noHandlingEnum) where TEnum : Enum
         {
             string enumName = typeof(TEnum).Name;
-            E($"No Handling Enum({enumName}). Type({noHandlingEnum})");
+            Error($"No Handling Enum({enumName}). Type({noHandlingEnum})");
         }
         public static void NoHandlingInt(int noHandingInt)
         {
-            E($"No Handling Idx({noHandingInt})");
+            Error($"No Handling Idx({noHandingInt})");
         }
 
         public static void DOnce(string msg, [CallerFilePath] string filePath = "", [CallerMemberName] string memberName = "", [CallerLineNumber] int lineNumber = 0)
-            => Log(msg, CONST.DEBUG_COLOR_CODE, Debug.Log, true, filePath, memberName, lineNumber);
+            => Log(msg, CONST.DEBUG_COLOR_CODE, UnityEngine.Debug.Log, true, filePath, memberName, lineNumber);
         public static void IOnce(string msg, [CallerFilePath] string filePath = "", [CallerMemberName] string memberName = "", [CallerLineNumber] int lineNumber = 0)
-            => Log(msg, CONST.INFO_COLOR_CODE, Debug.Log, true, filePath, memberName, lineNumber);
+            => Log(msg, CONST.INFO_COLOR_CODE, UnityEngine.Debug.Log, true, filePath, memberName, lineNumber);
         public static void WOnce(string msg, [CallerFilePath] string filePath = "", [CallerMemberName] string memberName = "", [CallerLineNumber] int lineNumber = 0)
-            => Log(msg, CONST.WARN_COLOR_CODE, Debug.LogWarning, true, filePath, memberName, lineNumber);
+            => Log(msg, CONST.WARN_COLOR_CODE, UnityEngine.Debug.LogWarning, true, filePath, memberName, lineNumber);
         public static void EOnce(string msg, [CallerFilePath] string filePath = "", [CallerMemberName] string memberName = "", [CallerLineNumber] int lineNumber = 0)
-            => Log(msg, CONST.ERROR_COLOR_CODE, Debug.LogError, true, filePath, memberName, lineNumber);
+            => Log(msg, CONST.ERROR_COLOR_CODE, UnityEngine.Debug.LogError, true, filePath, memberName, lineNumber);
 
         public static bool Assert(bool trueCond, string msg)
         {
-            Debug.Assert(trueCond, msg);
+            UnityEngine.Debug.Assert(trueCond, msg);
             return trueCond;
         }
 

@@ -44,7 +44,7 @@ namespace ECO
             {
                 if (!_image.sprite.texture.isReadable)
                 {
-                    LOG.E("Set AlphaHitTestMinimum. Failed. Image Should Be Readable");
+                    LOG.Error("Set AlphaHitTestMinimum. Failed. Image Should Be Readable");
                     return false;
                 }
 

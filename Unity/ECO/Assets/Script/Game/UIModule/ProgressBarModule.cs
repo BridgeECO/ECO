@@ -17,7 +17,7 @@ namespace ECO
 
             if (_progressImg.type != Image.Type.Filled)
             {
-                LOG.E("ProgressImg Must Be Filled");
+                LOG.Error("ProgressImg Must Be Filled");
                 return false;
             }
 

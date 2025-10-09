@@ -19,7 +19,7 @@ namespace ECO
                 string excelPath = PATH.JoinPath(excelFolderPath, $"{excelName}.xlsx");
                 string csvPath = PATH.GetProtoCsvPath(excelName);
                 _prtTool.ConvertExcelToCsv(excelPath, csvPath);
-                LOG.I($"CONVERT_EXCEL_TO_CSV_SUCCESS, ExcelPath({excelPath}), CsvPath({csvPath}");
+                LOG.Info($"CONVERT_EXCEL_TO_CSV_SUCCESS, ExcelPath({excelPath}), CsvPath({csvPath}");
             }
         }
 
@@ -37,11 +37,11 @@ namespace ECO
                 try
                 {
                     _prtTool.GenerateProto(csvName, csPath, csvPath, templatePath);
-                    LOG.I($"GENERATE_CS_SUCCESS, PrtName({csvName})");
+                    LOG.Info($"GENERATE_CS_SUCCESS, PrtName({csvName})");
                 }
                 catch (ProtoException exc)
                 {
-                    LOG.I($"GENERATE_CS_FAILED, PrtName({csvName}), Message({exc.Message})");
+                    LOG.Info($"GENERATE_CS_FAILED, PrtName({csvName}), Message({exc.Message})");
                 }
             }
         }

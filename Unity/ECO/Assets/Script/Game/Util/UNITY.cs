@@ -73,7 +73,7 @@ namespace ECO
             if (IsNullGameObj(go))
             {
                 if (isShowErr)
-                    LOG.E($"Invalid GameObject");
+                    LOG.Error($"Invalid GameObject");
 
                 return false;
             }
@@ -81,7 +81,7 @@ namespace ECO
             if (!go.TryGetComponent<T>(out comp))
             {
                 if (isShowErr)
-                    LOG.E($"Not Found Component. GameObject({go.name}), Comp({typeof(T)})");
+                    LOG.Error($"Not Found Component. GameObject({go.name}), Comp({typeof(T)})");
 
                 return false;
             }
@@ -132,7 +132,7 @@ namespace ECO
             }
 
             if (isShowErr)
-                LOG.E($"Not Found GameObject. GameObject({name})");
+                LOG.Error($"Not Found GameObject. GameObject({name})");
 
             return false;
         }

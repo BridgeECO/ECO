@@ -85,14 +85,14 @@ namespace ECO
             {
                 if (isShowErr)
                 {
-                    LOG.E($"Invalid Key. Key({key})");
+                    LOG.Error($"Invalid Key. Key({key})");
                 }
             }
             catch (Exception exc)
             {
                 if (isShowErr)
                 {
-                    LOG.E($"Invalid Exception. Exception({exc})");
+                    LOG.Error($"Invalid Exception. Exception({exc})");
                 }
             }
 
@@ -113,7 +113,7 @@ namespace ECO
             {
                 if (isShowErr)
                 {
-                    LOG.E($"Invalid Key. Key({key})");
+                    LOG.Error($"Invalid Key. Key({key})");
                 }
             }
 
