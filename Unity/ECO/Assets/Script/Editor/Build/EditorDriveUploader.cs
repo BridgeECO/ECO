@@ -1,19 +1,18 @@
-﻿using UnityEditor;
-using UnityEngine;
+﻿using Google.Apis.Auth.OAuth2;
+using Google.Apis.Drive.v3;
+using Google.Apis.Services;
+using Google.Apis.Upload;
+using Google.Apis.Util.Store;
 using System;
 using System.IO;
+using System.IO.Compression;
 using System.Threading;
 using System.Threading.Tasks;
-using System.IO.Compression;
-
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Services;
-using Google.Apis.Util.Store;
-using Google.Apis.Drive.v3;
-using Google.Apis.Upload;
+using UnityEditor;
+using UnityEngine;
 using DriveFile = Google.Apis.Drive.v3.Data.File;
 
-namespace ECO
+namespace ECOEditor
 {
     public static class EditorDriveUploader
     {

@@ -1,6 +1,7 @@
-﻿using UnityEditor;
+﻿using ECO;
+using UnityEditor;
 
-namespace ECO.Editor
+namespace ECOEditor
 {
     public class EditorMenu
     {

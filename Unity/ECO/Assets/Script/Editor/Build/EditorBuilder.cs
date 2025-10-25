@@ -1,14 +1,15 @@
-﻿using UnityEditor;
-using UnityEditor.Build.Reporting;
-using UnityEngine;
+﻿using ECO;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using IOComp = System.IO.Compression;
-using System.Collections.Generic;
+using UnityEditor;
 using UnityEditor.Build;
+using UnityEditor.Build.Reporting;
+using UnityEngine;
+using IOComp = System.IO.Compression;
 
-namespace ECO
+namespace ECOEditor
 {
     public class EditorBuilder : EditorWindow
     {
