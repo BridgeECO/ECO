@@ -12,17 +12,21 @@ namespace ECO
 {
     public abstract class SceneBase : MonoBehaviour
     {
+        private App _app = null;
+
         private void OnDestroy()
         {
             OnDestroyScene();
+
+            _app = null;
         }
 
         private void Awake()
         {
-            //Main이 없으면  Main 오브젝트 생성
+            _app = AppBootStrapper.Create();
 
             //하위에서 실패할경우
-            if (!OnAwakeScene())
+            if (!OnAwakeScene(_app))
             {
                 this.gameObject.SetActive(false);
                 //TODO : 로그 찍기 - 임현준
@@ -41,7 +45,7 @@ namespace ECO
         }
 
         protected abstract void OnDestroyScene();
-        protected abstract bool OnAwakeScene();
+        protected abstract bool OnAwakeScene(App app);
         protected abstract void OnUpdateScene();
         protected abstract void OnFixeUpdateScene();
     }
