@@ -136,6 +136,28 @@ namespace ECO
 
             return false;
         }
+
+        public static List<T> GetCompListInChild<T>(GameObject rootGO) where T : Component
+        {
+            List<T> compList = new List<T>();
+
+            foreach (Transform child in rootGO.transform)
+            {
+                if (UNITY.TryGetComp(out T comp, child.gameObject, false))
+                {
+                    if (comp is MonoBase monoComp)
+                    {
+                        if (!monoComp.Create())
+                            continue;
+                    }
+
+                    compList.Add(comp);
+                }
+            }
+
+            return compList;
+        }
+
         private static GameObject FindGOInSceneWithName(Scene scene, string path)
         {
             foreach (GameObject go in scene.GetRootGameObjects())

@@ -13,6 +13,7 @@ namespace ECO
     public abstract class SceneBase : MonoBehaviour
     {
         private App _app = null;
+        private Canvas _canvas = null;
 
         private void OnDestroy()
         {
@@ -25,8 +26,11 @@ namespace ECO
         {
             _app = AppBootStrapper.Create();
 
+            if (!UNITY.TryFindCompWithName(out _canvas, "c_canvas", this.gameObject))
+                return;
+
             //하위에서 실패할경우
-            if (!OnAwakeScene(_app))
+            if (!OnAwakeScene(_canvas, _app))
             {
                 this.gameObject.SetActive(false);
                 //TODO : 로그 찍기 - 임현준
@@ -45,7 +49,7 @@ namespace ECO
         }
 
         protected abstract void OnDestroyScene();
-        protected abstract bool OnAwakeScene(App app);
+        protected abstract bool OnAwakeScene(Canvas canvas, App app);
         protected abstract void OnUpdateScene();
         protected abstract void OnFixeUpdateScene();
     }
