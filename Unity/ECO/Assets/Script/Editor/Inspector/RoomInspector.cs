@@ -7,7 +7,7 @@ namespace ECOEditor
     [CustomEditor(typeof(Room))]
     public class RoomInspector : Editor
     {
-        private const int c_pixelPerUnit = 24;
+        private const int c_pixelPerUnit = 256;
         private float _boundaryPiexelWidth = 0;
         private float _boundaryPixelHeight = 0;
 
