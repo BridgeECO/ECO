@@ -45,13 +45,13 @@ namespace ECO
 
         private void FixedUpdate()
         {
-            OnFixeUpdateScene();
+            OnFixedUpdateScene();
         }
 
         protected abstract void OnDestroyScene();
         protected abstract bool OnAwakeScene(Canvas canvas, App app);
         protected abstract void OnUpdateScene();
-        protected abstract void OnFixeUpdateScene();
+        protected abstract void OnFixedUpdateScene();
     }
 
 }

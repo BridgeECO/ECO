@@ -14,7 +14,7 @@ namespace ECO
 
         }
 
-        protected override void OnFixeUpdateScene()
+        protected override void OnFixedUpdateScene()
         {
 
         }

@@ -19,7 +19,7 @@ namespace ECO
             _uiCtrl.Destroy();
         }
 
-        protected override void OnFixeUpdateScene()
+        protected override void OnFixedUpdateScene()
         {
 
         }
