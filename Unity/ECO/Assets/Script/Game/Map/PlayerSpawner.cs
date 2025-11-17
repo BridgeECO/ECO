@@ -5,9 +5,7 @@ namespace ECO
     public class PlayerSpawner : MonoBase
     {
         [SerializeField] private GameObject _playerPrefab; // Player 프리팹 (필수), 임시로 Serialize
-        private string _playerRootName = "c_player_root";
         private string _playerNodeName = "c_player";
-        private string _spawnNodeName = "c_player_spawn";
         private bool _canReuseExisting = true; // 기존 플레이어 재사용 여부
 
         private PlayerController _player;
@@ -17,13 +15,13 @@ namespace ECO
         protected override bool OnCreateMono()
         {
             // 1) 플레이어 루트 탐색 (없으면 Room 자기 자신 사용)
-            if (UNITY.TryFindGOWithName(out GameObject rootGo, _playerRootName, this.gameObject, false))
+            if (UNITY.TryFindGOWithName(out GameObject rootGo, "c_player_root", this.gameObject, false))
                 _playerRoot = rootGo.transform;
             else
                 _playerRoot = this.transform;
 
             // 2) 스폰 포인트 탐색 (없으면 루트 기준)
-            if (UNITY.TryFindGOWithName(out GameObject spGo, _spawnNodeName, _playerRoot.gameObject, false))
+            if (UNITY.TryFindGOWithName(out GameObject spGo, "c_player_spawn", _playerRoot.gameObject, false))
                 _spawnPoint = spGo.transform;
             else
                 _spawnPoint = _playerRoot;
