@@ -17,6 +17,8 @@ namespace ECO
             if (!_mapCtrl.Create(this.gameObject))
                 return false;
 
+            _mapCtrl.ShowMap();
+            _mapCtrl.ShowAllRegion();
             return true;
         }
 

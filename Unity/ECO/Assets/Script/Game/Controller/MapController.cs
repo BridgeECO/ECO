@@ -12,8 +12,10 @@ namespace ECO
         {
             if (!UNITY.TryFindCompWithName(out _map, "c_map", sceneRootGO))
                 return false;
+            if (!UNITY.TryFindGOWithName(out GameObject regionRootGO, "c_region_root", _map.gameObject))
+                return false;
 
-            _regionList = UNITY.GetCompListInChild<Region>(_map.gameObject);
+            _regionList = UNITY.GetCompListInChild<Region>(regionRootGO);
 
             return true;
         }
@@ -22,6 +24,16 @@ namespace ECO
         {
             UNITY.DestroyMonoList(ref _regionList);
             UNITY.DestroyMono(ref _map);
+        }
+
+        public void ShowMap()
+        {
+            _map.Show();
+        }
+
+        public void ShowAllRegion()
+        {
+            _regionList.ForEach(x => x.Show());
         }
     }
 }
