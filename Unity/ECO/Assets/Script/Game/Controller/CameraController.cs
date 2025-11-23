@@ -22,5 +22,11 @@ namespace ECO
         {
             _cinemachineCam = null;
         }
+
+        public void SetFollowTarget(Transform tf)
+        {
+            _cinemachineCam.LookAt = tf;
+            _cinemachineCam.Follow = tf;
+        }
     }
 }

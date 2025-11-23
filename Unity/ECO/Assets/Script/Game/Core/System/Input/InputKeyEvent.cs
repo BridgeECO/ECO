@@ -19,9 +19,25 @@ namespace ECO
         private UnityAction _onKeyEvent;
         private UnityAction _onKeyUpEvent;
 
-        //public void InputKey()
-        //{
-        //    if (InputAction.getk)
-        //}
+        public void InputKey()
+        {
+            if (Input.GetKeyDown(this.KeyCode))
+            {
+                _onKeyDownEvent?.Invoke();
+                return;
+            }
+
+            if (Input.GetKey(this.KeyCode))
+            {
+                _onKeyEvent?.Invoke();
+                return;
+            }
+
+            if (Input.GetKeyUp(this.KeyCode))
+            {
+                _onKeyUpEvent?.Invoke();
+                return;
+            }
+        }
     }
 }

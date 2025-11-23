@@ -5,9 +5,11 @@ namespace ECO
 {
     public class App
     {
-        public static void Destroy()
-        {
+        public InputSystem InputSys { get; private set; } = new InputSystem();
 
+        public void Destroy()
+        {
+            InputSys.Destroy();
         }
 
         public bool Create()
@@ -17,7 +19,7 @@ namespace ECO
 
         public void Update()
         {
-
+            InputSys.Update();
         }
     }
 }

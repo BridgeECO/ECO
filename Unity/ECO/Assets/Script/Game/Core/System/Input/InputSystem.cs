@@ -1,51 +1,25 @@
-﻿using ECO;
-using UnityEngine;
-using UnityEngine.Events;
+﻿using System.Collections.Generic;
 
-public class InputSystem
+namespace ECO
 {
-    private IArrowInput _arrowInput = null;
-
-    public void Update()
+    public class InputSystem : IDestroyable
     {
-        InputArrow();
-    }
+        private List<InputKeyEvent> _keyEvtList = new List<InputKeyEvent>();
 
-    private void InputArrow()
-    {
-        if (_arrowInput == null)
-            return;
-
-        ExecuteKeyAndDownInput(KeyCode.RightArrow, _arrowInput.InputRightKeyDown);
-    }
-
-    private bool ExecuteKeyAndDownInput(KeyCode keyCode, UnityAction onInputKey)
-    {
-        //Down 먼저 처리함
-        if (Input.GetKeyDown(keyCode))
+        public void Destroy()
         {
-            onInputKey.Invoke();
-            return true;
+            _keyEvtList.Clear();
         }
 
-        if (Input.GetKey(keyCode))
+        public void Update()
         {
-            onInputKey.Invoke();
-            return true;
+            foreach (var evt in _keyEvtList)
+                evt.InputKey();
         }
 
-        return false;
-    }
-
-    private bool ExecuteKeyUpInput(KeyCode keyCode, UnityAction onInputKey)
-    {
-        //Down 먼저 처리함
-        if (Input.GetKeyUp(keyCode))
+        public void RegisterEvt(InputKeyEvent evt)
         {
-            onInputKey.Invoke();
-            return true;
+            _keyEvtList.Add(evt);
         }
-
-        return false;
     }
 }
