@@ -17,14 +17,14 @@ namespace ECO
             return LoadAllCfgSOAndBuild();
         }
 
-        public IConfig GetConfig<CFG>() where CFG : IConfig, new()
+        public CFG GetConfig<CFG>() where CFG : class, IConfig, new()
         {
             if (_configDict.TryGetValue(typeof(CFG), out IConfig cfg))
-                return cfg;
+                return cfg as CFG;
 
             cfg = new CFG();
             _configDict.Add(typeof(CFG), cfg);
-            return cfg;
+            return cfg as CFG;
         }
 
         private bool LoadAllCfgSOAndBuild()
@@ -35,17 +35,18 @@ namespace ECO
             return true;
         }
 
-        private bool LoadCfgSOAndBuild<CFGSO, CFG>(string cfgName) where CFGSO : ConfigSOBase<CFG> where CFG : IConfig, new()
+        private bool LoadCfgSOAndBuild<CFGSO, CFG>(string cfgName) where CFGSO : ConfigSOBase<CFG> where CFG : class, IConfig, new()
         {
             if (!RES.TryLoadAddressableAsset<CFGSO>(out var cfgSO, PATH.GetCfgSOAddressableKey(cfgName)))
                 return false;
 
-            _configDict.Add(cfgSO.GetType(), cfgSO.BuildCfg());
+            var cfg = cfgSO.BuildCfg();
+            _configDict.Add(cfg.GetType(), cfgSO.BuildCfg());
             cfgSO.OnBuildCfg = OnBuildCfg<CFG>;
             return true;
         }
 
-        private void OnBuildCfg<CFG>(CFG newCfg) where CFG : IConfig, new()
+        private void OnBuildCfg<CFG>(CFG newCfg) where CFG : class, IConfig, new()
         {
             IConfig oldCFG = GetConfig<CFG>();
             oldCFG.Copy(newCfg);

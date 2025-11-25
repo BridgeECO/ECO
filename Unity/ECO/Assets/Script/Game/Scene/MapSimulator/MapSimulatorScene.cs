@@ -13,7 +13,7 @@ namespace ECO
         {
             if (!_uiCtrl.Create(canvas))
                 return false;
-            if (!_camCtrl.Create(this.gameObject))
+            if (!_camCtrl.Create(this.gameObject, app.CfgSys))
                 return false;
             if (!_mapCtrl.Create(this.gameObject))
                 return false;
