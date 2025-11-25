@@ -6,9 +6,13 @@ namespace ECO
 {
     public class PATH
     {
+        //Addressable Key
         public static string GetProtoCsvAddressableKey(string csvName) => $"Assets/Data/Proto/{csvName}.csv";
+        public static string GetCfgSOAddressableKey(string cfgName) => $"Assets/Data/Config/{cfgName}_cfg.asset";
 
 
+
+        //Path
         public static string GetProtoCsvFolderPath() => JoinPath(GetAssetPath(true), $"Data/Csv");
         public static string GetProtoCsvPath(string csvName) => JoinPath(GetProtoCsvFolderPath(), $"{csvName}.csv");
         public static string GetProtoExcelFolderPath() => JoinPath(GetAssetPath(true), $"..\\..\\..\\Excel\\Proto");
