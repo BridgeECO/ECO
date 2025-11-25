@@ -7,14 +7,10 @@ namespace ECO
     public class SystemConfigSO : ConfigSOBase<SystemConfig>
     {
         [field: SerializeField]
-        public int PixelPerUnit { get; private set; }
-
-
-        private SystemConfig _cfg = new SystemConfig();
+        public SystemConfig _cfg { get; private set; } = new SystemConfig();
 
         public override SystemConfig BuildCfg()
         {
-            _cfg.Build(this);
             return _cfg;
         }
 

@@ -1,13 +1,17 @@
-﻿namespace ECO
+﻿using System;
+using UnityEngine;
+
+namespace ECO
 {
+    [Serializable]
     public class SystemConfig : IConfig
     {
+        [field: SerializeField]
+        public int DefaultResolutionX { get; private set; }
+        [field: SerializeField]
+        public int DefaultResolutionY { get; private set; }
+        [field: SerializeField]
         public int PixelPerUnit { get; private set; }
-
-        public void Build(SystemConfigSO so)
-        {
-            this.PixelPerUnit = so.PixelPerUnit;
-        }
 
         public void Copy(IConfig newCfg)
         {
