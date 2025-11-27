@@ -25,5 +25,10 @@ namespace ECO
         {
             _player.TF.position += (Vector3)dir * 10f;
         }
+
+        public void Jump()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

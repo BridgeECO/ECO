@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8012726323294952470}
-  - component: {fileID: 6568754440652614891}
+  - component: {fileID: 5222779997077306188}
   - component: {fileID: 1402244869454246483}
   - component: {fileID: 2297178260716431702}
   - component: {fileID: 4231712494063567033}
@@ -36,7 +36,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6568754440652614891
+--- !u!114 &5222779997077306188
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -45,21 +45,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 6699162632453285524}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 944ecfc1bca19cc4185f2ef6ce2664c9, type: 3}
+  m_Script: {fileID: 11500000, guid: 986a578684d171e45bd439c48e81eb51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _moveSpeed: 7.5
-  _airControl: 0.6
-  _jumpVelocity: 12
-  _jumpCutMultiplier: 0.5
-  _coyoteTime: 0.1
-  _jumpBuffer: 0.1
-  _groundCheck: {fileID: 0}
-  _groundRadius: 0.18
-  _groundMask:
-    serializedVersion: 2
-    m_Bits: 0
-  _sprite: {fileID: 0}
 --- !u!114 &1402244869454246483
 MonoBehaviour:
   m_ObjectHideFlags: 0
