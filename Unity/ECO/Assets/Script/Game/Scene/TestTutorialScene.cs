@@ -25,9 +25,9 @@ namespace ECO
             _playerCtrl.ShowPlayer();
             _camCtrl.SetFollowTarget(_playerCtrl.Player.TF);
 
-            app.InputSys.RegisterEvt(new InputKeyEvent(KeyCode.Space, null, () => _playerCtrl.Jump()));
-            app.InputSys.RegisterEvt(new InputKeyEvent(KeyCode.W, null, () => _playerCtrl.Jump()));
-            app.InputSys.RegisterEvt(new InputKeyEvent(KeyCode.UpArrow, null, () => _playerCtrl.Jump()));
+            //app.InputSys.RegisterEvt(new InputKeyEvent(KeyCode.Space, null, () => _playerCtrl.Jump()));
+            //app.InputSys.RegisterEvt(new InputKeyEvent(KeyCode.W, null, () => _playerCtrl.Jump()));
+            //app.InputSys.RegisterEvt(new InputKeyEvent(KeyCode.UpArrow, null, () => _playerCtrl.Jump()));
 
             return true;
         }

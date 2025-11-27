@@ -10,9 +10,8 @@ namespace ECO
         private float _moveSpeed = 6f;
         private float _jumpPower = 8f;
 
-        private int _curJumpCount;
-        private const int MAX_JUMP_COUNT = 2;
         private bool _isGrounded;
+        private bool _canDoubleJump;
 
         public IPlayer Player => _player;
 
@@ -35,8 +34,8 @@ namespace ECO
 
             _player.Controller = this;
 
-            _curJumpCount = 0;
-            _isGrounded = false;
+            _isGrounded = true;
+            _canDoubleJump = true;
             return true;
         }
 
@@ -46,26 +45,24 @@ namespace ECO
             _player.Show();
         }
 
-        // 외부에서 방향을 직접 밀어주고 싶을 때 사용 (현재 TestTutorial에서는 사용 안 함)
+        // 외부에서 강제로 이동시키고 싶을 때만 사용 (지금은 내부 입력 처리 사용)
         public void Move(Vector2 dir)
         {
             float speedX = dir.x * _moveSpeed;
             _player.MoveHorizontal(speedX);
         }
 
+        // 외부에서 점프를 호출하고 싶을 때 사용 가능하지만,
+        // 기본적으로는 Update()에서 입력을 직접 읽어 처리함
         public void Jump()
         {
-            if (_curJumpCount >= MAX_JUMP_COUNT)
-                return;
-
-            _player.Jump(_jumpPower);
-            _curJumpCount++;
-            _isGrounded = false;
+            TryJump();
         }
 
         public void Update()
         {
             HandleMoveInput();
+            HandleJumpInput();
         }
 
         private void HandleMoveInput()
@@ -86,10 +83,40 @@ namespace ECO
                 _player.MoveHorizontal(moveX * _moveSpeed);
         }
 
+        private void HandleJumpInput()
+        {
+            if (Input.GetKeyDown(KeyCode.Space) ||
+                Input.GetKeyDown(KeyCode.W) ||
+                Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                TryJump();
+            }
+        }
+
+        private void TryJump()
+        {
+            if (_player == null)
+                return;
+
+            if (_isGrounded)
+            {
+                _player.Jump(_jumpPower);
+                _isGrounded = false;
+                _canDoubleJump = true;
+                return;
+            }
+
+            if (_canDoubleJump)
+            {
+                _player.Jump(_jumpPower);
+                _canDoubleJump = false;
+            }
+        }
+
         public void OnGrounded()
         {
             _isGrounded = true;
-            _curJumpCount = 0;
+            _canDoubleJump = true;
         }
     }
 }
