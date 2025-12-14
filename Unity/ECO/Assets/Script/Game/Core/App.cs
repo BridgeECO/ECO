@@ -7,6 +7,8 @@ namespace ECO
     {
         public InputSystem InputSys { get; private set; } = new InputSystem();
         public ConfigSystem CfgSys { get; private set; } = new ConfigSystem();
+        public TickerManager TickerMgr { get; private set; } = new TickerManager();
+
 
         public void Destroy()
         {
@@ -25,6 +27,7 @@ namespace ECO
         public void Update()
         {
             InputSys.Update();
+            TickerMgr.Update();
         }
     }
 }

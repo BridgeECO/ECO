@@ -6,6 +6,8 @@ namespace ECO
     {
         private GameConfig _gameCfg = null;
         private IResonanceObjManager _objMgr = new MapSimulatorResonanceObjManager();
+        private Ticker _ticker = null;
+        private MapSimulatorResonanceValue _resonanceValue = null;
 
         public bool Create(GameObject sceneRootGO, App app)
         {
@@ -14,6 +16,8 @@ namespace ECO
 
             app.InputSys.RegisterEvt(new InputKeyEvent(KeyCode.Mouse0, OnClickMouse));
             _gameCfg = app.CfgSys.GetConfig<GameConfig>();
+            _ticker = app.TickerMgr.GetTicker();
+            _ticker.SetOnTickAct(OnTick);
 
             return true;
         }
@@ -25,13 +29,39 @@ namespace ECO
 
         private void OnClickMouse()
         {
+            if (_resonanceValue != null)
+                return;
+
             var radius = _gameCfg.ResonanceRadius;
             var centerPos = CalcaResonanceMousePos();
             var objInCircleList = _objMgr.FindObjListInCircle(centerPos, radius);
 
-            foreach (var obj in objInCircleList)
+            if (objInCircleList.Count <= 0)
+                return;
+
+            _resonanceValue = new MapSimulatorResonanceValue(centerPos, radius, objInCircleList);
+            _resonanceValue.SetRadius(0f);
+            _resonanceValue.SetIsInc(true);
+        }
+
+        private void OnTick()
+        {
+            if (_resonanceValue == null)
+                return;
+
+            if (_resonanceValue.IsInc)
             {
-                obj.SetCircleParams(centerPos, radius);
+                _resonanceValue.IncRadius(0.1f);
+
+                if (_resonanceValue.CurRadius >= _resonanceValue.MaxRadius)
+                    _resonanceValue.SetIsInc(false);
+            }
+            else
+            {
+                _resonanceValue.DecRadius(0.1f);
+
+                if (_resonanceValue.CurRadius <= 0f)
+                    _resonanceValue = null;
             }
         }
 

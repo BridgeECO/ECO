@@ -20,11 +20,9 @@ namespace ECO
 
             _spriteRenderer.material = _resonanceMat;
 
-            //var color = _spriteRenderer.color;
-            //color.a = 0;
-
-            //_spriteRenderer.color = color;
             _matPropBlock = new MaterialPropertyBlock();
+            _matPropBlock.SetTexture("_MainTex", _spriteRenderer.sprite.texture);
+            SetAlpha(0);
         }
 
         public Bounds GetColBound()
@@ -34,13 +32,23 @@ namespace ECO
 
         public void SetCircleParams(Vector2 centerPos, float radius)
         {
-            _spriteRenderer.GetPropertyBlock(_matPropBlock);
+            if (radius <= 0)
+                SetAlpha(0);
+            else
+                SetAlpha(1);
 
-            _matPropBlock.SetTexture("_MainTex", _spriteRenderer.sprite.texture);
+            _spriteRenderer.GetPropertyBlock(_matPropBlock);
             _matPropBlock.SetVector("_CenterPos", centerPos);
             _matPropBlock.SetFloat("_Radius", radius);
-
             _spriteRenderer.SetPropertyBlock(_matPropBlock);
+        }
+
+        private void SetAlpha(float alpha)
+        {
+            var color = _spriteRenderer.color;
+            color.a = alpha;
+
+            _spriteRenderer.color = color;
         }
     }
 }
