@@ -23,7 +23,7 @@ namespace ECO
 
         public void Move(Vector2 dir)
         {
-            _player.TF.position += (Vector3)dir * 10f;
+            _player.TF.position += (Vector3)dir * 1f;
         }
 
         public void Jump()

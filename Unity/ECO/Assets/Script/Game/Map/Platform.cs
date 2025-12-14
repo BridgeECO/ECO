@@ -17,6 +17,11 @@ namespace ECO
             return true;
         }
 
+        protected override bool IsAutoShow()
+        {
+            return true;
+        }
+
         public void PlayWwiseEvt()
         {
             if (_wwiseEvt == null)

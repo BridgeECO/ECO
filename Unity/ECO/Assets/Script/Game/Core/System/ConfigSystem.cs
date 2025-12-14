@@ -31,6 +31,8 @@ namespace ECO
         {
             if (!LoadCfgSOAndBuild<SystemConfigSO, SystemConfig>("system"))
                 return false;
+            if (!LoadCfgSOAndBuild<GameConfigSO, GameConfig>("game"))
+                return false;
 
             return true;
         }

@@ -1,30 +1,38 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace ECO
 {
     public class MapSimulatorResonanceController : IResonanceController, IDestroyable
     {
-        private ResonanceObject _resonanceObj = null;
+        private GameConfig _gameCfg = null;
+        private IResonanceObjManager _objMgr = new MapSimulatorResonanceObjManager();
 
         public bool Create(GameObject sceneRootGO, App app)
         {
-            if (!UNITY.TryFindCompWithName(out _resonanceObj, "c_resonance", sceneRootGO))
+            if (!_objMgr.Create(sceneRootGO))
                 return false;
 
             app.InputSys.RegisterEvt(new InputKeyEvent(KeyCode.Mouse0, OnClickMouse));
+            _gameCfg = app.CfgSys.GetConfig<GameConfig>();
+
             return true;
         }
 
         public void Destroy()
         {
-            UNITY.DestroyMono(ref _resonanceObj);
+
         }
 
         private void OnClickMouse()
         {
-            _resonanceObj.SetPos(CalcaResonanceMousePos());
-            _resonanceObj.Show();
-            _resonanceObj.PlayAnim("active");
+            var radius = _gameCfg.ResonanceRadius;
+            var centerPos = CalcaResonanceMousePos();
+            var objInCircleList = _objMgr.FindObjListInCircle(centerPos, radius);
+
+            foreach (var obj in objInCircleList)
+            {
+                obj.SetCircleParams(centerPos, radius);
+            }
         }
 
         private Vector3 CalcaResonanceMousePos()

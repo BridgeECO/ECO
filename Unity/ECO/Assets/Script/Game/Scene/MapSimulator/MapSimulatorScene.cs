@@ -7,6 +7,7 @@ namespace ECO
         private MapSimulatorSceneUIController _uiCtrl = new MapSimulatorSceneUIController();
         private CameraController _camCtrl = new CameraController();
         private MapController _mapCtrl = new MapController();
+
         private IPlayerController _playerCtrl = new MapSimulatorPlayerController();
         private IResonanceController _resonanceCtrl = new MapSimulatorResonanceController();
 
