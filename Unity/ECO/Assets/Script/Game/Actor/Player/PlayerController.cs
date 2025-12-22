@@ -7,7 +7,9 @@ namespace ECO
         private Player _player;
         private Rigidbody2D _rigid;
 
+        [SerializeField]
         private float _moveSpeed = 6f;
+        [SerializeField]
         private float _jumpPower = 8f;
 
         private bool _isGrounded;
@@ -72,9 +74,9 @@ namespace ECO
 
             float moveX = 0f;
 
-            if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
+            if (Input.GetKey(KeyCode.LeftArrow))
                 moveX = -1f;
-            else if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
+            else if (Input.GetKey(KeyCode.RightArrow))
                 moveX = 1f;
 
             if (Mathf.Abs(moveX) < 0.01f)
@@ -85,12 +87,8 @@ namespace ECO
 
         private void HandleJumpInput()
         {
-            if (Input.GetKeyDown(KeyCode.Space) ||
-                Input.GetKeyDown(KeyCode.W) ||
-                Input.GetKeyDown(KeyCode.UpArrow))
-            {
+            if (Input.GetKeyDown(KeyCode.Z))
                 TryJump();
-            }
         }
 
         private void TryJump()
