@@ -13,7 +13,9 @@ namespace ECO
         private float _jumpPower = 8f;
 
         private bool _isGrounded;
-        private bool _canDoubleJump;
+        private bool _hasUsedAirJump;
+
+        private float _wallNormalX;
 
         public IPlayer Player => _player;
 
@@ -37,7 +39,8 @@ namespace ECO
             _player.Controller = this;
 
             _isGrounded = true;
-            _canDoubleJump = true;
+            _hasUsedAirJump = false;
+            _wallNormalX = 0f;
             return true;
         }
 
@@ -63,14 +66,15 @@ namespace ECO
 
         public void Update()
         {
-            HandleMoveInput();
+            float moveX = HandleMoveInput();
             HandleJumpInput();
+            ResolveWallStick(moveX);
         }
 
-        private void HandleMoveInput()
+        private float HandleMoveInput()
         {
             if (_player == null)
-                return;
+                return 0f;
 
             float moveX = 0f;
 
@@ -83,6 +87,8 @@ namespace ECO
                 _player.StopHorizontal();
             else
                 _player.MoveHorizontal(moveX * _moveSpeed);
+
+            return moveX;
         }
 
         private void HandleJumpInput()
@@ -100,21 +106,64 @@ namespace ECO
             {
                 _player.Jump(_jumpPower);
                 _isGrounded = false;
-                _canDoubleJump = true;
+                _hasUsedAirJump = false;
                 return;
             }
 
-            if (_canDoubleJump)
+            if (!_hasUsedAirJump)
             {
                 _player.Jump(_jumpPower);
-                _canDoubleJump = false;
+                _hasUsedAirJump = true;
             }
         }
+
+        private void ResolveWallStick(float moveX)
+        {
+            if (_player == null)
+                return;
+
+            if (_rigid == null)
+                return;
+
+            if (_isGrounded)
+                return;
+
+            if (Mathf.Abs(moveX) < 0.01f)
+                return;
+
+            if (Mathf.Abs(_wallNormalX) < 0.01f)
+                return;
+
+            float moveSign = moveX > 0f ? 1f : -1f;
+            float wallSide = _wallNormalX > 0f ? 1f : -1f;
+
+            if (moveSign != -wallSide)
+                return;
+
+            Vector2 lv = _rigid.linearVelocity;
+            if (lv.x * moveSign > 0f)
+                _rigid.linearVelocity = new Vector2(0f, lv.y);
+
+            _player.StopHorizontal();
+        }
+
 
         public void OnGrounded()
         {
             _isGrounded = true;
-            _canDoubleJump = true;
+            _hasUsedAirJump = false;
+            _wallNormalX = 0f;
+        }
+
+        public void OnAirborne()
+        {
+            _isGrounded = false;
+            _wallNormalX = 0f;
+        }
+
+        public void OnWallContact(float normalX)
+        {
+            _wallNormalX = normalX;
         }
     }
 }

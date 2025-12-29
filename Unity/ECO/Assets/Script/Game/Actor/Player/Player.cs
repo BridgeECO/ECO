@@ -57,11 +57,55 @@ namespace ECO
 
         protected override void OnCollisionEnterMono(Collision2D other)
         {
-            if (other.contacts.Length == 0)
+            ProcessContacts(other);
+        }
+
+        protected void OnCollisionStayMono(Collision2D other)
+        {
+            ProcessContacts(other);
+        }
+
+        protected override void OnCollisionExitMono(Collision2D other)
+        {
+            Controller?.OnAirborne();
+        }
+
+        private void ProcessContacts(Collision2D other)
+        {
+            if (Controller == null)
                 return;
 
-            if (other.contacts[0].normal.y > 0.5f)
-                Controller?.OnGrounded();
+            if (other.contactCount == 0)
+                return;
+
+            bool grounded = false;
+            bool wall = false;
+            float wallNormalX = 0f;
+
+            for (int i = 0; i < other.contactCount; ++i)
+            {
+                Vector2 n = other.contacts[i].normal;
+
+                if (n.y > 0.5f)
+                    grounded = true;
+
+                if (Mathf.Abs(n.x) > 0.9f)
+                {
+                    wall = true;
+                    wallNormalX = n.x;
+                }
+            }
+
+            if (grounded)
+            {
+                Controller.OnGrounded();
+                return;
+            }
+
+            Controller.OnAirborne();
+
+            if (wall)
+                Controller.OnWallContact(wallNormalX);
         }
 
         protected override bool IsAutoShow()
