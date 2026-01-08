@@ -14,10 +14,10 @@ namespace ECO
 
         public float MaxRadius { get; private set; } = 0;
         public float CurRadius { get; private set; } = 0;
-        public Vector2 CenterPos { get; private set; } = Vector2.zero;
+        public Vector2 CenterPos { get; set; } = Vector2.zero;
         public bool IsInc { get; private set; } = false;
 
-        private List<ResonanceObject> _objList = new List<ResonanceObject>();
+        public List<ResonanceObject> _objList = new List<ResonanceObject>();
 
         public void SetRadius(float radius)
         {

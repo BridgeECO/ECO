@@ -53,6 +53,9 @@ namespace ECO
             if (_resonanceValue == null)
                 return;
 
+            _resonanceValue.CenterPos = playerTransform.position;
+            _resonanceValue._objList = _objMgr.FindObjListInCircle(playerTransform.position, _gameCfg.ResonanceRadius);
+
             if (_resonanceValue.IsInc)
             {
                 _resonanceValue.IncRadius(0.1f);

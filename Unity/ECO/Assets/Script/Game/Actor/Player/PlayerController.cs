@@ -12,7 +12,7 @@ namespace ECO
         [SerializeField]
         private float _moveSpeed = 6f;
         [SerializeField]
-        private float _jumpPower = 8f;
+        private float _jumpPower = 16f;
 
         private bool _isGrounded;
         private bool _hasUsedAirJump;
