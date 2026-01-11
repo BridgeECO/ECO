@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -44,7 +44,7 @@ namespace ECO
         public List<Renderer> meshTargets = new List<Renderer>();
         public List<Graphic> uiTargets = new List<Graphic>();
 
-        [Tooltip("´ë»óÀÌ ºñ¾îÀÖÀ¸¸é Awake¿¡¼­ ÀÚµ¿ Å½»ö")]
+        [Tooltip("ëŒ€ìƒì´ ë¹„ì–´ìˆìœ¼ë©´ Awakeì—ì„œ ìë™ íƒìƒ‰")]
         public bool IsAutoFindTargets = true;
 
         private MaterialPropertyBlock _mpb;
@@ -87,7 +87,7 @@ namespace ECO
             _currentState = nextState;
 
             ApplyCurrentStateColor();
-            Debug.Log($"[FSM] {prevState} ¡æ {nextState}");
+            Debug.Log($"[FSM] {prevState} â†’ {nextState}");
             OnStateChanged?.Invoke(prevState, _currentState);
         }
 

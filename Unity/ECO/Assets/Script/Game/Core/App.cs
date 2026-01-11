@@ -1,6 +1,8 @@
 ﻿
 
 
+using ECODebug;
+
 namespace ECO
 {
     public class App
@@ -14,11 +16,16 @@ namespace ECO
         {
             InputSys.Destroy();
             CfgSys.Destroy();
+
+            DebugSystem.Destroy();
         }
 
         public bool Create()
         {
             if (!CfgSys.Create())
+                return false;
+
+            if (DebugSystem.Create())
                 return false;
 
             return true;

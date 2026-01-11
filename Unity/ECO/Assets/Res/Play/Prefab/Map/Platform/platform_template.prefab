@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3075415765696049493}
   - component: {fileID: 6445189354383447857}
   - component: {fileID: 5572181033812555518}
+  - component: {fileID: 6451766873387915591}
   m_Layer: 0
   m_Name: platform_template
   m_TagString: Untagged
@@ -161,4 +162,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dcec7ec7488541f479fc8f8e6bac6266, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onResonanceActivate:
+    m_PersistentCalls:
+      m_Calls: []
   _resonanceMat: {fileID: -876546973899608171, guid: 490536593af0022439269121306f10f6, type: 3}
+--- !u!114 &6451766873387915591
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2967482486289651907}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8cc6a47da576d0439ec33eece925b15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
