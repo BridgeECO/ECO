@@ -1,10 +1,13 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
 
 namespace ECO
 {
     [RequireComponent(typeof(SpriteRenderer), typeof(BoxCollider2D))]
     public class ResonanceObject : MonoBehaviour
     {
+        public UnityEvent onResonanceActivate = new UnityEvent();
+
         [SerializeField] private Material _resonanceMat = null;
 
         private MaterialPropertyBlock _matPropBlock = null;
@@ -28,6 +31,11 @@ namespace ECO
         public Bounds GetColBound()
         {
             return _boxCol.bounds;
+        }
+
+        public void ActivateResonance()
+        {
+            onResonanceActivate.Invoke();
         }
 
         public void SetCircleParams(Vector2 centerPos, float radius)
