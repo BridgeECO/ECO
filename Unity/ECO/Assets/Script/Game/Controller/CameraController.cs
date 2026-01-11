@@ -17,7 +17,7 @@ namespace ECO
 
             _cfgSys = cfgSys;
 
-            RefreshCamSize();
+            RefreshCamPerspective();
             return true;
         }
 
@@ -32,13 +32,27 @@ namespace ECO
             _cinemachineCam.Follow = tf;
         }
 
-        private void RefreshCamSize()
+        private void RefreshCamOrthographic()
         {
             SystemConfig sysCfg = _cfgSys.GetConfig<SystemConfig>();
             int pixelPerUnit = sysCfg.PixelPerUnit;
             int resolutionY = sysCfg.DefaultResolutionY;
 
             _cinemachineCam.Lens.OrthographicSize = (resolutionY * 0.5f) / pixelPerUnit;
+        }
+
+        private void RefreshCamPerspective()
+        {
+            SystemConfig sysCfg = _cfgSys.GetConfig<SystemConfig>();
+
+            int pixelPerUnit = sysCfg.PixelPerUnit;          // 64
+            int resolutionY = sysCfg.DefaultResolutionY;     // 1080
+
+            float camZ = Mathf.Abs(_cinemachineCam.transform.position.z); // 30
+            float halfHeight = (resolutionY * 0.5f) / pixelPerUnit;
+            float verticalFOV = 2f * Mathf.Atan(halfHeight / camZ) * Mathf.Rad2Deg;
+
+            _cinemachineCam.Lens.FieldOfView = verticalFOV;
         }
     }
 }
