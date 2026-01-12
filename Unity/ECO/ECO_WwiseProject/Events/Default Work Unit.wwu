@@ -1,6 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WwiseDocument Type="WorkUnit" ID="{FE18334D-FE04-4CFA-A2AB-086276688FBF}" SchemaVersion="119">
 	<Events>
-		<WorkUnit Name="Default Work Unit" ID="{FE18334D-FE04-4CFA-A2AB-086276688FBF}" PersistMode="Standalone"/>
+		<WorkUnit Name="Default Work Unit" ID="{FE18334D-FE04-4CFA-A2AB-086276688FBF}" PersistMode="Standalone">
+			<ChildrenList>
+				<Event Name="Play_SE_Samples_C" ID="{83CBFE0A-1989-43BF-844D-AFC1B02D17C9}">
+					<ChildrenList>
+						<Action Name="" ID="{44CFE303-EF3B-4F29-88D5-9A679E5999D6}" ShortID="185465496">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="SE_Samples_C" ID="{D4B9FC21-45FF-4DBB-BD80-C4BEB12CECF9}" WorkUnitID="{34AD97B6-23B2-44E6-84A3-5C91D1F2E890}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_SE_Samples_D" ID="{9C3C0FD7-5FB1-4278-A20F-56D5D78090F3}">
+					<ChildrenList>
+						<Action Name="" ID="{17038FDF-88C5-414F-9351-497DC95F3A05}" ShortID="717370991">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="SE_Samples_D" ID="{0F4630D9-9131-42EF-9A05-614CC116BFB4}" WorkUnitID="{34AD97B6-23B2-44E6-84A3-5C91D1F2E890}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+			</ChildrenList>
+		</WorkUnit>
 	</Events>
 </WwiseDocument>

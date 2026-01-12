@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Google.Apis.Logging;
 using UnityEngine;
 
@@ -9,6 +10,8 @@ namespace ECO
         private IResonanceObjManager _objMgr = new MapSimulatorResonanceObjManager();
         private Ticker _ticker = null;
         private MapSimulatorResonanceValue _resonanceValue = null;
+
+        private List<ResonanceObject> _objInCircleList = null;
 
         private Transform playerTransform;
 
@@ -26,24 +29,24 @@ namespace ECO
 
         public void Destroy()
         {
-            
+            _resonanceValue = null;
         }
 
         public void OnPlayerAirJumped(Transform nowPlayer)
         {
             if (_resonanceValue != null)
-                return;
+                _resonanceValue = null;
 
             playerTransform = nowPlayer;
 
             var radius = _gameCfg.ResonanceRadius;
             var centerPos = nowPlayer.position;
-            var objInCircleList = _objMgr.FindObjListInCircle(centerPos, radius);
+            _objInCircleList = _objMgr.FindObjListInCircle(centerPos, radius);
 
-            if (objInCircleList.Count <= 0)
+            if (_objInCircleList.Count <= 0)
                 return;
 
-            _resonanceValue = new MapSimulatorResonanceValue(centerPos, radius, objInCircleList);
+            _resonanceValue = new MapSimulatorResonanceValue(centerPos, radius, _objInCircleList);
             _resonanceValue.SetRadius(0f);
             _resonanceValue.SetIsInc(true);
         }
@@ -54,7 +57,9 @@ namespace ECO
                 return;
 
             _resonanceValue.CenterPos = playerTransform.position;
-            _resonanceValue._objList = _objMgr.FindObjListInCircle(playerTransform.position, _gameCfg.ResonanceRadius);
+            _objInCircleList = _objMgr.FindObjListInCircle(playerTransform.position, _resonanceValue.CurRadius);
+            _objInCircleList.ForEach(x => x.ActivateResonance());
+            Debug.Log(_objInCircleList.Count.ToString());
 
             if (_resonanceValue.IsInc)
             {

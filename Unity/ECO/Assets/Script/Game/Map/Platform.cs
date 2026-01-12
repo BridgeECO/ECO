@@ -8,7 +8,6 @@ namespace ECO
 
         private ResonanceObject _resonanceObj = null;
 
-
         protected override void OnDestroyMono()
         {
             _resonanceObj.onResonanceActivate.RemoveListener(PlayWwiseEvt);
@@ -20,6 +19,7 @@ namespace ECO
                 return false;
 
             _resonanceObj.onResonanceActivate.AddListener(PlayWwiseEvt);
+
             return true;
         }
 
@@ -30,12 +30,13 @@ namespace ECO
 
         public void PlayWwiseEvt()
         {
-            LOG.Info("여기서 플랫폼에 할당된 음악들 플레이");
+            //LOG.Info("여기서 플랫폼에 할당된 음악들 플레이");
 
             if (_wwiseEvt == null)
                 return;
 
-            AkSoundEngine.PostEvent(_wwiseEvt.playingId, this.gameObject);
+            //AkSoundEngine.PostEvent(_wwiseEvt.playingId, this.gameObject);
+            _wwiseEvt.HandleEvent(gameObject);
         }
     }
 }

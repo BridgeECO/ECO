@@ -13,15 +13,14 @@ namespace AK
 {
     namespace EVENTS
     {
-        static const AkUniqueID SE_SAMPLES_C = 1435318571U;
-        static const AkUniqueID SE_SAMPLES_D = 1435318572U;
-        static const AkUniqueID SE_SAMPLES_E = 1435318573U;
+        static const AkUniqueID PLAY_SE_SAMPLES_C = 3286298992U;
+        static const AkUniqueID PLAY_SE_SAMPLES_D = 3286298999U;
     } // namespace EVENTS
 
     namespace BANKS
     {
         static const AkUniqueID INIT = 1355168291U;
-        static const AkUniqueID MAIN = 3161908922U;
+        static const AkUniqueID NEW_SOUNDBANK = 4072029455U;
     } // namespace BANKS
 
     namespace BUSSES

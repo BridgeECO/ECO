@@ -22,41 +22,32 @@
 				<Bus Id="3803692087" Name="Master Audio Bus"/>
 			</Busses>
 		</SoundBank>
-		<SoundBank Id="3161908922" Type="User" Language="SFX" Hash="{1895FAD6-24A4-010A-F81F-C6498C0399FE}">
-			<ShortName>Main</ShortName>
-			<Path>Main.bnk</Path>
+		<SoundBank Id="4072029455" Type="User" Language="SFX" Hash="{23E4FC78-B987-C2E6-E341-776C0AD6F676}">
+			<ShortName>New_SoundBank</ShortName>
+			<Path>New_SoundBank.bnk</Path>
 			<Media>
-				<File Id="171931195" Language="SFX" Streaming="false" Location="Memory">
+				<File Id="621983481" Language="SFX" Streaming="false" Location="Memory">
 					<ShortName>SE_Samples_C.wav</ShortName>
-					<CachePath>SFX/SE_Samples_C_D20858FF.wem</CachePath>
+					<CachePath>SFX/SE_Samples_C_F7E1D1B8.wem</CachePath>
 				</File>
-				<File Id="389807190" Language="SFX" Streaming="false" Location="Memory">
+				<File Id="814137639" Language="SFX" Streaming="false" Location="Memory">
 					<ShortName>SE_Samples_D.wav</ShortName>
-					<CachePath>SFX/SE_Samples_D_70AE126A.wem</CachePath>
-				</File>
-				<File Id="601608683" Language="SFX" Streaming="false" Location="Memory">
-					<ShortName>SE_Samples_E.wav</ShortName>
-					<CachePath>SFX/SE_Samples_E_104D62C7.wem</CachePath>
+					<CachePath>SFX/SE_Samples_D_3A7B923E.wem</CachePath>
 				</File>
 			</Media>
 			<Events>
-				<Event Id="1435318571" Name="SE_Samples_C" DurationType="OneShot" DurationMin="1.1347476" DurationMax="1.1347476">
+				<Event Id="3286298992" Name="Play_SE_Samples_C" DurationType="OneShot" DurationMin="0.8888097" DurationMax="0.8888097">
 					<MediaRefs>
-						<MediaRef Id="171931195"/>
+						<MediaRef Id="621983481"/>
 					</MediaRefs>
 				</Event>
-				<Event Id="1435318572" Name="SE_Samples_D" DurationType="OneShot" DurationMin="1.4074459" DurationMax="1.4074459">
+				<Event Id="3286298999" Name="Play_SE_Samples_D" DurationType="OneShot" DurationMin="1.2495842" DurationMax="1.2495842">
 					<MediaRefs>
-						<MediaRef Id="389807190"/>
-					</MediaRefs>
-				</Event>
-				<Event Id="1435318573" Name="SE_Samples_E" DurationType="OneShot" DurationMin="1.3577371" DurationMax="1.3577371">
-					<MediaRefs>
-						<MediaRef Id="601608683"/>
+						<MediaRef Id="814137639"/>
 					</MediaRefs>
 				</Event>
 			</Events>
 		</SoundBank>
 	</SoundBanks>
-	<FileHash>{7934C8E6-ED87-67D6-3D9E-AE9E4F08A3AF}</FileHash>
+	<FileHash>{3A38D10B-A8B2-647A-1277-D20591B8D6C8}</FileHash>
 </SoundBanksInfo>

@@ -1,6 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WwiseDocument Type="WorkUnit" ID="{34AD97B6-23B2-44E6-84A3-5C91D1F2E890}" SchemaVersion="119">
 	<AudioObjects>
-		<WorkUnit Name="Default Work Unit" ID="{34AD97B6-23B2-44E6-84A3-5C91D1F2E890}" PersistMode="Standalone"/>
+		<WorkUnit Name="Default Work Unit" ID="{34AD97B6-23B2-44E6-84A3-5C91D1F2E890}" PersistMode="Standalone">
+			<ChildrenList>
+				<Sound Name="SE_Samples_C" ID="{D4B9FC21-45FF-4DBB-BD80-C4BEB12CECF9}" ShortID="83148361">
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1B10A975-E488-407D-B503-64192B715DCE}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{06323611-5F67-47EA-9DA2-269318CF17A1}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="SE_Samples_C" ID="{5EAFC757-93E3-485C-A91C-692A5D420E1A}">
+							<PropertyList>
+								<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+								<Property Name="TrimBegin" Type="Real64" Value="0.307293894036588"/>
+								<Property Name="TrimEnd" Type="Real64" Value="1.19610358755049"/>
+							</PropertyList>
+							<Language>SFX</Language>
+							<AudioFile>SE_Samples_C.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="621983481"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="SE_Samples_C" ID="{5EAFC757-93E3-485C-A91C-692A5D420E1A}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+				<Sound Name="SE_Samples_D" ID="{0F4630D9-9131-42EF-9A05-614CC116BFB4}" ShortID="676907566">
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{1B10A975-E488-407D-B503-64192B715DCE}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{06323611-5F67-47EA-9DA2-269318CF17A1}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="SE_Samples_D" ID="{2417AD37-FE04-40E6-8472-FF287EC7CA94}">
+							<PropertyList>
+								<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+								<Property Name="TrimBegin" Type="Real64" Value="0.397956759325255"/>
+								<Property Name="TrimEnd" Type="Real64" Value="1.64754098360656"/>
+							</PropertyList>
+							<Language>SFX</Language>
+							<AudioFile>SE_Samples_D.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="814137639"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="SE_Samples_D" ID="{2417AD37-FE04-40E6-8472-FF287EC7CA94}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+			</ChildrenList>
+		</WorkUnit>
 	</AudioObjects>
 </WwiseDocument>

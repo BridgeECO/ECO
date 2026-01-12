@@ -20,5 +20,10 @@ namespace ECO
         {
             UNITY.DestroyMonoList(ref _regionList);
         }
+
+        protected override bool IsAutoShow()
+        {
+            return true;
+        }
     }
 }

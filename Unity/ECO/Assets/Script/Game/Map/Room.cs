@@ -1,4 +1,6 @@
-﻿namespace ECO
+﻿using System.Diagnostics;
+
+namespace ECO
 {
     public class Room : MonoBase
     {
