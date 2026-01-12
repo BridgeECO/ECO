@@ -6,14 +6,20 @@ namespace ECO
     {
         [SerializeField] private AkEvent _wwiseEvt = null;
 
+        private ResonanceObject _resonanceObj = null;
+
 
         protected override void OnDestroyMono()
         {
-
+            _resonanceObj.onResonanceActivate.RemoveListener(PlayWwiseEvt);
         }
 
         protected override bool OnCreateMono()
         {
+            if (!UNITY.TryGetComp(out _resonanceObj, this.gameObject))
+                return false;
+
+            _resonanceObj.onResonanceActivate.AddListener(PlayWwiseEvt);
             return true;
         }
 
@@ -24,6 +30,8 @@ namespace ECO
 
         public void PlayWwiseEvt()
         {
+            LOG.Info("여기서 플랫폼에 할당된 음악들 플레이");
+
             if (_wwiseEvt == null)
                 return;
 

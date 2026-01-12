@@ -39,6 +39,8 @@ namespace ECO
             if (objInCircleList.Count <= 0)
                 return;
 
+            objInCircleList.ForEach(x => x.ActivateResonance());
+
             _resonanceValue = new MapSimulatorResonanceValue(centerPos, radius, objInCircleList);
             _resonanceValue.SetRadius(0f);
             _resonanceValue.SetIsInc(true);
