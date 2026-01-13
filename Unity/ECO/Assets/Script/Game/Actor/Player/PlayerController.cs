@@ -10,9 +10,9 @@ namespace ECO
         private Rigidbody2D _rigid;
 
         [SerializeField]
-        private float _moveSpeed = 6f;
+        private float _moveSpeed = 10f;
         [SerializeField]
-        private float _jumpPower = 16f;
+        private float _jumpPower = 20f;
 
         private bool _isGrounded;
         private bool _hasUsedAirJump;

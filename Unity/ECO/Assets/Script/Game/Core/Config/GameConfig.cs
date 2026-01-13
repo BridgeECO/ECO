@@ -6,7 +6,7 @@ namespace ECO
     [Serializable]
     public class GameConfig : IConfig
     {
-        [SerializeField] public float ResonanceRadius = 10f;
+        [SerializeField] public float ResonanceRadius = 30f;
 
         public void Copy(IConfig newCfg)
         {

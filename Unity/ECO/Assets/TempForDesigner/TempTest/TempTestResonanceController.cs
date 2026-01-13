@@ -11,7 +11,10 @@ namespace ECO
         private Ticker _ticker = null;
         private MapSimulatorResonanceValue _resonanceValue = null;
 
+        //공명 범위에 시각 효과가 발동되는 플랫폼 리스트
         private List<ResonanceObject> _objInCircleList = null;
+        //공명 범위에 음향 효과가 발동되는 플랫폼 리스트
+        private List<ResonanceObject> _objInSoundList = null;
 
         private Transform playerTransform;
 
@@ -57,13 +60,18 @@ namespace ECO
                 return;
 
             _resonanceValue.CenterPos = playerTransform.position;
+
+            //시각 효과용 공명 플랫폼 리스트 갱신
             _objInCircleList = _objMgr.FindObjListInCircle(playerTransform.position, _resonanceValue.CurRadius);
-            _objInCircleList.ForEach(x => x.ActivateResonance());
-            Debug.Log(_objInCircleList.Count.ToString());
+            
+            //음악 연주용 공명 플랫폼 리스트 갱신 및 연주
+            _objInSoundList = _objMgr.FindObjListInCircle(playerTransform.position, _resonanceValue.CurRadius/3f);
+            _objInSoundList.ForEach(x => x.ActivateResonance());
+            Debug.Log(_objInSoundList.Count.ToString());
 
             if (_resonanceValue.IsInc)
             {
-                _resonanceValue.IncRadius(0.1f);
+                _resonanceValue.IncRadius(10f);
 
                 if (_resonanceValue.CurRadius >= _resonanceValue.MaxRadius)
                     _resonanceValue.SetIsInc(false);
