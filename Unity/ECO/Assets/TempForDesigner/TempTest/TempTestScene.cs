@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace ECO
 {
@@ -11,6 +12,7 @@ namespace ECO
         private Player player = null;
 
         public TempTestResonanceController _resonanceCtrl = new TempTestResonanceController();
+        public static List<Region> nowRegionList = new();
 
         protected override bool OnAwakeScene(Canvas canvas, App app)
         {
@@ -27,6 +29,8 @@ namespace ECO
             _mapCtrl.ShowAllRegion();
 
             _playerCtrl.ShowPlayer();
+
+            nowRegionList = _mapCtrl._regionList;
 
             return true;
         }

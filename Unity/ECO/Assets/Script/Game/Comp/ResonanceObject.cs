@@ -12,7 +12,9 @@ namespace ECO
 
         private MaterialPropertyBlock _matPropBlock = null;
         private SpriteRenderer _spriteRenderer = null;
-        private BoxCollider2D _boxCol = null;
+        public BoxCollider2D _boxCol = null;
+
+        public bool isPlayed;
 
         private void Awake()
         {
@@ -26,6 +28,8 @@ namespace ECO
             _matPropBlock = new MaterialPropertyBlock();
             _matPropBlock.SetTexture("_MainTex", _spriteRenderer.sprite.texture);
             SetAlpha(0);
+
+            isPlayed = false;
         }
 
         public Bounds GetColBound()
@@ -35,7 +39,11 @@ namespace ECO
 
         public void ActivateResonance()
         {
-            onResonanceActivate.Invoke();
+            if(!isPlayed)
+            {
+                isPlayed = true;
+                onResonanceActivate.Invoke();
+            }
         }
 
         public void SetCircleParams(Vector2 centerPos, float radius)

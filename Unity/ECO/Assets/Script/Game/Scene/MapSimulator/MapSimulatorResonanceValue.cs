@@ -20,7 +20,7 @@ namespace ECO
         public List<ResonanceObject> _objList = new List<ResonanceObject>();
 
         public void SetRadius(float radius)
-        {
+        {            
             foreach (var obj in _objList)
             {
                 obj.SetCircleParams(this.CenterPos, radius);

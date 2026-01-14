@@ -27,7 +27,7 @@ namespace ECO
             isEnd = false;
             isStart = false;
 
-            moveSpeed = 4.5f;
+            moveSpeed = 3.5f;
             
             StartCoroutine("MovingDeathObject");
 

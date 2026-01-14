@@ -6,7 +6,7 @@ namespace ECO
     public class MapController : IDestroyable
     {
         private Map _map = null;
-        private List<Region> _regionList = new();
+        public List<Region> _regionList = new();
 
         public bool Create(GameObject sceneRootGO)
         {
