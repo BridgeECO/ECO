@@ -33,8 +33,10 @@ namespace ECO
 
         public void Destroy()
         {
+            _ticker.SetActive(false);
             _resonanceValue = null;
         }
+        
 
         public void OnPlayerAirJumped(Transform nowPlayer)
         {

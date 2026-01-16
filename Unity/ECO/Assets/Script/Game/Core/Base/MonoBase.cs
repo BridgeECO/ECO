@@ -88,6 +88,11 @@ namespace ECO
             OnCollisionExitMono(other);
         }
 
+        private void OnCollisionStay2D(Collision2D other)
+        {
+            OnCollisionStayMono(other);
+        }
+
         private void OnRectTransformDimensionsChange()
         {
             OnResizeScreen();
@@ -114,6 +119,7 @@ namespace ECO
         protected virtual void OnTriggerExitMono(Collider2D other) { }
         protected virtual void OnCollisionEnterMono(Collision2D other) { }
         protected virtual void OnCollisionExitMono(Collision2D other) { }
+        protected virtual void OnCollisionStayMono(Collision2D other) { }
 
         public void Show()
         {
