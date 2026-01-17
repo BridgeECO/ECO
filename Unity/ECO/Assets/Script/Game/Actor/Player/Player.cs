@@ -14,6 +14,8 @@ namespace ECO
         private bool _wallThisStep;
         private float _wallNormalX;
 
+        public GameObject nowInteractObject;
+
         protected override bool OnCreateMono()
         {
             if (!UNITY.TryGetComp(out _rigid, gameObject))

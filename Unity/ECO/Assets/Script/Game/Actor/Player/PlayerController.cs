@@ -16,6 +16,7 @@ namespace ECO
 
         private bool _isGrounded;
         private bool _hasUsedAirJump;
+        public bool isAirjumpable;
 
         private float _wallNormalX;
 
@@ -42,6 +43,8 @@ namespace ECO
             _rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
 
             _player.Controller = this;
+
+            isAirjumpable = false;
 
             _isGrounded = true;
             _hasUsedAirJump = false;
@@ -124,7 +127,7 @@ namespace ECO
                 return;
             }
 
-            if (!_hasUsedAirJump)
+            if (!_hasUsedAirJump && isAirjumpable)
             {
                 _player.Jump(_jumpPower);
                 _hasUsedAirJump = true;

@@ -16,6 +16,8 @@ namespace ECO
 
         public bool isPlayed;
 
+        public bool isAlwaysShowing;
+
         private void Awake()
         {
             if (!UNITY.TryGetComp(out _spriteRenderer, this.gameObject))
@@ -23,11 +25,14 @@ namespace ECO
             if (!UNITY.TryGetComp(out _boxCol, this.gameObject))
                 return;
 
-            _spriteRenderer.material = _resonanceMat;
+            if(!isAlwaysShowing)
+            {
+                _spriteRenderer.material = _resonanceMat;
 
-            _matPropBlock = new MaterialPropertyBlock();
-            _matPropBlock.SetTexture("_MainTex", _spriteRenderer.sprite.texture);
-            SetAlpha(0);
+                _matPropBlock = new MaterialPropertyBlock();
+                _matPropBlock.SetTexture("_MainTex", _spriteRenderer.sprite.texture);
+                SetAlpha(0);
+            }
 
             isPlayed = false;
         }
@@ -48,6 +53,9 @@ namespace ECO
 
         public void SetCircleParams(Vector2 centerPos, float radius)
         {
+            if(isAlwaysShowing)
+                return;
+            
             if (radius <= 0)
                 SetAlpha(0);
             else
