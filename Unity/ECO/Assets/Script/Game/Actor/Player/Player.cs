@@ -64,11 +64,17 @@ namespace ECO
 
         protected override void OnCollisionEnterMono(Collision2D other)
         {
+            if(other.gameObject.tag == "InteractObject")
+                return;
+            
             ProcessContacts(other);
         }
 
         protected override void OnCollisionStayMono(Collision2D other)
         {
+            if(other.gameObject.tag == "InteractObject")
+                return;
+            
             ProcessContacts(other);
         }
 

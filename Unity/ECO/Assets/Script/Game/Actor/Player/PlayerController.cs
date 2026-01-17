@@ -86,6 +86,27 @@ namespace ECO
             float moveX = HandleMoveInput();
             HandleJumpInput();
             ResolveWallStick(moveX);
+            HandleInteractInput();
+        }
+
+        private void HandleInteractInput()
+        {
+            if(Input.GetKey(KeyCode.X))
+            {
+                Player nowPlayer;
+
+                if(UNITY.TryFindCompWithName(out nowPlayer, "c_player"))
+                {
+                    if(nowPlayer.nowInteractObject != null)
+                    {
+                        nowPlayer.nowInteractObject.GetComponent<TempGainAirJumpObject>().GainAirJump(this);
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+            }
         }
 
         private float HandleMoveInput()
