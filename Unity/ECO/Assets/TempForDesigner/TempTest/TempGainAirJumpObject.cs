@@ -13,8 +13,8 @@ public class TempGainAirJumpObject : MonoBehaviour
         }
     }
     
-    public void GainAirJump()
+    public void GainAirJump(PlayerController playerController)
     {
-        
+        playerController.isAirjumpable = true;
     }
 }

@@ -32,6 +32,8 @@ namespace ECO
                 _matPropBlock = new MaterialPropertyBlock();
                 _matPropBlock.SetTexture("_MainTex", _spriteRenderer.sprite.texture);
                 SetAlpha(0);
+
+                _boxCol.enabled = false;
             }
 
             isPlayed = false;
