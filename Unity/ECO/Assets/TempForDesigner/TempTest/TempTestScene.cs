@@ -39,6 +39,7 @@ namespace ECO
         {
             _camCtrl.Destroy();
             _mapCtrl.Destroy();
+            _resonanceCtrl.Destroy();
         }
 
         protected override void OnFixedUpdateScene()
