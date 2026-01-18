@@ -174,10 +174,16 @@ namespace ECO
                 return;
 
             if (Mathf.Abs(moveX) < 0.01f)
+            {
+                Debug.Log("movex");
                 return;
+            }
 
             if (Mathf.Abs(_wallNormalX) < 0.01f)
+            {
+                Debug.Log("wallnormalx");
                 return;
+            }
 
             float moveSign = moveX > 0f ? 1f : -1f;
             float wallSide = _wallNormalX > 0f ? 1f : -1f;
@@ -194,7 +200,7 @@ namespace ECO
 
 
         public void OnGrounded()
-        {
+        {            
             _isGrounded = true;
             _hasUsedAirJump = false;
             _wallNormalX = 0f;

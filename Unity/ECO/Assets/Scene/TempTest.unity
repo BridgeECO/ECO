@@ -1138,6 +1138,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 860138670}
+  - component: {fileID: 860138671}
   m_Layer: 0
   m_Name: Restart_Screen
   m_TagString: Untagged
@@ -1167,6 +1168,23 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!111 &860138671
+Animation:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 860138669}
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Animation: {fileID: 7400000, guid: b373c162159c41b4ea810f48af8aff4d, type: 2}
+  m_Animations:
+  - {fileID: 7400000, guid: b373c162159c41b4ea810f48af8aff4d, type: 2}
+  m_WrapMode: 0
+  m_PlayAutomatically: 0
+  m_AnimatePhysics: 0
+  m_UpdateMode: 0
+  m_CullingType: 0
 --- !u!1 &887502112
 GameObject:
   m_ObjectHideFlags: 0

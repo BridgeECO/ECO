@@ -1,10 +1,12 @@
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace ECO
 {
     public class Player : MonoBase, IPlayer
     {
         private Rigidbody2D _rigid;
+        private BoxCollider2D _box2D;
 
         public Transform TF => transform;
         public PlayerController Controller { get; set; }
@@ -33,6 +35,7 @@ namespace ECO
                 LOG.Error("Player: Rigidbody2D not found");
                 return false;
             }
+            _box2D = GetComponent<BoxCollider2D>();
 
             defaultGravity = 3.5f;
             maxGravityOnRelease = 9f;
@@ -79,18 +82,12 @@ namespace ECO
         }
 
         protected override void OnCollisionEnterMono(Collision2D other)
-        {
-            if(other.gameObject.tag == "InteractObject")
-                return;
-            
+        {            
             ProcessContacts(other);
         }
 
         protected override void OnCollisionStayMono(Collision2D other)
         {
-            if(other.gameObject.tag == "InteractObject")
-                return;
-            
             ProcessContacts(other);
         }
 
@@ -106,7 +103,11 @@ namespace ECO
 
         private void FallingDown()
         {
-            
+            if (Input.GetKeyDown(KeyCode.Z))
+            {
+                Debug.Log("xxxx");
+            }
+
             // 1. 점프 중 키에서 손을 뗐을 때
             if (Input.GetKeyUp(KeyCode.Z) && _rigid.linearVelocityY > 0)
             {                
@@ -142,8 +143,11 @@ namespace ECO
                 return;
             }
 
+            CheckGroundStatus();
+
             if (_groundedThisStep)
             {
+                
                 Controller.OnGrounded();
             }
             else
@@ -178,9 +182,11 @@ namespace ECO
                 // .normal = 그 접촉점에서 "상대 표면이 나를 밀어내는 방향" (단위 벡터에 가까움)
                 Vector2 n = other.contacts[i].normal;
 
+                Debug.Log(i.ToString() + "번째 접촉면 벡터: " + n);
+
                 // 바닥 판정: 노멀의 y가 충분히 위를 향하면(경사 포함) grounded
-                if (n.y > 0.5f)
-                    _groundedThisStep = true;
+                // if (n.y > 0.5f)
+                //     _groundedThisStep = true;
 
                 // 벽 판정: 노멀의 x가 거의 좌/우를 향하면 벽
                 if (Mathf.Abs(n.x) > 0.9f)
@@ -189,6 +195,29 @@ namespace ECO
                     _wallNormalX = n.x; // 마지막으로 감지된 벽 방향 저장
                 }
             }
+        }
+
+        private void CheckGroundStatus()
+        {
+            float extraHeight = 0.1f; // 아래로 쏘는 거리
+            float inset = 0.05f;      // 양옆을 깎아내는 거리
+
+            // 기존 사이즈보다 양옆으로 inset만큼 줄인 사이즈
+            Vector2 size = new Vector2(_box2D.bounds.size.x - (inset * 2f), 0.1f);
+            
+            // 박스 캐스트 위치 (발밑)
+            Vector2 origin = new Vector2(_box2D.bounds.center.x, _box2D.bounds.min.y);
+
+            RaycastHit2D hit = Physics2D.BoxCast(origin, size, 0f, Vector2.down, extraHeight);
+
+            if(hit.collider != null)
+            {
+                _groundedThisStep = true;
+            }
+            else
+            {
+                _groundedThisStep = false;
+            }            
         }
 
         protected override bool IsAutoShow()
