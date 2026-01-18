@@ -13,6 +13,7 @@ public class TempEnding : MonoBehaviour
         {
             Time.timeScale = 0f;
             restartScreen.SetActive(true);
+            restartScreen.GetComponent<Animation>().Play();
         }
     }
 
