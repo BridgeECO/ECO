@@ -175,13 +175,11 @@ namespace ECO
 
             if (Mathf.Abs(moveX) < 0.01f)
             {
-                Debug.Log("movex");
                 return;
             }
 
             if (Mathf.Abs(_wallNormalX) < 0.01f)
             {
-                Debug.Log("wallnormalx");
                 return;
             }
 
