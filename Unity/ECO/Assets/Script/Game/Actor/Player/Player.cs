@@ -14,6 +14,16 @@ namespace ECO
         private bool _wallThisStep;
         private float _wallNormalX;
 
+        [Header("Jump Settings")]
+        public float jumpVelocity = 20f;
+        public float maxHoldTime = 0.5f;
+        private float jumpStartTime;
+        
+        [Header("Gravity Scaling")]       // 점프 초기 속도
+        public float defaultGravity;
+        public float maxGravityOnRelease; // 아주 짧게 눌렀을 때 적용될 강한 중력
+        public float minGravityOnRelease; // 최대 시간 근처로 눌렀을 때 적용될 약한 중력
+
         public GameObject nowInteractObject;
 
         protected override bool OnCreateMono()
@@ -24,7 +34,11 @@ namespace ECO
                 return false;
             }
 
-            _rigid.gravityScale = 2.5f;
+            defaultGravity = 3.5f;
+            maxGravityOnRelease = 9f;
+            minGravityOnRelease = 4f;
+
+            _rigid.gravityScale = defaultGravity;
             _rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
             return true;
         }
@@ -60,6 +74,8 @@ namespace ECO
             Vector2 v = _rigid.linearVelocity;
             v.y = power;
             _rigid.linearVelocity = v;
+
+            jumpStartTime = Time.time;
         }
 
         protected override void OnCollisionEnterMono(Collision2D other)
@@ -78,7 +94,45 @@ namespace ECO
             ProcessContacts(other);
         }
 
+        private void Update()
+        {
+            FallingDown();
+        }
+
         private void FixedUpdate()
+        {
+            CheckPlayerState();
+        }
+
+        private void FallingDown()
+        {
+            
+            // 1. 점프 중 키에서 손을 뗐을 때
+            if (Input.GetKeyUp(KeyCode.Z) && _rigid.linearVelocityY > 0)
+            {                
+                float holdDuration = Time.time - jumpStartTime;
+                
+                // 0에서 1 사이의 비율 계산 (짧게 누를수록 0에 가까움)
+                float holdRatio = Mathf.Clamp01(holdDuration / maxHoldTime);
+
+                //우선 상승속도를 크게 죽여버림
+                _rigid.linearVelocity = new Vector2(_rigid.linearVelocityX, _rigid.linearVelocityY * holdRatio);
+
+                // 보간법(Lerp)을 사용하여 짧게 누를수록(0) 높은 중력, 길게 누를수록(1) 낮은 중력을 할당
+                float newGravity = Mathf.Lerp(maxGravityOnRelease, minGravityOnRelease, holdRatio);
+                
+                _rigid.gravityScale = newGravity;
+            }
+
+            // 2. 착지 시 또는 하강 시작 시 중력 정상화 (바닥 체크 로직 추가 필요)
+            if (_rigid.linearVelocityY <= 0)
+            {
+                // 하강 시에는 다시 기본 중력 적용
+                _rigid.gravityScale = defaultGravity; 
+            }
+        }
+
+        private void CheckPlayerState()
         {
             // 1) 이번 물리 스텝에서 충돌 콜백(Enter/Stay)이 오면 아래 값들이 채워짐
             // 2) 물리 스텝 끝에서 "딱 한번" 상태를 결정하고 Controller에 전달
