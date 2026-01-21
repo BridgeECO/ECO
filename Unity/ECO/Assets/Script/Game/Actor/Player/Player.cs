@@ -7,6 +7,7 @@ namespace ECO
     {
         private Rigidbody2D _rigid;
         private BoxCollider2D _box2D;
+        private Animator _animator;
 
         public Transform TF => transform;
         public PlayerController Controller { get; set; }
@@ -36,6 +37,7 @@ namespace ECO
                 return false;
             }
             _box2D = GetComponent<BoxCollider2D>();
+            _animator = GetComponent<Animator>();
 
             defaultGravity = 3.5f;
             maxGravityOnRelease = 9f;
@@ -59,6 +61,8 @@ namespace ECO
             Vector2 v = _rigid.linearVelocity;
             v.x = speedX;
             _rigid.linearVelocity = v;
+
+            _animator.SetBool("isWalking", true);
         }
 
         public void StopHorizontal()
@@ -68,6 +72,8 @@ namespace ECO
             Vector2 v = _rigid.linearVelocity;
             v.x = 0f;
             _rigid.linearVelocity = v;
+
+            _animator.SetBool("isWalking", false);
         }
 
         public void Jump(float power)
@@ -79,6 +85,9 @@ namespace ECO
             _rigid.linearVelocity = v;
 
             jumpStartTime = Time.time;
+
+            _animator.SetBool("isFalling", false);
+            _animator.SetBool("isJumping", true);
         }
 
         protected override void OnCollisionEnterMono(Collision2D other)
@@ -99,6 +108,13 @@ namespace ECO
         private void FixedUpdate()
         {
             CheckPlayerState();
+
+            //만약 플레이어가 아래로 내려가는 중이면 해당하는 애니메이터 변수 설정
+            if(_rigid.linearVelocityY < 0)
+            {
+                _animator.SetBool("isJumping", false);
+                _animator.SetBool("isFalling", true);
+            }
         }
 
         private void FallingDown()

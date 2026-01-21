@@ -45,6 +45,7 @@ GameObject:
   - component: {fileID: 2297178260716431702}
   - component: {fileID: 4231712494063567033}
   - component: {fileID: 6264820804680778949}
+  - component: {fileID: 5075157975100521429}
   m_Layer: 0
   m_Name: c_player
   m_TagString: Player
@@ -86,12 +87,6 @@ MonoBehaviour:
   maxGravityOnRelease: 0
   minGravityOnRelease: 0
   nowInteractObject: {fileID: 0}
-  tilemapMask:
-    serializedVersion: 2
-    m_Bits: 8
-  feetBoxSize: {x: 0.6, y: 0.1}
-  feetCastDistance: 0.05
-  feetOrigin: {fileID: 2779011957162639141}
 --- !u!114 &1402244869454246483
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -240,3 +235,25 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 2}
   m_EdgeRadius: 0
+--- !u!95 &5075157975100521429
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6699162632453285524}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: dabf22fd6d516b2489eb21d975e1d094, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

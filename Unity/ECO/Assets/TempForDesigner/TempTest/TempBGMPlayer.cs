@@ -19,7 +19,7 @@ public class TempBGMPlayer : MonoBehaviour
         foreach (AudioSource audioSource in bgmSounds)
         {
             audioSource.mute = true;
-            audioSource.Play();
+            //audioSource.Play();
 
             //그리고 각 오디오 소스 당 하나씩 isBgmOns에 bool을 등록
             isBgmOns.Add(false);
