@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.UIElements;
 
 namespace ECO
@@ -12,11 +13,16 @@ namespace ECO
         public Transform TF => transform;
         public PlayerController Controller { get; set; }
 
+        //효과음 목록
+        private AudioSource _playerAudioSource;
+        public AudioSource jumpSound;
+        public AudioSource landSound;
+
         // 이번 물리 스텝(FixedUpdate) 동안 감지된 상태를 누적
         private bool _groundedThisStep;
         private bool _wallThisStep;
         private float _wallNormalX;
-
+        
         [Header("Jump Settings")]
         public float jumpVelocity = 20f;
         public float maxHoldTime = 0.5f;
@@ -38,6 +44,7 @@ namespace ECO
             }
             _box2D = GetComponent<BoxCollider2D>();
             _animator = GetComponent<Animator>();
+            _playerAudioSource = GetComponent<AudioSource>();
 
             defaultGravity = 3.5f;
             maxGravityOnRelease = 9f;
@@ -80,6 +87,9 @@ namespace ECO
         {
             if (_rigid == null) return;
 
+            jumpSound.Play();
+
+            
             Vector2 v = _rigid.linearVelocity;
             v.y = power;
             _rigid.linearVelocity = v;
@@ -93,6 +103,15 @@ namespace ECO
         protected override void OnCollisionEnterMono(Collision2D other)
         {            
             ProcessContacts(other);
+
+            //착지 효과음 재생
+            if(_groundedThisStep == true)
+            {
+                if(other.relativeVelocity.y > 2f)
+                {
+                    landSound.Play();
+                }
+            }
         }
 
         protected override void OnCollisionStayMono(Collision2D other)
@@ -204,6 +223,12 @@ namespace ECO
                     _wallNormalX = n.x; // 마지막으로 감지된 벽 방향 저장
                 }
             }
+        }
+
+        public void PlayerSound(AudioResource audioResource)
+        {
+            _playerAudioSource.resource = audioResource;
+            _playerAudioSource.Play();
         }
 
         protected override bool IsAutoShow()
