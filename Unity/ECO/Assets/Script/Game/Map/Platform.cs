@@ -20,6 +20,8 @@ namespace ECO
 
             _resonanceObj.onResonanceActivate.AddListener(PlayWwiseEvt);
 
+            
+
             return true;
         }
 
