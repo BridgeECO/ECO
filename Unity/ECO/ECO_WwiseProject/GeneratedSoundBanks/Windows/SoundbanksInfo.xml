@@ -22,20 +22,56 @@
 				<Bus Id="3803692087" Name="Master Audio Bus"/>
 			</Busses>
 		</SoundBank>
-		<SoundBank Id="4072029455" Type="User" Language="SFX" Hash="{23E4FC78-B987-C2E6-E341-776C0AD6F676}">
+		<SoundBank Id="4072029455" Type="User" Language="SFX" Hash="{DF0BF63E-B206-B7AE-4DD7-9032B33FBB91}">
 			<ShortName>New_SoundBank</ShortName>
 			<Path>New_SoundBank.bnk</Path>
 			<Media>
+				<File Id="4226784" Language="SFX" Streaming="false" Location="Memory">
+					<ShortName>No1_1.wav</ShortName>
+					<CachePath>SFX/No1_1_818F3B66.wem</CachePath>
+				</File>
+				<File Id="39027598" Language="SFX" Streaming="false" Location="Memory">
+					<ShortName>No4_1.wav</ShortName>
+					<CachePath>SFX/No4_1_818F3B66.wem</CachePath>
+				</File>
+				<File Id="282880508" Language="SFX" Streaming="false" Location="Memory">
+					<ShortName>No3_1.wav</ShortName>
+					<CachePath>SFX/No3_1_818F3B66.wem</CachePath>
+				</File>
 				<File Id="621983481" Language="SFX" Streaming="false" Location="Memory">
 					<ShortName>SE_Samples_C.wav</ShortName>
-					<CachePath>SFX/SE_Samples_C_F7E1D1B8.wem</CachePath>
+					<CachePath>SFX/SE_Samples_C_D5390F25.wem</CachePath>
 				</File>
 				<File Id="814137639" Language="SFX" Streaming="false" Location="Memory">
 					<ShortName>SE_Samples_D.wav</ShortName>
-					<CachePath>SFX/SE_Samples_D_3A7B923E.wem</CachePath>
+					<CachePath>SFX/SE_Samples_D_ED3BD932.wem</CachePath>
+				</File>
+				<File Id="945990057" Language="SFX" Streaming="false" Location="Memory">
+					<ShortName>No2_1.wav</ShortName>
+					<CachePath>SFX/No2_1_818F3B66.wem</CachePath>
 				</File>
 			</Media>
 			<Events>
+				<Event Id="2548516712" Name="Play_No1_1" DurationType="OneShot" DurationMin="1.5015" DurationMax="1.5015">
+					<MediaRefs>
+						<MediaRef Id="4226784"/>
+					</MediaRefs>
+				</Event>
+				<Event Id="2548957999" Name="Play_No2_1" DurationType="OneShot" DurationMin="1.5015" DurationMax="1.5015">
+					<MediaRefs>
+						<MediaRef Id="945990057"/>
+					</MediaRefs>
+				</Event>
+				<Event Id="2548810934" Name="Play_No3_1" DurationType="OneShot" DurationMin="1.5015" DurationMax="1.5015">
+					<MediaRefs>
+						<MediaRef Id="282880508"/>
+					</MediaRefs>
+				</Event>
+				<Event Id="1474307813" Name="Play_No4_1" DurationType="OneShot" DurationMin="1.5015" DurationMax="1.5015">
+					<MediaRefs>
+						<MediaRef Id="39027598"/>
+					</MediaRefs>
+				</Event>
 				<Event Id="3286298992" Name="Play_SE_Samples_C" DurationType="OneShot" DurationMin="0.8888097" DurationMax="0.8888097">
 					<MediaRefs>
 						<MediaRef Id="621983481"/>
@@ -49,5 +85,5 @@
 			</Events>
 		</SoundBank>
 	</SoundBanks>
-	<FileHash>{3A38D10B-A8B2-647A-1277-D20591B8D6C8}</FileHash>
+	<FileHash>{76CDBA52-5CB1-80AE-68EC-313368BC2FB0}</FileHash>
 </SoundBanksInfo>

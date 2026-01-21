@@ -13,6 +13,10 @@ namespace AK
 {
     namespace EVENTS
     {
+        static const AkUniqueID PLAY_NO1_1 = 2548516712U;
+        static const AkUniqueID PLAY_NO2_1 = 2548957999U;
+        static const AkUniqueID PLAY_NO3_1 = 2548810934U;
+        static const AkUniqueID PLAY_NO4_1 = 1474307813U;
         static const AkUniqueID PLAY_SE_SAMPLES_C = 3286298992U;
         static const AkUniqueID PLAY_SE_SAMPLES_D = 3286298999U;
     } // namespace EVENTS
