@@ -100,7 +100,7 @@ namespace ECO
             }
             else
             {
-                _resonanceValue.DecRadius(0.1f * Time.deltaTime * 40);
+                _resonanceValue.DecRadius(0.1f * Time.deltaTime * 200);
 
                 if (_resonanceValue.CurRadius <= 0f)
                     _resonanceValue = null;
