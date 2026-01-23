@@ -69,6 +69,15 @@ namespace ECO
         {
             if (_rigid == null) return;
 
+            if(speedX > 0)
+            {
+                GetComponent<SpriteRenderer>().flipX = true;
+            }
+            else
+            {
+                GetComponent<SpriteRenderer>().flipX = false;
+            }
+
             Vector2 v = _rigid.linearVelocity;
             v.x = speedX;
             _rigid.linearVelocity = v;
