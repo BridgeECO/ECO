@@ -93,14 +93,14 @@ namespace ECO
 
             if (_resonanceValue.IsInc)
             {
-                _resonanceValue.IncRadius(500f);
+                _resonanceValue.IncRadius(500f * Time.deltaTime * 40);
 
                 if (_resonanceValue.CurRadius >= _resonanceValue.MaxRadius)
                     _resonanceValue.SetIsInc(false);
             }
             else
             {
-                _resonanceValue.DecRadius(0.1f);
+                _resonanceValue.DecRadius(0.1f * Time.deltaTime * 40);
 
                 if (_resonanceValue.CurRadius <= 0f)
                     _resonanceValue = null;
