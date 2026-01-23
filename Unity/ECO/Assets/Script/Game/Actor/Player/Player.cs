@@ -35,6 +35,8 @@ namespace ECO
 
         public GameObject nowInteractObject;
 
+        public ShockwaveTestTrigger shockwave;
+
         protected override bool OnCreateMono()
         {
             if (!UNITY.TryGetComp(out _rigid, gameObject))
@@ -45,6 +47,8 @@ namespace ECO
             _box2D = GetComponent<BoxCollider2D>();
             _animator = GetComponent<Animator>();
             _playerAudioSource = GetComponent<AudioSource>();
+
+            shockwave = GetComponent<ShockwaveTestTrigger>();
 
             defaultGravity = 3.5f;
             maxGravityOnRelease = 9f;

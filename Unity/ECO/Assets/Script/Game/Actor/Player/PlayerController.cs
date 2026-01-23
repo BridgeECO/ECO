@@ -153,6 +153,9 @@ namespace ECO
                 _player.Jump(_jumpPower);
                 _hasUsedAirJump = true;
 
+                //충격파 이펙트 발생
+                _player.shockwave.CallShockWave();
+
                 //만약 TempTestResonanceController에 값이 있다면 사용하기
                 if(_resonanceController != null)
                 {
