@@ -51,7 +51,6 @@ namespace ECO
             }
 
             //isEnd가 True로 변하면 실행되는 코드
-            isEnd = false;
             isStart = false;
             _tempDeathObject.position = _deathObjectOriginalPos;
             _tempResetRoom.ResetRoom();
@@ -70,7 +69,9 @@ namespace ECO
 
         void OnEnable()
         {
+            StopAllCoroutines();
             StartCoroutine("MovingDeathObject");
+            isEnd = false;
         }
     }
 }
