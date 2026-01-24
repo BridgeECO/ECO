@@ -65,7 +65,7 @@ namespace ECO
             }
 
             if (_mpb == null) _mpb = new MaterialPropertyBlock();
-            ApplyCurrentStateColor();
+            //ApplyCurrentStateColor();
         }
 
         private void Update()
@@ -86,7 +86,7 @@ namespace ECO
             string prevState = _currentState;
             _currentState = nextState;
 
-            ApplyCurrentStateColor();
+            //ApplyCurrentStateColor();
             Debug.Log($"[FSM] {prevState} → {nextState}");
             OnStateChanged?.Invoke(prevState, _currentState);
         }

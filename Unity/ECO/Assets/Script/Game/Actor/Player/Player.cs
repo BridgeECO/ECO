@@ -56,6 +56,8 @@ namespace ECO
 
             _rigid.gravityScale = defaultGravity;
             _rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
+
+            GetComponent<SpriteRenderer>().color = new Color(1f,1f,1f,1f);
             return true;
         }
 
