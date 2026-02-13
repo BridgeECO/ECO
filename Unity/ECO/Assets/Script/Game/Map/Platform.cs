@@ -6,7 +6,7 @@ namespace ECO
     {
         [SerializeField] private AkEvent _wwiseEvt = null;
 
-        private ResonanceObject _resonanceObj = null;
+        public ResonanceObject _resonanceObj = null;
 
         protected override void OnDestroyMono()
         {

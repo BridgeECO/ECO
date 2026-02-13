@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.Events;
 
 namespace ECO
@@ -31,8 +32,8 @@ namespace ECO
 
                 _matPropBlock = new MaterialPropertyBlock();
                 _matPropBlock.SetTexture("_MainTex", _spriteRenderer.sprite.texture);
+                
                 SetAlpha(0);
-
                 _boxCol.enabled = false;
             }
 
@@ -69,12 +70,37 @@ namespace ECO
             _spriteRenderer.SetPropertyBlock(_matPropBlock);
         }
 
-        private void SetAlpha(float alpha)
+        public void SetAlpha(float alpha)
         {
             var color = _spriteRenderer.color;
             color.a = alpha;
 
             _spriteRenderer.color = color;
+        }
+
+        public IEnumerator ShowingTemp(float showingSpeed = 0.8f)
+        {
+            yield return null;
+
+            float alpha = 0;
+
+            _boxCol.enabled = true;
+
+            while(alpha <= 1)
+            {                
+                alpha += showingSpeed * Time.deltaTime;
+                SetAlpha(alpha);
+                yield return null;
+            }
+
+            while(alpha >= 0)
+            {                
+                alpha -= showingSpeed * Time.deltaTime;
+                SetAlpha(alpha);
+                yield return null;
+            }
+
+            _boxCol.enabled = false;
         }
     }
 }
