@@ -54,7 +54,7 @@ namespace ECOEditor
 
         private static void FillSceneMenu(ToolbarMenu menu)
         {
-            const string SCENE_PATH = "Assets/Scene";
+            const string SCENE_PATH = "Assets/01. Scene";
 
             menu.menu.MenuItems().Clear();
 
