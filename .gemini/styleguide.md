@@ -104,5 +104,5 @@
   * PascalCase: Scene, 스크립트 (예: `GameScene`, `GameManager.cs`)
   * Snake_Case 변형: 프리팹, 이미지, 사운드, 애니메이션 (예: `Sprite_Adventurer_1`, `Prefab_UI_ResultInfo`)
 * 외부 Import 에셋은 반드시 `20. External Assets` 하위 폴더로 이동시킵니다.
-* 기능 중심이 아닌 **컨텐츠 중심**의 폴더 정리를 지향합니다 (예: `[Player]` 폴더 내에 `PlayerController`, `UI_Player` 등을 함께 배치).
+* `02. Scripts` 이름의 스크립트 폴더의 경우, 기능 중심이 아닌 **컨텐츠 중심**의 폴더 정리를 지향합니다 (예: `[Player]` 폴더 내에 `PlayerController`, `UI_Player` 등을 함께 배치).
 * Hierarchy나 Project 창에서 아무 의미 없는 게임 오브젝트명을 작성하지 않으며, 단번에 역할을 알 수 있도록 명명합니다.
