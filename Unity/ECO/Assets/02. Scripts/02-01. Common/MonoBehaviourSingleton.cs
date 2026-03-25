@@ -3,7 +3,7 @@ using UnityEngine;
 public class MonoBehaviourSingleton<T> : MonoBehaviour where T : MonoBehaviour
 {
     [SerializeField]
-    private bool _dontDestroy;
+    private bool _isDontDestroyOnLoad;
 
     [SerializeField]
     private bool _lazyInitialization;
@@ -13,7 +13,7 @@ public class MonoBehaviourSingleton<T> : MonoBehaviour where T : MonoBehaviour
     {
         get
         {
-            if (ReferenceEquals(_instance, null))
+            if (_instance == null)
             {
                 _instance = FindAnyObjectByType<T>();
             }
@@ -28,7 +28,7 @@ public class MonoBehaviourSingleton<T> : MonoBehaviour where T : MonoBehaviour
             if (_instance == null)
             {
                 _instance = this as T;
-                if (_dontDestroy)
+                if (_isDontDestroyOnLoad)
                 {
                     DontDestroyOnLoad(gameObject);
                 }

@@ -41,6 +41,17 @@ internal class Pool
         return _pool.Get();
     }
 
+    public void Clear()
+    {
+        _pool.Clear();
+
+        if (_root != null)
+        {
+            GameObject.Destroy(_root.gameObject);
+            _root = null;
+        }
+    }
+
     #region Funcs
     private GameObject OnCreate()
     {
@@ -122,6 +133,10 @@ public class PoolManager : MonoBehaviourSingleton<PoolManager>
 
     public void Clear()
     {
+        foreach (var pool in _pools.Values)
+        {
+            pool.Clear();
+        }
         _pools.Clear();
     }
 }

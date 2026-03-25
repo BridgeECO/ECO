@@ -1,12 +1,11 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EventManager : MonoBehaviourSingleton<EventManager>
 {
-    private List<Action> _events = new List<Action>((int)EEventType.MaxCount);
+    private readonly Action[] _events = new Action[(int)EEventType.MaxCount];
 
-    private int EventCount => _events.Count;
+    private int EventCount => _events.Length;
 
     private void OnDestroy()
     {
