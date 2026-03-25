@@ -1,5 +1,4 @@
 using UnityEditor;
-using System.IO;
 
 public class TagEnumGenerator : EnumGeneratorBase
 {

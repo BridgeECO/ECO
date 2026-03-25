@@ -4,16 +4,16 @@ using UnityEditor;
 
 public abstract class EnumGeneratorBase
 {
-    protected const string DirectoryPath = "Assets/02. Scripts/02-01. Common/Enum";
+    protected const string DIRECTORY_PATH = "Assets/02. Scripts/02-01. Common/Enum";
 
     protected static void Generate(string fileName, string enumName, Action<StreamWriter> writeAction)
     {
-        if (!Directory.Exists(DirectoryPath))
+        if (!Directory.Exists(DIRECTORY_PATH))
         {
-            Directory.CreateDirectory(DirectoryPath);
+            Directory.CreateDirectory(DIRECTORY_PATH);
         }
 
-        string filePath = Path.Combine(DirectoryPath, fileName);
+        string filePath = Path.Combine(DIRECTORY_PATH, fileName);
 
         using (StreamWriter writer = new StreamWriter(filePath))
         {
