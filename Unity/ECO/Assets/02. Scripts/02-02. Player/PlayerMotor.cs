@@ -11,11 +11,6 @@ public class PlayerMotor : MonoBehaviour
         _rigidbody.bodyType = RigidbodyType2D.Kinematic;
     }
 
-    private void FixedUpdate()
-    {
-        _rigidbody.linearVelocity = Velocity;
-    }
-
     public void SetVelocity(Vector2 newVelocity)
     {
         Velocity = newVelocity;
@@ -39,5 +34,10 @@ public class PlayerMotor : MonoBehaviour
     public void Teleport(Vector2 position)
     {
         _rigidbody.position = position;
+    }
+
+    private void FixedUpdate()
+    {
+        _rigidbody.linearVelocity = Velocity;
     }
 }
