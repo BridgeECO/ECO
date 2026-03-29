@@ -22,23 +22,24 @@ public class PlayerSensor : MonoBehaviour
     [SerializeField]
     private LayerMask _interactionLayer;
 
-    public bool IsGrounded { get; private set; }
-    public bool IsSliding { get; private set; }
-    public bool IsBodyTouching { get; private set; }
+    public bool IsGrounded => _feetCollider.IsTouchingLayers(_groundLayer | _platformLayer);
+
+    public bool IsBodyTouching => _bodyCollider.IsTouchingLayers(_groundLayer);
+
+    public bool IsSliding => _leftSlipCollider.IsTouchingLayers(_groundLayer) || _rightSlipCollider.IsTouchingLayers(_groundLayer);
+
     public float WallDirection { get; private set; }
 
     private void Update()
     {
-        IsGrounded = _feetCollider.IsTouchingLayers(_groundLayer | _platformLayer);
+        HandleWallDirection();
+    }
 
-        IsBodyTouching = _bodyCollider.IsTouchingLayers(_groundLayer);
-
-        IsSliding = _leftSlipCollider.IsTouchingLayers(_groundLayer) ||
-                    _rightSlipCollider.IsTouchingLayers(_groundLayer);
-
+    private void HandleWallDirection()
+    {
         if (IsBodyTouching)
         {
-            WallDirection = transform.localScale.x > 0 ? 1f : -1f;
+            WallDirection = 0 < transform.localScale.x ? 1f : -1f;
         }
         else
         {
