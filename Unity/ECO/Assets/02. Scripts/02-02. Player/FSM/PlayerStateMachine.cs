@@ -45,9 +45,8 @@ public class PlayerStateMachine : MonoBehaviour
 
     private void Update()
     {
-        if (JumpBufferTimer > 0) JumpBufferTimer -= Time.deltaTime;
-        if (CoyoteTimer > 0) CoyoteTimer -= Time.deltaTime;
-
+        JumpBufferTimer = Mathf.Max(0f, JumpBufferTimer - Time.deltaTime);
+        CoyoteTimer = Mathf.Max(0f, CoyoteTimer - Time.deltaTime);
         _currentState?.Update();
     }
 
@@ -65,6 +64,7 @@ public class PlayerStateMachine : MonoBehaviour
     {
         _currentState?.Exit();
         _currentState = _states[newState];
+        Debug.Log($"상태 전환 : {newState}");
         _currentState?.Enter();
     }
 }
