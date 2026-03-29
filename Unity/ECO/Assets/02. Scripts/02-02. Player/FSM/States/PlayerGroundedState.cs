@@ -3,7 +3,6 @@ using UnityEngine;
 public class PlayerGroundedState : IPlayerState
 {
     private PlayerStateMachine _sm;
-
     private PlayerSensor _sensor;
     private PlayerMotor _motor;
 
@@ -30,7 +29,6 @@ public class PlayerGroundedState : IPlayerState
 
         if (0f < _sm.JumpBufferTimer)
         {
-            _sm.JumpBufferTimer = 0f;
             _sm.ChangeState(EPlayerState.Airborne);
             return;
         }
