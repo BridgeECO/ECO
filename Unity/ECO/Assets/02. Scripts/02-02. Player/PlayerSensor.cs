@@ -22,12 +22,9 @@ public class PlayerSensor : MonoBehaviour
     [SerializeField]
     private LayerMask _interactionLayer;
 
-    public bool IsGrounded => _feetCollider.IsTouchingLayers(_groundLayer | _platformLayer);
-
-    public bool IsBodyTouching => _bodyCollider.IsTouchingLayers(_groundLayer);
-
+    public bool IsGrounded => Physics2D.OverlapBox(_feetCollider.bounds.center, _feetCollider.bounds.size, 0f, _groundLayer | _platformLayer);
+    public bool IsBodyTouching => Physics2D.OverlapBox(_bodyCollider.bounds.center, _bodyCollider.bounds.size, 0f, _groundLayer);
     public bool IsSliding => _leftSlipCollider.IsTouchingLayers(_groundLayer) || _rightSlipCollider.IsTouchingLayers(_groundLayer);
-
     public float WallDirection { get; private set; }
 
     private void Update()
