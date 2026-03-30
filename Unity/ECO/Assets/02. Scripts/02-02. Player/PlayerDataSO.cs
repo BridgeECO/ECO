@@ -34,6 +34,10 @@ public class PlayerDataSO : ScriptableObject
     public float CoyoteTime { get => _coyoteTime; }
 
     [SerializeField]
+    private float _coyoteDistance = 0.2f;
+    public float CoyoteDistance { get => _coyoteDistance; }
+
+    [SerializeField]
     private float _jumpBufferTime = 0.2f;
     public float JumpBufferTime { get => _jumpBufferTime; }
 
@@ -64,7 +68,7 @@ public class PlayerDataSO : ScriptableObject
     public float WallJumpPowerY { get => _wallJumpPowerY; }
 
     [SerializeField]
-    private float _wallJumpInputLockTime = 0.5f;
+    private float _wallJumpInputLockTime = 0.2f;
     public float WallJumpInputLockTime { get => _wallJumpInputLockTime; }
 
     [Header("Slip")]

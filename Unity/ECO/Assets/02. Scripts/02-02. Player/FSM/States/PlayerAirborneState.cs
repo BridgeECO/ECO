@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class PlayerAirborneState : IPlayerState
 {
@@ -14,9 +13,11 @@ public class PlayerAirborneState : IPlayerState
     private float _airMoveSpeed;
     private float _maxJumpHoldTime;
     private float _slipDownSpeed;
+    private float _coyoteDistance;
 
     private bool _isJumping;
     private float _jumpHoldTimer;
+    private float _fallOffPosX;
 
     public PlayerAirborneState(PlayerStateMachine stateMachine, PlayerDataSO data)
     {
@@ -31,10 +32,13 @@ public class PlayerAirborneState : IPlayerState
         _airMoveSpeed = data.AirMoveSpeed;
         _maxJumpHoldTime = data.MaxJumpHoldTime;
         _slipDownSpeed = data.SlipDownSpeed;
+        _coyoteDistance = data.CoyoteDistance;
     }
 
     public void Enter()
     {
+        _fallOffPosX = _sm.transform.position.x;
+
         if (0f < _sm.JumpBufferTimer && 0f < _sm.CoyoteTimer)
         {
             ExecuteJump();
@@ -64,15 +68,6 @@ public class PlayerAirborneState : IPlayerState
         _input.OnDashPressed -= HandleDashPressed;
     }
 
-    private void CheckLateJump()
-    {
-        if (_sm.JumpBufferTimer == 0f || _sm.CoyoteTimer == 0f)
-        {
-            return;
-        }
-        ExecuteJump();
-    }
-
     private void ExecuteJump()
     {
         _sm.JumpBufferTimer = 0f;
@@ -82,12 +77,25 @@ public class PlayerAirborneState : IPlayerState
         _motor.SetVelocityY(_jumpSpeed);
     }
 
+    private void CheckLateJump()
+    {
+        if (_sm.JumpBufferTimer == 0f || _sm.CoyoteTimer == 0f)
+        {
+            return;
+        }
+        if (Mathf.Abs(_sm.transform.position.x - _fallOffPosX) <= _coyoteDistance)
+        {
+            ExecuteJump();
+        }
+    }
+
     private void HandleHorizontalMovement()
     {
         if (0f < _sm.InputLockTimer)
         {
             return;
         }
+
         float xInput = _input.HorizontalInput;
         _motor.SetVelocityX(xInput * _airMoveSpeed);
     }
@@ -112,10 +120,23 @@ public class PlayerAirborneState : IPlayerState
         if (!_sensor.IsSliding || 0f < _motor.Velocity.y || _sensor.IsGrounded)
         {
             return;
-        }                            
+        }
         float velocityX = (_sensor.IsLeftSliding) ? 2f : -2f;
         _motor.SetVelocityX(velocityX);
         _motor.AddVelocity(Vector2.down * _slipDownSpeed * Time.deltaTime);
+    }
+
+    private void ApplyGravity()
+    {
+        if (_isJumping)
+        {
+            return;
+        }
+        _motor.AddVelocity(Vector2.down * _gravity * Time.deltaTime);
+        if (_motor.Velocity.y < -_maxFallSpeed)
+        {
+            _motor.SetVelocityY(-_maxFallSpeed);
+        }
     }
 
     private void CheckStateTransitions()
@@ -138,19 +159,6 @@ public class PlayerAirborneState : IPlayerState
 
             _sm.ChangeState(EPlayerState.WallSlide);
             return;
-        }
-    }
-
-    private void ApplyGravity()
-    {
-        if (_isJumping)
-        {
-            return;
-        }
-        _motor.AddVelocity(Vector2.down * _gravity * Time.deltaTime);
-        if (_motor.Velocity.y < -_maxFallSpeed)
-        {
-            _motor.SetVelocityY(-_maxFallSpeed);
         }
     }
 

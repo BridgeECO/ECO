@@ -57,7 +57,6 @@ public class PlayerStateMachine : MonoBehaviour
         JumpBufferTimer = Mathf.Max(0f, JumpBufferTimer - Time.deltaTime);
         CoyoteTimer = Mathf.Max(0f, CoyoteTimer - Time.deltaTime);
         InputLockTimer = Mathf.Max(0f, InputLockTimer - Time.deltaTime);
-
         _currentState?.Update();
     }
 
@@ -76,5 +75,6 @@ public class PlayerStateMachine : MonoBehaviour
         _currentState?.Exit();
         _currentState = _states[newState];
         _currentState?.Enter();
+        // Debug.Log($"State Transition : {newState}");
     }
 }
