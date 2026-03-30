@@ -10,6 +10,9 @@ public class PlayerStateMachine : MonoBehaviour
     [SerializeField]
     private PlayerDataSO _playerData;
 
+    private IPlayerState _currentState;
+    private Dictionary<EPlayerState, IPlayerState> _states;
+
     public PlayerInput Input { get; private set; }
     public PlayerSensor Sensor { get; private set; }
     public PlayerMotor Motor { get; private set; }
@@ -21,9 +24,6 @@ public class PlayerStateMachine : MonoBehaviour
 
     public float InputLockTimer { get; set; }
     public float LastWallJumpDir { get; set; }
-
-    private IPlayerState _currentState;
-    private Dictionary<EPlayerState, IPlayerState> _states;
 
     private void Awake()
     {
@@ -73,8 +73,15 @@ public class PlayerStateMachine : MonoBehaviour
     public void ChangeState(EPlayerState newState)
     {
         _currentState?.Exit();
-        _currentState = _states[newState];
-        _currentState?.Enter();
-        // Debug.Log($"State Transition : {newState}");
+        if (_states.TryGetValue(newState, out IPlayerState state))
+        {
+            _currentState = state;
+            // Debug.Log($"State Transition : {newState}");
+            _currentState?.Enter();
+        }
+        else
+        {
+            Debug.LogError($"Invalid state transition: {newState}");
+        }
     }
 }

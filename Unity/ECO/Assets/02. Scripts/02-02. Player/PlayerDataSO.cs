@@ -14,6 +14,11 @@ public class PlayerDataSO : ScriptableObject
     private float _airMoveSpeed = 2f;
     public float AirMoveSpeed { get => _airMoveSpeed; }
 
+    [Tooltip("공중에서 최대 이동 속도를 초과했을 때(예: 벽점프 직후), 원래 속도로 부드럽게 돌아오기 위한 감속도")]
+    [SerializeField]
+    private float _airDeceleration = 15f;
+    public float AirDeceleration { get => _airDeceleration; }
+
     [Header("Jump & Gravity")]
     [Tooltip("점프를 누르는 순간 위로 솟구치는 초기 상승 속도")]
     [SerializeField]
@@ -84,7 +89,7 @@ public class PlayerDataSO : ScriptableObject
 
     [Tooltip("벽 점프 직후 45도 포물선 궤적을 보장하기 위해 플레이어의 좌우 방향키 입력을 강제로 막는 시간 (초)")]
     [SerializeField]
-    private float _wallJumpInputLockTime = 1f;
+    private float _wallJumpInputLockTime = 0.2f;
     public float WallJumpInputLockTime { get => _wallJumpInputLockTime; }
 
     [Header("Slip")]

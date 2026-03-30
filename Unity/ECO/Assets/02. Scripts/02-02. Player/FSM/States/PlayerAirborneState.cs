@@ -11,6 +11,7 @@ public class PlayerAirborneState : IPlayerState
     private float _gravity;
     private float _jumpSpeed;
     private float _airMoveSpeed;
+    private float _airDeceleration;
     private float _maxJumpHoldTime;
     private float _slipDownSpeed;
     private float _coyoteDistance;
@@ -30,6 +31,7 @@ public class PlayerAirborneState : IPlayerState
         _gravity = data.Gravity;
         _jumpSpeed = data.JumpSpeed;
         _airMoveSpeed = data.AirMoveSpeed;
+        _airDeceleration = data.AirDeceleration;
         _maxJumpHoldTime = data.MaxJumpHoldTime;
         _slipDownSpeed = data.SlipDownSpeed;
         _coyoteDistance = data.CoyoteDistance;
@@ -100,7 +102,7 @@ public class PlayerAirborneState : IPlayerState
         float currentSpeedX = _motor.Velocity.x;
         if (_airMoveSpeed < Mathf.Abs(currentSpeedX))
         {
-            currentSpeedX = Mathf.MoveTowards(currentSpeedX, targetSpeedX, 15f * Time.deltaTime);
+            currentSpeedX = Mathf.MoveTowards(currentSpeedX, targetSpeedX, _airDeceleration * Time.deltaTime);
             _motor.SetVelocityX(currentSpeedX);
         }
         else
@@ -157,9 +159,8 @@ public class PlayerAirborneState : IPlayerState
         }
 
         float xInput = _input.HorizontalInput;
-        if (_sensor.IsBodyTouching && xInput != 0f &&
-            Mathf.Sign(_sensor.WallDirection) == Mathf.Sign(xInput) &&
-            _motor.Velocity.y < 0f)
+        if (_sensor.IsBodyTouching && _motor.Velocity.y < 0f &&
+            Mathf.Sign(_sensor.WallDirection) == Mathf.Sign(xInput))
         {
             if (_sm.LastWallJumpDir != 0f && Mathf.Sign(_sm.LastWallJumpDir) == Mathf.Sign(_sensor.WallDirection))
             {
