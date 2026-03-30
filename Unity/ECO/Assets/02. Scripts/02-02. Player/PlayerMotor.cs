@@ -8,7 +8,6 @@ public class PlayerMotor : MonoBehaviour
     private void Awake()
     {
         _rigidbody = GetComponent<Rigidbody2D>();
-        _rigidbody.bodyType = RigidbodyType2D.Kinematic;
     }
 
     public void SetVelocity(Vector2 newVelocity)
