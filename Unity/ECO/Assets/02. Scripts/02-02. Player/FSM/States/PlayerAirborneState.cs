@@ -34,7 +34,7 @@ public class PlayerAirborneState : IPlayerState
 
     public void Enter()
     {
-        if (_sm.JumpBufferTimer > 0f && _sm.CoyoteTimer > 0f)
+        if (0f < _sm.JumpBufferTimer && 0f < _sm.CoyoteTimer)
         {
             ExecuteJump();
         }
@@ -51,9 +51,9 @@ public class PlayerAirborneState : IPlayerState
     {
         CheckLateJump();
         HandleHorizontalMovement();
-        ApplyGravity();
         HandleJumpHold();
         HandleSlip();
+        ApplyGravity();
         CheckStateTransitions();
     }
 
@@ -65,42 +65,54 @@ public class PlayerAirborneState : IPlayerState
 
     private void CheckLateJump()
     {
-        if (_sm.JumpBufferTimer > 0f && _sm.CoyoteTimer > 0f)
+        if (_sm.JumpBufferTimer == 0f || _sm.CoyoteTimer == 0f)
         {
-            ExecuteJump();
+            return;
         }
+        ExecuteJump();
+    }
+
+    private void ExecuteJump()
+    {
+        _sm.JumpBufferTimer = 0f;
+        _sm.CoyoteTimer = 0f;
+        _isJumping = true;
+        _jumpHoldTimer = 0f;
+        _motor.SetVelocityY(_jumpSpeed);
     }
 
     private void HandleHorizontalMovement()
     {
         if (0f < _sm.InputLockTimer)
         {
-            Debug.Log(_sm.InputLockTimer);
             return;
         }
-
         float xInput = _input.HorizontalInput;
         _motor.SetVelocityX(xInput * _airMoveSpeed);
     }
 
     private void HandleJumpHold()
     {
-        if (_isJumping)
+        if (!_isJumping)
         {
-            _jumpHoldTimer += Time.deltaTime;
-            if (_maxJumpHoldTime <= _jumpHoldTimer)
-            {
-                _isJumping = false;
-            }
+            return;
         }
+        _jumpHoldTimer += Time.deltaTime;
+
+        if (_jumpHoldTimer < _maxJumpHoldTime)
+        {
+            return;
+        }
+        _isJumping = false;
     }
 
     private void HandleSlip()
     {
-        if (_sensor.IsSliding && !_sensor.IsGrounded)
+        if (!_sensor.IsSliding || _sensor.IsGrounded)
         {
-            _motor.AddVelocity(Vector2.down * _slipDownSpeed * Time.deltaTime);
+            return;
         }
+        _motor.AddVelocity(Vector2.down * _slipDownSpeed * Time.deltaTime);
     }
 
     private void CheckStateTransitions()
@@ -120,6 +132,7 @@ public class PlayerAirborneState : IPlayerState
             {
                 return;
             }
+
             _sm.ChangeState(EPlayerState.WallSlide);
             return;
         }
@@ -138,29 +151,22 @@ public class PlayerAirborneState : IPlayerState
         }
     }
 
-    private void ExecuteJump()
-    {
-        _sm.JumpBufferTimer = 0f;
-        _sm.CoyoteTimer = 0f;
-        _isJumping = true;
-        _jumpHoldTimer = 0f;
-        _motor.SetVelocityY(_jumpSpeed);
-    }
-
     private void HandleJumpReleased()
     {
         _isJumping = false;
-        if (0f < _motor.Velocity.y)
+        if (0f < _sm.InputLockTimer || 0f == _motor.Velocity.y)
         {
-            _motor.SetVelocityY(0f);
+            return;
         }
+        _motor.SetVelocityY(0f);
     }
 
     private void HandleDashPressed()
     {
-        if (!_sm.HasUsedHover)
+        if (_sm.HasUsedHover)
         {
-            _sm.ChangeState(EPlayerState.Hover);
+            return;
         }
+        _sm.ChangeState(EPlayerState.Hover);
     }
 }
