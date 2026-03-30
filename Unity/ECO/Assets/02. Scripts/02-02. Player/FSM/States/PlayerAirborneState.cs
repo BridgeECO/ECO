@@ -6,12 +6,11 @@ public class PlayerAirborneState : IPlayerState
     private PlayerInput _input;
     private PlayerSensor _sensor;
     private PlayerMotor _motor;
-    private float maxFallSpeed = 5.33f;
-    private float gravity = 20f;
-    private float jumpSpeed = 10f;
-
-    private bool isJumping;
-    private float jumpHoldTimer;
+    private float _maxFallSpeed = 5.33f;
+    private float _gravity = 20f;
+    private float _jumpSpeed = 5.33f;
+    private bool _isJumping;
+    private float _jumpHoldTimer;
 
     public PlayerAirborneState(PlayerStateMachine stateMachine)
     {
@@ -29,7 +28,7 @@ public class PlayerAirborneState : IPlayerState
         }
         else
         {
-            isJumping = false;
+            _isJumping = false;
         }
 
         _input.OnJumpReleased += HandleJumpReleased;
@@ -42,12 +41,12 @@ public class PlayerAirborneState : IPlayerState
         _motor.SetVelocityX(xInput * 2f);
         ApplyGravity();
 
-        if (isJumping)
+        if (_isJumping)
         {
-            jumpHoldTimer += Time.deltaTime;
-            if (1.5f <= jumpHoldTimer)
+            _jumpHoldTimer += Time.deltaTime;
+            if (1.5f <= _jumpHoldTimer)
             {
-                isJumping = false;
+                _isJumping = false;
             }
         }
 
@@ -79,12 +78,12 @@ public class PlayerAirborneState : IPlayerState
 
     private void ApplyGravity()
     {
-        if (!isJumping)
+        if (!_isJumping)
         {
-            _sm.Motor.AddVelocity(Vector2.down * gravity * Time.deltaTime);
-            if (_sm.Motor.Velocity.y < -maxFallSpeed)
+            _sm.Motor.AddVelocity(Vector2.down * _gravity * Time.deltaTime);
+            if (_sm.Motor.Velocity.y < -_maxFallSpeed)
             {
-                _sm.Motor.SetVelocityY(-maxFallSpeed);
+                _sm.Motor.SetVelocityY(-_maxFallSpeed);
             }
         }
     }
@@ -93,14 +92,14 @@ public class PlayerAirborneState : IPlayerState
     {
         _sm.JumpBufferTimer = 0f;
         _sm.CoyoteTimer = 0f;
-        isJumping = true;
-        jumpHoldTimer = 0f;
-        _motor.SetVelocityY(jumpSpeed);
+        _isJumping = true;
+        _jumpHoldTimer = 0f;
+        _motor.SetVelocityY(_jumpSpeed);
     }
 
     private void HandleJumpReleased()
     {
-        isJumping = false;
+        _isJumping = false;
         if (0f < _sm.Motor.Velocity.y)
         {
             _sm.Motor.SetVelocityY(0f);

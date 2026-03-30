@@ -3,6 +3,10 @@ using UnityEngine;
 public class PlayerWallSlideState : IPlayerState
 {
     private PlayerStateMachine _sm;
+    private PlayerInput _input;
+    private PlayerSensor _sensor;
+    private PlayerMotor _motor;
+
     private float _wallSlideSpeed = 2.66f;
 
     public PlayerWallSlideState(PlayerStateMachine stateMachine)
@@ -12,23 +16,22 @@ public class PlayerWallSlideState : IPlayerState
 
     public void Enter()
     {
-        _sm.Motor.SetVelocity(new Vector2(0f, -_wallSlideSpeed));
-        _sm.Input.OnJumpPressed += HandleWallJump;
+        _motor.SetVelocity(new Vector2(0f, -_wallSlideSpeed));
+        _input.OnJumpPressed += HandleWallJump;
     }
 
     public void Update()
     {
-        _sm.Motor.SetVelocityY(-_wallSlideSpeed);
+        float xInput = _input.HorizontalInput;
+        _motor.SetVelocityY(-_wallSlideSpeed);
 
-        float xInput = _sm.Input.HorizontalInput;
-
-        if (_sm.Sensor.IsGrounded)
+        if (_sensor.IsGrounded)
         {
             _sm.ChangeState(EPlayerState.Grounded);
             return;
         }
 
-        if (!_sm.Sensor.IsBodyTouching || xInput != _sm.Sensor.WallDirection)
+        if (!_sensor.IsBodyTouching || xInput != _sensor.WallDirection)
         {
             _sm.ChangeState(EPlayerState.Airborne);
             return;
@@ -37,14 +40,14 @@ public class PlayerWallSlideState : IPlayerState
 
     public void Exit()
     {
-        _sm.Input.OnJumpPressed -= HandleWallJump;
+        _input.OnJumpPressed -= HandleWallJump;
     }
 
     private void HandleWallJump()
     {
         _sm.JumpBufferTimer = 0f;
-        float jumpDir = -_sm.Sensor.WallDirection;
-        _sm.Motor.SetVelocity(new Vector2(jumpDir * 10f, 10f));
+        float jumpDir = -_sensor.WallDirection;
+        _motor.SetVelocity(new Vector2(jumpDir * 10f, 10f));
         _sm.ChangeState(EPlayerState.Airborne);
     }
 }
