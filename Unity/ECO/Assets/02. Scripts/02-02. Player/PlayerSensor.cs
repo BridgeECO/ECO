@@ -36,14 +36,14 @@ public class PlayerSensor : MonoBehaviour
 
     private void HandleWallDirection()
     {
-        if (IsBodyTouching)
-        {
-            WallDirection = 0 < transform.localScale.x ? 1f : -1f;
-        }
-        else
+        if (!IsBodyTouching)
         {
             WallDirection = 0f;
+            return;
         }
+        bool isWallRight = Physics2D.Raycast
+            (_bodyCollider.bounds.center, Vector2.right, _bodyCollider.bounds.extents.x + 0.1f, _groundLayer);
+        WallDirection = (isWallRight) ? 1f : -1f;
     }
 
     public Collider2D GetInteractable()
