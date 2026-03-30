@@ -96,8 +96,17 @@ public class PlayerAirborneState : IPlayerState
             return;
         }
 
-        float xInput = _input.HorizontalInput;
-        _motor.SetVelocityX(xInput * _airMoveSpeed);
+        float targetSpeedX = _input.HorizontalInput * _airMoveSpeed;
+        float currentSpeedX = _motor.Velocity.x;
+        if (_airMoveSpeed < Mathf.Abs(currentSpeedX))
+        {
+            currentSpeedX = Mathf.MoveTowards(currentSpeedX, targetSpeedX, 15f * Time.deltaTime);
+            _motor.SetVelocityX(currentSpeedX);
+        }
+        else
+        {
+            _motor.SetVelocityX(targetSpeedX);
+        }
     }
 
     private void HandleJumpHold()
