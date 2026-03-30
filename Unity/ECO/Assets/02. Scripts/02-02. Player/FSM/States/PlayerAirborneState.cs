@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerAirborneState : IPlayerState
 {
@@ -108,10 +109,12 @@ public class PlayerAirborneState : IPlayerState
 
     private void HandleSlip()
     {
-        if (!_sensor.IsSliding || _sensor.IsGrounded)
+        if (!_sensor.IsSliding || 0f < _motor.Velocity.y || _sensor.IsGrounded)
         {
             return;
-        }
+        }                            
+        float velocityX = (_sensor.IsLeftSliding) ? 2f : -2f;
+        _motor.SetVelocityX(velocityX);
         _motor.AddVelocity(Vector2.down * _slipDownSpeed * Time.deltaTime);
     }
 

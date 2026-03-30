@@ -24,8 +24,9 @@ public class PlayerSensor : MonoBehaviour
 
     public bool IsGrounded => Physics2D.OverlapBox(_feetCollider.bounds.center, _feetCollider.bounds.size, 0f, _groundLayer | _platformLayer);
     public bool IsBodyTouching => Physics2D.OverlapBox(_bodyCollider.bounds.center, _bodyCollider.bounds.size, 0f, _groundLayer);
-    public bool IsSliding => _leftSlipCollider.IsTouchingLayers(_groundLayer | _platformLayer) || 
-                            _rightSlipCollider.IsTouchingLayers(_groundLayer | _platformLayer);
+    public bool IsSliding => IsLeftSliding || IsRightSliding;
+    public bool IsLeftSliding => _leftSlipCollider.IsTouchingLayers(_groundLayer | _platformLayer);
+    public bool IsRightSliding => _rightSlipCollider.IsTouchingLayers(_groundLayer | _platformLayer);
     public float WallDirection { get; private set; }
 
     private void Update()
