@@ -44,11 +44,6 @@ public class CameraController : MonoBehaviour
         transform.position = clamped;
     }
 
-    private void Start()
-    {
-
-    }
-
     private void LateUpdate()
     {
         if (_isTransitioning)
