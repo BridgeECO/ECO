@@ -25,6 +25,7 @@ public class PlayerGroundedState : IPlayerState
     {
         _sm.HasUsedHover = false;
         _sm.CoyoteTimer = _coyoteTime;
+        _sm.LastWallJumpDir = 0f;
         _motor.SetVelocityY(0f);
 
         _input.OnDashPressed += HandleDashPressed;

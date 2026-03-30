@@ -49,10 +49,42 @@ public class PlayerAirborneState : IPlayerState
 
     public void Update()
     {
+        CheckLateJump();
+        HandleHorizontalMovement();
+        ApplyGravity();
+        HandleJumpHold();
+        HandleSlip();
+        CheckStateTransitions();
+    }
+
+    public void Exit()
+    {
+        _input.OnJumpReleased -= HandleJumpReleased;
+        _input.OnDashPressed -= HandleDashPressed;
+    }
+
+    private void CheckLateJump()
+    {
+        if (_sm.JumpBufferTimer > 0f && _sm.CoyoteTimer > 0f)
+        {
+            ExecuteJump();
+        }
+    }
+
+    private void HandleHorizontalMovement()
+    {
+        if (0f < _sm.InputLockTimer)
+        {
+            Debug.Log(_sm.InputLockTimer);
+            return;
+        }
+
         float xInput = _input.HorizontalInput;
         _motor.SetVelocityX(xInput * _airMoveSpeed);
-        ApplyGravity();
+    }
 
+    private void HandleJumpHold()
+    {
         if (_isJumping)
         {
             _jumpHoldTimer += Time.deltaTime;
@@ -61,31 +93,36 @@ public class PlayerAirborneState : IPlayerState
                 _isJumping = false;
             }
         }
+    }
 
+    private void HandleSlip()
+    {
         if (_sensor.IsSliding && !_sensor.IsGrounded)
         {
             _motor.AddVelocity(Vector2.down * _slipDownSpeed * Time.deltaTime);
         }
+    }
 
+    private void CheckStateTransitions()
+    {
         if (_sensor.IsGrounded && _motor.Velocity.y <= 0f)
         {
             _sm.ChangeState(EPlayerState.Grounded);
             return;
         }
 
+        float xInput = _input.HorizontalInput;
         if (_sensor.IsBodyTouching && xInput != 0f &&
             Mathf.Sign(_sensor.WallDirection) == Mathf.Sign(xInput) &&
             _motor.Velocity.y < 0f)
         {
+            if (_sm.LastWallJumpDir != 0f && Mathf.Sign(_sm.LastWallJumpDir) == Mathf.Sign(_sensor.WallDirection))
+            {
+                return;
+            }
             _sm.ChangeState(EPlayerState.WallSlide);
             return;
         }
-    }
-
-    public void Exit()
-    {
-        _input.OnJumpReleased -= HandleJumpReleased;
-        _input.OnDashPressed -= HandleDashPressed;
     }
 
     private void ApplyGravity()

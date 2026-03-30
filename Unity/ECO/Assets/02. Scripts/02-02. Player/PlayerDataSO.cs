@@ -63,6 +63,10 @@ public class PlayerDataSO : ScriptableObject
     private float _wallJumpPowerY = 10f;
     public float WallJumpPowerY { get => _wallJumpPowerY; }
 
+    [SerializeField]
+    private float _wallJumpInputLockTime = 0.5f;
+    public float WallJumpInputLockTime { get => _wallJumpInputLockTime; }
+
     [Header("Slip")]
     [SerializeField]
     private float _slipDownSpeed = 15f;

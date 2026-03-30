@@ -19,6 +19,9 @@ public class PlayerStateMachine : MonoBehaviour
     public float CoyoteTimer { get; set; }
     public bool HasUsedHover { get; set; }
 
+    public float InputLockTimer { get; set; }
+    public float LastWallJumpDir { get; set; }
+
     private IPlayerState _currentState;
     private Dictionary<EPlayerState, IPlayerState> _states;
 
@@ -53,6 +56,8 @@ public class PlayerStateMachine : MonoBehaviour
     {
         JumpBufferTimer = Mathf.Max(0f, JumpBufferTimer - Time.deltaTime);
         CoyoteTimer = Mathf.Max(0f, CoyoteTimer - Time.deltaTime);
+        InputLockTimer = Mathf.Max(0f, InputLockTimer - Time.deltaTime);
+
         _currentState?.Update();
     }
 
@@ -63,14 +68,13 @@ public class PlayerStateMachine : MonoBehaviour
 
     private void HandleJumpPressed()
     {
-        JumpBufferTimer = 0.2f;
+        JumpBufferTimer = _playerData.JumpBufferTime;
     }
 
     public void ChangeState(EPlayerState newState)
     {
         _currentState?.Exit();
         _currentState = _states[newState];
-        Debug.Log($"상태 전환 : {newState}");
         _currentState?.Enter();
     }
 }
