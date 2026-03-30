@@ -7,11 +7,20 @@ public class PlayerWallSlideState : IPlayerState
     private PlayerSensor _sensor;
     private PlayerMotor _motor;
 
-    private float _wallSlideSpeed = 2.66f;
+    private float _wallSlideSpeed;
+    private float _wallJumpPowerX;
+    private float _wallJumpPowerY;
 
-    public PlayerWallSlideState(PlayerStateMachine stateMachine)
+    public PlayerWallSlideState(PlayerStateMachine stateMachine, PlayerDataSO data)
     {
         _sm = stateMachine;
+        _input = stateMachine.Input;
+        _sensor = stateMachine.Sensor;
+        _motor = stateMachine.Motor;
+
+        _wallSlideSpeed = data.WallSlideSpeed;
+        _wallJumpPowerX = data.WallJumpPowerX;
+        _wallJumpPowerY = data.WallJumpPowerY;
     }
 
     public void Enter()
@@ -47,7 +56,7 @@ public class PlayerWallSlideState : IPlayerState
     {
         _sm.JumpBufferTimer = 0f;
         float jumpDir = -_sensor.WallDirection;
-        _motor.SetVelocity(new Vector2(jumpDir * 10f, 10f));
+        _motor.SetVelocity(new Vector2(jumpDir * _wallJumpPowerX, _wallJumpPowerY));
         _sm.ChangeState(EPlayerState.Airborne);
     }
 }

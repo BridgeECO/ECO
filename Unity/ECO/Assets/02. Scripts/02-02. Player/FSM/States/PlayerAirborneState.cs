@@ -6,18 +6,30 @@ public class PlayerAirborneState : IPlayerState
     private PlayerInput _input;
     private PlayerSensor _sensor;
     private PlayerMotor _motor;
-    private float _maxFallSpeed = 5.33f;
-    private float _gravity = 20f;
-    private float _jumpSpeed = 5.33f;
+
+    private float _maxFallSpeed;
+    private float _gravity;
+    private float _jumpSpeed;
+    private float _airMoveSpeed;
+    private float _maxJumpHoldTime;
+    private float _slipDownSpeed;
+
     private bool _isJumping;
     private float _jumpHoldTimer;
 
-    public PlayerAirborneState(PlayerStateMachine stateMachine)
+    public PlayerAirborneState(PlayerStateMachine stateMachine, PlayerDataSO data)
     {
         _sm = stateMachine;
         _input = stateMachine.Input;
         _sensor = stateMachine.Sensor;
         _motor = stateMachine.Motor;
+
+        _maxFallSpeed = data.MaxFallSpeed;
+        _gravity = data.Gravity;
+        _jumpSpeed = data.JumpSpeed;
+        _airMoveSpeed = data.AirMoveSpeed;
+        _maxJumpHoldTime = data.MaxJumpHoldTime;
+        _slipDownSpeed = data.SlipDownSpeed;
     }
 
     public void Enter()
@@ -38,13 +50,13 @@ public class PlayerAirborneState : IPlayerState
     public void Update()
     {
         float xInput = _input.HorizontalInput;
-        _motor.SetVelocityX(xInput * 2f);
+        _motor.SetVelocityX(xInput * _airMoveSpeed);
         ApplyGravity();
 
         if (_isJumping)
         {
             _jumpHoldTimer += Time.deltaTime;
-            if (1.5f <= _jumpHoldTimer)
+            if (_maxJumpHoldTime <= _jumpHoldTimer)
             {
                 _isJumping = false;
             }
@@ -52,7 +64,7 @@ public class PlayerAirborneState : IPlayerState
 
         if (_sensor.IsSliding && !_sensor.IsGrounded)
         {
-            _motor.AddVelocity(Vector2.down * 15f * Time.deltaTime);
+            _motor.AddVelocity(Vector2.down * _slipDownSpeed * Time.deltaTime);
         }
 
         if (_sensor.IsGrounded && _motor.Velocity.y <= 0f)
@@ -78,13 +90,14 @@ public class PlayerAirborneState : IPlayerState
 
     private void ApplyGravity()
     {
-        if (!_isJumping)
+        if (_isJumping)
         {
-            _sm.Motor.AddVelocity(Vector2.down * _gravity * Time.deltaTime);
-            if (_sm.Motor.Velocity.y < -_maxFallSpeed)
-            {
-                _sm.Motor.SetVelocityY(-_maxFallSpeed);
-            }
+            return;
+        }
+        _motor.AddVelocity(Vector2.down * _gravity * Time.deltaTime);
+        if (_motor.Velocity.y < -_maxFallSpeed)
+        {
+            _motor.SetVelocityY(-_maxFallSpeed);
         }
     }
 
@@ -100,9 +113,9 @@ public class PlayerAirborneState : IPlayerState
     private void HandleJumpReleased()
     {
         _isJumping = false;
-        if (0f < _sm.Motor.Velocity.y)
+        if (0f < _motor.Velocity.y)
         {
-            _sm.Motor.SetVelocityY(0f);
+            _motor.SetVelocityY(0f);
         }
     }
 
