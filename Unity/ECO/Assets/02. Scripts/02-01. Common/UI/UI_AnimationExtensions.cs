@@ -108,4 +108,26 @@ public static class UI_AnimationExtensions
             }
         });
     }
+
+    public static void Blink(this Graphic target, float targetFadeValue = 0f, float duration = 0.5f, int loops = -1, params System.Action[] onCompleteActions)
+    {
+        target.DOFade(targetFadeValue, duration).SetLoops(loops, LoopType.Yoyo).OnComplete(() =>
+        {
+            foreach (var action in onCompleteActions)
+            {
+                action?.Invoke();
+            }
+        });
+    }
+
+    public static void Blink(this CanvasGroup target, float targetFadeValue = 0f, float duration = 0.5f, int loops = -1, params System.Action[] onCompleteActions)
+    {
+        target.DOFade(targetFadeValue, duration).SetLoops(loops, LoopType.Yoyo).OnComplete(() =>
+        {
+            foreach (var action in onCompleteActions)
+            {
+                action?.Invoke();
+            }
+        });
+    }
 }
