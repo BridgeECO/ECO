@@ -9,6 +9,8 @@ public class TitleScene : MonoBehaviour
     public Action OnWaitInputStarted;
     public Action OnMenuStarted;
 
+    public readonly float IntroDuration = 5f;
+
     private ETitleState _currentState = ETitleState.Intro;
 
     private void Start()
@@ -27,7 +29,9 @@ public class TitleScene : MonoBehaviour
     private async UniTaskVoid PlayIntroSequence()
     {
         OnIntroStarted?.Invoke();
-        await UniTask.Delay(TimeSpan.FromSeconds(5f));
+        await UniTask.Delay(TimeSpan.FromSeconds(IntroDuration),
+
+        cancellationToken: this.GetCancellationTokenOnDestroy());
         ChangeState(ETitleState.WaitInput);
     }
 

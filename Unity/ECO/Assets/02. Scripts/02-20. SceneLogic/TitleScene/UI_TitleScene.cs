@@ -42,11 +42,12 @@ public class UI_TitleScene : MonoBehaviour
 
     private async UniTaskVoid HandleIntroAsync()
     {
-        await _teamLogoImage.DOFade(1f, 1f).ToUniTask();
-        await UniTask.Delay(TimeSpan.FromSeconds(2f));
-        await _teamLogoImage.DOFade(0f, 1f).ToUniTask();
-        await UniTask.Delay(TimeSpan.FromSeconds(0.5f));
-        await _backgroundImage.DOFade(0f, 0.5f).ToUniTask();
+        var ct = this.GetCancellationTokenOnDestroy();
+        await _teamLogoImage.DOFade(1f, 1f).ToUniTask(cancellationToken: ct);
+        await UniTask.Delay(TimeSpan.FromSeconds(2f), cancellationToken: ct);
+        await _teamLogoImage.DOFade(0f, 1f).ToUniTask(cancellationToken: ct);
+        await UniTask.Delay(TimeSpan.FromSeconds(0.5f), cancellationToken: ct);
+        await _backgroundImage.DOFade(0f, 0.5f).ToUniTask(cancellationToken: ct);
     }
 
     private void HandleWaitInput()
@@ -56,7 +57,8 @@ public class UI_TitleScene : MonoBehaviour
 
     private async UniTaskVoid HandleWaitInputAsync()
     {
-        await _pressAnyKeyCanvasGroup.DOFade(1f, 0.5f).ToUniTask();
+        var ct = this.GetCancellationTokenOnDestroy();
+        await _pressAnyKeyCanvasGroup.DOFade(1f, 0.5f).ToUniTask(cancellationToken: ct);
         _pressAnyKeyText.Blink();
     }
 
@@ -67,9 +69,10 @@ public class UI_TitleScene : MonoBehaviour
 
     private async UniTaskVoid HandleMenuAsync()
     {
+        var ct = this.GetCancellationTokenOnDestroy();
         _pressAnyKeyText.DOKill();
-        await _pressAnyKeyCanvasGroup.DOFade(0f, 0.5f).ToUniTask();
-        await _buttonsCanvasGroup.DOFade(1f, 0.5f).ToUniTask();
+        await _pressAnyKeyCanvasGroup.DOFade(0f, 0.5f).ToUniTask(cancellationToken: ct);
+        await _buttonsCanvasGroup.DOFade(1f, 0.5f).ToUniTask(cancellationToken: ct);
     }
 
     private void InitUIState()
