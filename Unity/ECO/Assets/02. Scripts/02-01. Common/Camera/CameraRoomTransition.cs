@@ -27,9 +27,7 @@ public class CameraRoomTransition : MonoBehaviour
 
     private void OnDestroy()
     {
-        _transitionCts?.Cancel();
-        _transitionCts?.Dispose();
-        _transitionTween?.Kill();
+        StopTransition();
     }
 
 
@@ -37,8 +35,7 @@ public class CameraRoomTransition : MonoBehaviour
     {
         if (_isTransitioning)
         {
-            _transitionCts?.Cancel();
-            _transitionTween?.Kill();
+            StopTransition();
         }
         _transitionCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         try
@@ -74,6 +71,13 @@ public class CameraRoomTransition : MonoBehaviour
         _isTransitioning = false;
         _cameraController.IsFollowingPlayer = true;
         OnRoomTransitionCompleted?.Invoke();
+    }
+
+    private void StopTransition()
+    {
+        _transitionCts?.Cancel();
+        _transitionCts?.Dispose();
+        _transitionTween?.Kill();
     }
 
     private Vector3 GetTargetPosition()
