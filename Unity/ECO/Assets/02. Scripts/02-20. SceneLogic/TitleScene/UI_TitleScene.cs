@@ -29,10 +29,16 @@ public class UI_TitleScene : MonoBehaviour
     private void Awake()
     {
         InitUIState();
-
         _titleScene.OnIntroStarted += HandleIntro;
         _titleScene.OnWaitInputStarted += HandleWaitInput;
         _titleScene.OnMenuStarted += HandleMenu;
+    }
+
+    private void OnDestroy()
+    {
+        _titleScene.OnIntroStarted -= HandleIntro;
+        _titleScene.OnWaitInputStarted -= HandleWaitInput;
+        _titleScene.OnMenuStarted -= HandleMenu;
     }
 
     private void HandleIntro()
