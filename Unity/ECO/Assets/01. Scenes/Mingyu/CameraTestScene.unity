@@ -304,7 +304,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _parentRegion: {fileID: 0}
-  _cameraBounds: {fileID: 0}
+  _cameraBounds: {fileID: 56311243}
 --- !u!61 &56311243
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -339,7 +339,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 1
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: 3}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -349,7 +349,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 50, y: 10}
   m_EdgeRadius: 0
 --- !u!114 &56311244
 MonoBehaviour:
@@ -365,7 +365,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _targetRoom: {fileID: 56311242}
   _savePoint: {fileID: 0}
-  _cameraRoomTransition: {fileID: 0}
+  _cameraRoomTransition: {fileID: 667192217}
 --- !u!4 &71527631 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5776003008716666939, guid: c4859a728bb40ee4c94d7adee5ded22c, type: 3}
@@ -1138,7 +1138,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _targetRoom: {fileID: 715935734}
   _savePoint: {fileID: 0}
-  _cameraRoomTransition: {fileID: 0}
+  _cameraRoomTransition: {fileID: 667192217}
 --- !u!114 &715935734
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1152,7 +1152,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _parentRegion: {fileID: 0}
-  _cameraBounds: {fileID: 0}
+  _cameraBounds: {fileID: 715935735}
 --- !u!61 &715935735
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1187,7 +1187,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 1
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: 3}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -1197,7 +1197,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 50, y: 10}
   m_EdgeRadius: 0
 --- !u!1 &1195516001
 GameObject:
@@ -1701,7 +1701,7 @@ Transform:
   m_GameObject: {fileID: 1751301082}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 25, y: 7, z: 0}
+  m_LocalPosition: {x: 25, y: 10, z: 0}
   m_LocalScale: {x: 1, y: 10, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
