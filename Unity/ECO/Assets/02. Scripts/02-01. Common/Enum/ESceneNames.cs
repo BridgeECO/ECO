@@ -1,5 +1,5 @@
 public enum ESceneNames
 {
-    Title,
-    Play,
+    TitleScene,
+    GameScene,
 }
