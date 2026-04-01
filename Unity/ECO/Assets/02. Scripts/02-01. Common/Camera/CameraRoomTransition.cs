@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using UnityEngine;
 using VInspector;
 
@@ -13,30 +14,42 @@ public class CameraRoomTransition : MonoBehaviour
     [SerializeField]
     private CameraController _cameraController;
 
-    [SerializeField]
-    private Transform _playerTransform;
-
     [Foldout("Project")]
     [Header("Room Transition")]
     [SerializeField]
     private float _roomTransitionSpeed;
 
-    [SerializeField]
-    private float _roomTransitionSnapThreshold;
-
     private bool _isTransitioning;
+    private CancellationTokenSource _transitionCts;
+    private Tweener _transitionTween;
 
     public bool IsTransitioning => _isTransitioning;
+
+    private void OnDestroy()
+    {
+        _transitionCts?.Cancel();
+        _transitionCts?.Dispose();
+        _transitionTween?.Kill();
+    }
+
 
     public async UniTask StartRoomTransitionAsync(Vector2 nextRoomMin, Vector2 nextRoomMax, CancellationToken cancellationToken)
     {
         if (_isTransitioning)
         {
-            return;
+            _transitionCts?.Cancel();
+            _transitionTween?.Kill();
         }
-        InitTransition(nextRoomMin, nextRoomMax);
-        await UpdateTransitionAsync(cancellationToken);
-        CompleteTransition();
+        _transitionCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        try
+        {
+            InitTransition(nextRoomMin, nextRoomMax);
+            await UpdateTransitionAsync(_transitionCts.Token);
+            CompleteTransition();
+        }
+        catch (OperationCanceledException)
+        {
+        }
     }
 
     private void InitTransition(Vector2 nextRoomMin, Vector2 nextRoomMax)
@@ -49,20 +62,11 @@ public class CameraRoomTransition : MonoBehaviour
 
     private async UniTask UpdateTransitionAsync(CancellationToken cancellationToken)
     {
-        while (true)
-        {
-            Vector3 targetPosition = GetTargetPosition();
-            float distanceToTarget = Vector2.Distance(transform.position, targetPosition);
-
-            if (distanceToTarget <= _roomTransitionSnapThreshold)
-            {
-                transform.position = targetPosition;
-                break;
-            }
-
-            MoveTowardsTarget(targetPosition);
-            await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
-        }
+        Vector3 targetPosition = GetTargetPosition();
+        float distance = Vector3.Distance(transform.position, targetPosition);
+        float duration = distance / _roomTransitionSpeed;
+        _transitionTween = transform.DOMove(targetPosition, duration).SetEase(Ease.InOutSine);
+        await _transitionTween.ToUniTask(TweenCancelBehaviour.Kill, cancellationToken);
     }
 
     private void CompleteTransition()
@@ -74,17 +78,8 @@ public class CameraRoomTransition : MonoBehaviour
 
     private Vector3 GetTargetPosition()
     {
-        Vector3 targetPosition = _cameraController.GetClampedPosition(_playerTransform.position);
+        Vector3 targetPosition = _cameraController.GetClampedPosition();
         targetPosition.z = transform.position.z;
         return targetPosition;
-    }
-
-    private void MoveTowardsTarget(Vector3 targetPosition)
-    {
-        transform.position = Vector3.MoveTowards(
-            transform.position,
-            targetPosition,
-            _roomTransitionSpeed * Time.deltaTime
-        );
     }
 }

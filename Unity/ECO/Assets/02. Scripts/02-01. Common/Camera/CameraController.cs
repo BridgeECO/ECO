@@ -27,16 +27,17 @@ public class CameraController : MonoBehaviour
     private void Awake()
     {
         InitCameraHalfSize();
-        Vector3 clamped = GetClampedPosition(_playerTransform.position);
+        Vector3 clamped = GetClampedPosition();
         transform.position = clamped;
     }
 
     private void LateUpdate()
     {
-        if (IsFollowingPlayer)
+        if (!IsFollowingPlayer)
         {
-            FollowPlayer();
+            return;
         }
+        FollowPlayer();
     }
 
     private void InitCameraHalfSize()
@@ -48,8 +49,7 @@ public class CameraController : MonoBehaviour
 
     private void FollowPlayer()
     {
-        Vector3 clamped = GetClampedPosition(_playerTransform.position);
-        transform.position = clamped;
+        transform.position = GetClampedPosition();
     }
 
     public void SetRoomBounds(Vector2 roomMin, Vector2 roomMax)
@@ -58,11 +58,10 @@ public class CameraController : MonoBehaviour
         _currentRoomMax = roomMax;
     }
 
-    public Vector3 GetClampedPosition(Vector3 targetPosition)
+    public Vector3 GetClampedPosition()
     {
-        float clampedX = ClampAxis(targetPosition.x, _currentRoomMin.x, _currentRoomMax.x, _halfCamWidth);
-        float clampedY = ClampAxis(targetPosition.y - _cameraYOffset, _currentRoomMin.y, _currentRoomMax.y, _halfCamHeight);
-
+        float clampedX = ClampAxis(_playerTransform.position.x, _currentRoomMin.x, _currentRoomMax.x, _halfCamWidth);
+        float clampedY = ClampAxis(_playerTransform.position.y - _cameraYOffset, _currentRoomMin.y, _currentRoomMax.y, _halfCamHeight);
         return new Vector3(clampedX, clampedY, transform.position.z);
     }
 
@@ -70,12 +69,6 @@ public class CameraController : MonoBehaviour
     {
         float clampMin = roomMin + halfCamSize;
         float clampMax = roomMax - halfCamSize;
-
-        if (clampMin > clampMax)
-        {
-            return (roomMin + roomMax) * 0.5f;
-        }
-
-        return Mathf.Clamp(target, clampMin, clampMax);
+        return (clampMax < clampMin) ? (roomMin + roomMax) * 0.5f : Mathf.Clamp(target, clampMin, clampMax);
     }
 }

@@ -19,8 +19,6 @@ public class RoomTransition : MonoBehaviour
         {
             _cameraRoomTransition.StartRoomTransitionAsync
             (_targetRoom.MinBounds, _targetRoom.MaxBounds, CancellationToken.None).Forget();
-
-            UpdatePlayerSavePoint(_savePoint.position);
         }
     }
 
