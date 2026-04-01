@@ -24,6 +24,13 @@ public class TitleScene : MonoBehaviour
         }
     }
 
+    private async UniTaskVoid PlayIntroSequence()
+    {
+        OnIntroStarted?.Invoke();
+        await UniTask.Delay(TimeSpan.FromSeconds(5f));
+        ChangeState(ETitleState.WaitInput);
+    }
+
     private void ChangeState(ETitleState newState)
     {
         _currentState = newState;
@@ -40,12 +47,5 @@ public class TitleScene : MonoBehaviour
                     break;
                 }
         }
-    }
-
-    private async UniTaskVoid PlayIntroSequence()
-    {
-        OnIntroStarted?.Invoke();
-        await UniTask.Delay(TimeSpan.FromSeconds(4f));
-        ChangeState(ETitleState.WaitInput);
     }
 }

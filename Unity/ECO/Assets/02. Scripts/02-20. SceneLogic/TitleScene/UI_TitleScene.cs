@@ -42,9 +42,9 @@ public class UI_TitleScene : MonoBehaviour
 
     private async UniTaskVoid HandleIntroAsync()
     {
-        await _teamLogoImage.DOFade(1f, 0.5f).ToUniTask();
+        await _teamLogoImage.DOFade(1f, 1f).ToUniTask();
         await UniTask.Delay(TimeSpan.FromSeconds(2f));
-        await _teamLogoImage.DOFade(0f, 0.5f).ToUniTask();
+        await _teamLogoImage.DOFade(0f, 1f).ToUniTask();
         await UniTask.Delay(TimeSpan.FromSeconds(0.5f));
         await _backgroundImage.DOFade(0f, 0.5f).ToUniTask();
     }
