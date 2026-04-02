@@ -18,15 +18,29 @@ jobs:
         with:
           fetch-depth: 0
 
+      # 1. 해당 브랜치에 열려있는 PR이 있는지 확인
+      - name: Check if PR already exists
+        id: check_pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          COUNT=$(gh pr list --head ${{ github.ref_name }} --state open --json number --jq 'length')
+          echo "exists=$COUNT" >> $GITHUB_OUTPUT
+
+      # 2. PR이 없을 때(exists == '0')만 파이썬 환경 세팅
       - name: Set up Python
+        if: steps.check_pr.outputs.exists == '0'
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.12'
 
       - name: Install dependencies
+        if: steps.check_pr.outputs.exists == '0'
         run: pip install google-genai jq
 
+      # 3. PR이 없을 때만 AI를 호출하여 데이터 생성
       - name: Generate PR Data
+        if: steps.check_pr.outputs.exists == '0'
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
@@ -34,9 +48,13 @@ jobs:
           git diff origin/main..HEAD > diff.txt
           python .github/scripts/generate_pr_info.py > pr_info.json
 
-      - name: Create or Update Pull Request
+      # 4. PR이 없을 때만 최종적으로 PR 생성 (Update 로직 제거)
+      - name: Create Pull Request
+        if: steps.check_pr.outputs.exists == '0'
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MINGYU_PAT: ${{ secrets.MY_PERSONAL_TOKEN }}
+          SUJI_PAT: ${{ secrets.SUJI_PERSONAL_TOKEN }}
+          BOT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           TITLE=$(jq -r '.title' pr_info.json)
           BODY=$(jq -r '.body' pr_info.json)
@@ -45,33 +63,30 @@ jobs:
           case "${{ github.actor }}" in
             "Mingyu0626")
               USER_LABEL="🍎최민규"
+              SELECT_TOKEN=$MINGYU_PAT
               ;;
             "sooji123")
               USER_LABEL="🍪박수지"
               ;;
             *)
               USER_LABEL="${{ github.actor }}"
+              SELECT_TOKEN=$BOT_TOKEN
               ;;
           esac
           
-          ALL_LABELS="$AI_LABELS,$USER_LABEL"
+          if [ -z "$SELECT_TOKEN" ]; then
+            SELECT_TOKEN=$BOT_TOKEN
+          fi
           
+          ALL_LABELS="$AI_LABELS,$USER_LABEL"
           echo "$BODY" > pr_body.md
           
-          PR_EXISTS=$(gh pr list --head ${{ github.ref_name }} --json number --jq 'length')
-
-          if [ "$PR_EXISTS" -eq 0 ]; then
-            gh pr create \
-              --base main \
-              --head ${{ github.ref_name }} \
-              --title "$TITLE" \
-              --body-file pr_body.md \
-              --assignee ${{ github.actor }} \
-              --label "$ALL_LABELS" \
-              --draft
-          else
-            gh pr edit ${{ github.ref_name }} \
-              --title "$TITLE" \
-              --body-file pr_body.md \
-              --add-label "$ALL_LABELS"
-          fi
+          # 이미 PR이 없는 것을 확인했으므로 create 명령만 수행
+          GH_TOKEN=$SELECT_TOKEN gh pr create \
+            --base main \
+            --head ${{ github.ref_name }} \
+            --title "$TITLE" \
+            --body-file pr_body.md \
+            --assignee ${{ github.actor }} \
+            --label "$ALL_LABELS" \
+            --draft
