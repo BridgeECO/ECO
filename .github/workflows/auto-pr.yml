@@ -52,7 +52,7 @@ jobs:
       - name: Create Pull Request
         if: steps.check_pr.outputs.exists == '0'
         env:
-          MINGYU_PAT: ${{ secrets.MY_PERSONAL_TOKEN }}
+          MINGYU_PAT: ${{ secrets.MINGYU_PERSONAL_TOKEN }}
           SUJI_PAT: ${{ secrets.SUJI_PERSONAL_TOKEN }}
           BOT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
