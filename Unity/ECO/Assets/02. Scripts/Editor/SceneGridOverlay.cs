@@ -7,12 +7,14 @@ public static class SceneGridSystem
     private static bool _showGrid;
     private const float GridSize = 1f;
     private static Color _gridColor = Color.black;
+    private const string SHOW_GRID_KEY = "ECO_ShowGrid";
+    private const string GRID_COLOR_KEY = "ECO_GridColor";
 
     static SceneGridSystem()
     {
-        _showGrid = EditorPrefs.GetBool("ECO_ShowGrid", true);
+        _showGrid = EditorPrefs.GetBool(SHOW_GRID_KEY, true);
 
-        string colorStr = EditorPrefs.GetString("ECO_GridColor", "#FFFFFF33");
+        string colorStr = EditorPrefs.GetString(GRID_COLOR_KEY, ColorUtility.ToHtmlStringRGBA(Color.black));
         if (!ColorUtility.TryParseHtmlString(colorStr, out _gridColor))
         {
             _gridColor = Color.black;
@@ -26,7 +28,7 @@ public static class SceneGridSystem
     public static void ToggleGrid()
     {
         _showGrid = !_showGrid;
-        EditorPrefs.SetBool("ECO_ShowGrid", _showGrid);
+        EditorPrefs.SetBool(SHOW_GRID_KEY, _showGrid);
         SceneView.RepaintAll();
     }
 
@@ -43,7 +45,7 @@ public static class SceneGridSystem
         set
         {
             _gridColor = value;
-            EditorPrefs.SetString("ECO_GridColor", "#" + ColorUtility.ToHtmlStringRGBA(_gridColor));
+            EditorPrefs.SetString(GRID_COLOR_KEY, "#" + ColorUtility.ToHtmlStringRGBA(_gridColor));
         }
     }
 
