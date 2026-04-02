@@ -30,10 +30,23 @@ public class GameSceneManager : MonoBehaviour
     {
         if (!string.IsNullOrEmpty(_currentLoadedRegionScene))
         {
-            await SceneManager.UnloadSceneAsync(_currentLoadedRegionScene);
+            AsyncOperation unloadOp = SceneManager.UnloadSceneAsync(_currentLoadedRegionScene);
+            if (unloadOp != null)
+            {
+                await unloadOp;
+            }
         }
 
-        await SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+        AsyncOperation loadOp = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+
+        if (loadOp == null)
+        {
+            Debug.LogError($"Scene '{sceneName}' could not be loaded. Check Build Settings and spelling.");
+            return;
+        }
+
+        await loadOp;
+
         Scene newlyLoadedScene = SceneManager.GetSceneByName(sceneName);
         SceneManager.SetActiveScene(newlyLoadedScene);
         _currentLoadedRegionScene = sceneName;
@@ -43,6 +56,5 @@ public class GameSceneManager : MonoBehaviour
     {
         await LoadRegionSceneAsync(targetSceneName);
 
-        //플레이어의 위치를 정하는 코드가 추가로 필요함
     }
 }
