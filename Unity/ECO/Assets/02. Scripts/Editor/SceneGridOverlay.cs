@@ -4,7 +4,7 @@ using UnityEngine;
 [InitializeOnLoad]
 public static class SceneGridSystem
 {
-    private static bool _showGrid;
+    private static bool _isGridVisible;
     private const float GridSize = 1f;
     private static Color _gridColor = Color.black;
     private const string SHOW_GRID_KEY = "ECO_ShowGrid";
@@ -12,7 +12,7 @@ public static class SceneGridSystem
 
     static SceneGridSystem()
     {
-        _showGrid = EditorPrefs.GetBool(SHOW_GRID_KEY, true);
+        _isGridVisible = EditorPrefs.GetBool(SHOW_GRID_KEY, true);
 
         string colorStr = EditorPrefs.GetString(GRID_COLOR_KEY, ColorUtility.ToHtmlStringRGBA(Color.black));
         if (!ColorUtility.TryParseHtmlString(colorStr, out _gridColor))
@@ -27,15 +27,15 @@ public static class SceneGridSystem
     [MenuItem("ECO/Grid/Toggle Scene Grid", priority = 1)]
     public static void ToggleGrid()
     {
-        _showGrid = !_showGrid;
-        EditorPrefs.SetBool(SHOW_GRID_KEY, _showGrid);
+        _isGridVisible = !_isGridVisible;
+        EditorPrefs.SetBool(SHOW_GRID_KEY, _isGridVisible);
         SceneView.RepaintAll();
     }
 
     [MenuItem("ECO/Grid/Toggle Scene Grid", true)]
     public static bool ToggleGridValidate()
     {
-        Menu.SetChecked("ECO/Grid/Toggle Scene Grid", _showGrid);
+        Menu.SetChecked("ECO/Grid/Toggle Scene Grid", _isGridVisible);
         return true;
     }
 
@@ -51,7 +51,7 @@ public static class SceneGridSystem
 
     private static void OnSceneGUI(SceneView sceneView)
     {
-        if (!_showGrid) return;
+        if (!_isGridVisible) return;
 
         Handles.color = _gridColor;
 
