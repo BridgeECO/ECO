@@ -3,7 +3,7 @@ using UnityEditor;
 
 public class SceneEnumGenerator : EnumGeneratorBase
 {
-    [MenuItem("ECO/Enum Generator/Generate Scene Enums(ESceneNames)")]
+    [MenuItem("ECO/Enum Generator/Generate Scene Enums(ESceneNames)", priority = 3)]
     public static void GenerateSceneEnum()
     {
         Generate("ESceneNames.cs", "ESceneNames", (writer) =>
