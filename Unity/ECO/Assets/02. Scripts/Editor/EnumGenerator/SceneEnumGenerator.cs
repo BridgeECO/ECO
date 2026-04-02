@@ -1,9 +1,9 @@
-using UnityEditor;
 using System.IO;
+using UnityEditor;
 
 public class SceneEnumGenerator : EnumGeneratorBase
 {
-    [MenuItem("Tools/Generate Enum/ESceneNames")]
+    [MenuItem("ECO/Tools/Generate Enum/ESceneNames")]
     public static void GenerateSceneEnum()
     {
         Generate("ESceneNames.cs", "ESceneNames", (writer) =>
