@@ -2,7 +2,7 @@ import os
 import google.generativeai as genai
 
 genai.configure(api_key=os.environ["GEMINI_API_KEY"])
-model = genai.GenerativeModel('gemini-2.5-pro', generation_config={"response_mime_type": "application/json"})
+model = genai.GenerativeModel('gemini-2.5-flash', generation_config={"response_mime_type": "application/json"})
 
 with open('commits.txt', 'r', encoding='utf-8') as f:
     commits = f.read()
