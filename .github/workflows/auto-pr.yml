@@ -41,7 +41,20 @@ jobs:
           TITLE=$(jq -r '.title' pr_info.json)
           BODY=$(jq -r '.body' pr_info.json)
           AI_LABELS=$(jq -r '.labels | join(",")' pr_info.json)
-          ALL_LABELS="$AI_LABELS,${{ github.actor }}"
+          
+          case "${{ github.actor }}" in
+            "Mingyu0626")
+              USER_LABEL="🍎최민규"
+              ;;
+            "sooji123")
+              USER_LABEL="🍪박수지"
+              ;;
+            *)
+              USER_LABEL="${{ github.actor }}"
+              ;;
+          esac
+          
+          ALL_LABELS="$AI_LABELS,$USER_LABEL"
           
           echo "$BODY" > pr_body.md
           
