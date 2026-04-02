@@ -11,9 +11,12 @@ public class RoomTransition : MonoBehaviour
     [SerializeField]
     private Transform _savePoint;
 
-    [Foldout("Hierarchy")]
-    [SerializeField]
     private CameraRoomTransition _cameraRoomTransition;
+
+    private void Start()
+    {
+        _cameraRoomTransition = CameraRoomTransition.Instance;
+    }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -22,7 +25,7 @@ public class RoomTransition : MonoBehaviour
             _cameraRoomTransition.StartRoomTransitionAsync
             (_targetRoom.MinBounds, _targetRoom.MaxBounds,
             this.GetCancellationTokenOnDestroy()).Forget();
-            // UpdatePlayerSavePoint(_savePoint.position);
+            //UpdatePlayerSavePoint(_savePoint.position);
         }
     }
 

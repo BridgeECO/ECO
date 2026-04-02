@@ -7,6 +7,8 @@ using VInspector;
 
 public class CameraRoomTransition : MonoBehaviour
 {
+    public static CameraRoomTransition Instance { get; private set; }
+
     public Action OnRoomTransitionStarted;
     public Action OnRoomTransitionCompleted;
 
@@ -24,6 +26,18 @@ public class CameraRoomTransition : MonoBehaviour
     private Tweener _transitionTween;
 
     public bool IsTransitioning => _isTransitioning;
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     private void OnDestroy()
     {

@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEngine;
 
 [InitializeOnLoad]
-public static class SceneGridSystem
+public static class GridGuide
 {
     private static bool _isGridVisible;
     private const float GridSize = 1f;
@@ -10,7 +10,7 @@ public static class SceneGridSystem
     private const string SHOW_GRID_KEY = "ECO_ShowGrid";
     private const string GRID_COLOR_KEY = "ECO_GridColor";
 
-    static SceneGridSystem()
+    static GridGuide()
     {
         _isGridVisible = EditorPrefs.GetBool(SHOW_GRID_KEY, true);
 
@@ -24,7 +24,7 @@ public static class SceneGridSystem
         SceneView.duringSceneGui += OnSceneGUI;
     }
 
-    [MenuItem("ECO/Grid/Toggle Scene Grid", priority = 1)]
+    [MenuItem("ECO/Grid Guide/Toggle Scene Grid", priority = 1)]
     public static void ToggleGrid()
     {
         _isGridVisible = !_isGridVisible;
@@ -32,10 +32,10 @@ public static class SceneGridSystem
         SceneView.RepaintAll();
     }
 
-    [MenuItem("ECO/Grid/Toggle Scene Grid", true)]
+    [MenuItem("ECO/Grid Guide/Toggle Scene Grid", true)]
     public static bool ToggleGridValidate()
     {
-        Menu.SetChecked("ECO/Grid/Toggle Scene Grid", _isGridVisible);
+        Menu.SetChecked("ECO/Grid Guide/Toggle Scene Grid", _isGridVisible);
         return true;
     }
 
@@ -77,12 +77,12 @@ public static class SceneGridSystem
     }
 }
 
-public class SceneGridSettingsWindow : EditorWindow
+public class GridGuideSettingsWindow : EditorWindow
 {
-    [MenuItem("ECO/Grid/Grid Settings", priority = 2)]
+    [MenuItem("ECO/Grid Guide/Grid Settings", priority = 2)]
     public static void ShowWindow()
     {
-        GetWindow<SceneGridSettingsWindow>("Grid Settings");
+        GetWindow<GridGuideSettingsWindow>("Grid Settings");
     }
 
     private void OnGUI()
@@ -91,11 +91,11 @@ public class SceneGridSettingsWindow : EditorWindow
 
         EditorGUI.BeginChangeCheck();
 
-        Color newColor = EditorGUILayout.ColorField("Grid Color", SceneGridSystem.GridColor);
+        Color newColor = EditorGUILayout.ColorField("Grid Color", GridGuide.GridColor);
 
         if (EditorGUI.EndChangeCheck())
         {
-            SceneGridSystem.GridColor = newColor;
+            GridGuide.GridColor = newColor;
             SceneView.RepaintAll();
         }
     }
