@@ -5,7 +5,7 @@ public class LayerEnumGenerator : EnumGeneratorBase
 {
     private const int MAX_LAYERS = 32;
 
-    [MenuItem("ECO/Tools/Generate Enum/ELayers")]
+    [MenuItem("ECO/Enum Generator/Generate Layer Enums(ELayers)")]
     public static void GenerateLayerEnum()
     {
         Generate("ELayers.cs", "ELayers", (writer) =>
