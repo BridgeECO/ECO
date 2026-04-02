@@ -2,7 +2,7 @@ using UnityEditor;
 
 public class TagEnumGenerator : EnumGeneratorBase
 {
-    [MenuItem("ECO/Tools/Generate Enum/ETags")]
+    [MenuItem("ECO/Enum Generator/Generate Tag Enums(ETags)", priority = 3)]
     public static void GenerateTagEnum()
     {
         Generate("ETags.cs", "ETags", (writer) =>
