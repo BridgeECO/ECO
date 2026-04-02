@@ -10,7 +10,7 @@ with open('commits.txt', 'r', encoding='utf-8') as f:
 with open('diff.txt', 'r', encoding='utf-8') as f:
     diff_text = f.read()
 
-with open('.github/PULL_REQUEST_TEMPLATE.md', 'r', encoding='utf-8') as f:
+with open('docs/PULL_REQUEST_TEMPLATE.md', 'r', encoding='utf-8') as f:
     template = f.read()
 
 prompt = f"""
