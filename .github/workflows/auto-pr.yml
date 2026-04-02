@@ -1,0 +1,64 @@
+name: Auto Create PR
+
+on:
+  push:
+    branches-ignore:
+      - main
+      - develop
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install google-generativeai jq
+
+      - name: Generate PR Data
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          git log origin/main..HEAD --pretty=format:"%s%n%b" > commits.txt
+          git diff origin/main..HEAD > diff.txt
+          python .github/scripts/generate_pr_info.py > pr_info.json
+
+      - name: Create or Update Pull Request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TITLE=$(jq -r '.title' pr_info.json)
+          BODY=$(jq -r '.body' pr_info.json)
+          AI_LABELS=$(jq -r '.labels | join(",")' pr_info.json)
+          ALL_LABELS="$AI_LABELS,${{ github.actor }}"
+          
+          echo "$BODY" > pr_body.md
+          
+          PR_EXISTS=$(gh pr list --head ${{ github.ref_name }} --json number --jq 'length')
+
+          if [ "$PR_EXISTS" -eq 0 ]; then
+            gh pr create \
+              --base main \
+              --head ${{ github.ref_name }} \
+              --title "$TITLE" \
+              --body-file pr_body.md \
+              --assignee ${{ github.actor }} \
+              --label "$ALL_LABELS" \
+              --draft
+          else
+            gh pr edit ${{ github.ref_name }} \
+              --title "$TITLE" \
+              --body-file pr_body.md \
+              --add-label "$ALL_LABELS"
+          fi
