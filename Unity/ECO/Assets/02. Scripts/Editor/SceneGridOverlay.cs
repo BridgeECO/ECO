@@ -5,13 +5,12 @@ using UnityEngine;
 public static class SceneGridSystem
 {
     private static bool _showGrid;
-    private static float _gridSize;
+    private const float GridSize = 1f;
     private static Color _gridColor = Color.black;
 
     static SceneGridSystem()
     {
         _showGrid = EditorPrefs.GetBool("ECO_ShowGrid", true);
-        _gridSize = EditorPrefs.GetFloat("ECO_GridSize", 0.25f);
 
         string colorStr = EditorPrefs.GetString("ECO_GridColor", "#FFFFFF33");
         if (!ColorUtility.TryParseHtmlString(colorStr, out _gridColor))
@@ -38,16 +37,6 @@ public static class SceneGridSystem
         return true;
     }
 
-    public static float GridSize
-    {
-        get => _gridSize;
-        set
-        {
-            _gridSize = value;
-            EditorPrefs.SetFloat("ECO_GridSize", _gridSize);
-        }
-    }
-
     public static Color GridColor
     {
         get => _gridColor;
@@ -60,7 +49,7 @@ public static class SceneGridSystem
 
     private static void OnSceneGUI(SceneView sceneView)
     {
-        if (!_showGrid || _gridSize <= 0f) return;
+        if (!_showGrid) return;
 
         Handles.color = _gridColor;
 
@@ -69,17 +58,17 @@ public static class SceneGridSystem
         float height = cam.orthographicSize * 2f;
         float width = height * cam.aspect;
 
-        float startX = Mathf.Floor((camPos.x - width / 2f) / _gridSize) * _gridSize;
+        float startX = Mathf.Floor((camPos.x - width / 2f) / GridSize) * GridSize;
         float endX = camPos.x + width / 2f;
-        float startY = Mathf.Floor((camPos.y - height / 2f) / _gridSize) * _gridSize;
+        float startY = Mathf.Floor((camPos.y - height / 2f) / GridSize) * GridSize;
         float endY = camPos.y + height / 2f;
 
-        for (float x = startX; x <= endX; x += _gridSize)
+        for (float x = startX; x <= endX; x += GridSize)
         {
             Handles.DrawLine(new Vector3(x, startY, 0f), new Vector3(x, endY, 0f));
         }
 
-        for (float y = startY; y <= endY; y += _gridSize)
+        for (float y = startY; y <= endY; y += GridSize)
         {
             Handles.DrawLine(new Vector3(startX, y, 0f), new Vector3(endX, y, 0f));
         }
@@ -100,12 +89,10 @@ public class SceneGridSettingsWindow : EditorWindow
 
         EditorGUI.BeginChangeCheck();
 
-        float newSize = EditorGUILayout.FloatField("Grid Size (Unit)", SceneGridSystem.GridSize);
         Color newColor = EditorGUILayout.ColorField("Grid Color", SceneGridSystem.GridColor);
 
         if (EditorGUI.EndChangeCheck())
         {
-            SceneGridSystem.GridSize = newSize;
             SceneGridSystem.GridColor = newColor;
             SceneView.RepaintAll();
         }
