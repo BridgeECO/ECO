@@ -4,13 +4,13 @@ from google.genai import types
 
 client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 
-with open('commits.txt', 'r', encoding='utf-8') as f:
+with open('commits.txt', 'r', encoding='utf-8', errors='ignore') as f:
     commits = f.read()
 
-with open('diff.txt', 'r', encoding='utf-8') as f:
+with open('diff.txt', 'r', encoding='utf-8', errors='ignore') as f:
     diff_text = f.read()
 
-with open('docs/PULL_REQUEST_TEMPLATE.md', 'r', encoding='utf-8') as f:
+with open('docs/PULL_REQUEST_TEMPLATE.md', 'r', encoding='utf-8', errors='ignore') as f:
     template = f.read()
 
 prompt = f"""
