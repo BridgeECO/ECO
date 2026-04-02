@@ -24,7 +24,7 @@ jobs:
           python-version: '3.10'
 
       - name: Install dependencies
-        run: pip install google-generativeai jq
+        run: pip install google-genai jq
 
       - name: Generate PR Data
         env:
