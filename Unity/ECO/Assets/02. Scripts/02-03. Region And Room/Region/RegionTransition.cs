@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using Org.BouncyCastle.Asn1.Esf;
 using UnityEngine;
 
 [RequireComponent(typeof(BoxCollider2D))]
@@ -12,10 +11,7 @@ public class RegionTransition : MonoBehaviour
     {
         if (other.CompareTag(nameof(ETags.Player)))
         {
-            if (GameSceneManager.Instance != null)
-            {
-                GameSceneManager.Instance.TransitionToNewRegionAsync(_targetSceneName).Forget();
-            }
+            GameSceneManager.Instance.TransitionToNewRegionAsync(_targetSceneName).Forget();
         }
     }
 }

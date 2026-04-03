@@ -15,7 +15,7 @@ public class RoomTransition : MonoBehaviour
 
     private void Start()
     {
-        _cameraRoomTransition = CameraRoomTransition.Instance;
+        _cameraRoomTransition = FindAnyObjectByType<CameraRoomTransition>();
     }
 
     private void OnTriggerEnter2D(Collider2D other)
