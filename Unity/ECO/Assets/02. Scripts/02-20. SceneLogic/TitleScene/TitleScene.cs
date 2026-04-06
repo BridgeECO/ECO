@@ -20,6 +20,11 @@ public class TitleScene : MonoBehaviour
 
     private void Update()
     {
+        if (InputHandler.IsInputBlocked)
+        {
+            return;
+        }
+
         if (_currentState == ETitleState.WaitInput && Input.anyKeyDown)
         {
             ChangeState(ETitleState.Menu);

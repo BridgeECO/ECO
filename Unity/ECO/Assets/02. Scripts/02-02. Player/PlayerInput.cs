@@ -20,6 +20,12 @@ public class PlayerInput : MonoBehaviour
 
     private void Update()
     {
+        if (InputHandler.IsInputBlocked)
+        {
+            HorizontalInput = 0f;
+            return;
+        }
+
         HorizontalInput = Input.GetAxisRaw("Horizontal");
         MouseWorldPosition = _mainCamera.ScreenToWorldPoint(Input.mousePosition);
         Jump();

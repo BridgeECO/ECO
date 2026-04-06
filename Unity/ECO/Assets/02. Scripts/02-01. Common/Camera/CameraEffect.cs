@@ -7,6 +7,11 @@ public class CameraEffect : MonoBehaviour
 {
     private void Update()
     {
+        if (InputHandler.IsInputBlocked)
+        {
+            return;
+        }
+
         if (Input.GetKeyDown(KeyCode.Alpha0))
         {
             PlayShake();

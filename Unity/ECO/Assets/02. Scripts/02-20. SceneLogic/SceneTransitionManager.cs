@@ -53,6 +53,7 @@ public class SceneTransitionManager : MonoBehaviourSingleton<SceneTransitionMana
             return;
         }
         _isTransitioning = true;
+        InputHandler.BlockInput();
 
         try
         {
@@ -62,8 +63,6 @@ public class SceneTransitionManager : MonoBehaviourSingleton<SceneTransitionMana
 
             await LoadSceneAsync(targetSceneName);
 
-            // 플레이어 좌표 0으로 고정
-
             var fadeInUcs = new UniTaskCompletionSource();
             UIManager.Instance.FadeOutLoadingPanel(() => fadeInUcs.TrySetResult());
             await fadeInUcs.Task;
@@ -71,6 +70,7 @@ public class SceneTransitionManager : MonoBehaviourSingleton<SceneTransitionMana
         finally
         {
             _isTransitioning = false;
+            InputHandler.UnblockInput();
         }
     }
 
