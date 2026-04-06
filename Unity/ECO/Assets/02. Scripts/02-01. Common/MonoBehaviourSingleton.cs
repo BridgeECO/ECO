@@ -30,7 +30,7 @@ public class MonoBehaviourSingleton<T> : MonoBehaviour where T : MonoBehaviour
                 _instance = this as T;
                 if (_isDontDestroyOnLoad)
                 {
-                    DontDestroyOnLoad(gameObject);
+                    DontDestroyOnLoad(transform.root.gameObject);
                 }
             }
             else
