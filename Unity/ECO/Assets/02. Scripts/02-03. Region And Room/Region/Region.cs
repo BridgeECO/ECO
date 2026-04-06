@@ -11,8 +11,14 @@ public class Region : MonoBehaviour
     [SerializeField]
     private List<Room> _rooms;
 
-    private Transform spawnPoint;
+
+    private Room _currentRoom;
 
     public string RegionName => _regionName;
     public IReadOnlyList<Room> Rooms => _rooms;
+
+    private void Awake()
+    {
+        _currentRoom = _rooms[0];
+    }
 }

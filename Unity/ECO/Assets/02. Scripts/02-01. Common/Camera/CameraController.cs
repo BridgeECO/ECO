@@ -3,10 +3,6 @@ using VInspector;
 
 public class CameraController : MonoBehaviour
 {
-    [Foldout("Hierarchy")]
-    [SerializeField]
-    private Transform _playerTransform;
-
     [Foldout("Project")]
     [Header("Room Bounds")]
     [SerializeField]
@@ -19,6 +15,8 @@ public class CameraController : MonoBehaviour
     [SerializeField]
     private float _cameraYOffset;
 
+    private Transform _playerTransform;
+
     private float _halfCamHeight;
     private float _halfCamWidth;
 
@@ -26,7 +24,7 @@ public class CameraController : MonoBehaviour
 
     private void Awake()
     {
-        InitCameraHalfSize();
+        InitCameraController();
         Vector3 clamped = GetClampedPosition();
         transform.position = clamped;
     }
@@ -40,11 +38,14 @@ public class CameraController : MonoBehaviour
         FollowPlayer();
     }
 
-    private void InitCameraHalfSize()
+    private void InitCameraController()
     {
         Camera camera = Camera.main;
         _halfCamHeight = camera.orthographicSize;
         _halfCamWidth = _halfCamHeight * camera.aspect;
+        _playerTransform = Object.FindAnyObjectByType<PlayerStateMachine>(FindObjectsInactive.Include).transform;
+        _playerTransform.gameObject.SetActive(true);
+        _playerTransform.position = Vector3.zero;
     }
 
     private void FollowPlayer()
@@ -61,7 +62,7 @@ public class CameraController : MonoBehaviour
     public Vector3 GetClampedPosition()
     {
         float clampedX = ClampAxis(_playerTransform.position.x, _currentRoomMin.x, _currentRoomMax.x, _halfCamWidth);
-        float clampedY = ClampAxis(_playerTransform.position.y - _cameraYOffset, _currentRoomMin.y, _currentRoomMax.y, _halfCamHeight);
+        float clampedY = ClampAxis(_playerTransform.position.y + _cameraYOffset, _currentRoomMin.y, _currentRoomMax.y, _halfCamHeight);
         return new Vector3(clampedX, clampedY, transform.position.z);
     }
 
