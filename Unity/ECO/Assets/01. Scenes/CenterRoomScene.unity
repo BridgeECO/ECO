@@ -569,8 +569,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71c2567ff55aa2847a0de0079b0bb3f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _targetSceneName: Region1Scene
-  _targetSpawnPointId: 0
+  _targetSceneName: 0
 --- !u!1 &1072602018
 GameObject:
   m_ObjectHideFlags: 0
@@ -584,7 +583,7 @@ GameObject:
   - component: {fileID: 1072602021}
   - component: {fileID: 1072602020}
   m_Layer: 0
-  m_Name: ===== [ Room] =====
+  m_Name: ===== [ Room ] =====
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -635,8 +634,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2efb35d16e0d9444d91bb24db058018f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _parentRegion: {fileID: 0}
   _cameraBounds: {fileID: 1072602022}
+  _spawnPoint: {fileID: 0}
 --- !u!61 &1072602022
 BoxCollider2D:
   m_ObjectHideFlags: 0
