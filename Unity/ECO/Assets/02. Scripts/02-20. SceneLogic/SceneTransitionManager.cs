@@ -74,8 +74,8 @@ public class SceneTransitionManager : MonoBehaviourSingleton<SceneTransitionMana
         }
     }
 
-    public async UniTask TransitionToLobbyAsync()
+    public async UniTask TransitionToTitleAsync()
     {
-        // await TransitionToNewRegionAsync(nameof(ESceneNames.LobbyScene));
+        await TransitionToNewRegionAsync(ESceneNames.TitleScene);
     }
 }
