@@ -10,6 +10,9 @@ with open('commits.txt', 'r', encoding='utf-8', errors='ignore') as f:
 with open('diff.txt', 'r', encoding='utf-8', errors='ignore') as f:
     diff_text = f.read()
 
+commits = commits[:5000]
+diff_text = diff_text[:80000]
+
 with open('docs/PULL_REQUEST_TEMPLATE.md', 'r', encoding='utf-8', errors='ignore') as f:
     template = f.read()
 
