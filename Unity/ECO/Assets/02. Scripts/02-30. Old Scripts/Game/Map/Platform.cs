@@ -4,7 +4,8 @@ namespace ECO
 {
     public class Platform : MonoBase
     {
-        [SerializeField] private AkEvent _wwiseEvt = null;
+        // [SerializeField] 
+        // private AkEvent _wwiseEvt = null;
 
         private ResonanceObject _resonanceObj = null;
 
@@ -31,11 +32,9 @@ namespace ECO
         public void PlayWwiseEvt()
         {
             LOG.Info("여기서 플랫폼에 할당된 음악들 플레이");
-
-            if (_wwiseEvt == null)
-                return;
-
-            AkSoundEngine.PostEvent(_wwiseEvt.playingId, this.gameObject);
+            // if (_wwiseEvt == null)
+            //     return;
+            // AkSoundEngine.PostEvent(_wwiseEvt.playingId, this.gameObject);
         }
     }
 }
