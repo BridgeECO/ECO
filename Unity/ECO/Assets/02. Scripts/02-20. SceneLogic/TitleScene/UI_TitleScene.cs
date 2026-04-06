@@ -3,10 +3,13 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using VInspector;
 
 public class UI_TitleScene : MonoBehaviour
 {
+    [Foldout("Hierarchy")]
     [SerializeField]
     private TitleScene _titleScene;
 
@@ -21,7 +24,6 @@ public class UI_TitleScene : MonoBehaviour
 
     [SerializeField]
     private CanvasGroup _buttonsCanvasGroup;
-
 
     [SerializeField]
     private TextMeshProUGUI _pressAnyKeyText;

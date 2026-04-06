@@ -1,5 +1,7 @@
 public enum ESceneNames
 {
     TitleScene,
-    GameScene,
+    PersistentScene,
+    Region1Scene,
+    CenterRoomScene,
 }

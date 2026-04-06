@@ -51,10 +51,10 @@ namespace ECO
                     {
                         _pd.SetGenericBinding(track, _animator);
                     }
-                    else if (track is AkTimelineEventTrack)
-                    {
-                        _pd.SetGenericBinding(track, this.gameObject);
-                    }
+                    // else if (track is AkTimelineEventTrack)
+                    // {
+                    //     _pd.SetGenericBinding(track, this.gameObject);
+                    // }
                     else if (track is MarkerTrack)
                     {
 

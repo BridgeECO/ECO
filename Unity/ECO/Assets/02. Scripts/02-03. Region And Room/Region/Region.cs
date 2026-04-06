@@ -6,11 +6,14 @@ public class Region : MonoBehaviour
 {
     [Foldout("Project")]
     [SerializeField]
-    private string _regionName;
-
-    [SerializeField]
     private List<Room> _rooms;
 
-    public string RegionName => _regionName;
+    private Room _currentRoom;
+
     public IReadOnlyList<Room> Rooms => _rooms;
+
+    private void Awake()
+    {
+        _currentRoom = _rooms[0];
+    }
 }

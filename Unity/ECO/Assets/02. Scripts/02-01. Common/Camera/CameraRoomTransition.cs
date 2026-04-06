@@ -10,20 +10,22 @@ public class CameraRoomTransition : MonoBehaviour
     public Action OnRoomTransitionStarted;
     public Action OnRoomTransitionCompleted;
 
-    [Foldout("Hierarchy")]
-    [SerializeField]
-    private CameraController _cameraController;
-
     [Foldout("Project")]
     [Header("Room Transition")]
     [SerializeField]
-    private float _roomTransitionSpeed;
+    private float _roomTransitionDuration;
 
+    private CameraController _cameraController;
     private bool _isTransitioning;
     private CancellationTokenSource _transitionCts;
     private Tweener _transitionTween;
 
     public bool IsTransitioning => _isTransitioning;
+
+    private void Awake()
+    {
+        _cameraController = GetComponent<CameraController>();
+    }
 
     private void OnDestroy()
     {
@@ -61,8 +63,7 @@ public class CameraRoomTransition : MonoBehaviour
     {
         Vector3 targetPosition = GetTargetPosition();
         float distance = Vector3.Distance(transform.position, targetPosition);
-        float duration = distance / _roomTransitionSpeed;
-        _transitionTween = transform.DOMove(targetPosition, duration).SetEase(Ease.InOutSine);
+        _transitionTween = transform.DOMove(targetPosition, _roomTransitionDuration).SetEase(Ease.InOutSine);
         await _transitionTween.ToUniTask(TweenCancelBehaviour.Kill, cancellationToken);
     }
 
