@@ -3,11 +3,13 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using VInspector;
 
 public class UI_TitleScene : MonoBehaviour
 {
+    [Foldout("Hierarchy")]
     [SerializeField]
     private TitleScene _titleScene;
 
@@ -26,17 +28,12 @@ public class UI_TitleScene : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI _pressAnyKeyText;
 
-    [Header("Buttons")]
-    [SerializeField] private Button _startButton;
-
     private void Awake()
     {
         InitUIState();
         _titleScene.OnIntroStarted += HandleIntro;
         _titleScene.OnWaitInputStarted += HandleWaitInput;
         _titleScene.OnMenuStarted += HandleMenu;
-
-        _startButton.onClick.AddListener(OnClickStart);
     }
 
     private void OnDestroy()
@@ -44,8 +41,6 @@ public class UI_TitleScene : MonoBehaviour
         _titleScene.OnIntroStarted -= HandleIntro;
         _titleScene.OnWaitInputStarted -= HandleWaitInput;
         _titleScene.OnMenuStarted -= HandleMenu;
-
-        _startButton.onClick.RemoveListener(OnClickStart);
     }
 
     private void HandleIntro()
@@ -104,12 +99,5 @@ public class UI_TitleScene : MonoBehaviour
 
         _pressAnyKeyCanvasGroup.alpha = 0f;
         _buttonsCanvasGroup.alpha = 0f;
-    }
-
-    private void OnClickStart()
-    {
-        if (_buttonsCanvasGroup.alpha < 0.9f) return;
-
-        SceneManager.LoadScene("PersistentScene", LoadSceneMode.Single);
     }
 }
