@@ -35,7 +35,6 @@ public class CameraRoomTransition : MonoBehaviour
 
     public async UniTask StartRoomTransitionAsync(Vector2 nextRoomMin, Vector2 nextRoomMax, CancellationToken cancellationToken)
     {
-        Debug.Log($"{nextRoomMin}, {nextRoomMax}");
         if (_isTransitioning)
         {
             StopTransition();
