@@ -1,18 +1,17 @@
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using VInspector;
-using Cysharp.Threading.Tasks;
 
 public class EnergyLine : MonoBehaviour
 {
-    [Foldout("Hierarchy")]
+    [Foldout("Project")]
     [SerializeField]
     private List<Transform> _waypoints = new List<Transform>();
 
     [SerializeField]
     private LineRenderer _lineRendererPrefab;
 
-    [Foldout("Project")]
     [SerializeField]
     private float _energySpeed = 2f;
 
@@ -56,7 +55,7 @@ public class EnergyLine : MonoBehaviour
 
     private void StartNewSegment()
     {
-        if (_activeSegments.Count > 0)
+        if (0 < _activeSegments.Count)
         {
             EnergySegment lastSegment = _activeSegments[_activeSegments.Count - 1];
             if (!lastSegment.IsCuttingOff && !lastSegment.IsWaitingToCutOff)
@@ -90,7 +89,6 @@ public class EnergyLine : MonoBehaviour
         }
 
         EnergySegment targetSegment = _activeSegments[_activeSegments.Count - 1];
-        
         if (targetSegment.IsCuttingOff || targetSegment.IsWaitingToCutOff)
         {
             return;

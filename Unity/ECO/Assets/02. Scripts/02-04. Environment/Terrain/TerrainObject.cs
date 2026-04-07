@@ -6,7 +6,7 @@ public class TerrainObject : MonoBehaviour, IEnergyReceiver
 {
     [Foldout("Project")]
     [SerializeField]
-    private ETerrainState _terrainState = ETerrainState.Active;
+    private ETerrainType _terrainType = ETerrainType.Active;
 
     [SerializeField]
     private List<TerrainGimmickBaseSO> _gimmickDatas = new List<TerrainGimmickBaseSO>();
@@ -34,16 +34,13 @@ public class TerrainObject : MonoBehaviour, IEnergyReceiver
     private void RefreshTerrainState()
     {
         bool isActiveState = false;
-        switch (_terrainState)
+        switch (_terrainType)
         {
-            case ETerrainState.Always:
+            case ETerrainType.Always:
                 isActiveState = true;
                 break;
-            case ETerrainState.Active:
+            case ETerrainType.Active:
                 isActiveState = _isEnergyActive;
-                break;
-            case ETerrainState.Inactive:
-                isActiveState = !_isEnergyActive;
                 break;
         }
         ApplyGimmicks(isActiveState);
