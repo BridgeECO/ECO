@@ -1,38 +1,27 @@
+using System.Collections.Generic;
 using UnityEngine;
 using VInspector;
 
 public class TerrainObject : MonoBehaviour, IEnergyReceiver
 {
-    [Foldout("Hierarchy")]
-    [SerializeField]
-    private GameObject _visualObject;
-
-    [SerializeField]
-    private Collider2D _terrainCollider;
-
-    [SerializeField]
-    private SpriteRenderer _targetSpriteRenderer;
-
     [Foldout("Project")]
     [SerializeField]
     private ETerrainState _terrainState = ETerrainState.Active;
 
     [SerializeField]
-    private bool _hasImageToggleGimmick;
+    private List<TerrainGimmickBaseSO> _gimmickDatas = new List<TerrainGimmickBaseSO>();
 
-    [SerializeField]
-    private bool _hasColliderToggleGimmick;
-
-    [SerializeField]
-    private Sprite _activeSprite;
-
-    [SerializeField]
-    private Sprite _inactiveSprite;
+    private List<TerrainGimmickBase> _runtimeGimmicks = new List<TerrainGimmickBase>();
 
     private bool _isEnergyActive = false;
 
     private void Awake()
     {
+        foreach (var data in _gimmickDatas)
+        {
+            _runtimeGimmicks.Add(data.CreateGimmick());
+        }
+
         RefreshTerrainState();
     }
 
@@ -62,22 +51,11 @@ public class TerrainObject : MonoBehaviour, IEnergyReceiver
 
     private void ApplyGimmicks(bool isActive)
     {
-        if (_hasImageToggleGimmick && _visualObject != null)
+        foreach (var gimmick in _runtimeGimmicks)
         {
-            _visualObject.SetActive(isActive);
-        }
-
-        if (_hasColliderToggleGimmick && _terrainCollider != null)
-        {
-            _terrainCollider.enabled = isActive;
-        }
-
-        if (_targetSpriteRenderer != null)
-        {
-            Sprite targetSprite = isActive ? _activeSprite : _inactiveSprite;
-            if (targetSprite != null)
+            if (gimmick != null)
             {
-                _targetSpriteRenderer.sprite = targetSprite;
+                gimmick.ApplyGimmick(this, isActive);
             }
         }
     }
