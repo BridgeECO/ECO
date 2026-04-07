@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "SpriteChangeGimmickSO", menuName = "Environment/Gimmick/SpriteChangeGimmickSO")]
+[CreateAssetMenu(fileName = "SpriteChangeGimmickSO", menuName = "Scriptable Objects/Terrain Gimmick/SpriteChangeGimmickSO")]
 public class SpriteChangeGimmickSO : TerrainGimmickBaseSO
 {
     [SerializeField]
