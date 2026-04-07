@@ -45,7 +45,7 @@
 
 \## 🖼️ 컴포넌트 및 UI 참조 바인딩
 
-\* \*\*절대 금지:\*\* 스크립트 내부에서 UI 요소나 외부 객체를 찾기 위해 `GetComponent`, `transform.Find`, `GameObject.Find` 등의 탐색 함수를 사용하는 것을 절대 금지한다.
+\* \*\*절대 금지:\*\* 스크립트 내부에서 UI 요소나 외부 객체를 찾기 위해 `transform.Find`, `GameObject.Find` 등의 탐색 함수를 사용하는 것을 절대 금지한다.
 
 \* \*\*필수 사항:\*\* 모든 컴포넌트 참조는 반드시 `\[SerializeField] private`으로 선언하고, 유니티 에디터의 인스펙터(Inspector)를 통해 직렬화하여 할당한다.
 
