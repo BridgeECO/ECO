@@ -1,11 +1,12 @@
 using UnityEngine;
 
-public class PressurePlateInteractionBehavior : InteractionBehaviorBase
+public class AutoPlayInteraction : InteractionBase
 {
-    public PressurePlateInteractionBehavior(SpecialObjectBase target) : base(target) { }
+    public AutoPlayInteraction(SpecialObjectBase target) : base(target) { }
 
     public override void OnTriggerEnter2D(Collider2D other)
     {
+        TargetObject.CallInteract();
         TargetObject.CallSetState(true);
     }
 

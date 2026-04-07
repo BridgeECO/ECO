@@ -1,8 +1,8 @@
 using UnityEngine;
 
-public class ButtonInteractionBehavior : InteractionBehaviorBase
+public class ButtonInteraction : InteractionBase
 {
-    public ButtonInteractionBehavior(SpecialObjectBase target) : base(target) { }
+    public ButtonInteraction(SpecialObjectBase target) : base(target) { }
 
     public override void OnUpdate()
     {

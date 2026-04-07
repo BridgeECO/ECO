@@ -14,27 +14,27 @@ public abstract class SpecialObjectBase : MonoBehaviour
 
     public bool IsPlayerInRange { get; private set; }
 
-    private InteractionBehaviorBase _interactionBehavior;
+    private InteractionBase _interaction;
 
     protected virtual void Awake()
     {
         switch (_interactionType)
         {
             case EInteractionType.Button:
-                _interactionBehavior = new ButtonInteractionBehavior(this);
+                _interaction = new ButtonInteraction(this);
                 break;
             case EInteractionType.AutoPlay:
-                _interactionBehavior = new AutoPlayInteractionBehavior(this);
+                _interaction = new AutoPlayInteraction(this);
                 break;
             case EInteractionType.PressurePlate:
-                _interactionBehavior = new PressurePlateInteractionBehavior(this);
+                _interaction = new PressurePlateInteraction(this);
                 break;
         }
     }
 
     protected virtual void Update()
     {
-        _interactionBehavior?.OnUpdate();
+        _interaction?.OnUpdate();
     }
 
     protected virtual void OnTriggerEnter2D(Collider2D other)
@@ -46,7 +46,7 @@ public abstract class SpecialObjectBase : MonoBehaviour
 
         IsPlayerInRange = true;
         HandlePlayerEnter();
-        _interactionBehavior?.OnTriggerEnter2D(other);
+        _interaction?.OnTriggerEnter2D(other);
     }
 
     protected virtual void OnTriggerExit2D(Collider2D other)
@@ -58,7 +58,7 @@ public abstract class SpecialObjectBase : MonoBehaviour
 
         IsPlayerInRange = false;
         HandlePlayerExit();
-        _interactionBehavior?.OnTriggerExit2D(other);
+        _interaction?.OnTriggerExit2D(other);
     }
 
     protected virtual void HandlePlayerEnter()

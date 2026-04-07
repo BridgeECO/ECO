@@ -1,10 +1,10 @@
 using UnityEngine;
 
-public abstract class InteractionBehaviorBase
+public abstract class InteractionBase
 {
     protected SpecialObjectBase TargetObject { get; private set; }
 
-    public InteractionBehaviorBase(SpecialObjectBase target)
+    public InteractionBase(SpecialObjectBase target)
     {
         TargetObject = target;
     }
