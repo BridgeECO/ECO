@@ -4,12 +4,6 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using VInspector;
 
-public enum EVisualEffectPlayType
-{
-    VFX,
-    Animation
-}
-
 public class VisualEffectObject : SpecialObjectBase
 {
     [Foldout("Project")]
@@ -59,11 +53,11 @@ public class VisualEffectObject : SpecialObjectBase
             case EVisualEffectPlayType.Animation:
                 if (_animator != null)
                 {
-                    _hasPlayed = true;
                     PlayAnimationAsync().Forget();
                 }
                 break;
         }
+        _hasPlayed = true;
     }
 
     private void PlayVFX()
