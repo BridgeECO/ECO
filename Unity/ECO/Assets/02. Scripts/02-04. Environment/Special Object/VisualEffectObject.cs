@@ -10,9 +10,7 @@ public class VisualEffectObject : SpecialObjectBase
     [SerializeField]
     private EVisualEffectPlayType _visualEffectPlayType;
 
-    [SerializeField]
     private List<VFX> _vfxs;
-
     private Animator _animator;
     private readonly string _animationTrigger = "Play";
 
