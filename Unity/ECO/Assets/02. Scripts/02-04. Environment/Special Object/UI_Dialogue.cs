@@ -1,40 +1,61 @@
+using DG.Tweening;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 using VInspector;
 
 public class UI_Dialogue : MonoBehaviour
 {
     [Foldout("Hierarchy")]
     [SerializeField]
-    private GameObject _uiContainer;
+    private CanvasGroup _dialogueCanvasgroup;
 
     [SerializeField]
     private TextMeshProUGUI _dialogueTextDisplay;
 
+    [Foldout("Settings")]
+    [SerializeField]
+    private float _animationDuration = 0.4f;
+
     private void Awake()
     {
-        HideDialogue();
+        if (_dialogueCanvasgroup != null)
+        {
+
+            _dialogueCanvasgroup.alpha = 0f;
+            _dialogueCanvasgroup.transform.localScale = Vector3.zero;
+        }
     }
 
     public void ShowDialogue(string text)
     {
-        if (!ReferenceEquals(_uiContainer, null))
-        {
-            _uiContainer.SetActive(true);
-        }
-
-        if (!ReferenceEquals(_dialogueTextDisplay, null))
+        if (_dialogueTextDisplay != null)
         {
             _dialogueTextDisplay.text = text;
+        }
+
+        if (_dialogueCanvasgroup != null)
+        {
+            KillAllTween();
+            _dialogueCanvasgroup.transform.localScale = Vector3.zero;
+            _dialogueCanvasgroup.DOFade(1f, _animationDuration * 0.5f);
+            _dialogueCanvasgroup.transform.DOScale(Vector3.one, _animationDuration).SetEase(Ease.OutBack);
         }
     }
 
     public void HideDialogue()
     {
-        if (!ReferenceEquals(_uiContainer, null))
+        if (_dialogueCanvasgroup != null)
         {
-            _uiContainer.SetActive(false);
+            KillAllTween();
+            _dialogueCanvasgroup.DOFade(0f, _animationDuration * 0.8f);
+            _dialogueCanvasgroup.transform.DOScale(Vector3.zero, _animationDuration).SetEase(Ease.InBack);
         }
+    }
+
+    private void KillAllTween()
+    {
+        _dialogueCanvasgroup.DOKill();
+        _dialogueCanvasgroup.transform.DOKill();
     }
 }

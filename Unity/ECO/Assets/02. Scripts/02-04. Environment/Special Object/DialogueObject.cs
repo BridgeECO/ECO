@@ -18,7 +18,7 @@ public class DialogueObject : SpecialObjectBase
 
     protected override void HandlePlayerEnter()
     {
-        if (!ReferenceEquals(_highlightObject, null))
+        if (_highlightObject != null)
         {
             _highlightObject.SetActive(true);
         }
@@ -26,7 +26,7 @@ public class DialogueObject : SpecialObjectBase
 
     protected override void HandlePlayerExit()
     {
-        if (!ReferenceEquals(_highlightObject, null))
+        if (_highlightObject != null)
         {
             _highlightObject.SetActive(false);
         }
@@ -45,7 +45,7 @@ public class DialogueObject : SpecialObjectBase
 
     private void ToggleUI()
     {
-        if (ReferenceEquals(_uiDialogue, null))
+        if (_uiDialogue == null)
         {
             return;
         }

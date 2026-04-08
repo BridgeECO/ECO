@@ -1,38 +1,74 @@
+using System.Collections.Generic;
+using System.Linq;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using VInspector;
-using Cysharp.Threading.Tasks;
 
 public class VisualEffectObject : SpecialObjectBase
 {
-    [Foldout("Hierarchy")]
-    [SerializeField]
-    private Animator _animator;
-
     [Foldout("Project")]
     [SerializeField]
-    private string _animationTriggerName;
+    private EVisualEffectPlayType _visualEffectPlayType;
+
+    private List<VFX> _vfxs;
+    private Animator _animator;
+    private readonly string _animationTrigger = "Play";
 
     private bool _hasPlayed = false;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        InitVisualEffectObject();
+    }
+
+    private void InitVisualEffectObject()
+    {
+        switch (_visualEffectPlayType)
+        {
+            case EVisualEffectPlayType.VFX:
+                _vfxs = GetComponentsInChildren<VFX>().ToList();
+                break;
+            case EVisualEffectPlayType.Animation:
+                _animator = GetComponent<Animator>();
+                break;
+        }
+    }
 
     protected override void Interact()
     {
         base.Interact();
-
         if (_hasPlayed)
         {
             return;
         }
 
-        if (!ReferenceEquals(_animator, null) && !string.IsNullOrEmpty(_animationTriggerName))
+        switch (_visualEffectPlayType)
         {
-            _hasPlayed = true;
-            PlayAnimationAsync().Forget();
+            case EVisualEffectPlayType.VFX:
+                PlayVFX();
+                break;
+            case EVisualEffectPlayType.Animation:
+                if (_animator != null)
+                {
+                    PlayAnimationAsync().Forget();
+                }
+                break;
+        }
+        _hasPlayed = true;
+    }
+
+    private void PlayVFX()
+    {
+        foreach (var vfx in _vfxs)
+        {
+            vfx.Play();
         }
     }
 
     private async UniTaskVoid PlayAnimationAsync()
     {
-        _animator.SetTrigger(_animationTriggerName);
+        _animator.SetTrigger(_animationTrigger);
         await UniTask.Yield();
     }
 }
