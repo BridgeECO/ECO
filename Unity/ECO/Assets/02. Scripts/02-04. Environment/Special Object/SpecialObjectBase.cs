@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using VInspector;
 
+[RequireComponent(typeof(Collider2D))]
 public abstract class SpecialObjectBase : MonoBehaviour
 {
     public Action OnInteract;
