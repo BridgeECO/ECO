@@ -21,7 +21,6 @@ public class UI_Dialogue : MonoBehaviour
     {
         if (_dialogueCanvasgroup != null)
         {
-
             _dialogueCanvasgroup.alpha = 0f;
             _dialogueCanvasgroup.transform.localScale = Vector3.zero;
         }
@@ -48,8 +47,11 @@ public class UI_Dialogue : MonoBehaviour
         if (_dialogueCanvasgroup != null)
         {
             KillAllTween();
-            _dialogueCanvasgroup.DOFade(0f, _animationDuration * 0.8f);
-            _dialogueCanvasgroup.transform.DOScale(Vector3.zero, _animationDuration).SetEase(Ease.InBack);
+            _dialogueCanvasgroup.transform.DOScale(Vector3.zero, _animationDuration).SetEase(Ease.InBack)
+            .OnComplete(() =>
+            {
+                _dialogueCanvasgroup.alpha = 0f;
+            });
         }
     }
 
