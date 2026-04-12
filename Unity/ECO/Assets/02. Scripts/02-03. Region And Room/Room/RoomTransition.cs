@@ -32,12 +32,12 @@ public class RoomTransition : MonoBehaviour
             _cameraRoomTransition.StartRoomTransitionAsync
             (_targetRoom.MinBounds, _targetRoom.MaxBounds,
             this.GetCancellationTokenOnDestroy()).Forget();
-            //UpdatePlayerSavePoint(_savePoint.position);
+            UpdatePlayerSavePoint(_savePoint.position);
         }
     }
 
     private void UpdatePlayerSavePoint(Vector3 newSavePoint)
     {
-
+        RespawnManager.Instance.UpdateSavePoint(_targetRoom, newSavePoint);
     }
 }
