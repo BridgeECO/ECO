@@ -18,6 +18,7 @@ jobs:
         with:
           fetch-depth: 0
 
+      # 1. 해당 브랜치에 열려있는 PR이 있는지 확인
       - name: Check if PR already exists
         id: check_pr
         env:
@@ -26,6 +27,7 @@ jobs:
           COUNT=$(gh pr list --head ${{ github.ref_name }} --state open --json number --jq 'length')
           echo "exists=$COUNT" >> $GITHUB_OUTPUT
 
+      # 2. PR이 없을 때(exists == '0')만 환경 세팅
       - name: Set up Python
         if: steps.check_pr.outputs.exists == '0'
         uses: actions/setup-python@v5
@@ -36,6 +38,7 @@ jobs:
         if: steps.check_pr.outputs.exists == '0'
         run: pip install google-genai jq
 
+      # 3. 리포지토리의 실제 라벨 목록 가져오기
       - name: Fetch Repository Labels
         if: steps.check_pr.outputs.exists == '0'
         env:
@@ -43,6 +46,7 @@ jobs:
         run: |
           gh label list --json name --jq '.[].name' > labels.txt
 
+      # 4. AI를 호출하여 PR 데이터 생성
       - name: Generate PR Data
         if: steps.check_pr.outputs.exists == '0'
         env:
@@ -52,6 +56,7 @@ jobs:
           git diff origin/main..HEAD > diff.txt
           python .github/scripts/generate_pr_info.py > pr_info.json
 
+      # 5. 최종 PR 생성 및 담당자 지정
       - name: Create Pull Request
         if: steps.check_pr.outputs.exists == '0'
         env:
@@ -70,6 +75,7 @@ jobs:
               ;;
             "sooji123")
               USER_LABEL="🍪박수지"
+              SELECT_TOKEN=$SUJI_PAT
               ;;
             *)
               USER_LABEL="${{ github.actor }}"
@@ -81,14 +87,22 @@ jobs:
             SELECT_TOKEN=$BOT_TOKEN
           fi
           
-          ALL_LABELS="$AI_LABELS,$USER_LABEL"
+          if [ -z "$AI_LABELS" ]; then
+            ALL_LABELS="$USER_LABEL"
+          else
+            ALL_LABELS="$AI_LABELS,$USER_LABEL"
+          fi
+          
           echo "$BODY" > pr_body.md
           
-          GH_TOKEN=$SELECT_TOKEN gh pr create \
+          # 1. PR 생성 (URL을 받아옴)
+          NEW_PR_URL=$(GH_TOKEN=$SELECT_TOKEN gh pr create \
             --base main \
             --head ${{ github.ref_name }} \
             --title "$TITLE" \
             --body-file pr_body.md \
-            --assignee ${{ github.actor }} \
             --label "$ALL_LABELS" \
-            --draft
+            --draft)
+          
+          # 2. 담당자(Assignee) 별도 지정
+          GH_TOKEN=$SELECT_TOKEN gh pr edit "$NEW_PR_URL" --add-assignee "${{ github.actor }}"
