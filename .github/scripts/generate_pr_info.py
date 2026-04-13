@@ -51,7 +51,7 @@ Diff:
 }}
 """
 
-models = ['gemini-3.0-flash', 'gemini-2.5-flash']
+models = ['gemini-3-flash', 'gemini-2.5-flash']
 success = False
 
 for model_name in models:
