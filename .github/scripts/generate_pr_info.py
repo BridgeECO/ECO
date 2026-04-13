@@ -1,4 +1,5 @@
 import os
+import sys
 from google import genai
 from google.genai import types
 
@@ -50,12 +51,23 @@ Diff:
 }}
 """
 
-response = client.models.generate_content(
-    model='gemini-2.5-flash',
-    contents=prompt,
-    config=types.GenerateContentConfig(
-        response_mime_type="application/json",
-    )
-)
+models = ['gemini-3.0-flash', 'gemini-2.5-flash', 'gemini-2.0-flash']
+success = False
 
-print(response.text)
+for model_name in models:
+    try:
+        response = client.models.generate_content(
+            model=model_name,
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                response_mime_type="application/json",
+            )
+        )
+        print(response.text)
+        success = True
+        break
+    except Exception:
+        continue
+
+if not success:
+    sys.exit(1)
