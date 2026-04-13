@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using VInspector;
 
@@ -10,9 +12,6 @@ public class Room : MonoBehaviour
     [SerializeField]
     private BoxCollider2D _cameraBounds;
 
-    [SerializeField]
-    private Transform _spawnPoint;
-
     [Foldout("Pixel Boundary")]
     [SerializeField]
     private float _pixelWidth;
@@ -20,9 +19,29 @@ public class Room : MonoBehaviour
     [SerializeField]
     private float _pixelHeight;
 
+    private List<IRoomResettable> _resettables;
+
     public Vector2 MinBounds => _cameraBounds.bounds.min;
     public Vector2 MaxBounds => _cameraBounds.bounds.max;
-    public Vector3 SpawnPoint => _spawnPoint.position;
+    public bool IsVisited { get; set; }
+
+    private void Awake()
+    {
+        _resettables = GetComponentsInChildren<IRoomResettable>(true).ToList();
+    }
+
+    public void ResetRoom()
+    {
+        if (_resettables == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < _resettables.Count; i++)
+        {
+            _resettables[i]?.ResetState();
+        }
+    }
 
     [Button]
     private void RefreshBoundary()

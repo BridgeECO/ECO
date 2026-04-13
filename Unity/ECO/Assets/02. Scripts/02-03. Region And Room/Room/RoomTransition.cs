@@ -5,18 +5,23 @@ using VInspector;
 [RequireComponent(typeof(BoxCollider2D))]
 public class RoomTransition : MonoBehaviour
 {
-    [Foldout("Project")]
+    [Foldout("Hierarchy")]
     [SerializeField]
-    private Room _targetRoom;
+    private Room _roomA;
     [SerializeField]
-    private Transform _savePoint;
+    private Transform _spawnPointA;
+
+    [SerializeField]
+    private Room _roomB;
+    [SerializeField]
+    private Transform _spawnPointB;
 
     private CameraRoomTransition _cameraRoomTransition;
     private float _lastTriggerTime = -1f;
 
     private void Start()
     {
-        _cameraRoomTransition = FindAnyObjectByType<CameraRoomTransition>();
+        _cameraRoomTransition = Camera.main.GetComponent<CameraRoomTransition>();
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -26,18 +31,53 @@ public class RoomTransition : MonoBehaviour
             return;
         }
 
-        if (other.CompareTag(nameof(ETags.Player)))
+        if (!other.CompareTag(nameof(ETags.Player)))
         {
-            _lastTriggerTime = Time.time;
-            _cameraRoomTransition.StartRoomTransitionAsync
-            (_targetRoom.MinBounds, _targetRoom.MaxBounds,
-            this.GetCancellationTokenOnDestroy()).Forget();
-            //UpdatePlayerSavePoint(_savePoint.position);
+            return;
         }
+
+
+        Room targetRoom = GetTargetRoom();
+        if (targetRoom == null)
+        {
+            return;
+        }
+        _lastTriggerTime = Time.time;
+        ExecuteRoomTransition(targetRoom);
     }
 
-    private void UpdatePlayerSavePoint(Vector3 newSavePoint)
+    private void ExecuteRoomTransition(Room targetRoom)
     {
+        _cameraRoomTransition.StartRoomTransitionAsync
+            (targetRoom.MinBounds, targetRoom.MaxBounds,
+            this.GetCancellationTokenOnDestroy()).Forget();
 
+        Vector3 spawnPosition = targetRoom == _roomA ? _spawnPointA.position : _spawnPointB.position;
+        RespawnManager.Instance.UpdateSavePoint(targetRoom, spawnPosition);
+
+        // if (targetRoom.IsVisited)
+        // {
+        //     return;
+        // }
+        // targetRoom.IsVisited = true;
+        SaveManager.Instance.Save(targetRoom);
+    }
+
+    private Room GetTargetRoom()
+    {
+        Room currentRoom = RespawnManager.Instance.CurrentRoom;
+        if (currentRoom == _roomA)
+        {
+            return _roomB;
+        }
+        else if (currentRoom == _roomB)
+        {
+            return _roomA;
+        }
+        else if (currentRoom == null)
+        {
+            return _roomB;
+        }
+        return null;
     }
 }
