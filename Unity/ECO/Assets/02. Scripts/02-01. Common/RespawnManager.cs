@@ -33,7 +33,6 @@ public class RespawnManager : MonoBehaviourSingleton<RespawnManager>
 
     private void BindPlayer()
     {
-        Debug.Log("BindPlayer 호출");
         _playerMotor = FindAnyObjectByType<PlayerMotor>();
     }
 

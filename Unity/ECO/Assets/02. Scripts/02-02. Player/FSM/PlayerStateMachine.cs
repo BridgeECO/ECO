@@ -84,4 +84,13 @@ public class PlayerStateMachine : MonoBehaviour
             Debug.LogError($"Invalid state transition: {newState}");
         }
     }
+
+    public void InitState()
+    {
+        InputLockTimer = 0f;
+        JumpBufferTimer = 0f;
+        CoyoteTimer = 0f;
+        HasUsedHover = false;
+        ChangeState(EPlayerState.Grounded);
+    }
 }

@@ -3,10 +3,12 @@ using UnityEngine;
 public class PlayerMotor : MonoBehaviour
 {
     public Vector2 Velocity { get; private set; }
+    private PlayerStateMachine _stateMachine;
     private Rigidbody2D _rigidbody;
 
     private void Awake()
     {
+        _stateMachine = GetComponent<PlayerStateMachine>();
         _rigidbody = GetComponent<Rigidbody2D>();
     }
 
@@ -33,6 +35,9 @@ public class PlayerMotor : MonoBehaviour
     public void Teleport(Vector2 position)
     {
         _rigidbody.position = position;
+        Velocity = Vector2.zero;
+        _rigidbody.linearVelocity = Vector2.zero;
+        _stateMachine.InitState();
     }
 
     private void FixedUpdate()
