@@ -32,13 +32,11 @@ Template: {template}
 }}
 """
 
-# 모델 리스트 (안정성을 위해 1.5-flash도 마지막에 추가하는 걸 추천해요)
-models = ['gemini-3-flash', 'gemini-2.5-flash']
+models = ['gemini-3-flash-preview', 'gemini-2.5-flash']
 success = False
 
 for model_name in models:
     try:
-        # 시도 중인 모델을 로그에 출력
         print(f"Trying model: {model_name}...", file=sys.stderr)
         
         response = client.models.generate_content(
