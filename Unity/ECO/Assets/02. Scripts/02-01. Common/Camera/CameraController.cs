@@ -3,18 +3,12 @@ using VInspector;
 
 public class CameraController : MonoBehaviour
 {
-    [Foldout("Project")]
-    [Header("Room Bounds")]
-    [SerializeField]
-    private Vector2 _currentRoomMin;
-
-    [SerializeField]
-    private Vector2 _currentRoomMax;
-
     [Header("Camera Offset")]
     [SerializeField]
     private float _cameraYOffset;
 
+    private Vector2 _currentRoomMin;
+    private Vector2 _currentRoomMax;
     private Transform _playerTransform;
 
     private float _halfCamHeight;
