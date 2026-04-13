@@ -55,11 +55,11 @@ public class RoomTransition : MonoBehaviour
         Vector3 spawnPosition = targetRoom == _roomA ? _spawnPointA.position : _spawnPointB.position;
         RespawnManager.Instance.UpdateSavePoint(targetRoom, spawnPosition);
 
-        if (targetRoom.IsVisited)
-        {
-            return;
-        }
-        targetRoom.IsVisited = true;
+        // if (targetRoom.IsVisited)
+        // {
+        //     return;
+        // }
+        // targetRoom.IsVisited = true;
         SaveManager.Instance.Save(targetRoom);
     }
 
