@@ -18,7 +18,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      # 1. 해당 브랜치에 열려있는 PR이 있는지 확인
       - name: Check if PR already exists
         id: check_pr
         env:
@@ -27,7 +26,6 @@ jobs:
           COUNT=$(gh pr list --head ${{ github.ref_name }} --state open --json number --jq 'length')
           echo "exists=$COUNT" >> $GITHUB_OUTPUT
 
-      # 2. PR이 없을 때(exists == '0')만 파이썬 환경 세팅
       - name: Set up Python
         if: steps.check_pr.outputs.exists == '0'
         uses: actions/setup-python@v5
@@ -38,7 +36,13 @@ jobs:
         if: steps.check_pr.outputs.exists == '0'
         run: pip install google-genai jq
 
-      # 3. PR이 없을 때만 AI를 호출하여 데이터 생성
+      - name: Fetch Repository Labels
+        if: steps.check_pr.outputs.exists == '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh label list --json name --jq '.[].name' > labels.txt
+
       - name: Generate PR Data
         if: steps.check_pr.outputs.exists == '0'
         env:
@@ -48,7 +52,6 @@ jobs:
           git diff origin/main..HEAD > diff.txt
           python .github/scripts/generate_pr_info.py > pr_info.json
 
-      # 4. PR이 없을 때만 최종적으로 PR 생성 (Update 로직 제거)
       - name: Create Pull Request
         if: steps.check_pr.outputs.exists == '0'
         env:
@@ -81,7 +84,6 @@ jobs:
           ALL_LABELS="$AI_LABELS,$USER_LABEL"
           echo "$BODY" > pr_body.md
           
-          # 이미 PR이 없는 것을 확인했으므로 create 명령만 수행
           GH_TOKEN=$SELECT_TOKEN gh pr create \
             --base main \
             --head ${{ github.ref_name }} \
