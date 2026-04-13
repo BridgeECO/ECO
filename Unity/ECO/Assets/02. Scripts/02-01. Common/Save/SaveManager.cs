@@ -37,6 +37,12 @@ public class SaveManager : MonoBehaviourSingleton<SaveManager>
         string json = JsonConvert.SerializeObject(dto, Formatting.Indented);
         string filePath = GetSaveFilePath(slotIndex);
 
+        string directoryPath = Path.GetDirectoryName(filePath);
+        if (Directory.Exists(directoryPath) == false)
+        {
+            Directory.CreateDirectory(directoryPath);
+        }
+
         File.WriteAllText(filePath, json);
     }
 
@@ -64,7 +70,7 @@ public class SaveManager : MonoBehaviourSingleton<SaveManager>
     {
         string fileName = string.Format(SaveFileNameFormat, slotIndex);
 #if UNITY_EDITOR
-        return Path.Combine(Application.dataPath, fileName);
+        return Path.Combine(Application.dataPath, "21. SaveFiles", fileName);
 #else
         return Path.Combine(Application.persistentDataPath, fileName);
 #endif
