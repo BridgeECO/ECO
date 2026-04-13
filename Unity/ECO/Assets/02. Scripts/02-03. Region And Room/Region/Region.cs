@@ -4,7 +4,7 @@ using VInspector;
 
 public class Region : MonoBehaviourSingleton<Region>
 {
-    [Foldout("Project")]
+    [Foldout("Hierarchy")]
     [SerializeField]
     private ERegions _regionType;
 

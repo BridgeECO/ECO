@@ -5,7 +5,7 @@ using VInspector;
 [RequireComponent(typeof(BoxCollider2D))]
 public class RoomTransition : MonoBehaviour
 {
-    [Foldout("Rooms")]
+    [Foldout("Hierarchy")]
     [SerializeField]
     private Room _roomA;
     [SerializeField]
