@@ -1,21 +1,40 @@
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using VInspector;
 
 public class RespawnManager : MonoBehaviourSingleton<RespawnManager>
 {
-    [SerializeField]
     private PlayerMotor _playerMotor;
-
     private Room _currentRoom;
     private Vector3 _respawnPosition;
 
     public Room CurrentRoom => _currentRoom;
     public Vector3 RespawnPosition => _respawnPosition;
 
-    public void BindPlayer(PlayerMotor playerMotor)
+    private void OnEnable()
     {
-        _playerMotor = playerMotor;
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void Start()
+    {
+        BindPlayer();
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        BindPlayer();
+    }
+
+    private void BindPlayer()
+    {
+        Debug.Log("BindPlayer 호출");
+        _playerMotor = FindAnyObjectByType<PlayerMotor>();
     }
 
     public void UpdateSavePoint(Room room, Vector3 position)

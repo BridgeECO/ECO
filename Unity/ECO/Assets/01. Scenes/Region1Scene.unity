@@ -474,6 +474,7 @@ MonoBehaviour:
   _rooms:
   - {fileID: 715935734}
   - {fileID: 1421950449}
+  _initialSpawnPoint: {fileID: 0}
 --- !u!1001 &1421950447
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -551,6 +552,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2efb35d16e0d9444d91bb24db058018f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!4 &1421950450 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 836651683199868162, guid: b596518fa74425844944b3bb87ddf7fa, type: 3}
+  m_PrefabInstance: {fileID: 1421950447}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1684002107 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2151531313914832295, guid: c0ae2510ff092ab4eb449af8ff9a6b4e, type: 3}
@@ -669,6 +675,14 @@ PrefabInstance:
       propertyPath: _roomB
       value: 
       objectReference: {fileID: 1421950449}
+    - target: {fileID: 6491151203603539429, guid: c0ae2510ff092ab4eb449af8ff9a6b4e, type: 3}
+      propertyPath: _spawnPointA
+      value: 
+      objectReference: {fileID: 5277423656645544161}
+    - target: {fileID: 6491151203603539429, guid: c0ae2510ff092ab4eb449af8ff9a6b4e, type: 3}
+      propertyPath: _spawnPointB
+      value: 
+      objectReference: {fileID: 1421950450}
     - target: {fileID: 7542751907726059439, guid: c0ae2510ff092ab4eb449af8ff9a6b4e, type: 3}
       propertyPath: m_Name
       value: ===== [ RoomPassageway ] =====
@@ -743,6 +757,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b596518fa74425844944b3bb87ddf7fa, type: 3}
+--- !u!4 &5277423656645544161 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6510805986027832570, guid: b596518fa74425844944b3bb87ddf7fa, type: 3}
+  m_PrefabInstance: {fileID: 5277423656645544160}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
