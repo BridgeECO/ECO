@@ -2,27 +2,37 @@ using System.IO;
 using Newtonsoft.Json;
 using UnityEngine;
 
-public class SaveManager : POCOSingleton<SaveManager>
+public class SaveManager : MonoBehaviourSingleton<SaveManager>
 {
     public int CurrentSlotIndex { get; set; }
     public SaveData CurrentSaveData { get; private set; }
 
     private const string SaveFileNameFormat = "saveData_{0}.json";
 
-    private string GetSaveFilePath(int slotIndex)
+    protected override void Awake()
     {
-        string fileName = string.Format(SaveFileNameFormat, slotIndex);
-        return Path.Combine(Application.persistentDataPath, fileName);
+        base.Awake();
+        CurrentSaveData = new SaveData();
     }
 
-    public void Save(int slotIndex, SaveData saveData)
+    public void Save(Room targetRoom)
     {
-        if (saveData == null)
+        Region region = Region.Instance;
+        if (CurrentSaveData == null || region == null)
         {
             return;
         }
+        CurrentSaveData.Region = region.RegionType;
+        CurrentSaveData.RoomIndex = region.GetRoomIndex(targetRoom);
+        Save(CurrentSlotIndex, CurrentSaveData.ToDTO());
+    }
 
-        SaveDataDTO dto = saveData.ToDTO();
+    public void Save(int slotIndex, SaveDataDTO dto)
+    {
+        if (dto == null)
+        {
+            return;
+        }
 
         string json = JsonConvert.SerializeObject(dto, Formatting.Indented);
         string filePath = GetSaveFilePath(slotIndex);
@@ -38,7 +48,6 @@ public class SaveManager : POCOSingleton<SaveManager>
         {
             return null;
         }
-
         string json = File.ReadAllText(filePath);
         SaveDataDTO dto = JsonConvert.DeserializeObject<SaveDataDTO>(json);
 
@@ -46,9 +55,18 @@ public class SaveManager : POCOSingleton<SaveManager>
         {
             return null;
         }
-
         SaveData saveData = new SaveData(dto.Region, dto.RoomIndex);
         CurrentSaveData = saveData;
         return saveData;
+    }
+
+    private string GetSaveFilePath(int slotIndex)
+    {
+        string fileName = string.Format(SaveFileNameFormat, slotIndex);
+#if UNITY_EDITOR
+        return Path.Combine(Application.dataPath, fileName);
+#else
+        return Path.Combine(Application.persistentDataPath, fileName);
+#endif
     }
 }

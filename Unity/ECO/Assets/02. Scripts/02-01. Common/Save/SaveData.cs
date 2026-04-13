@@ -5,6 +5,8 @@ public class SaveData
 
     public SaveData()
     {
+        Region = ERegions.None;
+        RoomIndex = -1;
     }
 
     public SaveData(ERegions region, int roomIndex)

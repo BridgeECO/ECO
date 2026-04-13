@@ -26,33 +26,52 @@ public class RoomTransition : MonoBehaviour
             return;
         }
 
-        if (other.CompareTag(nameof(ETags.Player)))
+        if (!other.CompareTag(nameof(ETags.Player)))
         {
-            _lastTriggerTime = Time.time;
-
-            Room targetRoom = null;
-            if (RespawnManager.Instance.CurrentRoom == _roomA)
-            {
-                targetRoom = _roomB;
-            }
-            else if (RespawnManager.Instance.CurrentRoom == _roomB)
-            {
-                targetRoom = _roomA;
-            }
-            else if (RespawnManager.Instance.CurrentRoom == null)
-            {
-                // CurrentRoom이 아직 설정되지 않은 초기 상태일 경우 기본 타겟 설정
-                targetRoom = _roomB; 
-            }
-
-            if (targetRoom != null)
-            {
-                _cameraRoomTransition.StartRoomTransitionAsync
-                (targetRoom.MinBounds, targetRoom.MaxBounds,
-                this.GetCancellationTokenOnDestroy()).Forget();
-
-                RespawnManager.Instance.UpdateSavePoint(targetRoom);
-            }
+            return;
         }
+
+
+        Room targetRoom = GetTargetRoom();
+        if (targetRoom == null)
+        {
+            return;
+        }
+        _lastTriggerTime = Time.time;
+        ExecuteRoomTransition(targetRoom);
+    }
+
+    private void ExecuteRoomTransition(Room targetRoom)
+    {
+        _cameraRoomTransition.StartRoomTransitionAsync
+            (targetRoom.MinBounds, targetRoom.MaxBounds,
+            this.GetCancellationTokenOnDestroy()).Forget();
+
+        RespawnManager.Instance.UpdateSavePoint(targetRoom);
+
+        if (targetRoom.IsVisited)
+        {
+            return;
+        }
+        targetRoom.IsVisited = true;
+        SaveManager.Instance.Save(targetRoom);
+    }
+
+    private Room GetTargetRoom()
+    {
+        Room currentRoom = RespawnManager.Instance.CurrentRoom;
+        if (currentRoom == _roomA)
+        {
+            return _roomB;
+        }
+        else if (currentRoom == _roomB)
+        {
+            return _roomA;
+        }
+        else if (currentRoom == null)
+        {
+            return _roomB;
+        }
+        return null;
     }
 }

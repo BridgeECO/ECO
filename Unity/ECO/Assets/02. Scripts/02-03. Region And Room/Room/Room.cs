@@ -27,6 +27,7 @@ public class Room : MonoBehaviour
     public Vector2 MinBounds => _cameraBounds.bounds.min;
     public Vector2 MaxBounds => _cameraBounds.bounds.max;
     public IReadOnlyList<Transform> SpawnPoints => _spawnPoints;
+    public bool IsVisited { get; set; }
 
     private void Awake()
     {

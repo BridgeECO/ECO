@@ -2,15 +2,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using VInspector;
 
-public class Region : MonoBehaviour
+public class Region : MonoBehaviourSingleton<Region>
 {
     [Foldout("Project")]
+    [SerializeField]
+    private ERegions _regionType;
+
     [SerializeField]
     private List<Room> _rooms;
 
     private Room _currentRoom;
 
     public IReadOnlyList<Room> Rooms => _rooms;
+    public ERegions RegionType => _regionType;
 
     private void Start()
     {
@@ -24,7 +28,7 @@ public class Region : MonoBehaviour
             return;
         }
         _currentRoom = _rooms[0];
-
+        _currentRoom.IsVisited = true;
         InitCameraBounds();
         InitSavePoint();
     }
@@ -44,9 +48,23 @@ public class Region : MonoBehaviour
 
     private void InitSavePoint()
     {
-        if (RespawnManager.Instance != null)
+        RespawnManager.Instance?.UpdateSavePoint(_currentRoom);
+    }
+
+    public int GetRoomIndex(Room room)
+    {
+        if (_rooms == null)
         {
-            RespawnManager.Instance.UpdateSavePoint(_currentRoom);
+            return -1;
         }
+
+        for (int i = 0; i < _rooms.Count; i++)
+        {
+            if (_rooms[i] == room)
+            {
+                return i;
+            }
+        }
+        return -1;
     }
 }
