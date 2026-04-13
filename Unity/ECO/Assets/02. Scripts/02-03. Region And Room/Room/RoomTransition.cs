@@ -9,7 +9,12 @@ public class RoomTransition : MonoBehaviour
     [SerializeField]
     private Room _roomA;
     [SerializeField]
+    private Transform _spawnPointA;
+
+    [SerializeField]
     private Room _roomB;
+    [SerializeField]
+    private Transform _spawnPointB;
 
     private CameraRoomTransition _cameraRoomTransition;
     private float _lastTriggerTime = -1f;
@@ -47,7 +52,8 @@ public class RoomTransition : MonoBehaviour
             (targetRoom.MinBounds, targetRoom.MaxBounds,
             this.GetCancellationTokenOnDestroy()).Forget();
 
-        RespawnManager.Instance.UpdateSavePoint(targetRoom);
+        Vector3 spawnPosition = targetRoom == _roomA ? _spawnPointA.position : _spawnPointB.position;
+        RespawnManager.Instance.UpdateSavePoint(targetRoom, spawnPosition);
 
         if (targetRoom.IsVisited)
         {

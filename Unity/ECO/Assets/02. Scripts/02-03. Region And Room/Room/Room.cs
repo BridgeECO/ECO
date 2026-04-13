@@ -12,9 +12,6 @@ public class Room : MonoBehaviour
     [SerializeField]
     private BoxCollider2D _cameraBounds;
 
-    [SerializeField]
-    private List<Transform> _spawnPoints = new List<Transform>();
-
     [Foldout("Pixel Boundary")]
     [SerializeField]
     private float _pixelWidth;
@@ -26,7 +23,6 @@ public class Room : MonoBehaviour
 
     public Vector2 MinBounds => _cameraBounds.bounds.min;
     public Vector2 MaxBounds => _cameraBounds.bounds.max;
-    public IReadOnlyList<Transform> SpawnPoints => _spawnPoints;
     public bool IsVisited { get; set; }
 
     private void Awake()

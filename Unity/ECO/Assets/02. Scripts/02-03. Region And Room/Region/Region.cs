@@ -11,6 +11,9 @@ public class Region : MonoBehaviourSingleton<Region>
     [SerializeField]
     private List<Room> _rooms;
 
+    [SerializeField]
+    private Transform _initialSpawnPoint;
+
     private Room _currentRoom;
 
     public IReadOnlyList<Room> Rooms => _rooms;
@@ -48,7 +51,10 @@ public class Region : MonoBehaviourSingleton<Region>
 
     private void InitSavePoint()
     {
-        RespawnManager.Instance?.UpdateSavePoint(_currentRoom);
+        if (_initialSpawnPoint != null)
+        {
+            RespawnManager.Instance?.UpdateSavePoint(_currentRoom, _initialSpawnPoint.position);
+        }
     }
 
     public int GetRoomIndex(Room room)
