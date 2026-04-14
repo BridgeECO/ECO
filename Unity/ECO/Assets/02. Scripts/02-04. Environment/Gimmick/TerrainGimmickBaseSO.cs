@@ -1,5 +1,4 @@
 using UnityEngine;
-using VInspector;
 
 public abstract class TerrainGimmickBaseSO : ScriptableObject
 {
@@ -12,5 +11,5 @@ public abstract class TerrainGimmickBaseSO : ScriptableObject
     public EGimmickActivationType ActivationType => _activationType;
     public bool IsInverted => _isInverted;
 
-    public abstract TerrainGimmickBase CreateGimmick();
+    public abstract TerrainGimmickBase CreateGimmick(TerrainGimmickEntry entry);
 }

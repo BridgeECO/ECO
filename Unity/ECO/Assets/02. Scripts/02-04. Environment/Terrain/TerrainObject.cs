@@ -6,7 +6,7 @@ public class TerrainObject : MonoBehaviour, IEnergyReceiver
 {
     [Foldout("Project")]
     [SerializeField]
-    private List<TerrainGimmickBaseSO> _gimmickDatas = new List<TerrainGimmickBaseSO>();
+    private List<TerrainGimmickEntry> _gimmickEntries = new List<TerrainGimmickEntry>();
 
     private List<TerrainGimmickBase> _runtimeGimmicks = new List<TerrainGimmickBase>();
 
@@ -14,9 +14,12 @@ public class TerrainObject : MonoBehaviour, IEnergyReceiver
 
     private void Awake()
     {
-        foreach (var data in _gimmickDatas)
+        foreach (var entry in _gimmickEntries)
         {
-            _runtimeGimmicks.Add(data.CreateGimmick());
+            if (entry.GimmickData != null)
+            {
+                _runtimeGimmicks.Add(entry.GimmickData.CreateGimmick(entry));
+            }
         }
 
         ApplyGimmicks();

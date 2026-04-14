@@ -3,14 +3,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "ImageChangeGimmickSO", menuName = "Scriptable Objects/Terrain Gimmick/ImageChangeGimmickSO")]
 public class ImageChangeGimmickSO : TerrainGimmickBaseSO
 {
-    [SerializeField]
-    private Sprite _activeSprite;
-
-    [SerializeField]
-    private Sprite _inactiveSprite;
-
-    public override TerrainGimmickBase CreateGimmick()
+    public override TerrainGimmickBase CreateGimmick(TerrainGimmickEntry entry)
     {
-        return new ImageChangeGimmick(ActivationType, IsInverted, _activeSprite, _inactiveSprite);
+        return new ImageChangeGimmick(ActivationType, IsInverted, entry.ChangeSprite);
     }
 }
