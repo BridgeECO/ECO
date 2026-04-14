@@ -27,7 +27,7 @@ jobs:
           COUNT=$(gh pr list --head ${{ github.ref_name }} --state open --json number --jq 'length')
           echo "exists=$COUNT" >> $GITHUB_OUTPUT
 
-      # 2. PR이 없을 때(exists == '0')만 환경 세팅
+      # 2. PR이 없을 때만 환경 세팅
       - name: Set up Python
         if: steps.check_pr.outputs.exists == '0'
         uses: actions/setup-python@v5
@@ -95,14 +95,22 @@ jobs:
           
           echo "$BODY" > pr_body.md
           
-          # 1. PR 생성 (URL을 받아옴)
-          NEW_PR_URL=$(GH_TOKEN=$SELECT_TOKEN gh pr create \
+          # PR 생성 후 번호만 추출
+          PR_NUMBER=$(GH_TOKEN=$SELECT_TOKEN gh pr create \
             --base main \
             --head ${{ github.ref_name }} \
             --title "$TITLE" \
             --body-file pr_body.md \
             --label "$ALL_LABELS" \
-            --draft)
-          
-          # 2. 담당자(Assignee) 별도 지정
-          GH_TOKEN=$SELECT_TOKEN gh pr edit "$NEW_PR_URL" --add-assignee "${{ github.actor }}"
+            --draft \
+            --json number --jq '.number')
+
+          echo "Created PR #$PR_NUMBER. Waiting for indexing..."
+          sleep 5 # 서버 동기화를 위한 대기
+
+          # 담당자 지정 (REST API 방식 사용으로 안정성 강화)
+          GH_TOKEN=$SELECT_TOKEN gh api \
+            --method POST \
+            -H "Accept: application/vnd.github+json" \
+            /repos/${{ github.repository }}/issues/$PR_NUMBER/assignees \
+            -f assignees[]="${{ github.actor }}"
