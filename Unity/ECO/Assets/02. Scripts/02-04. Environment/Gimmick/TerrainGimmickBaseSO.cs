@@ -3,7 +3,6 @@ using VInspector;
 
 public abstract class TerrainGimmickBaseSO : ScriptableObject
 {
-    [Foldout("Project")]
     [SerializeField]
     private EGimmickActivationType _activationType;
 

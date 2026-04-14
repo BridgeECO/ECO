@@ -1,11 +1,11 @@
 using UnityEngine;
 
-public class SpriteChangeGimmick : TerrainGimmickBase
+public class ImageChangeGimmick : TerrainGimmickBase
 {
     private Sprite _activeSprite;
     private Sprite _inactiveSprite;
 
-    public SpriteChangeGimmick(
+    public ImageChangeGimmick(
         EGimmickActivationType activationType,
         bool isInverted,
         Sprite activeSprite,
