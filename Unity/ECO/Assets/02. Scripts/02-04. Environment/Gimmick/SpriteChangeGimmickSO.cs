@@ -11,6 +11,6 @@ public class SpriteChangeGimmickSO : TerrainGimmickBaseSO
 
     public override TerrainGimmickBase CreateGimmick()
     {
-        return new SpriteChangeGimmick(_activeSprite, _inactiveSprite);
+        return new SpriteChangeGimmick(ActivationType, IsInverted, _activeSprite, _inactiveSprite);
     }
 }

@@ -6,14 +6,11 @@ public class TerrainObject : MonoBehaviour, IEnergyReceiver
 {
     [Foldout("Project")]
     [SerializeField]
-    private ETerrainType _terrainType = ETerrainType.Active;
-
-    [SerializeField]
     private List<TerrainGimmickBaseSO> _gimmickDatas = new List<TerrainGimmickBaseSO>();
 
     private List<TerrainGimmickBase> _runtimeGimmicks = new List<TerrainGimmickBase>();
 
-    private bool _isEnergyActive = false;
+    private bool _isEnergyActive;
 
     private void Awake()
     {
@@ -22,37 +19,22 @@ public class TerrainObject : MonoBehaviour, IEnergyReceiver
             _runtimeGimmicks.Add(data.CreateGimmick());
         }
 
-        RefreshTerrainState();
+        ApplyGimmicks();
     }
 
     public void SetEnergyActive(bool isActive)
     {
         _isEnergyActive = isActive;
-        RefreshTerrainState();
+        ApplyGimmicks();
     }
 
-    private void RefreshTerrainState()
-    {
-        bool isActiveState = false;
-        switch (_terrainType)
-        {
-            case ETerrainType.Always:
-                isActiveState = true;
-                break;
-            case ETerrainType.Active:
-                isActiveState = _isEnergyActive;
-                break;
-        }
-        ApplyGimmicks(isActiveState);
-    }
-
-    private void ApplyGimmicks(bool isActive)
+    private void ApplyGimmicks()
     {
         foreach (var gimmick in _runtimeGimmicks)
         {
             if (gimmick != null)
             {
-                gimmick.ApplyGimmick(this, isActive);
+                gimmick.Evaluate(this, _isEnergyActive);
             }
         }
     }

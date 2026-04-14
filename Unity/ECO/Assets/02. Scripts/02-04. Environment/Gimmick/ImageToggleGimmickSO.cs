@@ -5,6 +5,6 @@ public class ImageToggleGimmickSO : TerrainGimmickBaseSO
 {
     public override TerrainGimmickBase CreateGimmick()
     {
-        return new ImageToggleGimmick();
+        return new ImageToggleGimmick(ActivationType, IsInverted);
     }
 }

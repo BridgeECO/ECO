@@ -5,6 +5,6 @@ public class ColliderToggleGimmickSO : TerrainGimmickBaseSO
 {
     public override TerrainGimmickBase CreateGimmick()
     {
-        return new ColliderToggleGimmick();
+        return new ColliderToggleGimmick(ActivationType, IsInverted);
     }
 }
