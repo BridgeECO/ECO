@@ -2,12 +2,17 @@ using UnityEngine;
 
 public class ImageToggleGimmick : TerrainGimmickBase
 {
-    public override void ApplyGimmick(TerrainObject target, bool isActive)
+    public ImageToggleGimmick(EGimmickActivationType activationType, bool isInverted)
+        : base(activationType, isInverted)
+    {
+    }
+
+    protected override void ApplyGimmick(TerrainObject target, bool isActivated)
     {
         SpriteRenderer spriteRenderer = target.GetComponent<SpriteRenderer>();
         if (spriteRenderer != null)
         {
-            spriteRenderer.enabled = isActive;
+            spriteRenderer.enabled = isActivated;
         }
     }
 }

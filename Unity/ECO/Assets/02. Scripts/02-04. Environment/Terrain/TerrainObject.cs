@@ -6,54 +6,46 @@ public class TerrainObject : MonoBehaviour, IEnergyReceiver
 {
     [Foldout("Project")]
     [SerializeField]
-    private ETerrainType _terrainType = ETerrainType.Active;
-
-    [SerializeField]
-    private List<TerrainGimmickBaseSO> _gimmickDatas = new List<TerrainGimmickBaseSO>();
+    private List<TerrainGimmickEntry> _gimmickEntries = new List<TerrainGimmickEntry>();
 
     private List<TerrainGimmickBase> _runtimeGimmicks = new List<TerrainGimmickBase>();
 
-    private bool _isEnergyActive = false;
+    private bool _isEnergyActive;
 
     private void Awake()
     {
-        foreach (var data in _gimmickDatas)
+        foreach (var entry in _gimmickEntries)
         {
-            _runtimeGimmicks.Add(data.CreateGimmick());
+            if (entry.GimmickData != null)
+            {
+                _runtimeGimmicks.Add(entry.GimmickData.CreateGimmick(entry));
+            }
         }
-
-        RefreshTerrainState();
+        ApplyGimmicks();
     }
 
-    public void SetEnergyActive(bool isActive)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        _isEnergyActive = isActive;
-        RefreshTerrainState();
-    }
-
-    private void RefreshTerrainState()
-    {
-        bool isActiveState = false;
-        switch (_terrainType)
+        foreach (var gimmick in _runtimeGimmicks)
         {
-            case ETerrainType.Always:
-                isActiveState = true;
-                break;
-            case ETerrainType.Active:
-                isActiveState = _isEnergyActive;
-                break;
+            gimmick.OnTerrainTriggerEnter2D(other);
         }
-        ApplyGimmicks(isActiveState);
     }
 
-    private void ApplyGimmicks(bool isActive)
+    private void ApplyGimmicks()
     {
         foreach (var gimmick in _runtimeGimmicks)
         {
             if (gimmick != null)
             {
-                gimmick.ApplyGimmick(this, isActive);
+                gimmick.Evaluate(this, _isEnergyActive);
             }
         }
+    }
+
+    public void SetEnergyActive(bool isActive)
+    {
+        _isEnergyActive = isActive;
+        ApplyGimmicks();
     }
 }
