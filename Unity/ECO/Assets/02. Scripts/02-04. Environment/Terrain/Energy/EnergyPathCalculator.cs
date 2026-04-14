@@ -47,14 +47,8 @@ public class EnergyPathCalculator
         for (int i = 0; i < terrains.Count; i++)
         {
             EnergyTerrainConnection conn = terrains[i];
-            if (conn.Terrain == null)
-            {
-                continue;
-            }
-
             int actIndex = 1 + i * 2;
             int deactIndex = 2 + i * 2;
-
             conn.ActivationCenterDistance = keyPointDistances.ContainsKey(actIndex) ? keyPointDistances[actIndex] : 0f;
             conn.DeactivationEndDistance = keyPointDistances.ContainsKey(deactIndex) ? keyPointDistances[deactIndex] : 0f;
         }
@@ -67,13 +61,6 @@ public class EnergyPathCalculator
 
         foreach (EnergyTerrainConnection conn in terrains)
         {
-            if (conn.Terrain == null)
-            {
-                points.Add(defaultTransform.position);
-                points.Add(defaultTransform.position);
-                continue;
-            }
-
             AddKeyPoint(points, conn.Terrain.ActivationPosition, conn.Terrain.transform);
             AddKeyPoint(points, conn.Terrain.DeactivationPosition, conn.Terrain.transform);
         }
@@ -89,7 +76,6 @@ public class EnergyPathCalculator
             targetList.Add(targetTransform.position);
             return;
         }
-
         targetList.Add(fallbackTransform.position);
     }
 }
