@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public abstract class TerrainGimmickBase
 {
     private EGimmickActivationType _activationType;
@@ -18,6 +20,8 @@ public abstract class TerrainGimmickBase
         isActivated = _isInverted ? !isActivated : isActivated;
         ApplyGimmick(target, isActivated);
     }
+
+    public virtual void OnTerrainTriggerEnter2D(Collider2D other) { }
 
     protected abstract void ApplyGimmick(TerrainObject target, bool isActivated);
 }

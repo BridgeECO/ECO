@@ -21,14 +21,15 @@ public class TerrainObject : MonoBehaviour, IEnergyReceiver
                 _runtimeGimmicks.Add(entry.GimmickData.CreateGimmick(entry));
             }
         }
-
         ApplyGimmicks();
     }
 
-    public void SetEnergyActive(bool isActive)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        _isEnergyActive = isActive;
-        ApplyGimmicks();
+        foreach (var gimmick in _runtimeGimmicks)
+        {
+            gimmick.OnTerrainTriggerEnter2D(other);
+        }
     }
 
     private void ApplyGimmicks()
@@ -40,5 +41,11 @@ public class TerrainObject : MonoBehaviour, IEnergyReceiver
                 gimmick.Evaluate(this, _isEnergyActive);
             }
         }
+    }
+
+    public void SetEnergyActive(bool isActive)
+    {
+        _isEnergyActive = isActive;
+        ApplyGimmicks();
     }
 }
