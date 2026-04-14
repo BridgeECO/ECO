@@ -18,9 +18,8 @@ public class PlayerKillOnCollisionGimmick : TerrainGimmickBase
 
     public override void OnTerrainTriggerEnter2D(Collider2D other)
     {
-        if (!other.CompareTag(ETags.Player.ToString()))
+        if (!IsActivated || !other.CompareTag(nameof(ETags.Player)))
         {
-            Debug.Log($"부딪힌 대상이 플레이어가 아님 : {other.tag}");
             return;
         }
         RespawnManager.Instance.Respawn();
