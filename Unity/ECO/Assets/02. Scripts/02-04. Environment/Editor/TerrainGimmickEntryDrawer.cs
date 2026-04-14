@@ -15,7 +15,7 @@ public class TerrainGimmickEntryDrawer : PropertyDrawer
         float spacing = EditorGUIUtility.standardVerticalSpacing;
 
         Rect gimmickDataRect = new Rect(position.x, position.y, position.width, lineHeight);
-        EditorGUI.PropertyField(gimmickDataRect, gimmickDataProperty, new GUIContent("Gimmick Data"));
+        EditorGUI.PropertyField(gimmickDataRect, gimmickDataProperty, label);
 
         if (IsImageChangeGimmick(gimmickDataProperty))
         {
