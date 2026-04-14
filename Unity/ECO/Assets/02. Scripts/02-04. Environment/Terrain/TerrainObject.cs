@@ -10,6 +10,16 @@ public class TerrainObject : MonoBehaviour, IEnergyReceiver
 
     private List<TerrainGimmickBase> _runtimeGimmicks = new List<TerrainGimmickBase>();
 
+    [Foldout("Energy")]
+    [SerializeField]
+    private Transform _activationPosition;
+    
+    [SerializeField]
+    private Transform _deactivationPosition;
+
+    public Transform ActivationPosition => _activationPosition;
+    public Transform DeactivationPosition => _deactivationPosition;
+
     private bool _isEnergyActive;
 
     private void Awake()

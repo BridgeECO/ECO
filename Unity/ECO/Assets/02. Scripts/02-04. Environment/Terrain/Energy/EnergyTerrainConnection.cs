@@ -8,13 +8,9 @@ public class EnergyTerrainConnection
     private TerrainObject _terrain;
     public TerrainObject Terrain => _terrain;
 
-    [SerializeField]
-    private float _activationCenterDistance;
-    public float ActivationCenterDistance => _activationCenterDistance;
+    public float ActivationCenterDistance { get; set; }
 
-    [SerializeField]
-    private float _deactivationEndDistance;
-    public float DeactivationEndDistance => _deactivationEndDistance;
+    public float DeactivationEndDistance { get; set; }
 
     public bool IsActiveInternal { get; set; }
 }
