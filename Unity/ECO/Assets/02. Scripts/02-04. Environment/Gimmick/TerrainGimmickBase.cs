@@ -7,6 +7,7 @@ public abstract class TerrainGimmickBase
 
     public EGimmickActivationType ActivationType => _activationType;
     public bool IsInverted => _isInverted;
+    protected bool IsActivated { get; private set; }
 
     protected TerrainGimmickBase(EGimmickActivationType activationType, bool isInverted)
     {
@@ -16,9 +17,9 @@ public abstract class TerrainGimmickBase
 
     public void Evaluate(TerrainObject target, bool isEnergyActive)
     {
-        bool isActivated = (_activationType == EGimmickActivationType.Always) || isEnergyActive;
-        isActivated = _isInverted ? !isActivated : isActivated;
-        ApplyGimmick(target, isActivated);
+        IsActivated = (_activationType == EGimmickActivationType.Always) || isEnergyActive;
+        IsActivated = _isInverted ? !IsActivated : IsActivated;
+        ApplyGimmick(target, IsActivated);
     }
 
     public virtual void OnTerrainTriggerEnter2D(Collider2D other) { }
