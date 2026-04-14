@@ -45,6 +45,30 @@ public class EnergyLine : MonoBehaviour
         InitPathAndDistances();
     }
 
+    private void OnDrawGizmos()
+    {
+#if UNITY_EDITOR
+        InitPathAndDistances();
+
+        if (_computedWaypoints == null || _computedWaypoints.Count < 2)
+        {
+            return;
+        }
+
+        Gizmos.color = Color.cyan;
+        for (int i = 0; i < _computedWaypoints.Count - 1; i++)
+        {
+            Gizmos.DrawLine(_computedWaypoints[i], _computedWaypoints[i + 1]);
+        }
+
+        Gizmos.color = Color.yellow;
+        foreach (Vector3 waypoint in _pathCalculator.GetKeyPoints(_startPoint, _endPoint, transform, _connectedTerrains))
+        {
+            Gizmos.DrawSphere(waypoint, 0.1f);
+        }
+#endif
+    }
+
     private void InitPathAndDistances()
     {
         _pathCalculator.CalculatePathAndDistances(
@@ -106,29 +130,5 @@ public class EnergyLine : MonoBehaviour
                 connection.Terrain.SetEnergyActive(shouldBeActive);
             }
         }
-    }
-
-    private void OnDrawGizmos()
-    {
-#if UNITY_EDITOR
-        InitPathAndDistances();
-
-        if (_computedWaypoints == null || _computedWaypoints.Count < 2)
-        {
-            return;
-        }
-
-        Gizmos.color = Color.cyan;
-        for (int i = 0; i < _computedWaypoints.Count - 1; i++)
-        {
-            Gizmos.DrawLine(_computedWaypoints[i], _computedWaypoints[i + 1]);
-        }
-
-        Gizmos.color = Color.yellow;
-        foreach (Vector3 waypoint in _pathCalculator.GetKeyPoints(_startPoint, _endPoint, transform, _connectedTerrains))
-        {
-            Gizmos.DrawSphere(waypoint, 0.1f);
-        }
-#endif
     }
 }
