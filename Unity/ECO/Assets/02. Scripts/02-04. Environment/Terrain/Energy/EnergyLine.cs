@@ -7,7 +7,13 @@ public class EnergyLine : MonoBehaviour
 {
     [Foldout("Project")]
     [SerializeField]
-    private List<Transform> _waypoints = new List<Transform>();
+    private Transform _startPoint;
+
+    [SerializeField]
+    private Transform _endPoint;
+
+    [SerializeField]
+    private int _curveResolution = 10;
 
     [SerializeField]
     private LineRenderer _lineRendererPrefab;
@@ -19,125 +25,54 @@ public class EnergyLine : MonoBehaviour
     private float _cutOffDelay = 3f;
 
     [SerializeField]
+    private float _splineTension = 0.8f;
+
+    [SerializeField]
     private List<EnergyTerrainConnection> _connectedTerrains = new List<EnergyTerrainConnection>();
 
-    private List<EnergySegment> _activeSegments = new List<EnergySegment>();
+    private List<Vector3> _computedWaypoints = new List<Vector3>();
     private float _totalDistance;
+
+    private EnergyPathCalculator _pathCalculator = new EnergyPathCalculator();
+    private EnergySegmentController _segmentController = new EnergySegmentController();
 
     private void Awake()
     {
-        CalculateTotalDistance();
+        InitPathAndDistances();
     }
 
-    private void CalculateTotalDistance()
+    private void InitPathAndDistances()
     {
-        _totalDistance = 0f;
-        for (int i = 0; i < _waypoints.Count - 1; i++)
-        {
-            if (_waypoints[i] != null && _waypoints[i + 1] != null)
-            {
-                _totalDistance += Vector3.Distance(_waypoints[i].position, _waypoints[i + 1].position);
-            }
-        }
+        _pathCalculator.CalculatePathAndDistances(
+            _startPoint,
+            _endPoint,
+            transform,
+            _connectedTerrains,
+            _curveResolution,
+            _splineTension,
+
+            out _computedWaypoints,
+
+            out _totalDistance
+        );
     }
 
     public void SetSwitchState(bool isOn)
     {
         if (isOn)
         {
-            StartNewSegment();
-        }
-        else
-        {
-            StopCurrentSegmentAsync().Forget();
-        }
-    }
-
-    private void StartNewSegment()
-    {
-        if (0 < _activeSegments.Count)
-        {
-            EnergySegment lastSegment = _activeSegments[_activeSegments.Count - 1];
-            if (!lastSegment.IsCuttingOff && !lastSegment.IsWaitingToCutOff)
-            {
-                return;
-            }
-        }
-
-        EnergySegment newSegment = new EnergySegment
-        {
-            HeadDistance = 0f,
-            TailDistance = 0f,
-            IsCuttingOff = false,
-            IsWaitingToCutOff = false
-        };
-
-        if (_lineRendererPrefab != null)
-        {
-            newSegment.LineRendererInstance = Instantiate(_lineRendererPrefab, transform);
-            newSegment.LineRendererInstance.gameObject.SetActive(true);
-        }
-
-        _activeSegments.Add(newSegment);
-    }
-
-    private async UniTaskVoid StopCurrentSegmentAsync()
-    {
-        if (_activeSegments.Count == 0)
-        {
+            _segmentController.StartNewSegment(_lineRendererPrefab, transform);
             return;
         }
 
-        EnergySegment targetSegment = _activeSegments[_activeSegments.Count - 1];
-        if (targetSegment.IsCuttingOff || targetSegment.IsWaitingToCutOff)
-        {
-            return;
-        }
-
-        targetSegment.IsWaitingToCutOff = true;
-        await UniTask.Delay(System.TimeSpan.FromSeconds(_cutOffDelay));
-
-        if (_activeSegments.Contains(targetSegment))
-        {
-            targetSegment.IsWaitingToCutOff = false;
-            targetSegment.IsCuttingOff = true;
-        }
+        _segmentController.StopCurrentSegmentAsync(_cutOffDelay).Forget();
     }
 
     private void Update()
     {
-        UpdateSegments();
+        _segmentController.UpdateSegments(Time.deltaTime, _totalDistance, _energySpeed);
         UpdateTerrains();
-        RenderSegments();
-    }
-
-    private void UpdateSegments()
-    {
-        for (int i = _activeSegments.Count - 1; i >= 0; i--)
-        {
-            EnergySegment segment = _activeSegments[i];
-
-            if (segment.HeadDistance < _totalDistance)
-            {
-                segment.HeadDistance += _energySpeed * Time.deltaTime;
-                segment.HeadDistance = Mathf.Min(segment.HeadDistance, _totalDistance);
-            }
-
-            if (segment.IsCuttingOff)
-            {
-                segment.TailDistance += _energySpeed * Time.deltaTime;
-                segment.TailDistance = Mathf.Min(segment.TailDistance, _totalDistance);
-            }
-
-            if (segment.TailDistance >= _totalDistance)
-            {
-                if (segment.LineRendererInstance != null)
-                {
-                    Destroy(segment.LineRendererInstance.gameObject);
-                }
-                _activeSegments.RemoveAt(i);
-            }
-        }
+        _segmentController.RenderSegments(_computedWaypoints);
     }
 
     private void UpdateTerrains()
@@ -151,7 +86,7 @@ public class EnergyLine : MonoBehaviour
 
             bool shouldBeActive = false;
 
-            foreach (EnergySegment segment in _activeSegments)
+            foreach (EnergySegment segment in _segmentController.ActiveSegments)
             {
                 if (segment.HeadDistance >= connection.ActivationCenterDistance &&
                     segment.TailDistance < connection.DeactivationEndDistance)
@@ -169,51 +104,27 @@ public class EnergyLine : MonoBehaviour
         }
     }
 
-    private void RenderSegments()
+    private void OnDrawGizmos()
     {
-        foreach (EnergySegment segment in _activeSegments)
+#if UNITY_EDITOR
+        InitPathAndDistances();
+
+        if (_computedWaypoints == null || _computedWaypoints.Count < 2)
         {
-            if (segment.LineRendererInstance != null)
-            {
-                UpdateLineRenderer(segment.LineRendererInstance, segment.TailDistance, segment.HeadDistance);
-            }
-        }
-    }
-
-    private void UpdateLineRenderer(LineRenderer lr, float startDist, float endDist)
-    {
-        List<Vector3> points = new List<Vector3>();
-        float currentDist = 0f;
-
-        for (int i = 0; i < _waypoints.Count - 1; i++)
-        {
-            if (_waypoints[i] == null || _waypoints[i + 1] == null) continue;
-
-            Vector3 p1 = _waypoints[i].position;
-            Vector3 p2 = _waypoints[i + 1].position;
-            float segLen = Vector3.Distance(p1, p2);
-
-            float nextDist = currentDist + segLen;
-
-            if (startDist <= nextDist && endDist >= currentDist)
-            {
-                float localStart = Mathf.Max(0, startDist - currentDist);
-                float localEnd = Mathf.Min(segLen, endDist - currentDist);
-
-                Vector3 pointStart = Vector3.Lerp(p1, p2, localStart / segLen);
-                Vector3 pointEnd = Vector3.Lerp(p1, p2, localEnd / segLen);
-
-                if (points.Count == 0 || points[points.Count - 1] != pointStart)
-                {
-                    points.Add(pointStart);
-                }
-                points.Add(pointEnd);
-            }
-
-            currentDist = nextDist;
+            return;
         }
 
-        lr.positionCount = points.Count;
-        lr.SetPositions(points.ToArray());
+        Gizmos.color = Color.cyan;
+        for (int i = 0; i < _computedWaypoints.Count - 1; i++)
+        {
+            Gizmos.DrawLine(_computedWaypoints[i], _computedWaypoints[i + 1]);
+        }
+
+        Gizmos.color = Color.yellow;
+        foreach (Vector3 waypoint in _pathCalculator.GetKeyPoints(_startPoint, _endPoint, transform, _connectedTerrains))
+        {
+            Gizmos.DrawSphere(waypoint, 0.1f);
+        }
+#endif
     }
 }

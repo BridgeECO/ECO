@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2703483275982280445}
   m_Layer: 0
-  m_Name: WayPoints_0
+  m_Name: StartPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -77,12 +77,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c64a5795d70fc54293fc9b725d41fa8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _waypoints:
-  - {fileID: 2703483275982280445}
-  - {fileID: 6550696225412009948}
+  _startPoint: {fileID: 2703483275982280445}
+  _endPoint: {fileID: 6550696225412009948}
+  _curveResolution: 20
   _lineRendererPrefab: {fileID: 3049731104107783143, guid: bb67e1f9586d86f4ebc2dda500f78d2b, type: 3}
   _energySpeed: 10
   _cutOffDelay: 3
+  _splineTension: 1
   _connectedTerrains: []
 --- !u!1 &6972483028336617072
 GameObject:
@@ -94,7 +95,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6550696225412009948}
   m_Layer: 0
-  m_Name: WayPoints_1
+  m_Name: EndPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
