@@ -109,6 +109,7 @@ public class PlayerAirborneState : IPlayerState
             return;
         }
         _isJumping = false;
+        _motor.SetVelocityY(0f);
     }
 
     private void HandleSlip()
@@ -161,7 +162,7 @@ public class PlayerAirborneState : IPlayerState
     private void HandleJumpReleased()
     {
         _isJumping = false;
-        if (0f < _sm.InputLockTimer || 0f == _motor.Velocity.y)
+        if (0f < _sm.InputLockTimer || _motor.Velocity.y <= 0f)
         {
             return;
         }
