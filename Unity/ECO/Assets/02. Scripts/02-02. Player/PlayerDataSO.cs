@@ -20,12 +20,12 @@ public class PlayerDataSO : ScriptableObject
     public float AirDeceleration { get => _airDeceleration; }
 
     [Header("Jump & Gravity")]
-    [Tooltip("점프 키를 최대 시간(MaxJumpHoldTime)까지 눌렀을 때 도달하는 최대 높이 (그리드 블록 수, 1블록 = 1 Unity unit)")]
+    [Tooltip("최대 점프 가능 블록 수")]
     [SerializeField]
     private float _jumpHeight = 8f;
     public float JumpHeight { get => _jumpHeight; }
 
-    [Tooltip("점프 키를 누르고 있을 때 최대 점프 높이에 도달하기까지 걸리는 시간 (초). 상승 속도 = JumpHeight / MaxJumpHoldTime")]
+    [Tooltip("점프 키를 누르고 있을 때 최대 점프 높이에 도달하기까지 걸리는 시간 (초).")]
     [SerializeField]
     private float _maxJumpHoldTime = 1.5f;
     public float MaxJumpHoldTime { get => _maxJumpHoldTime; }
