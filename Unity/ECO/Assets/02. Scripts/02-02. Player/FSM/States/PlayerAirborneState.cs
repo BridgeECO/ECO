@@ -60,7 +60,8 @@ public class PlayerAirborneState : IPlayerState
         _sm.CoyoteTimer = 0f;
         _isJumping = true;
         _jumpHoldTimer = 0f;
-        _motor.SetVelocityY(_data.JumpHeight / _data.MaxJumpHoldTime);
+        float maxJumpHoldTime = (_data.MaxJumpHoldTime != 0f) ? _data.MaxJumpHoldTime : 0.1f;
+        _motor.SetVelocityY(_data.JumpHeight / maxJumpHoldTime);
     }
 
     private void CheckLateJump()
