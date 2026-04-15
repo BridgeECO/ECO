@@ -51,6 +51,10 @@ public class EnergyPathCalculator
 
             if (node.NodeType == EEnergyPathNodeType.Terrain)
             {
+                if (node.Terrain == null)
+                {
+                    continue;
+                }
                 int actIndex = keyIndex;
                 int deactIndex = keyIndex + 1;
                 node.ActivationCenterDistance = keyPointDistances.ContainsKey(actIndex) ? keyPointDistances[actIndex] : 0f;
@@ -59,6 +63,10 @@ public class EnergyPathCalculator
             }
             else
             {
+                if (node.Waypoint == null)
+                {
+                    continue;
+                }
                 keyIndex += 1;
             }
         }
