@@ -6,11 +6,7 @@ public class PlayerWallSlideState : IPlayerState
     private PlayerInput _input;
     private PlayerSensor _sensor;
     private PlayerMotor _motor;
-
-    private float _wallSlideSpeed;
-    private float _wallJumpPowerX;
-    private float _wallJumpPowerY;
-    private float _wallJumpInputLockTime;
+    private PlayerDataSO _data;
 
     public PlayerWallSlideState(PlayerStateMachine stateMachine, PlayerDataSO data)
     {
@@ -18,23 +14,19 @@ public class PlayerWallSlideState : IPlayerState
         _input = stateMachine.Input;
         _sensor = stateMachine.Sensor;
         _motor = stateMachine.Motor;
-
-        _wallSlideSpeed = data.WallSlideSpeed;
-        _wallJumpPowerX = data.WallJumpPowerX;
-        _wallJumpPowerY = data.WallJumpPowerY;
-        _wallJumpInputLockTime = data.WallJumpInputLockTime;
+        _data = data;
     }
 
     public void Enter()
     {
-        _motor.SetVelocity(new Vector2(0f, -_wallSlideSpeed));
+        _motor.SetVelocity(new Vector2(0f, -_data.WallSlideSpeed));
         _input.OnJumpPressed += HandleWallJump;
     }
 
     public void Update()
     {
         float xInput = _input.HorizontalInput;
-        _motor.SetVelocityY(-_wallSlideSpeed);
+        _motor.SetVelocityY(-_data.WallSlideSpeed);
 
         if (_sensor.IsGrounded)
         {
@@ -57,11 +49,11 @@ public class PlayerWallSlideState : IPlayerState
     private void HandleWallJump()
     {
         _sm.JumpBufferTimer = 0f;
-        _sm.InputLockTimer = _wallJumpInputLockTime;
+        _sm.InputLockTimer = _data.WallJumpInputLockTime;
         _sm.LastWallJumpDir = _sensor.WallDirection;
 
         float jumpDir = -_sensor.WallDirection;
-        _motor.SetVelocity(new Vector2(jumpDir * _wallJumpPowerX, _wallJumpPowerY));
+        _motor.SetVelocity(new Vector2(jumpDir * _data.WallJumpPowerX, _data.WallJumpPowerY));
         _sm.ChangeState(EPlayerState.Airborne);
     }
 }
