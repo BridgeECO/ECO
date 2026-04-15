@@ -60,9 +60,10 @@ jobs:
           SONGJUNE_PAT: ${{ secrets.SONGJUNE_PERSONAL_TOKEN }}
           BOT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          TITLE=$(jq -r '.title' pr_info.json)
-          BODY=$(jq -r '.body' pr_info.json)
-          AI_LABELS=$(jq -r '.labels | join(",")' pr_info.json)
+          PR_OBJ=$(jq 'if type=="array" then .[0] else . end' pr_info.json)
+          TITLE=$(echo "$PR_OBJ" | jq -r '.title')
+          BODY=$(echo "$PR_OBJ" | jq -r '.body')
+          AI_LABELS=$(echo "$PR_OBJ" | jq -r '.labels | join(",")')
           
           case "${{ github.actor }}" in
             "Mingyu0626")
@@ -73,7 +74,6 @@ jobs:
               USER_LABEL="🍪박수지"
               SELECT_TOKEN=$SUJI_PAT
               ;;
-            *)
             "helloSalmon")
               USER_LABEL="🍯송준"
               SELECT_TOKEN=$SONGJUNE_PAT
