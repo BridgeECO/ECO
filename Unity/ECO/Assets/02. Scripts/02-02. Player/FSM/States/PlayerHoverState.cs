@@ -6,8 +6,8 @@ public class PlayerHoverState : IPlayerState
     private PlayerInput _input;
     private PlayerSensor _sensor;
     private PlayerMotor _motor;
+    private PlayerDataSO _data;
 
-    private float _maxHoverTime;
     private float _hoverTimer;
 
     public PlayerHoverState(PlayerStateMachine stateMachine, PlayerDataSO data)
@@ -16,8 +16,7 @@ public class PlayerHoverState : IPlayerState
         _input = stateMachine.Input;
         _sensor = stateMachine.Sensor;
         _motor = stateMachine.Motor;
-
-        _maxHoverTime = data.MaxHoverTime;
+        _data = data;
     }
 
     public void Enter()
@@ -33,7 +32,7 @@ public class PlayerHoverState : IPlayerState
     {
         _motor.SetVelocity(Vector2.zero);
         _hoverTimer += Time.deltaTime;
-        if (_hoverTimer < _maxHoverTime)
+        if (_hoverTimer < _data.MaxHoverTime)
         {
             return;
         }

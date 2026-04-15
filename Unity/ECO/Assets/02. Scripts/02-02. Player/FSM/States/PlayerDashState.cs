@@ -6,9 +6,7 @@ public class PlayerDashState : IPlayerState
     private PlayerInput _input;
     private PlayerSensor _sensor;
     private PlayerMotor _motor;
-
-    private float _dashSpeed;
-    private float _dashDuration;
+    private PlayerDataSO _data;
 
     private float _dashTimer;
     private Vector2 _dashDirection;
@@ -19,9 +17,7 @@ public class PlayerDashState : IPlayerState
         _input = stateMachine.Input;
         _sensor = stateMachine.Sensor;
         _motor = stateMachine.Motor;
-
-        _dashSpeed = data.DashSpeed;
-        _dashDuration = data.DashDuration;
+        _data = data;
     }
 
     public void Enter()
@@ -31,14 +27,14 @@ public class PlayerDashState : IPlayerState
         Vector2 mouseWorldPos = _input.MouseWorldPosition;
         _dashDirection = (mouseWorldPos - (Vector2)_sm.transform.position).normalized;
 
-        _motor.SetVelocity(_dashDirection * _dashSpeed);
+        _motor.SetVelocity(_dashDirection * _data.DashSpeed);
     }
 
     public void Update()
     {
         _dashTimer += Time.deltaTime;
-        _motor.SetVelocity(_dashDirection * _dashSpeed);
-        if (_dashTimer < _dashDuration)
+        _motor.SetVelocity(_dashDirection * _data.DashSpeed);
+        if (_dashTimer < _data.DashDuration)
         {
             return;
         }

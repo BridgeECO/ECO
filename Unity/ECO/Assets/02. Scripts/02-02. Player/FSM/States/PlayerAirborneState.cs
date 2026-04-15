@@ -6,15 +6,7 @@ public class PlayerAirborneState : IPlayerState
     private PlayerInput _input;
     private PlayerSensor _sensor;
     private PlayerMotor _motor;
-
-    private float _maxFallSpeed;
-    private float _gravity;
-    private float _jumpSpeed;
-    private float _airMoveSpeed;
-    private float _airDeceleration;
-    private float _maxJumpHoldTime;
-    private float _slipDownSpeed;
-    private float _coyoteDistance;
+    private PlayerDataSO _data;
 
     private bool _isJumping;
     private float _jumpHoldTimer;
@@ -26,15 +18,7 @@ public class PlayerAirborneState : IPlayerState
         _input = stateMachine.Input;
         _sensor = stateMachine.Sensor;
         _motor = stateMachine.Motor;
-
-        _maxFallSpeed = data.MaxFallSpeed;
-        _gravity = data.Gravity;
-        _jumpSpeed = data.JumpSpeed;
-        _airMoveSpeed = data.AirMoveSpeed;
-        _airDeceleration = data.AirDeceleration;
-        _maxJumpHoldTime = data.MaxJumpHoldTime;
-        _slipDownSpeed = data.SlipDownSpeed;
-        _coyoteDistance = data.CoyoteDistance;
+        _data = data;
     }
 
     public void Enter()
@@ -76,7 +60,7 @@ public class PlayerAirborneState : IPlayerState
         _sm.CoyoteTimer = 0f;
         _isJumping = true;
         _jumpHoldTimer = 0f;
-        _motor.SetVelocityY(_jumpSpeed);
+        _motor.SetVelocityY(_data.JumpHeight / _data.MaxJumpHoldTime);
     }
 
     private void CheckLateJump()
@@ -85,7 +69,7 @@ public class PlayerAirborneState : IPlayerState
         {
             return;
         }
-        if (Mathf.Abs(_sm.transform.position.x - _fallOffPosX) <= _coyoteDistance)
+        if (Mathf.Abs(_sm.transform.position.x - _fallOffPosX) <= _data.CoyoteDistance)
         {
             ExecuteJump();
         }
@@ -98,11 +82,11 @@ public class PlayerAirborneState : IPlayerState
             return;
         }
 
-        float targetSpeedX = _input.HorizontalInput * _airMoveSpeed;
+        float targetSpeedX = _input.HorizontalInput * _data.AirMoveSpeed;
         float currentSpeedX = _motor.Velocity.x;
-        if (_airMoveSpeed < Mathf.Abs(currentSpeedX))
+        if (_data.AirMoveSpeed < Mathf.Abs(currentSpeedX))
         {
-            currentSpeedX = Mathf.MoveTowards(currentSpeedX, targetSpeedX, _airDeceleration * Time.deltaTime);
+            currentSpeedX = Mathf.MoveTowards(currentSpeedX, targetSpeedX, _data.AirDeceleration * Time.deltaTime);
             _motor.SetVelocityX(currentSpeedX);
         }
         else
@@ -119,7 +103,7 @@ public class PlayerAirborneState : IPlayerState
         }
         _jumpHoldTimer += Time.deltaTime;
 
-        if (_jumpHoldTimer < _maxJumpHoldTime)
+        if (_jumpHoldTimer < _data.MaxJumpHoldTime)
         {
             return;
         }
@@ -134,7 +118,7 @@ public class PlayerAirborneState : IPlayerState
         }
         float velocityX = (_sensor.IsLeftSliding) ? 2f : -2f;
         _motor.SetVelocityX(velocityX);
-        _motor.AddVelocity(Vector2.down * _slipDownSpeed * Time.deltaTime);
+        _motor.AddVelocity(Vector2.down * _data.SlipDownSpeed * Time.deltaTime);
     }
 
     private void ApplyGravity()
@@ -143,10 +127,11 @@ public class PlayerAirborneState : IPlayerState
         {
             return;
         }
-        _motor.AddVelocity(Vector2.down * _gravity * Time.deltaTime);
-        if (_motor.Velocity.y < -_maxFallSpeed)
+        float gravityScale = (_motor.Velocity.y < 0f) ? _data.FallGravityMultiplier : 1f;
+        _motor.AddVelocity(Vector2.down * _data.Gravity * gravityScale * Time.deltaTime);
+        if (_motor.Velocity.y < -_data.MaxFallSpeed)
         {
-            _motor.SetVelocityY(-_maxFallSpeed);
+            _motor.SetVelocityY(-_data.MaxFallSpeed);
         }
     }
 

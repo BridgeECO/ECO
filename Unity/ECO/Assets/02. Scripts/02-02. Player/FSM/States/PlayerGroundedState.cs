@@ -6,9 +6,7 @@ public class PlayerGroundedState : IPlayerState
     private PlayerInput _input;
     private PlayerSensor _sensor;
     private PlayerMotor _motor;
-
-    private float _coyoteTime;
-    private float _groundMoveSpeed;
+    private PlayerDataSO _data;
 
     public PlayerGroundedState(PlayerStateMachine stateMachine, PlayerDataSO data)
     {
@@ -16,15 +14,13 @@ public class PlayerGroundedState : IPlayerState
         _input = stateMachine.Input;
         _sensor = stateMachine.Sensor;
         _motor = stateMachine.Motor;
-
-        _coyoteTime = data.CoyoteTime;
-        _groundMoveSpeed = data.GroundMoveSpeed;
+        _data = data;
     }
 
     public void Enter()
     {
         _sm.HasUsedHover = false;
-        _sm.CoyoteTimer = _coyoteTime;
+        _sm.CoyoteTimer = _data.CoyoteTime;
         _sm.LastWallJumpDir = 0f;
         _motor.SetVelocityY(0f);
 
@@ -33,10 +29,10 @@ public class PlayerGroundedState : IPlayerState
 
     public void Update()
     {
-        _sm.CoyoteTimer = _coyoteTime;
+        _sm.CoyoteTimer = _data.CoyoteTime;
 
         float xInput = _input.HorizontalInput;
-        _motor.SetVelocityX(xInput * _groundMoveSpeed);
+        _motor.SetVelocityX(xInput * _data.GroundMoveSpeed);
 
         if (_sm.JumpBufferTimer > 0f)
         {
