@@ -32,7 +32,7 @@ public class EnergyLine : MonoBehaviour
     private float _splineTension;
 
     [SerializeField]
-    private List<EnergyTerrainConnection> _connectedTerrains = new List<EnergyTerrainConnection>();
+    private List<EnergyPathNode> _pathNodes = new List<EnergyPathNode>();
 
     private List<Vector3> _computedWaypoints = new List<Vector3>();
     private float _totalDistance;
@@ -49,7 +49,6 @@ public class EnergyLine : MonoBehaviour
     {
 #if UNITY_EDITOR
         InitPathAndDistances();
-
         if (_computedWaypoints == null || _computedWaypoints.Count < 2)
         {
             return;
@@ -62,7 +61,7 @@ public class EnergyLine : MonoBehaviour
         }
 
         Gizmos.color = Color.yellow;
-        foreach (Vector3 waypoint in _pathCalculator.GetKeyPoints(_startPoint, _endPoint, transform, _connectedTerrains))
+        foreach (Vector3 waypoint in _pathCalculator.GetKeyPoints(_startPoint, _endPoint, transform, _pathNodes))
         {
             Gizmos.DrawSphere(waypoint, 0.1f);
         }
@@ -75,12 +74,10 @@ public class EnergyLine : MonoBehaviour
             _startPoint,
             _endPoint,
             transform,
-            _connectedTerrains,
+            _pathNodes,
             _curveResolution,
             _splineTension,
-
             out _computedWaypoints,
-
             out _totalDistance
         );
     }
@@ -92,7 +89,6 @@ public class EnergyLine : MonoBehaviour
             _segmentController.StartNewSegment(_lineRendererPrefab, transform);
             return;
         }
-
         _segmentController.StopCurrentSegmentAsync(_cutOffDelay).Forget();
     }
 
@@ -105,29 +101,33 @@ public class EnergyLine : MonoBehaviour
 
     private void UpdateTerrains()
     {
-        foreach (EnergyTerrainConnection connection in _connectedTerrains)
+        foreach (EnergyPathNode node in _pathNodes)
         {
-            if (connection.Terrain == null)
+            if (node.NodeType != EEnergyPathNodeType.Terrain)
             {
                 continue;
             }
 
-            bool shouldBeActive = false;
+            if (node.Terrain == null)
+            {
+                continue;
+            }
 
+            bool isActive = false;
             foreach (EnergySegment segment in _segmentController.ActiveSegments)
             {
-                if (segment.HeadDistance >= connection.ActivationCenterDistance &&
-                    segment.TailDistance < connection.DeactivationEndDistance)
+                if (segment.HeadDistance >= node.ActivationCenterDistance &&
+                    segment.TailDistance < node.DeactivationEndDistance)
                 {
-                    shouldBeActive = true;
+                    isActive = true;
                     break;
                 }
             }
 
-            if (connection.IsActiveInternal != shouldBeActive)
+            if (node.IsActiveInternal != isActive)
             {
-                connection.IsActiveInternal = shouldBeActive;
-                connection.Terrain.SetEnergyActive(shouldBeActive);
+                node.IsActiveInternal = isActive;
+                node.Terrain.SetEnergyActive(isActive);
             }
         }
     }

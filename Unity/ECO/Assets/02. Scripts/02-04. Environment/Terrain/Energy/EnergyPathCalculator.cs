@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class EnergyPathCalculator
 {
-    public void CalculatePathAndDistances(Transform start, Transform end, Transform defaultTransform, List<EnergyTerrainConnection> terrains, int resolution, float tension, out List<Vector3> computedWaypoints, out float totalDistance)
+    public void CalculatePathAndDistances(Transform start, Transform end, Transform defaultTransform, List<EnergyPathNode> pathNodes, int resolution, float tension, out List<Vector3> computedWaypoints, out float totalDistance)
     {
-        List<Vector3> keyPoints = GetKeyPoints(start, end, defaultTransform, terrains);
+        List<Vector3> keyPoints = GetKeyPoints(start, end, defaultTransform, pathNodes);
         computedWaypoints = new List<Vector3>();
         totalDistance = 0f;
 
@@ -44,25 +44,50 @@ public class EnergyPathCalculator
             }
         }
 
-        for (int i = 0; i < terrains.Count; i++)
+        int keyIndex = 1;
+        for (int i = 0; i < pathNodes.Count; i++)
         {
-            EnergyTerrainConnection conn = terrains[i];
-            int actIndex = 1 + i * 2;
-            int deactIndex = 2 + i * 2;
-            conn.ActivationCenterDistance = keyPointDistances.ContainsKey(actIndex) ? keyPointDistances[actIndex] : 0f;
-            conn.DeactivationEndDistance = keyPointDistances.ContainsKey(deactIndex) ? keyPointDistances[deactIndex] : 0f;
+            EnergyPathNode node = pathNodes[i];
+
+            if (node.NodeType == EEnergyPathNodeType.Terrain)
+            {
+                int actIndex = keyIndex;
+                int deactIndex = keyIndex + 1;
+                node.ActivationCenterDistance = keyPointDistances.ContainsKey(actIndex) ? keyPointDistances[actIndex] : 0f;
+                node.DeactivationEndDistance = keyPointDistances.ContainsKey(deactIndex) ? keyPointDistances[deactIndex] : 0f;
+                keyIndex += 2;
+            }
+            else
+            {
+                keyIndex += 1;
+            }
         }
     }
 
-    public List<Vector3> GetKeyPoints(Transform start, Transform end, Transform defaultTransform, List<EnergyTerrainConnection> terrains)
+    public List<Vector3> GetKeyPoints(Transform start, Transform end, Transform defaultTransform, List<EnergyPathNode> pathNodes)
     {
         List<Vector3> points = new List<Vector3>();
         AddKeyPoint(points, start, defaultTransform);
 
-        foreach (EnergyTerrainConnection conn in terrains)
+        foreach (EnergyPathNode node in pathNodes)
         {
-            AddKeyPoint(points, conn.Terrain.ActivationPosition, conn.Terrain.transform);
-            AddKeyPoint(points, conn.Terrain.DeactivationPosition, conn.Terrain.transform);
+            if (node.NodeType == EEnergyPathNodeType.Terrain)
+            {
+                if (node.Terrain == null)
+                {
+                    continue;
+                }
+                AddKeyPoint(points, node.Terrain.ActivationPosition, node.Terrain.transform);
+                AddKeyPoint(points, node.Terrain.DeactivationPosition, node.Terrain.transform);
+            }
+            else
+            {
+                if (node.Waypoint == null)
+                {
+                    continue;
+                }
+                points.Add(node.Waypoint.position);
+            }
         }
 
         AddKeyPoint(points, end, defaultTransform);
