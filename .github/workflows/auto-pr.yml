@@ -57,6 +57,7 @@ jobs:
         env:
           MINGYU_PAT: ${{ secrets.MINGYU_PERSONAL_TOKEN }}
           SUJI_PAT: ${{ secrets.SUJI_PERSONAL_TOKEN }}
+          SONGJUNE_PAT: ${{ secrets.SONGJUNE_PERSONAL_TOKEN }}
           BOT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           TITLE=$(jq -r '.title' pr_info.json)
@@ -71,6 +72,11 @@ jobs:
             "sooji123")
               USER_LABEL="🍪박수지"
               SELECT_TOKEN=$SUJI_PAT
+              ;;
+            *)
+            "helloSalmon")
+              USER_LABEL="🍯송준"
+              SELECT_TOKEN=$SONGJUNE_PAT
               ;;
             *)
               USER_LABEL="${{ github.actor }}"
