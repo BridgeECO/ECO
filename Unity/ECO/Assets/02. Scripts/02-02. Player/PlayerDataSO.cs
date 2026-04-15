@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 [CreateAssetMenu(fileName = "PlayerDataSO", menuName = "Scriptable Objects/PlayerDataSO")]
 public class PlayerDataSO : ScriptableObject
@@ -20,12 +20,12 @@ public class PlayerDataSO : ScriptableObject
     public float AirDeceleration { get => _airDeceleration; }
 
     [Header("Jump & Gravity")]
-    [Tooltip("점프를 누르는 순간 위로 솟구치는 초기 상승 속도")]
+    [Tooltip("점프 키를 최대 시간(MaxJumpHoldTime)까지 눌렀을 때 도달하는 최대 높이 (그리드 블록 수, 1블록 = 1 Unity unit)")]
     [SerializeField]
-    private float _jumpSpeed = 5.33f;
-    public float JumpSpeed { get => _jumpSpeed; }
+    private float _jumpHeight = 8f;
+    public float JumpHeight { get => _jumpHeight; }
 
-    [Tooltip("점프 키를 누르고 있을 때 중력을 무시하고 일직선으로 상승하는 최대 시간 (초)")]
+    [Tooltip("점프 키를 누르고 있을 때 최대 점프 높이에 도달하기까지 걸리는 시간 (초). 상승 속도 = JumpHeight / MaxJumpHoldTime")]
     [SerializeField]
     private float _maxJumpHoldTime = 1.5f;
     public float MaxJumpHoldTime { get => _maxJumpHoldTime; }
@@ -34,6 +34,11 @@ public class PlayerDataSO : ScriptableObject
     [SerializeField]
     private float _gravity = 20f;
     public float Gravity { get => _gravity; }
+
+    [Tooltip("낙하 시(Y속도 < 0) 기본 중력에 곱해지는 배율. 1이면 동일, 높일수록 빠르게 추락")]
+    [SerializeField]
+    private float _fallGravityMultiplier = 1.5f;
+    public float FallGravityMultiplier { get => _fallGravityMultiplier; }
 
     [Tooltip("공중에서 떨어질 때 도달할 수 있는 최대 낙하 속도 제한")]
     [SerializeField]
