@@ -2,9 +2,11 @@ using Cysharp.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using VInspector;
 
 public class UI_FocusController : MonoBehaviour
 {
+    [Foldout("Hierarchy")]
     [SerializeField]
     private GameObject _firstSelectedButton;
     private GameObject _lastSelectedButton;
@@ -17,9 +19,11 @@ public class UI_FocusController : MonoBehaviour
     private void OnDisable()
     {
         _lastSelectedButton = null;
-        
+
+
         SetSelectedGameObject(null);
-        
+
+
         InputHandler.OnNavigateEvent -= ChangeNavigationMode;
         InputHandler.OnPointEvent -= ChangePointerMode;
     }
@@ -75,8 +79,9 @@ public class UI_FocusController : MonoBehaviour
             return;
         }
 
-        GameObject targetButton = (_lastSelectedButton != null && _lastSelectedButton.activeInHierarchy) 
-            ? _lastSelectedButton 
+        GameObject targetButton = (_lastSelectedButton != null && _lastSelectedButton.activeInHierarchy)
+            ? _lastSelectedButton
+
             : _firstSelectedButton;
 
         SetSelectedGameObject(targetButton);

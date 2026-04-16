@@ -23,6 +23,15 @@ public class UIManager : MonoBehaviourSingleton<UIManager>
         InputHandler.OnCancelEvent -= HandleCancelInput;
     }
 
+    private void Update()
+    {
+        // 최상단 관리자에서 글로벌 UI 키(Esc) 입력 감지 및 이벤트 전송
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            InputHandler.TriggerCancelEvent();
+        }
+    }
+
     private void HandleCancelInput()
     {
         if (UI_PopupHandler.Instance != null && !UI_PopupHandler.Instance.HasPopups)

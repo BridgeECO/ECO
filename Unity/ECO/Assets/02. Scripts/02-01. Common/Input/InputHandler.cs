@@ -2,18 +2,18 @@ using System;
 
 public static class InputHandler
 {
+    public static Action OnCancelEvent;
+    public static Action OnNavigateEvent;
+    public static Action OnPointEvent;
+
     public enum EInputMode
     {
         Player,
         UI
     }
 
-    public static bool IsInputBlocked { get; private set; }
     public static EInputMode CurrentMode { get; private set; } = EInputMode.Player;
-
-    public static Action OnCancelEvent;
-    public static Action OnNavigateEvent;
-    public static Action OnPointEvent;
+    public static bool IsInputBlocked { get; private set; }
 
     public static void BlockInput()
     {

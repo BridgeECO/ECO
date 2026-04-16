@@ -23,15 +23,6 @@ public class UI_PopupHandler : MonoBehaviourSingleton<UI_PopupHandler>
         InputHandler.OnCancelEvent -= OnCancelPressed;
     }
 
-    private void Update()
-    {
-        // 별도의 Input 시스템에서 OnCancelEvent 이벤트를 발생시키지 않는다면, 여기서 직접 수신
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            InputHandler.TriggerCancelEvent();
-        }
-    }
-
     public void OpenPopup(UI_Popup popup)
     {
         if (popup.gameObject.activeSelf)
@@ -50,7 +41,7 @@ public class UI_PopupHandler : MonoBehaviourSingleton<UI_PopupHandler>
 
     public void ClosePopup(UI_Popup popup)
     {
-        if (_popups.TryPeek(out UI_Popup latestPopup) && ReferenceEquals(latestPopup, popup))
+        if (_popups.TryPeek(out UI_Popup latestPopup) && latestPopup == popup)
         {
             CloseLatestPopup();
         }
