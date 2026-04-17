@@ -7,4 +7,5 @@ public enum ETags
     MainCamera,
     Player,
     GameController,
+    PlayerInteract,
 }

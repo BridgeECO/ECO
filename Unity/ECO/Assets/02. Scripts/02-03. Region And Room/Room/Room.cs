@@ -53,4 +53,10 @@ public class Room : MonoBehaviour
             _cameraBounds.compositeOperation = Collider2D.CompositeOperation.Merge;
         }
     }
+
+    [Button]
+    public void SetThisRoomToCurrentRoom()
+    {
+        RespawnManager.Instance.UpdateSavePoint(this, transform.position);
+    }
 }
