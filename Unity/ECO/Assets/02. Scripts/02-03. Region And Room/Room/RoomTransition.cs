@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using VInspector;
@@ -84,7 +83,26 @@ public class RoomTransition : MonoBehaviour
         Vector2 playerPos = playerCollider.transform.position;
         float distA = Vector2.SqrMagnitude(playerPos - (Vector2)_spawnPointA.position);
         float distB = Vector2.SqrMagnitude(playerPos - (Vector2)_spawnPointB.position);
-        return (distA < distB) ? _roomA : (distB < distA) ? _roomB : GetRoomByVelocity(playerCollider, (Vector3)playerPos);
+
+        if (Mathf.Abs(distA - distB) < 0.1f)
+        {
+            Room velocityRoom = GetRoomByVelocity(playerCollider, (Vector3)playerPos);
+            if (velocityRoom != null)
+            {
+                return velocityRoom;
+            }
+        }
+
+        if (distA < distB)
+        {
+            return _roomA;
+        }
+
+        if (distB < distA)
+        {
+            return _roomB;
+        }
+        return RespawnManager.Instance.CurrentRoom;
     }
 
     private Room GetRoomByVelocity(Collider2D playerCollider, Vector3 position)
@@ -94,26 +112,28 @@ public class RoomTransition : MonoBehaviour
             return null;
         }
 
+        Vector2 velocity = rb.linearVelocity;
+        if (velocity.sqrMagnitude < 0.01f)
+        {
+            return null;
+        }
+
         Vector2 centerA = (_roomA.MinBounds + _roomA.MaxBounds) / 2f;
         Vector2 centerB = (_roomB.MinBounds + _roomB.MaxBounds) / 2f;
         Vector2 dirToA = (centerA - (Vector2)position).normalized;
         Vector2 dirToB = (centerB - (Vector2)position).normalized;
 
-        float dotA = Vector2.Dot(rb.linearVelocity.normalized, dirToA);
-        float dotB = Vector2.Dot(rb.linearVelocity.normalized, dirToB);
-        return (dotB < dotA) ? _roomA : (dotA < dotB) ? _roomB : null;
-    }
+        float dotA = Vector2.Dot(velocity.normalized, dirToA);
+        float dotB = Vector2.Dot(velocity.normalized, dirToB);
 
-    private float GetSqrDistanceToRoom(Vector3 position, Room room)
-    {
-        if (room == null)
+        if (dotA > dotB)
         {
-            return float.MaxValue;
+            return _roomA;
         }
-
-        Vector2 min = room.MinBounds, max = room.MaxBounds;
-        float dx = Mathf.Max(0f, Mathf.Max(min.x - position.x, position.x - max.x));
-        float dy = Mathf.Max(0f, Mathf.Max(min.y - position.y, position.y - max.y));
-        return dx * dx + dy * dy;
+        if (dotB > dotA)
+        {
+            return _roomB;
+        }
+        return null;
     }
 }
