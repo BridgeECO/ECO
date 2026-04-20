@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6590118463367036015}
   - component: {fileID: 3368549898796636633}
   - component: {fileID: 6959422486903440088}
+  - component: {fileID: 264400550608560754}
   m_Layer: 5
   m_Name: TMP_Title
   m_TagString: Untagged
@@ -137,6 +138,26 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &264400550608560754
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2590459671706947034}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: 300
+  m_MinHeight: -1
+  m_PreferredWidth: 300
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &4622587746036928412
 GameObject:
   m_ObjectHideFlags: 0
@@ -352,7 +373,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 166383271541498855, guid: 1fbc2bd2a689d49a38b93f54a2e40820, type: 3}
       propertyPath: m_Name
-      value: Switch
+      value: Toggle Switch
       objectReference: {fileID: 0}
     - target: {fileID: 8353558145028652593, guid: 1fbc2bd2a689d49a38b93f54a2e40820, type: 3}
       propertyPath: m_AnchorMax.y
@@ -393,6 +414,6 @@ MonoBehaviour:
   m_MinHeight: -1
   m_PreferredWidth: -1
   m_PreferredHeight: -1
-  m_FlexibleWidth: 0.15
+  m_FlexibleWidth: 0.2
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
