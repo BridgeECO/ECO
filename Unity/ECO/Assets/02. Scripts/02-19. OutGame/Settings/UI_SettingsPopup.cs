@@ -1,6 +1,6 @@
+using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Ricimi;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using VInspector;
@@ -8,13 +8,15 @@ using VInspector;
 public class UI_SettingsPopup : Popup
 {
     [Foldout("UI")]
-    [SerializeField] private List<Toggle> UI_TabToggles; 
+    [SerializeField] private List<Toggle> UI_TabToggles;
+
     [SerializeField] private List<UI_SettingsTabBase> UI_SettingTabs;
     [SerializeField] private Button UI_ResetButton;
     [SerializeField] private Button UI_ApplyButton;
     [SerializeField] private Button UI_BackButton;
     [SerializeField] private Image UI_BackgroundOverlay;
-    
+
+
     [Foldout("References")]
     [SerializeField] private UI_SystemPopup UI_ConfirmPopup;
 
@@ -25,7 +27,8 @@ public class UI_SettingsPopup : Popup
         for (int i = 0; i < UI_TabToggles.Count; i++)
         {
             int index = i;
-            UI_TabToggles[i].onValueChanged.AddListener((isOn) => 
+            UI_TabToggles[i].onValueChanged.AddListener((isOn) =>
+
             {
                 if (isOn)
                 {
@@ -38,7 +41,8 @@ public class UI_SettingsPopup : Popup
         UI_ApplyButton.onClick.AddListener(OnClick_Apply);
         UI_BackButton.onClick.AddListener(OnClick_Back);
     }
-    
+
+
     private void OnClick_Tab(int index)
     {
         if (activeTabIndex >= 0 && activeTabIndex < UI_SettingTabs.Count)
@@ -47,7 +51,8 @@ public class UI_SettingsPopup : Popup
         }
 
         activeTabIndex = index;
-        
+
+
         if (activeTabIndex >= 0 && activeTabIndex < UI_SettingTabs.Count)
         {
             UI_SettingTabs[activeTabIndex].gameObject.SetActive(true);
@@ -120,8 +125,9 @@ public class UI_SettingsPopup : Popup
     private async UniTaskVoid HandleResetAsync()
     {
         UI_SystemPopup.EPopupResult result = await UI_ConfirmPopup.ShowPopupAsync(
-            "초기화", 
-            "모든 설정을 기본값으로 되돌리시겠습니까?", 
+            "초기화",
+            "모든 설정을 기본값으로 되돌리시겠습니까?",
+
             false
         );
 
@@ -145,8 +151,8 @@ public class UI_SettingsPopup : Popup
         if (hasUnsaved)
         {
             UI_SystemPopup.EPopupResult result = await UI_ConfirmPopup.ShowPopupAsync(
-                "저장 경고", 
-                "저장하지 않고 나가시겠습니까?", 
+                "Unsaved Changes",
+                "You have unsaved changes. Would you like to confirm the changes before leaving, or ignore them and exit anyway?",
                 true
             );
 
