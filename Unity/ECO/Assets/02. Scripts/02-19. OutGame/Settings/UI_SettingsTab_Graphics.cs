@@ -34,9 +34,20 @@ public class UI_SettingsTab_Graphics : UI_SettingsTabBase
     private Slider _antiAliasingSlider;
 
     private bool _isDirty;
+    private bool _isInitialized;
+
+    private void Awake()
+    {
+        InitTab();
+    }
 
     public override void InitTab()
     {
+        if (_isInitialized)
+        {
+            return;
+        }
+
         _displayModeDropdown.onValueChanged.AddListener(val => SetDirty());
         _resolutionDropdown.onValueChanged.AddListener(val => SetDirty());
         _brightnessSlider.onValueChanged.AddListener(val => SetDirty());
@@ -46,6 +57,8 @@ public class UI_SettingsTab_Graphics : UI_SettingsTabBase
         _shadowQualitySlider.onValueChanged.AddListener(val => SetDirty());
         _motionBlurSlider.onValueChanged.AddListener(val => SetDirty());
         _antiAliasingSlider.onValueChanged.AddListener(val => SetDirty());
+
+        _isInitialized = true;
     }
 
     public override void RefreshTab()

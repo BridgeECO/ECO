@@ -18,13 +18,26 @@ public class UI_SettingsTab_Sound : UI_SettingsTabBase
     private Slider _voiceVolumeSlider;
 
     private bool _isDirty;
+    private bool _isInitialized;
+
+    private void Awake()
+    {
+        InitTab();
+    }
 
     public override void InitTab()
     {
+        if (_isInitialized)
+        {
+            return;
+        }
+
         _masterVolumeSlider.onValueChanged.AddListener(val => SetDirty());
         _bgmVolumeSlider.onValueChanged.AddListener(val => SetDirty());
         _sfxVolumeSlider.onValueChanged.AddListener(val => SetDirty());
         _voiceVolumeSlider.onValueChanged.AddListener(val => SetDirty());
+
+        _isInitialized = true;
     }
 
     public override void RefreshTab()

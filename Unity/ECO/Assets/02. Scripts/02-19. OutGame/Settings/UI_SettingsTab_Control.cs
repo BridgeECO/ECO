@@ -34,19 +34,21 @@ public class UI_SettingsTab_Control : UI_SettingsTabBase
 
     private static readonly KeyCode[] _allKeyCodes = (KeyCode[])System.Enum.GetValues(typeof(KeyCode));
     private bool _isDirty;
+    private bool _isInitialized;
     private CancellationTokenSource _cts;
 
-    private void OnDestroy()
+    private void Awake()
     {
-        if (_cts != null)
-        {
-            _cts.Cancel();
-            _cts.Dispose();
-        }
+        InitTab();
     }
 
     public override void InitTab()
     {
+        if (_isInitialized)
+        {
+            return;
+        }
+
         _inputDeviceDropdown.onValueChanged.AddListener(val => SetDirty());
         _mouseSensitivitySlider.onValueChanged.AddListener(val => SetDirty());
         _invertYSwitch.onValueChanged.AddListener(val => SetDirty());
@@ -54,6 +56,8 @@ public class UI_SettingsTab_Control : UI_SettingsTabBase
         _rebindJumpButton.onClick.AddListener(OnClick_RebindJump);
         _rebindInteractionButton.onClick.AddListener(OnClick_RebindInteraction);
         _cts = new CancellationTokenSource();
+
+        _isInitialized = true;
     }
 
     public override void RefreshTab()
@@ -119,6 +123,15 @@ public class UI_SettingsTab_Control : UI_SettingsTabBase
                     }
                 }
             }
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (_cts != null)
+        {
+            _cts.Cancel();
+            _cts.Dispose();
         }
     }
 }
