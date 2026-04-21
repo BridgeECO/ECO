@@ -1,5 +1,5 @@
-using Cysharp.Threading.Tasks;
 using System.Threading;
+using Cysharp.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,74 +7,74 @@ using VInspector;
 
 public class UI_SettingsTab_Control : UI_SettingsTabBase
 {
-    [Foldout("UI")]
-    [SerializeField] private TMP_Dropdown UI_InputDeviceDropdown;
-    [SerializeField] private Slider UI_MouseSensitivitySlider;
-    [SerializeField] private Slider UI_InvertYSwitch; // Slider -> Switch for inspector clarity
-    [SerializeField] private Slider UI_VibrationSwitch; // Slider -> Switch for inspector clarity
-    [SerializeField] private Button UI_RebindJumpButton;
-    [SerializeField] private TextMeshProUGUI UI_JumpKeyText;
+    [Foldout("Hierarchy")]
+    [SerializeField]
+    private TMP_Dropdown _inputDeviceDropdown;
 
-    private bool isDirty;
-    private CancellationTokenSource cts;
+    [SerializeField]
+    private Slider _mouseSensitivitySlider;
 
-    public override void Init()
+    [SerializeField]
+    private Slider _invertYSwitch;
+
+    [SerializeField]
+    private Slider _vibrationSwitch;
+
+    [SerializeField]
+    private Button _rebindJumpButton;
+
+    [SerializeField]
+    private TextMeshProUGUI _jumpKeyText;
+
+    private bool _isDirty;
+    private CancellationTokenSource _cts;
+
+    public override void InitTab()
     {
-        UI_InputDeviceDropdown.onValueChanged.AddListener(val => SetDirty());
-        UI_MouseSensitivitySlider.onValueChanged.AddListener(val => SetDirty());
-        UI_InvertYSwitch.onValueChanged.AddListener(val => SetDirty());
-        UI_VibrationSwitch.onValueChanged.AddListener(val => SetDirty());
-
-        UI_RebindJumpButton.onClick.AddListener(OnClick_RebindJump);
-
-        cts = new CancellationTokenSource();
+        _inputDeviceDropdown.onValueChanged.AddListener(val => SetDirty());
+        _mouseSensitivitySlider.onValueChanged.AddListener(val => SetDirty());
+        _invertYSwitch.onValueChanged.AddListener(val => SetDirty());
+        _vibrationSwitch.onValueChanged.AddListener(val => SetDirty());
+        _rebindJumpButton.onClick.AddListener(OnClick_RebindJump);
+        _cts = new CancellationTokenSource();
     }
 
-    private void OnDestroy()
+    public override void RefreshTab()
     {
-        if (cts != null)
-        {
-            cts.Cancel();
-            cts.Dispose();
-        }
+        _isDirty = false;
     }
 
-    public override void Refresh()
+    public override void ResetTabToDefault()
     {
-        isDirty = false;
-    }
-
-    public override void ResetToDefault()
-    {
-        UI_MouseSensitivitySlider.value = 0.5f;
-        UI_InvertYSwitch.value = 0f;
-        UI_VibrationSwitch.value = 1f;
+        _mouseSensitivitySlider.value = 0.5f;
+        _invertYSwitch.value = 0f;
+        _vibrationSwitch.value = 1f;
         SetDirty();
     }
 
-    public override void SaveSettings()
+    public override void SaveTabSettings()
     {
-        isDirty = false;
+        _isDirty = false;
     }
 
     public override bool HasUnsavedChanges()
     {
-        return isDirty;
+        return _isDirty;
     }
 
     private void SetDirty()
     {
-        isDirty = true;
+        _isDirty = true;
     }
 
     private void OnClick_RebindJump()
     {
-        WaitForKeyInputAsync(cts.Token).Forget();
+        WaitForKeyInputAsync(_cts.Token).Forget();
     }
 
     private async UniTaskVoid WaitForKeyInputAsync(CancellationToken token)
     {
-        UI_JumpKeyText.text = "Press Any Key...";
+        _jumpKeyText.text = "Press Any Key...";
 
         bool keyBound = false;
 
@@ -84,10 +84,19 @@ public class UI_SettingsTab_Control : UI_SettingsTabBase
 
             if (UnityEngine.Input.anyKeyDown)
             {
-                UI_JumpKeyText.text = "Space";
+                _jumpKeyText.text = "Space";
                 keyBound = true;
                 SetDirty();
             }
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (_cts != null)
+        {
+            _cts.Cancel();
+            _cts.Dispose();
         }
     }
 }

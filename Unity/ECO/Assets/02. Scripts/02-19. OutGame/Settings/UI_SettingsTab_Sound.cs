@@ -4,48 +4,55 @@ using VInspector;
 
 public class UI_SettingsTab_Sound : UI_SettingsTabBase
 {
-    [Foldout("UI")]
-    [SerializeField] private Slider UI_MasterVolumeSlider;
-    [SerializeField] private Slider UI_BGMVolumeSlider;
-    [SerializeField] private Slider UI_SFXVolumeSlider;
-    [SerializeField] private Slider UI_VoiceVolumeSlider;
+    [Foldout("Hierarchy")]
+    [SerializeField]
+    private Slider _masterVolumeSlider;
 
-    private bool isDirty;
+    [SerializeField]
+    private Slider _bgmVolumeSlider;
 
-    public override void Init()
+    [SerializeField]
+    private Slider _sfxVolumeSlider;
+
+    [SerializeField]
+    private Slider _voiceVolumeSlider;
+
+    private bool _isDirty;
+
+    public override void InitTab()
     {
-        UI_MasterVolumeSlider.onValueChanged.AddListener(val => SetDirty());
-        UI_BGMVolumeSlider.onValueChanged.AddListener(val => SetDirty());
-        UI_SFXVolumeSlider.onValueChanged.AddListener(val => SetDirty());
-        UI_VoiceVolumeSlider.onValueChanged.AddListener(val => SetDirty());
+        _masterVolumeSlider.onValueChanged.AddListener(val => SetDirty());
+        _bgmVolumeSlider.onValueChanged.AddListener(val => SetDirty());
+        _sfxVolumeSlider.onValueChanged.AddListener(val => SetDirty());
+        _voiceVolumeSlider.onValueChanged.AddListener(val => SetDirty());
     }
 
-    public override void Refresh()
+    public override void RefreshTab()
     {
-        isDirty = false;
+        _isDirty = false;
     }
 
-    public override void ResetToDefault()
+    public override void ResetTabToDefault()
     {
-        UI_MasterVolumeSlider.value = 1f;
-        UI_BGMVolumeSlider.value = 1f;
-        UI_SFXVolumeSlider.value = 1f;
-        UI_VoiceVolumeSlider.value = 1f;
+        _masterVolumeSlider.value = 1f;
+        _bgmVolumeSlider.value = 1f;
+        _sfxVolumeSlider.value = 1f;
+        _voiceVolumeSlider.value = 1f;
         SetDirty();
     }
 
-    public override void SaveSettings()
+    public override void SaveTabSettings()
     {
-        isDirty = false;
+        _isDirty = false;
     }
 
     public override bool HasUnsavedChanges()
     {
-        return isDirty;
+        return _isDirty;
     }
 
     private void SetDirty()
     {
-        isDirty = true;
+        _isDirty = true;
     }
 }

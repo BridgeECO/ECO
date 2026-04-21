@@ -5,56 +5,73 @@ using VInspector;
 
 public class UI_SettingsTab_Graphics : UI_SettingsTabBase
 {
-    [Foldout("UI")] 
-    [SerializeField] private TMP_Dropdown UI_DisplayModeDropdown;
-    [SerializeField] private TMP_Dropdown UI_ResolutionDropdown;
-    [SerializeField] private Slider UI_BrightnessSlider;
-    [SerializeField] private Slider UI_VSyncSwitch; // Slider -> Switch for inspector clarity
-    [SerializeField] private TMP_Dropdown UI_OverallQualityDropdown;
-    [SerializeField] private Slider UI_TextureQualitySlider;
-    [SerializeField] private Slider UI_ShadowQualitySlider;
-    [SerializeField] private Slider UI_MotionBlurSlider;
-    [SerializeField] private Slider UI_AntiAliasingSlider;
+    [Foldout("Hierarchy")]
+    [SerializeField]
+    private TMP_Dropdown _displayModeDropdown;
 
-    private bool isDirty;
+    [SerializeField]
+    private TMP_Dropdown _resolutionDropdown;
 
-    public override void Init()
+    [SerializeField]
+    private Slider _brightnessSlider;
+
+    [SerializeField]
+    private Slider _vSyncSwitch;
+
+    [SerializeField]
+    private TMP_Dropdown _overallQualityDropdown;
+
+    [SerializeField]
+    private Slider _textureQualitySlider;
+
+    [SerializeField]
+    private Slider _shadowQualitySlider;
+
+    [SerializeField]
+    private Slider _motionBlurSlider;
+
+    [SerializeField]
+    private Slider _antiAliasingSlider;
+
+    private bool _isDirty;
+
+    public override void InitTab()
     {
-        UI_DisplayModeDropdown.onValueChanged.AddListener(val => SetDirty());
-        UI_ResolutionDropdown.onValueChanged.AddListener(val => SetDirty());
-        UI_BrightnessSlider.onValueChanged.AddListener(val => SetDirty());
-        UI_VSyncSwitch.onValueChanged.AddListener(val => SetDirty());
-        UI_OverallQualityDropdown.onValueChanged.AddListener(val => SetDirty());
-        UI_TextureQualitySlider.onValueChanged.AddListener(val => SetDirty());
-        UI_ShadowQualitySlider.onValueChanged.AddListener(val => SetDirty());
-        UI_MotionBlurSlider.onValueChanged.AddListener(val => SetDirty());
-        UI_AntiAliasingSlider.onValueChanged.AddListener(val => SetDirty());
+        _displayModeDropdown.onValueChanged.AddListener(val => SetDirty());
+        _resolutionDropdown.onValueChanged.AddListener(val => SetDirty());
+        _brightnessSlider.onValueChanged.AddListener(val => SetDirty());
+        _vSyncSwitch.onValueChanged.AddListener(val => SetDirty());
+        _overallQualityDropdown.onValueChanged.AddListener(val => SetDirty());
+        _textureQualitySlider.onValueChanged.AddListener(val => SetDirty());
+        _shadowQualitySlider.onValueChanged.AddListener(val => SetDirty());
+        _motionBlurSlider.onValueChanged.AddListener(val => SetDirty());
+        _antiAliasingSlider.onValueChanged.AddListener(val => SetDirty());
     }
 
-    public override void Refresh()
+    public override void RefreshTab()
     {
-        isDirty = false;
+        _isDirty = false;
     }
 
-    public override void ResetToDefault()
+    public override void ResetTabToDefault()
     {
-        UI_BrightnessSlider.value = 1f;
-        UI_VSyncSwitch.value = 1f;
+        _brightnessSlider.value = 1f;
+        _vSyncSwitch.value = 1f;
         SetDirty();
     }
 
-    public override void SaveSettings()
+    public override void SaveTabSettings()
     {
-        isDirty = false;
+        _isDirty = false;
     }
 
     public override bool HasUnsavedChanges()
     {
-        return isDirty;
+        return _isDirty;
     }
 
     private void SetDirty()
     {
-        isDirty = true;
+        _isDirty = true;
     }
 }

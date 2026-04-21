@@ -5,47 +5,54 @@ using VInspector;
 
 public class UI_SettingsTab_Gameplay : UI_SettingsTabBase
 {
-    [Foldout("UI")]
-    [SerializeField] private TMP_Dropdown UI_LanguageDropdown;
-    [SerializeField] private Slider UI_SubtitlesSwitch; // Slider -> Switch for inspector clarity
-    [SerializeField] private Slider UI_CameraShakeSwitch; // Slider -> Switch for inspector clarity
-    [SerializeField] private Slider UI_UIScaleSlider;
+    [Foldout("Hierarchy")]
+    [SerializeField]
+    private TMP_Dropdown _languageDropdown;
 
-    private bool isDirty;
+    [SerializeField]
+    private Slider _subtitlesSwitch;
 
-    public override void Init()
+    [SerializeField]
+    private Slider _cameraShakeSwitch;
+
+    [SerializeField]
+    private Slider _uiScaleSlider;
+
+    private bool _isDirty;
+
+    public override void InitTab()
     {
-        UI_LanguageDropdown.onValueChanged.AddListener(val => SetDirty());
-        UI_SubtitlesSwitch.onValueChanged.AddListener(val => SetDirty());
-        UI_CameraShakeSwitch.onValueChanged.AddListener(val => SetDirty());
-        UI_UIScaleSlider.onValueChanged.AddListener(val => SetDirty());
+        _languageDropdown.onValueChanged.AddListener(val => SetDirty());
+        _subtitlesSwitch.onValueChanged.AddListener(val => SetDirty());
+        _cameraShakeSwitch.onValueChanged.AddListener(val => SetDirty());
+        _uiScaleSlider.onValueChanged.AddListener(val => SetDirty());
     }
 
-    public override void Refresh()
+    public override void RefreshTab()
     {
-        isDirty = false;
+        _isDirty = false;
     }
 
-    public override void ResetToDefault()
+    public override void ResetTabToDefault()
     {
-        UI_SubtitlesSwitch.value = 1f;
-        UI_CameraShakeSwitch.value = 1f;
-        UI_UIScaleSlider.value = 1f;
+        _subtitlesSwitch.value = 1f;
+        _cameraShakeSwitch.value = 1f;
+        _uiScaleSlider.value = 1f;
         SetDirty();
     }
 
-    public override void SaveSettings()
+    public override void SaveTabSettings()
     {
-        isDirty = false;
+        _isDirty = false;
     }
 
     public override bool HasUnsavedChanges()
     {
-        return isDirty;
+        return _isDirty;
     }
 
     private void SetDirty()
     {
-        isDirty = true;
+        _isDirty = true;
     }
 }

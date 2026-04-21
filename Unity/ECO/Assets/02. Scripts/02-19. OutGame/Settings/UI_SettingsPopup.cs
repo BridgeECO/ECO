@@ -7,28 +7,39 @@ using VInspector;
 
 public class UI_SettingsPopup : Popup
 {
-    [Foldout("UI")]
-    [SerializeField] private List<Toggle> UI_TabToggles;
+    [Foldout("Hierarchy")]
+    [SerializeField]
+    private List<Toggle> _tabToggles;
 
-    [SerializeField] private List<UI_SettingsTabBase> UI_SettingTabs;
-    [SerializeField] private Button UI_ResetButton;
-    [SerializeField] private Button UI_ApplyButton;
-    [SerializeField] private Button UI_BackButton;
-    [SerializeField] private Image UI_BackgroundOverlay;
+    [SerializeField]
+    private List<UI_SettingsTabBase> _settingTabs;
+
+    [SerializeField]
+    private Button _resetButton;
+
+    [SerializeField]
+    private Button _applyButton;
+
+    [SerializeField]
+    private Button _backButton;
+
+    [SerializeField]
+    private Image _backgroundOverlay;
 
 
-    [Foldout("References")]
-    [SerializeField] private UI_SystemPopup UI_ConfirmPopup;
+    [Foldout("Hierarchy")]
+    [Header("References")]
+    [SerializeField]
+    private UI_SystemPopup _confirmPopup;
 
-    private int activeTabIndex = 0;
+    private int _activeTabIndex = 0;
 
     private void Awake()
     {
-        for (int i = 0; i < UI_TabToggles.Count; i++)
+        for (int i = 0; i < _tabToggles.Count; i++)
         {
             int index = i;
-            UI_TabToggles[i].onValueChanged.AddListener((isOn) =>
-
+            _tabToggles[i].onValueChanged.AddListener((isOn) =>
             {
                 if (isOn)
                 {
@@ -37,26 +48,26 @@ public class UI_SettingsPopup : Popup
             });
         }
 
-        UI_ResetButton.onClick.AddListener(OnClick_Reset);
-        UI_ApplyButton.onClick.AddListener(OnClick_Apply);
-        UI_BackButton.onClick.AddListener(OnClick_Back);
+        _resetButton.onClick.AddListener(OnClick_Reset);
+        _applyButton.onClick.AddListener(OnClick_Apply);
+        _backButton.onClick.AddListener(OnClick_Back);
     }
 
 
     private void OnClick_Tab(int index)
     {
-        if (activeTabIndex >= 0 && activeTabIndex < UI_SettingTabs.Count)
+        if (_activeTabIndex >= 0 && _activeTabIndex < _settingTabs.Count)
         {
-            UI_SettingTabs[activeTabIndex].gameObject.SetActive(false);
+            _settingTabs[_activeTabIndex].gameObject.SetActive(false);
         }
 
-        activeTabIndex = index;
+        _activeTabIndex = index;
 
 
-        if (activeTabIndex >= 0 && activeTabIndex < UI_SettingTabs.Count)
+        if (_activeTabIndex >= 0 && _activeTabIndex < _settingTabs.Count)
         {
-            UI_SettingTabs[activeTabIndex].gameObject.SetActive(true);
-            UI_SettingTabs[activeTabIndex].Refresh();
+            _settingTabs[_activeTabIndex].gameObject.SetActive(true);
+            _settingTabs[_activeTabIndex].RefreshTab();
         }
     }
 
@@ -67,9 +78,9 @@ public class UI_SettingsPopup : Popup
 
     private void OnClick_Apply()
     {
-        if (activeTabIndex >= 0 && activeTabIndex < UI_SettingTabs.Count)
+        if (_activeTabIndex >= 0 && _activeTabIndex < _settingTabs.Count)
         {
-            UI_SettingTabs[activeTabIndex].SaveSettings();
+            _settingTabs[_activeTabIndex].SaveTabSettings();
         }
     }
 
@@ -83,15 +94,15 @@ public class UI_SettingsPopup : Popup
         gameObject.SetActive(true);
         CustomOpen();
 
-        for (int i = 0; i < UI_SettingTabs.Count; i++)
+        for (int i = 0; i < _settingTabs.Count; i++)
         {
-            UI_SettingTabs[i].Init();
-            UI_SettingTabs[i].gameObject.SetActive(false);
+            _settingTabs[i].InitTab();
+            _settingTabs[i].gameObject.SetActive(false);
         }
 
-        if (UI_TabToggles.Count > 0)
+        if (_tabToggles.Count > 0)
         {
-            UI_TabToggles[0].isOn = true;
+            _tabToggles[0].isOn = true;
             OnClick_Tab(0);
         }
     }
@@ -104,9 +115,9 @@ public class UI_SettingsPopup : Popup
             animator.Play("Close");
         }
 
-        if (UI_BackgroundOverlay != null)
+        if (_backgroundOverlay != null)
         {
-            UI_BackgroundOverlay.CrossFadeAlpha(0.0f, 0.2f, false);
+            _backgroundOverlay.CrossFadeAlpha(0.0f, 0.2f, false);
         }
 
         WaitAndDisableAsync().Forget();
@@ -114,28 +125,27 @@ public class UI_SettingsPopup : Popup
 
     private void CustomOpen()
     {
-        if (UI_BackgroundOverlay != null)
+        if (_backgroundOverlay != null)
         {
-            UI_BackgroundOverlay.gameObject.SetActive(true);
-            UI_BackgroundOverlay.canvasRenderer.SetAlpha(0.0f);
-            UI_BackgroundOverlay.CrossFadeAlpha(1.0f, 0.4f, false);
+            _backgroundOverlay.gameObject.SetActive(true);
+            _backgroundOverlay.canvasRenderer.SetAlpha(0.0f);
+            _backgroundOverlay.CrossFadeAlpha(1.0f, 0.4f, false);
         }
     }
 
     private async UniTaskVoid HandleResetAsync()
     {
-        UI_SystemPopup.EPopupResult result = await UI_ConfirmPopup.ShowPopupAsync(
+        UI_SystemPopup.EPopupResult result = await _confirmPopup.ShowPopupAsync(
             "초기화",
             "모든 설정을 기본값으로 되돌리시겠습니까?",
-
             false
         );
 
         if (result == UI_SystemPopup.EPopupResult.Confirm)
         {
-            if (activeTabIndex >= 0 && activeTabIndex < UI_SettingTabs.Count)
+            if (_activeTabIndex >= 0 && _activeTabIndex < _settingTabs.Count)
             {
-                UI_SettingTabs[activeTabIndex].ResetToDefault();
+                _settingTabs[_activeTabIndex].ResetTabToDefault();
             }
         }
     }
@@ -143,14 +153,14 @@ public class UI_SettingsPopup : Popup
     private async UniTaskVoid HandleBackAsync()
     {
         bool hasUnsaved = false;
-        if (activeTabIndex >= 0 && activeTabIndex < UI_SettingTabs.Count)
+        if (_activeTabIndex >= 0 && _activeTabIndex < _settingTabs.Count)
         {
-            hasUnsaved = UI_SettingTabs[activeTabIndex].HasUnsavedChanges();
+            hasUnsaved = _settingTabs[_activeTabIndex].HasUnsavedChanges();
         }
 
         if (hasUnsaved)
         {
-            UI_SystemPopup.EPopupResult result = await UI_ConfirmPopup.ShowPopupAsync(
+            UI_SystemPopup.EPopupResult result = await _confirmPopup.ShowPopupAsync(
                 "Unsaved Changes",
                 "You have unsaved changes. Would you like to confirm the changes before leaving, or ignore them and exit anyway?",
                 true
@@ -158,7 +168,7 @@ public class UI_SettingsPopup : Popup
 
             if (result == UI_SystemPopup.EPopupResult.Confirm)
             {
-                UI_SettingTabs[activeTabIndex].SaveSettings();
+                _settingTabs[_activeTabIndex].SaveTabSettings();
                 Close();
             }
             else if (result == UI_SystemPopup.EPopupResult.Ignore)
