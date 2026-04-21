@@ -26,8 +26,24 @@ public class UI_SettingsTab_Control : UI_SettingsTabBase
     [SerializeField]
     private TextMeshProUGUI _jumpKeyText;
 
+    [SerializeField]
+    private Button _rebindInteractionButton;
+
+    [SerializeField]
+    private TextMeshProUGUI _interactionKeyText;
+
+    private static readonly KeyCode[] _allKeyCodes = (KeyCode[])System.Enum.GetValues(typeof(KeyCode));
     private bool _isDirty;
     private CancellationTokenSource _cts;
+
+    private void OnDestroy()
+    {
+        if (_cts != null)
+        {
+            _cts.Cancel();
+            _cts.Dispose();
+        }
+    }
 
     public override void InitTab()
     {
@@ -36,6 +52,7 @@ public class UI_SettingsTab_Control : UI_SettingsTabBase
         _invertYSwitch.onValueChanged.AddListener(val => SetDirty());
         _vibrationSwitch.onValueChanged.AddListener(val => SetDirty());
         _rebindJumpButton.onClick.AddListener(OnClick_RebindJump);
+        _rebindInteractionButton.onClick.AddListener(OnClick_RebindInteraction);
         _cts = new CancellationTokenSource();
     }
 
@@ -69,34 +86,39 @@ public class UI_SettingsTab_Control : UI_SettingsTabBase
 
     private void OnClick_RebindJump()
     {
-        WaitForKeyInputAsync(_cts.Token).Forget();
+        WaitForKeyInputAsync(_jumpKeyText).Forget();
     }
 
-    private async UniTaskVoid WaitForKeyInputAsync(CancellationToken token)
+    private void OnClick_RebindInteraction()
     {
-        _jumpKeyText.text = "Press Any Key...";
+        WaitForKeyInputAsync(_interactionKeyText).Forget();
+    }
+
+    private async UniTaskVoid WaitForKeyInputAsync(TextMeshProUGUI targetText)
+    {
+        string originalText = targetText.text;
+        targetText.text = "Press Any Key...";
+
+        await UniTask.Yield(_cts.Token);
 
         bool keyBound = false;
 
         while (!keyBound)
         {
-            await UniTask.Yield(token);
-
-            if (UnityEngine.Input.anyKeyDown)
+            await UniTask.Yield(_cts.Token);
+            if (Input.anyKeyDown && !Input.GetMouseButtonDown(0))
             {
-                _jumpKeyText.text = "Space";
-                keyBound = true;
-                SetDirty();
+                for (int i = 0; i < _allKeyCodes.Length; i++)
+                {
+                    if (Input.GetKeyDown(_allKeyCodes[i]))
+                    {
+                        targetText.text = _allKeyCodes[i].ToString();
+                        keyBound = true;
+                        SetDirty();
+                        break;
+                    }
+                }
             }
-        }
-    }
-
-    private void OnDestroy()
-    {
-        if (_cts != null)
-        {
-            _cts.Cancel();
-            _cts.Dispose();
         }
     }
 }

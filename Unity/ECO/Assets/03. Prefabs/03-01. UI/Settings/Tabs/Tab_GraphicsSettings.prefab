@@ -171,15 +171,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bb7f2395f2ca574497d1b2c1abf18f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UI_DisplayModeDropdown: {fileID: 5061014629335654275}
-  UI_ResolutionDropdown: {fileID: 6734001066887841400}
-  UI_BrightnessSlider: {fileID: 582546270995040694}
-  UI_VSyncSwitch: {fileID: 3877325349035061678}
-  UI_OverallQualityDropdown: {fileID: 1973136108803455415}
-  UI_TextureQualitySlider: {fileID: 660924755866210523}
-  UI_ShadowQualitySlider: {fileID: 8325986019076805987}
-  UI_MotionBlurSlider: {fileID: 59765026646534857}
-  UI_AntiAliasingSlider: {fileID: 349466498540537825}
+  _displayModeDropdown: {fileID: 5061014629335654275}
+  _resolutionDropdown: {fileID: 6734001066887841400}
+  _brightnessSlider: {fileID: 582546270995040694}
+  _vSyncSwitch: {fileID: 3877325349035061678}
+  _overallQualityDropdown: {fileID: 1973136108803455415}
+  _textureQualitySlider: {fileID: 660924755866210523}
+  _shadowQualitySlider: {fileID: 8325986019076805987}
+  _motionBlurSlider: {fileID: 59765026646534857}
+  _antiAliasingSlider: {fileID: 349466498540537825}
 --- !u!1 &9216029965661331642
 GameObject:
   m_ObjectHideFlags: 0
@@ -1671,11 +1671,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 374046249379491701, guid: 5f840202a162b4528849bf62ff36f7a6, type: 3}
       propertyPath: m_Size
-      value: 0.6585366
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 374046249379491701, guid: 5f840202a162b4528849bf62ff36f7a6, type: 3}
       propertyPath: m_Value
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 374046249379491702, guid: 5f840202a162b4528849bf62ff36f7a6, type: 3}
       propertyPath: m_Pivot.x
