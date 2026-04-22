@@ -21,6 +21,7 @@ public class PlayerStateMachine : MonoBehaviour
     public float JumpBufferTimer { get; set; }
     public float CoyoteTimer { get; set; }
     public bool HasUsedHover { get; set; }
+    public float DashCooldownTimer { get; set; }
 
     public float InputLockTimer { get; set; }
     public float LastWallJumpDir { get; set; }
@@ -57,6 +58,7 @@ public class PlayerStateMachine : MonoBehaviour
         JumpBufferTimer = Mathf.Max(0f, JumpBufferTimer - Time.deltaTime);
         CoyoteTimer = Mathf.Max(0f, CoyoteTimer - Time.deltaTime);
         InputLockTimer = Mathf.Max(0f, InputLockTimer - Time.deltaTime);
+        DashCooldownTimer = Mathf.Max(0f, DashCooldownTimer - Time.deltaTime);
         _currentState?.Update();
     }
 
@@ -90,6 +92,7 @@ public class PlayerStateMachine : MonoBehaviour
         InputLockTimer = 0f;
         JumpBufferTimer = 0f;
         CoyoteTimer = 0f;
+        DashCooldownTimer = 0f;
         HasUsedHover = false;
         ChangeState(EPlayerState.Grounded);
     }

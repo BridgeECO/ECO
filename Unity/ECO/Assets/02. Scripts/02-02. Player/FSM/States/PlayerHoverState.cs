@@ -22,6 +22,7 @@ public class PlayerHoverState : IPlayerState
     public void Enter()
     {
         _sm.HasUsedHover = true;
+        _sm.DashCooldownTimer = _data.DashCooldown;
         _motor.SetVelocity(Vector2.zero);
         _hoverTimer = 0f;
 

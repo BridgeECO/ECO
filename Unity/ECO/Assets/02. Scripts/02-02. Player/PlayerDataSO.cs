@@ -17,27 +17,27 @@ public class PlayerDataSO : ScriptableObject
     private float _airDeceleration;
 
     [Header("Jump & Gravity")]
-    [Tooltip("점프 키를 끝까지 홀딩했을 때 도달하는 최대 높이 (블록 단위). 이 값이 포물선의 정점이 됩니다.")]
+    [Tooltip("점프 가능한 최대 높이(블록 단위). 이 값이 포물선의 정점이 됩니다.")]
     [SerializeField]
     private float _jumpHeight;
 
-    [Tooltip("점프 키를 끝까지 홀딩했을 때 정점에 도달하기까지 걸리는 시간 (초). 낮출수록 점프 전체 속도가 빨라지고 중력이 강해집니다. 높일수록 점프가 둥실둥실 느려집니다.")]
+    [Tooltip("점프의 최대 홀딩 시간(초). 낮출수록 점프 전체 속도가 빨라지고 중력이 강해집니다. 높일수록 점프가 둥실둥실 느려집니다.")]
     [SerializeField]
     private float _maxJumpHoldTime;
 
-    [Tooltip("정점을 찍고 낙하할 때 중력에 곱해지는 배율. 1이면 상승과 동일한 속도로 낙하, 높일수록 정점 이후 빠르게 떨어집니다.")]
+    [Tooltip("정점을 찍고 낙하할 때 중력에 곱해지는 배율. 1이면 상승과 동일한 속도로 떨어지고, 높일수록 빠르게 떨어집니다.")]
     [SerializeField]
     private float _fallGravityMultiplier;
 
-    [Tooltip("점프 중 키에서 손을 뗐을 때 추가로 적용되는 하강 가속 배율. 높일수록 손을 뗀 직후 더 빠르게 아래로 당겨집니다.")]
+    [Tooltip("점프 키를 일찍 놓았을 때, 상승 중이거나 정점에 머무르는 순간(속도가 0 이상일 때) 적용되는 중력 배율. 높일수록 상승 궤적이 더 날카롭게 꺾이며 빠르게 낙하로 전환됩니다.")]
     [SerializeField]
     private float _earlyReleaseFallMultiplier;
 
-    [Tooltip("점프 중 키에서 손을 뗐을 때 현재 상승 속도를 즉시 얼마나 줄일지 결정합니다. 0이면 즉시 정점, 1이면 속도 변화 없음. 0에 가까울수록 짧은 탭 점프가 더 명확해집니다.")]
-    [SerializeField]
+    [Tooltip("키를 뗀 순간 딱 한 번, 현재 상승 속도에 곱해지는 배율. 0이면 즉시 상승이 멈추고, 1이면 감속 없음. 낮출수록 짧게 눌렀을 때 점프 높이 차이가 커집니다.")]
+    [SerializeField, Range(0f, 1f)]
     private float _jumpCutMultiplier;
 
-    [Tooltip("착지 직전에 점프 키를 미리 눌러도 착지 후 즉시 점프가 나가는 선입력 허용 시간 (초). 높일수록 여유롭게 점프 입력을 받아줍니다.")]
+    [Tooltip("착지 직전에 점프 키를 미리 눌러도 착지 후 즉시 점프가 나가는 선입력 허용 시간(초). 높일수록 여유롭게 점프 입력을 받아줍니다.")]
     [SerializeField]
     private float _jumpBufferTime;
 
@@ -54,15 +54,19 @@ public class PlayerDataSO : ScriptableObject
     private float _coyoteDistance;
 
     [Header("Dash & Hover")]
-    [Tooltip("대쉬 시 마우스 포인터 방향으로 날아가는 속도. 높일수록 더 빠르고 강렬한 대쉬가 됩니다.")]
+    [Tooltip("대쉬의 속도")]
     [SerializeField]
     private float _dashSpeed;
 
-    [Tooltip("대쉬 후 날아가는 지속 시간 (초). 높일수록 더 멀리 날아갑니다.")]
+    [Tooltip("대쉬의 지속 시간(초).")]
     [SerializeField]
     private float _dashDuration;
 
-    [Tooltip("마우스 좌클릭을 유지할 때 공중에서 제자리에 머무를 수 있는 최대 시간 (초). 0으로 설정하면 호버 기능이 사실상 비활성화됩니다.")]
+    [Tooltip("대쉬의 재사용 대기 시간(초).")]
+    [SerializeField]
+    private float _dashCooldown;
+
+    [Tooltip("최대 체류 시간 (초). 이 시간 안에 버튼을 떼면 대쉬가 발동되고, 초과하면 대쉬 없이 해제됩니다.")]
     [SerializeField]
     private float _maxHoverTime;
 
@@ -71,7 +75,7 @@ public class PlayerDataSO : ScriptableObject
     [SerializeField]
     private float _wallSlideSpeed;
 
-    [Tooltip("벽점프 시 벽의 반대 방향(가로)으로 튀어나가는 힘. 높일수록 옆으로 더 멀리 날아갑니다.")]
+    [Tooltip("벽점프 시 벽의 반대 방향으로 튀어나가는 힘. 높일수록 옆으로 더 멀리 날아갑니다.")]
     [SerializeField]
     private float _wallJumpPowerX;
 
@@ -79,7 +83,7 @@ public class PlayerDataSO : ScriptableObject
     [SerializeField]
     private float _wallJumpPowerY;
 
-    [Tooltip("벽점프 직후 방향키 입력을 무시하는 시간 (초). 이 시간 동안 포물선 궤적이 강제 유지됩니다. 너무 낮으면 방향키로 궤적이 무너질 수 있습니다.")]
+    [Tooltip("벽점프 직후 방향키 입력을 무시하는 시간(초). 이 시간 동안 포물선 궤적이 강제 유지됩니다. 너무 낮으면 방향키로 궤적이 무너질 수 있습니다.")]
     [SerializeField]
     private float _wallJumpInputLockTime;
 
@@ -119,6 +123,8 @@ public class PlayerDataSO : ScriptableObject
     public float DashSpeed { get => _dashSpeed; }
 
     public float DashDuration { get => _dashDuration; }
+
+    public float DashCooldown { get => _dashCooldown; }
 
     public float MaxHoverTime { get => _maxHoverTime; }
 

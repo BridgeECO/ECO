@@ -169,11 +169,13 @@ public class PlayerAirborneState : IPlayerState
         {
             return;
         }
+
         if (_isJumpHeld)
         {
             _isEarlyReleased = true;
         }
         _isJumpHeld = false;
+
         if (0f < _motor.Velocity.y)
         {
             _motor.SetVelocityY(_motor.Velocity.y * _data.JumpCutMultiplier);
@@ -182,7 +184,7 @@ public class PlayerAirborneState : IPlayerState
 
     private void HandleDashPressed()
     {
-        if (_sm.HasUsedHover)
+        if (_sm.HasUsedHover || 0f < _sm.DashCooldownTimer)
         {
             return;
         }
