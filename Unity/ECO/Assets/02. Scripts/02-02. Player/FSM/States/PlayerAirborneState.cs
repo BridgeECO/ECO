@@ -8,7 +8,8 @@ public class PlayerAirborneState : IPlayerState
     private PlayerMotor _motor;
     private PlayerDataSO _data;
 
-    private bool _isJumping;
+    private bool _isJumpHeld;
+    private bool _isEarlyReleased;
     private float _jumpHoldTimer;
     private float _fallOffPosX;
 
@@ -31,7 +32,8 @@ public class PlayerAirborneState : IPlayerState
         }
         else
         {
-            _isJumping = false;
+            _isJumpHeld = false;
+            _isEarlyReleased = false;
         }
 
         _input.OnJumpReleased += HandleJumpReleased;
@@ -58,10 +60,10 @@ public class PlayerAirborneState : IPlayerState
     {
         _sm.JumpBufferTimer = 0f;
         _sm.CoyoteTimer = 0f;
-        _isJumping = true;
+        _isJumpHeld = true;
+        _isEarlyReleased = false;
         _jumpHoldTimer = 0f;
-        float maxJumpHoldTime = (_data.MaxJumpHoldTime != 0f) ? _data.MaxJumpHoldTime : 0.1f;
-        _motor.SetVelocityY(_data.JumpHeight / maxJumpHoldTime);
+        _motor.SetVelocityY(_data.InitialJumpVelocity);
     }
 
     private void CheckLateJump()
@@ -83,9 +85,9 @@ public class PlayerAirborneState : IPlayerState
             return;
         }
 
-        float targetSpeedX = _input.HorizontalInput * _data.AirMoveSpeed;
+        float targetSpeedX = _input.HorizontalInput * _data.GroundMoveSpeed;
         float currentSpeedX = _motor.Velocity.x;
-        if (_data.AirMoveSpeed < Mathf.Abs(currentSpeedX))
+        if (_data.GroundMoveSpeed < Mathf.Abs(currentSpeedX))
         {
             currentSpeedX = Mathf.MoveTowards(currentSpeedX, targetSpeedX, _data.AirDeceleration * Time.deltaTime);
             _motor.SetVelocityX(currentSpeedX);
@@ -98,18 +100,16 @@ public class PlayerAirborneState : IPlayerState
 
     private void HandleJumpHold()
     {
-        if (!_isJumping)
+        if (!_isJumpHeld)
         {
             return;
         }
         _jumpHoldTimer += Time.deltaTime;
-
         if (_jumpHoldTimer < _data.MaxJumpHoldTime)
         {
             return;
         }
-        _isJumping = false;
-        _motor.SetVelocityY(0f);
+        _isJumpHeld = false;
     }
 
     private void HandleSlip()
@@ -125,11 +125,15 @@ public class PlayerAirborneState : IPlayerState
 
     private void ApplyGravity()
     {
-        if (_isJumping)
+        float gravityScale = 1f;
+        if (_motor.Velocity.y < 0f)
         {
-            return;
+            gravityScale = _data.FallGravityMultiplier;
         }
-        float gravityScale = (_motor.Velocity.y < 0f) ? _data.FallGravityMultiplier : 1f;
+        else if (_isEarlyReleased)
+        {
+            gravityScale = _data.EarlyReleaseFallMultiplier;
+        }
         _motor.AddVelocity(Vector2.down * _data.Gravity * gravityScale * Time.deltaTime);
         if (_motor.Velocity.y < -_data.MaxFallSpeed)
         {
@@ -161,12 +165,19 @@ public class PlayerAirborneState : IPlayerState
 
     private void HandleJumpReleased()
     {
-        _isJumping = false;
-        if (0f < _sm.InputLockTimer || _motor.Velocity.y <= 0f)
+        if (0f < _sm.InputLockTimer)
         {
             return;
         }
-        _motor.SetVelocityY(0f);
+        if (_isJumpHeld)
+        {
+            _isEarlyReleased = true;
+        }
+        _isJumpHeld = false;
+        if (0f < _motor.Velocity.y)
+        {
+            _motor.SetVelocityY(_motor.Velocity.y * _data.JumpCutMultiplier);
+        }
     }
 
     private void HandleDashPressed()
