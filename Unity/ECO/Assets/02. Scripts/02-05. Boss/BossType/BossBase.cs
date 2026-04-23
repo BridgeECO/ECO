@@ -22,7 +22,7 @@ public abstract class BossBase : MonoBehaviour
 
     protected virtual void Awake()
     {
-        if (ReferenceEquals(_animationController, null))
+        if (_animationController == null)
         {
             _animationController = GetComponentInChildren<BossAnimationController>();
         }

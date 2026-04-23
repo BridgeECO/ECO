@@ -7,7 +7,7 @@ public class BossAnimationController : MonoBehaviour
 
     private void Awake()
     {
-        if (ReferenceEquals(_animator, null))
+        if (_animator == null)
         {
             _animator = GetComponent<Animator>();
         }

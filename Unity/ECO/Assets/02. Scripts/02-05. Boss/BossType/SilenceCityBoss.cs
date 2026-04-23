@@ -7,7 +7,7 @@ public class SilenceCityBoss : BossBase
 {
     [Header("Settings")]
     [SerializeField]
-    private BossRoomManager bossRoomManager;
+    private BossRoomManager _bossRoomManager;
 
     [Header("Layer Masks")]
     [SerializeField]
@@ -115,9 +115,9 @@ public class SilenceCityBoss : BossBase
             UIManager.Instance.FadeInLoadingPanel(() => fadeOutUcs.TrySetResult());
             await fadeOutUcs.Task;
 
-            if (bossRoomManager != null)
+            if (_bossRoomManager != null)
             {
-                bossRoomManager.ResetRoom();
+                _bossRoomManager.ResetRoom();
             }
 
             ResetToPosition();

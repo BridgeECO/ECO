@@ -33,6 +33,5 @@ public class BossRoomManager : MonoBehaviour
             state.Obj.transform.rotation = state.Rot;
             state.Obj.SetActive(true);
         }
-        InputHandler.UnblockInput();
     }
 }
