@@ -11,6 +11,8 @@ public class PlayerInput : MonoBehaviour
     public float HorizontalInput { get; private set; }
     public Vector2 MouseWorldPosition { get; private set; }
 
+    public bool IsDashLocked { get; set; }
+
     private Camera _mainCamera;
 
     private void Awake()
@@ -46,6 +48,11 @@ public class PlayerInput : MonoBehaviour
 
     private void Dash()
     {
+        if (IsDashLocked)
+        {
+            return;
+        }
+
         if (Input.GetMouseButtonDown(0))
         {
             OnDashPressed?.Invoke();
