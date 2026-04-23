@@ -98,44 +98,45 @@ public class SilenceCityBoss : BossBase
     private async UniTask ResetEncounterAsync()
     {
         _isReset = true;
+
+        if (UIManager.Instance == null)
+        {
+            _isReset = false;
+            return;
+        }
+
         StopChase();
-        // SceneTransitionManager에서 쓰신 것처럼 플레이어 입력을 막습니다.
-        // (InputHandler 스크립트가 전역으로 접근 가능하다고 가정)
+
         InputHandler.BlockInput();
 
         try
         {
-            // [1단계] 페이드 인 (화면이 어두워짐)
             var fadeOutUcs = new UniTaskCompletionSource();
             UIManager.Instance.FadeInLoadingPanel(() => fadeOutUcs.TrySetResult());
             await fadeOutUcs.Task;
 
-            // [2단계] 화면이 완전히 가려진 상태에서 모든 요소 리셋
             if (bossRoomManager != null)
             {
                 bossRoomManager.ResetRoom();
             }
-            ResetToPosition(); // 보스를 처음 추격 시작 위치로 이동
+
+            ResetToPosition();
 
             if (RespawnManager.Instance != null)
             {
-                RespawnManager.Instance.Respawn(); // 플레이어 부활 지점으로 이동
+                RespawnManager.Instance.Respawn();
             }
 
-            // (선택 사항) 화면이 닫힌 상태로 아주 약간의 대기 시간을 주면 연출이 더 자연스럽습니다.
             await UniTask.Delay(System.TimeSpan.FromSeconds(0.3f));
 
-            // [3단계] 페이드 아웃 (화면이 다시 밝아짐)
             var fadeInUcs = new UniTaskCompletionSource();
             UIManager.Instance.FadeOutLoadingPanel(() => fadeInUcs.TrySetResult());
             await fadeInUcs.Task;
 
-            // [4단계] 페이드 아웃이 완료되면 보스가 다시 추격을 시작
             StartChase();
         }
         finally
         {
-            // 모든 연출이 끝난 후 플래그 해제 및 조작 권한 복구
             _isReset = false;
             InputHandler.UnblockInput();
         }
