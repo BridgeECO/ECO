@@ -54,6 +54,14 @@ public class PlayerGroundedState : IPlayerState
 
     private void HandleDashPressed()
     {
-        _sm.ChangeState(EPlayerState.Dash);
+        if (_sm.HasUsedHover)
+        {
+            return;
+        }
+        if (0f < _sm.DashCooldownTimer)
+        {
+            return;
+        }
+        _sm.ChangeState(EPlayerState.Hover);
     }
 }

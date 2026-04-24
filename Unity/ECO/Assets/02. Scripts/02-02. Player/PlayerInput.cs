@@ -1,5 +1,6 @@
-using UnityEngine;
 using System;
+using UnityEngine;
+using VInspector;
 
 public class PlayerInput : MonoBehaviour
 {
@@ -11,8 +12,15 @@ public class PlayerInput : MonoBehaviour
     public float HorizontalInput { get; private set; }
     public Vector2 MouseWorldPosition { get; private set; }
 
+    [field: SerializeField]
+    public bool IsDashLocked { get; set; }
+
+    [field: SerializeField]
+    public bool IsWallSlideLocked { get; set; }
+
     private Camera _mainCamera;
 
+    #region Unity Lifecycle Methods
     private void Awake()
     {
         _mainCamera = Camera.main;
@@ -31,7 +39,9 @@ public class PlayerInput : MonoBehaviour
         Jump();
         Dash();
     }
+    #endregion
 
+    #region Manipulations(Jump & Dash)
     private void Jump()
     {
         if (Input.GetKeyDown(KeyCode.Space))
@@ -46,6 +56,11 @@ public class PlayerInput : MonoBehaviour
 
     private void Dash()
     {
+        if (IsDashLocked)
+        {
+            return;
+        }
+
         if (Input.GetMouseButtonDown(0))
         {
             OnDashPressed?.Invoke();
@@ -55,4 +70,31 @@ public class PlayerInput : MonoBehaviour
             OnDashReleased?.Invoke();
         }
     }
+    #endregion
+
+    #region Debug Buttons
+    [Button("Unlock Dash"), ShowIf("IsDashLocked")]
+    private void UnlockDash()
+    {
+        IsDashLocked = false;
+    }
+
+    [Button("Lock Dash"), HideIf("IsDashLocked")]
+    private void LockDash()
+    {
+        IsDashLocked = true;
+    }
+
+    [Button("Unlock Wall Slide"), ShowIf("IsWallSlideLocked")]
+    private void UnlockWallSlide()
+    {
+        IsWallSlideLocked = false;
+    }
+
+    [Button("Lock Wall Slide"), HideIf("IsWallSlideLocked")]
+    private void LockWallSlide()
+    {
+        IsWallSlideLocked = true;
+    }
+    #endregion
 }
