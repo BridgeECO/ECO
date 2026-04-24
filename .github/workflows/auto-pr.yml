@@ -1,15 +1,12 @@
 name: Auto Create PR
-
 on:
   push:
     branches-ignore:
       - main
       - develop
-
 permissions:
   contents: write
   pull-requests: write
-
 jobs:
   create-pr:
     runs-on: ubuntu-latest
@@ -17,7 +14,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Check if PR already exists
         id: check_pr
         env:
@@ -25,24 +21,20 @@ jobs:
         run: |
           COUNT=$(gh pr list --head ${{ github.ref_name }} --state open --json number --jq 'length')
           echo "exists=$COUNT" >> $GITHUB_OUTPUT
-
       - name: Set up Python
         if: steps.check_pr.outputs.exists == '0'
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-
       - name: Install dependencies
         if: steps.check_pr.outputs.exists == '0'
         run: pip install google-genai jq
-
       - name: Fetch Repository Labels
         if: steps.check_pr.outputs.exists == '0'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh label list --json name --jq '.[].name' > labels.txt
-
       - name: Generate PR Data
         if: steps.check_pr.outputs.exists == '0'
         env:
@@ -51,7 +43,6 @@ jobs:
           git log origin/main..HEAD --pretty=format:"%s%n%b" > commits.txt
           git diff origin/main..HEAD > diff.txt
           python .github/scripts/generate_pr_info.py > pr_info.json
-
       - name: Create Pull Request
         if: steps.check_pr.outputs.exists == '0'
         env:
@@ -96,20 +87,11 @@ jobs:
           
           echo "$BODY" > pr_body.md
           
-          NEW_PR_URL=$(GH_TOKEN=$SELECT_TOKEN gh pr create \
+          GH_TOKEN=$SELECT_TOKEN gh pr create \
             --base main \
             --head ${{ github.ref_name }} \
             --title "$TITLE" \
             --body-file pr_body.md \
             --label "$ALL_LABELS" \
-            --draft)
-
-          PR_NUMBER=$(basename "$NEW_PR_URL")
-          
-          sleep 5
-
-          GH_TOKEN=$SELECT_TOKEN gh api \
-            --method POST \
-            -H "Accept: application/vnd.github+json" \
-            /repos/${{ github.repository }}/issues/$PR_NUMBER/assignees \
-            -f assignees[]="${{ github.actor }}"
+            --assignee "${{ github.actor }}" \
+            --draft || true
