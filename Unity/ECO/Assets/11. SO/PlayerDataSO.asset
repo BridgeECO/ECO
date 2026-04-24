@@ -16,16 +16,18 @@ MonoBehaviour:
   _airMoveSpeed: 2
   _airDeceleration: 15
   _jumpHeight: 8
-  _maxJumpHoldTime: 1.5
-  _gravity: 20
-  _fallGravityMultiplier: 4
-  _maxFallSpeed: 10
+  _maxJumpHoldTime: 0.6
+  _fallGravityMultiplier: 1
+  _earlyReleaseFallMultiplier: 5
+  _jumpCutMultiplier: 0
+  _jumpBufferTime: 0.2
+  _maxFallSpeed: 15
   _coyoteTime: 0.5
   _coyoteDistance: 0.2
-  _jumpBufferTime: 0.2
-  _dashSpeed: 8
-  _dashDuration: 1
-  _maxHoverTime: 1
+  _dashSpeed: 15
+  _dashDuration: 0.5
+  _dashCooldown: 2
+  _maxHoverTime: 0.8
   _wallSlideSpeed: 2.66
   _wallJumpPowerX: 10
   _wallJumpPowerY: 10
