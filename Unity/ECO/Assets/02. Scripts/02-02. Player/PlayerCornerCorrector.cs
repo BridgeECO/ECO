@@ -19,7 +19,7 @@ public class PlayerCornerCorrector : MonoBehaviour
 
     [Foldout("Settings")]
     [SerializeField]
-    private LayerMask _groundLayer;
+    private LayerMask _terrainLayer;
 
     [SerializeField]
     private float _correctionSpeed = 15f;
@@ -40,14 +40,19 @@ public class PlayerCornerCorrector : MonoBehaviour
 
     private void UpdateCornerCorrection()
     {
-        bool isCenterHitting = _headCenter.IsTouchingLayers(_groundLayer);
-        if (_motor.Velocity.y <= 0f || isCenterHitting)
+        if (_motor.Velocity.y <= 0f)
         {
             return;
         }
 
-        bool isLeftHitting = _headLeft.IsTouchingLayers(_groundLayer);
-        bool isRightHitting = _headRight.IsTouchingLayers(_groundLayer);
+        bool isCenterHitting = _headCenter.IsTouchingLayers(_terrainLayer);
+        if (isCenterHitting)
+        {
+            return;
+        }
+
+        bool isLeftHitting = _headLeft.IsTouchingLayers(_terrainLayer);
+        bool isRightHitting = _headRight.IsTouchingLayers(_terrainLayer);
         if (isLeftHitting && !isRightHitting)
         {
             ApplyCorrection(1f);
