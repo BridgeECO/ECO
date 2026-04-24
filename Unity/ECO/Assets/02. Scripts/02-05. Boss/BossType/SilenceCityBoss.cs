@@ -110,7 +110,7 @@ public class SilenceCityBoss : BossBase
             UIManager.Instance.FadeInLoadingPanel(() => fadeOutUcs.TrySetResult());
             await fadeOutUcs.Task;
 
-            _bossRoomManager.ResetRoom();
+            BossRoomManager.ResetRoom();
 
             ResetToPosition();
 
@@ -125,12 +125,12 @@ public class SilenceCityBoss : BossBase
             UIManager.Instance.FadeOutLoadingPanel(() => fadeInUcs.TrySetResult());
             await fadeInUcs.Task;
 
-            InputHandler.UnblockInput();
             StartChase();
         }
         finally
         {
             _isReset = false;
+            InputHandler.UnblockInput();
         }
     }
 }

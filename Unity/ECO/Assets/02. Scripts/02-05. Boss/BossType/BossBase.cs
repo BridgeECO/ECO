@@ -14,12 +14,13 @@ public abstract class BossBase : MonoBehaviour
     [SerializeField]
     private BossAnimationController _animationController;
     [SerializeField]
-    protected BossRoomManager _bossRoomManager;
+    private BossRoomManager _bossRoomManager;
 
     protected Transform TargetPlayer;
 
     public BossDataSO BossData { get => _bossData; protected set => _bossData = value; }
     protected BossAnimationController AnimationController => _animationController;
+    protected BossRoomManager BossRoomManager => _bossRoomManager;
     protected EBossState CurrentState { get; private set; } = EBossState.Idle;
 
     protected virtual void Awake()
