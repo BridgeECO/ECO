@@ -85,9 +85,9 @@ public class PlayerAirborneState : IPlayerState
             return;
         }
 
-        float targetSpeedX = _input.HorizontalInput * _data.GroundMoveSpeed;
+        float targetSpeedX = _input.HorizontalInput * _data.AirMoveSpeed;
         float currentSpeedX = _motor.Velocity.x;
-        if (_data.GroundMoveSpeed < Mathf.Abs(currentSpeedX))
+        if (_data.AirMoveSpeed < Mathf.Abs(currentSpeedX))
         {
             currentSpeedX = Mathf.MoveTowards(currentSpeedX, targetSpeedX, _data.AirDeceleration * Time.deltaTime);
             _motor.SetVelocityX(currentSpeedX);
