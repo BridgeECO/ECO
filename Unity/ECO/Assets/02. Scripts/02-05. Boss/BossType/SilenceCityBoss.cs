@@ -5,10 +5,6 @@ using VInspector;
 [RequireComponent(typeof(Rigidbody2D))]
 public class SilenceCityBoss : BossBase
 {
-    [Header("Settings")]
-    [SerializeField]
-    private BossRoomManager _bossRoomManager;
-
     [Header("Layer Masks")]
     [SerializeField]
     private LayerMask _destructibleLayer;
@@ -83,7 +79,6 @@ public class SilenceCityBoss : BossBase
             if (!_isReset)
             {
                 ResetEncounterAsync().Forget();
-                Debug.Log($"ResetEncounterAsync ½ÇÇà");
 
             }
             return;
@@ -115,10 +110,7 @@ public class SilenceCityBoss : BossBase
             UIManager.Instance.FadeInLoadingPanel(() => fadeOutUcs.TrySetResult());
             await fadeOutUcs.Task;
 
-            if (_bossRoomManager != null)
-            {
-                _bossRoomManager.ResetRoom();
-            }
+            _bossRoomManager.ResetRoom();
 
             ResetToPosition();
 
@@ -133,12 +125,12 @@ public class SilenceCityBoss : BossBase
             UIManager.Instance.FadeOutLoadingPanel(() => fadeInUcs.TrySetResult());
             await fadeInUcs.Task;
 
+            InputHandler.UnblockInput();
             StartChase();
         }
         finally
         {
             _isReset = false;
-            InputHandler.UnblockInput();
         }
     }
 }

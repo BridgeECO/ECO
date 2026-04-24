@@ -13,6 +13,8 @@ public abstract class BossBase : MonoBehaviour
     [Foldout("Hierarchy")]
     [SerializeField]
     private BossAnimationController _animationController;
+    [SerializeField]
+    protected BossRoomManager _bossRoomManager;
 
     protected Transform TargetPlayer;
 
@@ -25,6 +27,11 @@ public abstract class BossBase : MonoBehaviour
         if (_animationController == null)
         {
             _animationController = GetComponentInChildren<BossAnimationController>();
+        }
+
+        if (_bossRoomManager == null)
+        {
+            _bossRoomManager = UnityEngine.Object.FindFirstObjectByType<BossRoomManager>();
         }
 
         GameObject player = GameObject.FindWithTag(nameof(ETags.Player));
