@@ -104,9 +104,9 @@ public class PlayerDataSO : ScriptableObject
 
     public float MaxFallSpeed { get => _maxFallSpeed; }
 
-    public float Gravity { get => 2f * _jumpHeight / (_maxJumpHoldTime * _maxJumpHoldTime); }
+    public float Gravity { get => 0f < _maxJumpHoldTime ? 2f * _jumpHeight / (_maxJumpHoldTime * _maxJumpHoldTime) : 0f; }
 
-    public float InitialJumpVelocity { get => 2f * _jumpHeight / _maxJumpHoldTime; }
+    public float InitialJumpVelocity { get => 0f < _maxJumpHoldTime ? 2f * _jumpHeight / _maxJumpHoldTime : 0f; }
 
     public float FallGravityMultiplier { get => _fallGravityMultiplier; }
 
