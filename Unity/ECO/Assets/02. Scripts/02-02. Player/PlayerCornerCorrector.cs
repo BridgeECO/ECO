@@ -48,6 +48,7 @@ public class PlayerCornerCorrector : MonoBehaviour
         bool isCenterHitting = _headCenter.IsTouchingLayers(_terrainLayer);
         if (isCenterHitting)
         {
+            _motor.SetVelocityY(0f);
             return;
         }
 
