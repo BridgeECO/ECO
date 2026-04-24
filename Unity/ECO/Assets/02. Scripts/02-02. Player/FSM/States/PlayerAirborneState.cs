@@ -150,17 +150,21 @@ public class PlayerAirborneState : IPlayerState
         }
 
         float xInput = _input.HorizontalInput;
-        if (_sensor.IsBodyTouching && _motor.Velocity.y < 0f &&
-            Mathf.Sign(_sensor.WallDirection) == Mathf.Sign(xInput))
+        bool isTouchingWallWithInput =
+            _sensor.IsBodyTouching && _motor.Velocity.y < 0f && Mathf.Sign(_sensor.WallDirection) == Mathf.Sign(xInput);
+        if (!isTouchingWallWithInput)
         {
-            if (_sm.LastWallJumpDir != 0f && Mathf.Sign(_sm.LastWallJumpDir) == Mathf.Sign(_sensor.WallDirection))
-            {
-                return;
-            }
-
-            _sm.ChangeState(EPlayerState.WallSlide);
             return;
         }
+
+        bool isSameWallAsLastJump =
+            _sm.LastWallJumpDir != 0f && Mathf.Sign(_sm.LastWallJumpDir) == Mathf.Sign(_sensor.WallDirection);
+        if (isSameWallAsLastJump)
+        {
+            return;
+        }
+
+        _sm.ChangeState(EPlayerState.WallSlide);
     }
 
     private void HandleJumpReleased()
