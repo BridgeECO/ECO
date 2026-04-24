@@ -16,17 +16,17 @@ public class PlayerSensor : MonoBehaviour
 
     [Header("Layer Masks")]
     [SerializeField]
-    private LayerMask _groundLayer;
+    private LayerMask _terrainLayer;
     [SerializeField]
     private LayerMask _platformLayer;
     [SerializeField]
     private LayerMask _interactionLayer;
 
-    public bool IsGrounded => Physics2D.OverlapBox(_feetCollider.bounds.center, _feetCollider.bounds.size, 0f, _groundLayer | _platformLayer);
-    public bool IsBodyTouching => Physics2D.OverlapBox(_bodyCollider.bounds.center, _bodyCollider.bounds.size, 0f, _groundLayer);
+    public bool IsGrounded => Physics2D.OverlapBox(_feetCollider.bounds.center, _feetCollider.bounds.size, 0f, _terrainLayer | _platformLayer);
+    public bool IsBodyTouching => Physics2D.OverlapBox(_bodyCollider.bounds.center, _bodyCollider.bounds.size, 0f, _terrainLayer);
     public bool IsSliding => IsLeftSliding || IsRightSliding;
-    public bool IsLeftSliding => _leftSlipCollider.IsTouchingLayers(_groundLayer | _platformLayer);
-    public bool IsRightSliding => _rightSlipCollider.IsTouchingLayers(_groundLayer | _platformLayer);
+    public bool IsLeftSliding => _leftSlipCollider.IsTouchingLayers(_terrainLayer | _platformLayer);
+    public bool IsRightSliding => _rightSlipCollider.IsTouchingLayers(_terrainLayer | _platformLayer);
     public float WallDirection { get; private set; }
 
     private void Update()
@@ -42,7 +42,7 @@ public class PlayerSensor : MonoBehaviour
             return;
         }
         bool isWallRight = Physics2D.Raycast
-            (_bodyCollider.bounds.center, Vector2.right, _bodyCollider.bounds.extents.x + 0.1f, _groundLayer);
+            (_bodyCollider.bounds.center, Vector2.right, _bodyCollider.bounds.extents.x + 0.1f, _terrainLayer);
         WallDirection = (isWallRight) ? 1f : -1f;
     }
 
