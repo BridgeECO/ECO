@@ -114,10 +114,11 @@ public class PlayerAirborneState : IPlayerState
 
     private void HandleSlip()
     {
-        if (!_sensor.IsSliding || 0f < _motor.Velocity.y || _sensor.IsGrounded)
+        if (!_sensor.IsSliding || 0f < _motor.Velocity.y || _sensor.IsGrounded || _sensor.IsBodyTouching)
         {
             return;
         }
+
         float velocityX = (_sensor.IsLeftSliding) ? 2f : -2f;
         _motor.SetVelocityX(velocityX);
         _motor.AddVelocity(Vector2.down * _data.SlipDownSpeed * Time.deltaTime);
@@ -126,7 +127,7 @@ public class PlayerAirborneState : IPlayerState
     private void ApplyGravity()
     {
         float gravityScale = 1f;
-        if (_motor.Velocity.y < 0f)
+        if (_motor.Velocity.y <= 0f)
         {
             gravityScale = _data.FallGravityMultiplier;
         }
@@ -151,8 +152,8 @@ public class PlayerAirborneState : IPlayerState
 
         float xInput = _input.HorizontalInput;
         bool isTouchingWallWithInput =
-            !_input.IsWallSlideLocked && _sensor.IsBodyTouching &&
-            _motor.Velocity.y < 0f && Mathf.Sign(_sensor.WallDirection) == Mathf.Sign(xInput);
+            !_input.IsWallSlideLocked && _sensor.WallDirection != 0f &&
+            _motor.Velocity.y <= 0f && Mathf.Sign(_sensor.WallDirection) == Mathf.Sign(xInput);
         if (!isTouchingWallWithInput)
         {
             return;
