@@ -25,7 +25,8 @@ public class PlayerSensor : MonoBehaviour
     private const float WallCheckDistance = 0.05f;
 
     public bool IsGrounded => Physics2D.OverlapBox(_feetCollider.bounds.center, _feetCollider.bounds.size, 0f, _terrainLayer) || _feetCollider.IsTouchingLayers(_platformLayer);
-    public bool IsBodyTouching => Physics2D.OverlapBox(_bodyCollider.bounds.center, (Vector2)_bodyCollider.bounds.size + new Vector2(WallCheckDistance * 2f, 0f), 0f, _terrainLayer);
+    public bool IsBodyTouching => Physics2D.OverlapBox(_bodyCollider.bounds.center, _bodyCollider.bounds.size, 0f, _terrainLayer);
+    public bool IsWallTouching => Physics2D.OverlapBox(_bodyCollider.bounds.center, (Vector2)_bodyCollider.bounds.size + new Vector2(WallCheckDistance * 2f, 0f), 0f, _terrainLayer);
     public bool IsSliding => IsLeftSliding || IsRightSliding;
     public bool IsLeftSliding => _leftSlipCollider.IsTouchingLayers(_terrainLayer);
     public bool IsRightSliding => _rightSlipCollider.IsTouchingLayers(_terrainLayer);
@@ -38,7 +39,7 @@ public class PlayerSensor : MonoBehaviour
 
     private void HandleWallDirection()
     {
-        if (!IsBodyTouching)
+        if (!IsWallTouching)
         {
             WallDirection = 0f;
             return;

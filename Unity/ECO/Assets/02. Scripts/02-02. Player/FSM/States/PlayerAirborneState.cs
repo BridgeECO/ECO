@@ -152,7 +152,7 @@ public class PlayerAirborneState : IPlayerState
 
         float xInput = _input.HorizontalInput;
         bool isTouchingWallWithInput =
-            !_input.IsWallSlideLocked && _sensor.IsBodyTouching &&
+            !_input.IsWallSlideLocked && _sensor.WallDirection != 0f &&
             _motor.Velocity.y <= 0f && Mathf.Sign(_sensor.WallDirection) == Mathf.Sign(xInput);
         if (!isTouchingWallWithInput)
         {
