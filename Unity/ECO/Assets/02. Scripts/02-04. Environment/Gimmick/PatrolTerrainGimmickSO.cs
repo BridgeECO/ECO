@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "PatrolTerrainGimmick", menuName = "Environment/Gimmick/PatrolTerrainGimmick", order = 2)]
+[CreateAssetMenu(fileName = "GimmickSO_PatrolTerrain", menuName = "Scriptable Objects/Terrain Gimmick/PatrolTerrainGimmickSO")]
 public class PatrolTerrainGimmickSO : TerrainGimmickBaseSO
 {
     public override TerrainGimmickBase CreateGimmick(TerrainGimmickEntry entry)
