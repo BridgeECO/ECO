@@ -13,7 +13,7 @@ public class TerrainObject : MonoBehaviour, IEnergyReceiver
     [Foldout("Energy")]
     [SerializeField]
     private Transform _activationPosition;
-    
+
     [SerializeField]
     private Transform _deactivationPosition;
 
@@ -39,6 +39,22 @@ public class TerrainObject : MonoBehaviour, IEnergyReceiver
         foreach (var gimmick in _runtimeGimmicks)
         {
             gimmick.OnTerrainTriggerEnter2D(other);
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        foreach (var gimmick in _runtimeGimmicks)
+        {
+            gimmick.OnTerrainTriggerExit2D(other);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        foreach (var gimmick in _runtimeGimmicks)
+        {
+            gimmick?.OnDestroy(this);
         }
     }
 
