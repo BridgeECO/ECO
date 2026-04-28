@@ -2,7 +2,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-public class HiddenTerrainGimmick : TerrainGimmickBase
+public class FakeTerrainGimmick : TerrainGimmickBase
 {
     private float _fadeDuration;
     private float _detectionPadding;
@@ -10,7 +10,7 @@ public class HiddenTerrainGimmick : TerrainGimmickBase
     private SpriteRenderer _spriteRenderer;
     private BoxCollider2D _boxCollider;
 
-    public HiddenTerrainGimmick(
+    public FakeTerrainGimmick(
         EGimmickActivationType activationType,
         bool isInverted,
         float fadeDuration,

@@ -1,7 +1,7 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "HiddenTerrainGimmickSO", menuName = "Scriptable Objects/Terrain Gimmick/HiddenTerrainGimmickSO")]
-public class HiddenTerrainGimmickSO : TerrainGimmickBaseSO
+[CreateAssetMenu(fileName = "FakeTerrainGimmickSO", menuName = "Scriptable Objects/Terrain Gimmick/FakeTerrainGimmickSO")]
+public class FakeTerrainGimmickSO : TerrainGimmickBaseSO
 {
     [Tooltip("스프라이트가 투명/불투명으로 전환되는 데 걸리는 시간(초).")]
     [SerializeField]
@@ -13,6 +13,6 @@ public class HiddenTerrainGimmickSO : TerrainGimmickBaseSO
 
     public override TerrainGimmickBase CreateGimmick(TerrainGimmickEntry entry)
     {
-        return new HiddenTerrainGimmick(ActivationType, IsInverted, _fadeDuration, _detectionPadding);
+        return new FakeTerrainGimmick(ActivationType, IsInverted, _fadeDuration, _detectionPadding);
     }
 }
