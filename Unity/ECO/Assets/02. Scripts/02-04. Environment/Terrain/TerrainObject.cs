@@ -22,8 +22,11 @@ public class TerrainObject : MonoBehaviour, IEnergyReceiver
 
     private bool _isEnergyActive;
 
+    public Rigidbody2D Rigidbody { get; set; }
+
     private void Awake()
     {
+        Rigidbody = GetComponent<Rigidbody2D>();
         foreach (var entry in _gimmickEntries)
         {
             if (entry.GimmickData != null)
@@ -67,6 +70,28 @@ public class TerrainObject : MonoBehaviour, IEnergyReceiver
                 gimmick.Evaluate(this, _isEnergyActive);
             }
         }
+    }
+
+    private void OnDrawGizmos()
+    {
+#if UNITY_EDITOR
+        if (_activationPosition != null)
+        {
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawLine(transform.position, _activationPosition.position);
+        }
+
+        if (_gimmickEntries != null)
+        {
+            foreach (var entry in _gimmickEntries)
+            {
+                if (entry.GimmickData != null)
+                {
+                    entry.GimmickData.DrawGizmos(this, entry);
+                }
+            }
+        }
+#endif
     }
 
     public void SetEnergyActive(bool isActive)
