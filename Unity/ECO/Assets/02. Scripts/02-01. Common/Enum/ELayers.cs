@@ -9,4 +9,5 @@ public enum ELayers
     Platform = 7,
     Interactable = 8,
     Destructible = 9,
+    GimmickActivation = 10,
 }
