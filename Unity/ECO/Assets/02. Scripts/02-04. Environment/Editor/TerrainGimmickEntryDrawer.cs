@@ -29,10 +29,7 @@ public class TerrainGimmickEntryDrawer : PropertyDrawer
         {
             currentRect.y += lineHeight + spacing;
             EditorGUI.PropertyField(currentRect, moveSpeedProperty, new GUIContent("Move Speed"));
-        }
 
-        if (IsMoveTerrainGimmick(gimmickDataProperty) || IsPatrolTerrainGimmick(gimmickDataProperty))
-        {
             currentRect.y += lineHeight + spacing;
             float waypointsHeight = EditorGUI.GetPropertyHeight(waypointsProperty, true);
             currentRect.height = waypointsHeight;
@@ -60,13 +57,8 @@ public class TerrainGimmickEntryDrawer : PropertyDrawer
         if (IsMoveTerrainGimmick(gimmickDataProperty) || IsPatrolTerrainGimmick(gimmickDataProperty))
         {
             height += lineHeight + spacing;
-        }
-
-        if (IsMoveTerrainGimmick(gimmickDataProperty) || IsPatrolTerrainGimmick(gimmickDataProperty))
-        {
             height += EditorGUI.GetPropertyHeight(waypointsProperty, true) + spacing;
         }
-
         return height;
     }
 
