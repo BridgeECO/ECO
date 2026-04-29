@@ -62,61 +62,55 @@ public class PatrolTerrainGimmick : TerrainGimmickBase
 
         while (!ct.IsCancellationRequested)
         {
-            Vector2 targetPos;
-            if (currentIndex == -1)
-            {
-                targetPos = _initialPosition;
-            }
-            else
+            Vector2 targetPos = _initialPosition;
+            
+            if (0 <= currentIndex)
             {
                 Transform wp = _entry.Waypoints[currentIndex];
                 if (wp == null)
                 {
                     break;
                 }
+                
                 targetPos = wp.position;
             }
 
-            while (!ct.IsCancellationRequested)
+            Vector2 currentPos = target.Rigidbody.position;
+            
+            if (Vector2.Distance(currentPos, targetPos) <= 0.001f)
             {
-                Vector2 currentPos = target.Rigidbody.position;
-                if (Vector2.Distance(currentPos, targetPos) <= 0.001f)
+                target.Rigidbody.MovePosition(targetPos);
+                currentIndex += direction;
+                
+                if (_entry.Waypoints.Count <= currentIndex)
                 {
-                    target.Rigidbody.MovePosition(targetPos);
-                    break;
+                    direction = -1;
+                    currentIndex = Mathf.Max(-1, _entry.Waypoints.Count - 2);
                 }
-
-                Vector2 nextPos = Vector2.MoveTowards(currentPos, targetPos, _entry.MoveSpeed * Time.fixedDeltaTime);
-                target.Rigidbody.MovePosition(nextPos);
-
-                await UniTask.Yield(PlayerLoopTiming.FixedUpdate, ct);
-            }
-
-            currentIndex += direction;
-            if (_entry.Waypoints.Count <= currentIndex)
-            {
-                direction = -1;
-                currentIndex = _entry.Waypoints.Count - 2;
+                
                 if (currentIndex < -1)
                 {
-                    currentIndex = -1;
+                    direction = 1;
+                    currentIndex = 0;
                 }
+                
+                continue;
             }
-            else if (currentIndex < -1)
-            {
-                direction = 1;
-                currentIndex = 0;
-            }
+
+            Vector2 nextPos = Vector2.MoveTowards(currentPos, targetPos, _entry.MoveSpeed * Time.fixedDeltaTime);
+            target.Rigidbody.MovePosition(nextPos);
+
+            await UniTask.Yield(PlayerLoopTiming.FixedUpdate, ct);
         }
     }
 
     private async UniTask ReturnToInitialPositionAsync(TerrainObject target, CancellationToken ct)
     {
-        Vector2 targetPos = _initialPosition;
-
         while (!ct.IsCancellationRequested)
         {
+            Vector2 targetPos = _initialPosition;
             Vector2 currentPos = target.Rigidbody.position;
+            
             if (Vector2.Distance(currentPos, targetPos) <= 0.001f)
             {
                 target.Rigidbody.MovePosition(targetPos);

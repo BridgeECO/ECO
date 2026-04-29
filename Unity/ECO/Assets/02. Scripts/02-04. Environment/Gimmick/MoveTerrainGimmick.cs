@@ -69,15 +69,20 @@ public class MoveTerrainGimmick : TerrainGimmickBase
     {
         while (!ct.IsCancellationRequested)
         {
-            if (_targetWaypointIndex < -1) break;
-            if (_targetWaypointIndex >= _entry.Waypoints.Count) break;
+            if (_targetWaypointIndex < -1 || _entry.Waypoints.Count <= _targetWaypointIndex)
+            {
+                break;
+            }
 
             Vector2 targetPos = _initialPosition;
 
-            if (_targetWaypointIndex >= 0)
+            if (0 <= _targetWaypointIndex)
             {
                 Transform wp = _entry.Waypoints[_targetWaypointIndex];
-                if (wp == null) break;
+                if (wp == null)
+                {
+                    break;
+                }
                 
                 targetPos = wp.position;
             }

@@ -11,7 +11,7 @@ public class PatrolTerrainGimmickSO : TerrainGimmickBaseSO
     public override void DrawGizmos(TerrainObject target, TerrainGimmickEntry entry)
     {
 #if UNITY_EDITOR
-        if (entry.Waypoints != null && entry.Waypoints.Count > 0)
+        if (entry.Waypoints != null && 0 < entry.Waypoints.Count)
         {
             Gizmos.color = Color.yellow;
             Vector3 prev = target.transform.position;
