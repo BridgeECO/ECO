@@ -3,94 +3,76 @@ using UnityEngine;
 
 public class TerrainRiderSynchronizer : MonoBehaviour
 {
-    private List<PlayerMotor> _activeRiders = new List<PlayerMotor>();
-    private List<PlayerMotor> _exitingRiders = new List<PlayerMotor>();
-    private List<float> _exitingTimes = new List<float>();
+    private PlayerMotor _rider;
+    private bool _isExiting;
+    private float _exitingTime;
 
     private const float RIDER_COYOTE_TIME = 0.15f;
 
-    public void SetVelocity(Vector2 velocity)
+    private void Update()
     {
-        for (int i = 0; i < _activeRiders.Count; i++)
+        if (_rider != null && _isExiting)
         {
-            if (_activeRiders[i] != null)
+            if (Time.time >= _exitingTime || _rider.Velocity.y > 0.1f)
             {
-                _activeRiders[i].ExternalVelocity = velocity;
-            }
-        }
-
-        for (int i = 0; i < _exitingRiders.Count; i++)
-        {
-            if (_exitingRiders[i] != null)
-            {
-                _exitingRiders[i].ExternalVelocity = velocity;
+                _rider.ExternalVelocity = Vector2.zero;
+                _rider = null;
+                _isExiting = false;
             }
         }
     }
 
-    private void Update()
+    public void SetVelocity(Vector2 velocity)
     {
-        for (int i = _exitingRiders.Count - 1; i >= 0; i--)
+        if (_rider != null)
         {
-            PlayerMotor rider = _exitingRiders[i];
-            
-            if (rider == null || Time.time >= _exitingTimes[i] || rider.Velocity.y > 0.1f)
-            {
-                if (rider != null)
-                {
-                    rider.ExternalVelocity = Vector2.zero;
-                }
-                _exitingRiders.RemoveAt(i);
-                _exitingTimes.RemoveAt(i);
-            }
+            _rider.ExternalVelocity = velocity;
         }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag(nameof(ETags.Player)))
+        if (!collision.gameObject.CompareTag(nameof(ETags.Player)))
         {
-            foreach (ContactPoint2D contact in collision.contacts)
-            {
-                if (contact.normal.y < -0.5f)
-                {
-                    PlayerMotor motor = collision.gameObject.GetComponentInParent<PlayerMotor>();
-                    if (motor != null)
-                    {
-                        int exitIndex = _exitingRiders.IndexOf(motor);
-                        if (exitIndex >= 0)
-                        {
-                            _exitingRiders.RemoveAt(exitIndex);
-                            _exitingTimes.RemoveAt(exitIndex);
-                        }
+            return;
+        }
 
-                        if (!_activeRiders.Contains(motor))
-                        {
-                            _activeRiders.Add(motor);
-                        }
-                    }
-                    break;
-                }
+        bool isOnTop = false;
+        foreach (ContactPoint2D contact in collision.contacts)
+        {
+            if (contact.normal.y < -0.5f)
+            {
+                isOnTop = true;
+                break;
             }
         }
+
+        if (!isOnTop)
+        {
+            return;
+        }
+        PlayerMotor motor = collision.gameObject.GetComponentInParent<PlayerMotor>();
+        if (motor == null)
+        {
+            return;
+        }
+        _rider = motor;
+        _isExiting = false;
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag(nameof(ETags.Player)))
+        if (!collision.gameObject.CompareTag(nameof(ETags.Player)))
         {
-            PlayerMotor motor = collision.gameObject.GetComponentInParent<PlayerMotor>();
-            if (motor != null)
-            {
-                if (_activeRiders.Remove(motor))
-                {
-                    if (!_exitingRiders.Contains(motor))
-                    {
-                        _exitingRiders.Add(motor);
-                        _exitingTimes.Add(Time.time + RIDER_COYOTE_TIME);
-                    }
-                }
-            }
+            return;
         }
+
+        PlayerMotor motor = collision.gameObject.GetComponentInParent<PlayerMotor>();
+        if (motor == null || _rider != motor || _isExiting)
+        {
+            return;
+        }
+        _isExiting = true;
+        _exitingTime = Time.time + RIDER_COYOTE_TIME;
     }
 }
