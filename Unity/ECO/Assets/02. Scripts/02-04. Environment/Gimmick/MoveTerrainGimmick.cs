@@ -8,6 +8,8 @@ public class MoveTerrainGimmick : TerrainGimmickBase
     private CancellationTokenSource _moveCts;
     private Vector2 _initialPosition;
     private bool _isInitialized;
+    private int _targetWaypointIndex = 0;
+    private bool _isCurrentlyForward = true;
 
     public MoveTerrainGimmick(EGimmickActivationType activationType, bool isInverted, TerrainGimmickEntry entry)
 
@@ -34,66 +36,59 @@ public class MoveTerrainGimmick : TerrainGimmickBase
         {
             _initialPosition = target.Rigidbody.position;
             _isInitialized = true;
+            _targetWaypointIndex = 0;
+            _isCurrentlyForward = true;
         }
 
         _moveCts?.Cancel();
         _moveCts?.Dispose();
         _moveCts = new CancellationTokenSource();
 
-        if (isActivated)
+        if (_entry.Waypoints == null || _entry.Waypoints.Count == 0)
         {
-            if (_entry.Waypoints == null || _entry.Waypoints.Count == 0)
-            {
-                Debug.LogWarning($"[MoveTerrainGimmick] {target.name}에 Waypoints가 설정되지 않았습니다.");
-                return;
-            }
-            MoveWaypointsAsync(target, _moveCts.Token).Forget();
+            Debug.LogWarning($"[MoveTerrainGimmick] {target.name}에 Waypoints가 설정되지 않았습니다.");
+            return;
         }
-        else
+
+        if (isActivated && !_isCurrentlyForward)
         {
-            ReturnToInitialPositionAsync(target, _moveCts.Token).Forget();
+            _isCurrentlyForward = true;
+            _targetWaypointIndex++;
         }
+
+        if (!isActivated && _isCurrentlyForward)
+        {
+            _isCurrentlyForward = false;
+            _targetWaypointIndex--;
+        }
+
+        MoveRoutineAsync(target, isActivated, _moveCts.Token).Forget();
     }
 
-    private async UniTask MoveWaypointsAsync(TerrainObject target, CancellationToken ct)
+    private async UniTask MoveRoutineAsync(TerrainObject target, bool isForward, CancellationToken ct)
     {
-        for (int i = 0; i < _entry.Waypoints.Count; i++)
-        {
-            if (ct.IsCancellationRequested) return;
-
-            Transform wp = _entry.Waypoints[i];
-            if (wp == null) continue;
-
-            Vector2 targetPos = wp.position;
-
-            while (!ct.IsCancellationRequested)
-            {
-                Vector2 currentPos = target.Rigidbody.position;
-                if (Vector2.Distance(currentPos, targetPos) <= 0.001f)
-                {
-                    target.Rigidbody.MovePosition(targetPos);
-                    break;
-                }
-
-                Vector2 nextPos = Vector2.MoveTowards(currentPos, targetPos, _entry.MoveSpeed * Time.fixedDeltaTime);
-                target.Rigidbody.MovePosition(nextPos);
-
-                await UniTask.Yield(PlayerLoopTiming.FixedUpdate, ct);
-            }
-        }
-    }
-
-    private async UniTask ReturnToInitialPositionAsync(TerrainObject target, CancellationToken ct)
-    {
-        Vector2 targetPos = _initialPosition;
-
         while (!ct.IsCancellationRequested)
         {
+            if (_targetWaypointIndex < -1) break;
+            if (_targetWaypointIndex >= _entry.Waypoints.Count) break;
+
+            Vector2 targetPos = _initialPosition;
+
+            if (_targetWaypointIndex >= 0)
+            {
+                Transform wp = _entry.Waypoints[_targetWaypointIndex];
+                if (wp == null) break;
+                
+                targetPos = wp.position;
+            }
+
             Vector2 currentPos = target.Rigidbody.position;
+            
             if (Vector2.Distance(currentPos, targetPos) <= 0.001f)
             {
                 target.Rigidbody.MovePosition(targetPos);
-                break;
+                _targetWaypointIndex += isForward ? 1 : -1;
+                continue;
             }
 
             Vector2 nextPos = Vector2.MoveTowards(currentPos, targetPos, _entry.MoveSpeed * Time.fixedDeltaTime);
