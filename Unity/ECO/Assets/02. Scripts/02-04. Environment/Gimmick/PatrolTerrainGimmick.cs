@@ -62,14 +62,20 @@ public class PatrolTerrainGimmick : TerrainGimmickBase
 
         while (!ct.IsCancellationRequested)
         {
-            Transform wp = _entry.Waypoints[currentIndex];
-            if (wp == null)
+            Vector2 targetPos;
+            if (currentIndex == -1)
             {
-                break;
+                targetPos = _initialPosition;
             }
-
-            Vector2 targetPos = wp.position;
-
+            else
+            {
+                Transform wp = _entry.Waypoints[currentIndex];
+                if (wp == null)
+                {
+                    break;
+                }
+                targetPos = wp.position;
+            }
 
             while (!ct.IsCancellationRequested)
             {
@@ -91,13 +97,15 @@ public class PatrolTerrainGimmick : TerrainGimmickBase
             {
                 direction = -1;
                 currentIndex = _entry.Waypoints.Count - 2;
-                currentIndex = (currentIndex < 0) ? 0 : currentIndex;
+                if (currentIndex < -1)
+                {
+                    currentIndex = -1;
+                }
             }
-            else if (currentIndex < 0)
+            else if (currentIndex < -1)
             {
                 direction = 1;
-                currentIndex = 1;
-                currentIndex = (_entry.Waypoints.Count <= currentIndex) ? 0 : currentIndex;
+                currentIndex = 0;
             }
         }
     }
