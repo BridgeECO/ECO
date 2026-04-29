@@ -13,7 +13,7 @@ public class MoveTerrainGimmickSO : TerrainGimmickBaseSO
 #if UNITY_EDITOR
         if (entry.Waypoints != null && entry.Waypoints.Count > 0)
         {
-            Gizmos.color = Color.cyan;
+            Gizmos.color = Color.green;
             Vector3 prev = target.transform.position;
             foreach (var wp in entry.Waypoints)
             {
