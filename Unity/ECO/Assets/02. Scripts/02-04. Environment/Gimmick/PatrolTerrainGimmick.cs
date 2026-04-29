@@ -79,6 +79,7 @@ public class PatrolTerrainGimmick : TerrainGimmickBase
             
             if (Vector2.Distance(currentPos, targetPos) <= 0.001f)
             {
+                target.GetComponent<TerrainRiderSynchronizer>()?.SetVelocity(Vector2.zero);
                 target.Rigidbody.MovePosition(targetPos);
                 currentIndex += direction;
                 
@@ -98,6 +99,8 @@ public class PatrolTerrainGimmick : TerrainGimmickBase
             }
 
             Vector2 nextPos = Vector2.MoveTowards(currentPos, targetPos, _entry.MoveSpeed * Time.fixedDeltaTime);
+            Vector2 velocity = (nextPos - currentPos) / Time.fixedDeltaTime;
+            target.GetComponent<TerrainRiderSynchronizer>()?.SetVelocity(velocity);
             target.Rigidbody.MovePosition(nextPos);
 
             await UniTask.Yield(PlayerLoopTiming.FixedUpdate, ct);
@@ -113,11 +116,14 @@ public class PatrolTerrainGimmick : TerrainGimmickBase
             
             if (Vector2.Distance(currentPos, targetPos) <= 0.001f)
             {
+                target.GetComponent<TerrainRiderSynchronizer>()?.SetVelocity(Vector2.zero);
                 target.Rigidbody.MovePosition(targetPos);
                 break;
             }
 
             Vector2 nextPos = Vector2.MoveTowards(currentPos, targetPos, _entry.MoveSpeed * Time.fixedDeltaTime);
+            Vector2 velocity = (nextPos - currentPos) / Time.fixedDeltaTime;
+            target.GetComponent<TerrainRiderSynchronizer>()?.SetVelocity(velocity);
             target.Rigidbody.MovePosition(nextPos);
 
             await UniTask.Yield(PlayerLoopTiming.FixedUpdate, ct);

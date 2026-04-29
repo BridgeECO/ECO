@@ -3,6 +3,7 @@ using UnityEngine;
 public class PlayerMotor : MonoBehaviour
 {
     public Vector2 Velocity { get; private set; }
+    public Vector2 ExternalVelocity { get; set; }
     private PlayerStateMachine _stateMachine;
     private Rigidbody2D _rigidbody;
 
@@ -42,6 +43,6 @@ public class PlayerMotor : MonoBehaviour
 
     private void FixedUpdate()
     {
-        _rigidbody.linearVelocity = Velocity;
+        _rigidbody.linearVelocity = Velocity + ExternalVelocity;
     }
 }

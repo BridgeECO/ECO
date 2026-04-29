@@ -3,39 +3,47 @@ using UnityEngine;
 
 public class TerrainRiderSynchronizer : MonoBehaviour
 {
-    private HashSet<Transform> _riders = new HashSet<Transform>();
-    private Rigidbody2D _rb2D;
-    private Vector2 _lastPosition;
+    private List<PlayerMotor> _activeRiders = new List<PlayerMotor>();
+    private List<PlayerMotor> _exitingRiders = new List<PlayerMotor>();
+    private List<float> _exitingTimes = new List<float>();
 
-    private void Awake()
+    private const float RIDER_COYOTE_TIME = 0.15f;
+
+    public void SetVelocity(Vector2 velocity)
     {
-        _rb2D = GetComponent<Rigidbody2D>();
-        _lastPosition = _rb2D.position;
-    }
-
-    private void FixedUpdate()
-    {
-        if (_riders.Count == 0)
+        for (int i = 0; i < _activeRiders.Count; i++)
         {
-            _lastPosition = _rb2D.position;
-            return;
-        }
-
-        Vector2 currentPosition = _rb2D.position;
-        Vector2 delta = currentPosition - _lastPosition;
-
-        if (delta.sqrMagnitude > 0.000001f)
-        {
-            foreach (var rider in _riders)
+            if (_activeRiders[i] != null)
             {
-                if (rider != null)
-                {
-                    rider.position += (Vector3)delta;
-                }
+                _activeRiders[i].ExternalVelocity = velocity;
             }
         }
 
-        _lastPosition = currentPosition;
+        for (int i = 0; i < _exitingRiders.Count; i++)
+        {
+            if (_exitingRiders[i] != null)
+            {
+                _exitingRiders[i].ExternalVelocity = velocity;
+            }
+        }
+    }
+
+    private void Update()
+    {
+        for (int i = _exitingRiders.Count - 1; i >= 0; i--)
+        {
+            PlayerMotor rider = _exitingRiders[i];
+            
+            if (rider == null || Time.time >= _exitingTimes[i] || rider.Velocity.y > 0.1f)
+            {
+                if (rider != null)
+                {
+                    rider.ExternalVelocity = Vector2.zero;
+                }
+                _exitingRiders.RemoveAt(i);
+                _exitingTimes.RemoveAt(i);
+            }
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -46,34 +54,23 @@ public class TerrainRiderSynchronizer : MonoBehaviour
             {
                 if (contact.normal.y < -0.5f)
                 {
-                    _riders.Add(collision.transform);
+                    PlayerMotor motor = collision.gameObject.GetComponentInParent<PlayerMotor>();
+                    if (motor != null)
+                    {
+                        int exitIndex = _exitingRiders.IndexOf(motor);
+                        if (exitIndex >= 0)
+                        {
+                            _exitingRiders.RemoveAt(exitIndex);
+                            _exitingTimes.RemoveAt(exitIndex);
+                        }
+
+                        if (!_activeRiders.Contains(motor))
+                        {
+                            _activeRiders.Add(motor);
+                        }
+                    }
                     break;
                 }
-            }
-        }
-    }
-
-    private void OnCollisionStay2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag(nameof(ETags.Player)))
-        {
-            bool isOnTop = false;
-            foreach (ContactPoint2D contact in collision.contacts)
-            {
-                if (contact.normal.y < -0.5f)
-                {
-                    isOnTop = true;
-                    break;
-                }
-            }
-
-            if (isOnTop)
-            {
-                _riders.Add(collision.transform);
-            }
-            else
-            {
-                _riders.Remove(collision.transform);
             }
         }
     }
@@ -82,7 +79,18 @@ public class TerrainRiderSynchronizer : MonoBehaviour
     {
         if (collision.gameObject.CompareTag(nameof(ETags.Player)))
         {
-            _riders.Remove(collision.transform);
+            PlayerMotor motor = collision.gameObject.GetComponentInParent<PlayerMotor>();
+            if (motor != null)
+            {
+                if (_activeRiders.Remove(motor))
+                {
+                    if (!_exitingRiders.Contains(motor))
+                    {
+                        _exitingRiders.Add(motor);
+                        _exitingTimes.Add(Time.time + RIDER_COYOTE_TIME);
+                    }
+                }
+            }
         }
     }
 }
