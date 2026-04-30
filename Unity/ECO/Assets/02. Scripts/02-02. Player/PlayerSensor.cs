@@ -28,9 +28,26 @@ public class PlayerSensor : MonoBehaviour
     public bool IsBodyTouching => Physics2D.OverlapBox(_bodyCollider.bounds.center, _bodyCollider.bounds.size, 0f, _terrainLayer);
     public bool IsWallTouching => Physics2D.OverlapBox(_bodyCollider.bounds.center, (Vector2)_bodyCollider.bounds.size + new Vector2(WALL_CHECK_DISTANCE * 2f, 0f), 0f, _terrainLayer);
     public bool IsSliding => IsLeftSliding || IsRightSliding;
-    public bool IsLeftSliding => _leftSlipCollider.IsTouchingLayers(_terrainLayer);
-    public bool IsRightSliding => _rightSlipCollider.IsTouchingLayers(_terrainLayer);
+    public bool IsLeftSliding
+    {
+        get
+        {
+            Vector2 checkSize = new Vector2(0.1f, 0.1f);
+            Vector2 checkCenter = new Vector2(_bodyCollider.bounds.min.x, _bodyCollider.bounds.min.y);
+            return Physics2D.OverlapBox(checkCenter, checkSize, 0f, _terrainLayer | _platformLayer);
+        }
+    }
+    public bool IsRightSliding
+    {
+        get
+        {
+            Vector2 checkSize = new Vector2(0.1f, 0.1f);
+            Vector2 checkCenter = new Vector2(_bodyCollider.bounds.max.x, _bodyCollider.bounds.min.y);
+            return Physics2D.OverlapBox(checkCenter, checkSize, 0f, _terrainLayer | _platformLayer);
+        }
+    }
     public float WallDirection { get; private set; }
+
 
     private void Update()
     {

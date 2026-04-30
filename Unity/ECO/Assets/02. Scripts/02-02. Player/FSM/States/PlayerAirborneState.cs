@@ -52,6 +52,7 @@ public class PlayerAirborneState : IPlayerState
 
     public void Exit()
     {
+        _motor.SetFriction(true);
         _input.OnJumpReleased -= HandleJumpReleased;
         _input.OnDashPressed -= HandleDashPressed;
     }
@@ -114,11 +115,13 @@ public class PlayerAirborneState : IPlayerState
 
     private void HandleSlip()
     {
-        if (!_sensor.IsSliding || 0f < _motor.Velocity.y || _sensor.IsGrounded || _sensor.IsBodyTouching)
+        if (!_sensor.IsSliding || 0f < _motor.Velocity.y || _sensor.IsGrounded || _sensor.IsWallTouching)
         {
+            _motor.SetFriction(true);
             return;
         }
 
+        _motor.SetFriction(false);
         float velocityX = (_sensor.IsLeftSliding) ? 2f : -2f;
         _motor.SetVelocityX(velocityX);
         _motor.AddVelocity(Vector2.down * _data.SlipDownSpeed * Time.deltaTime);
