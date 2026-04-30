@@ -23,6 +23,7 @@ public class PlayerSensor : MonoBehaviour
     private LayerMask _interactionLayer;
 
     private const float WALL_CHECK_DISTANCE = 0.05f;
+    private const float SLIP_CHECK_BOX_SIZE = 0.1f;
 
     public bool IsGrounded => Physics2D.OverlapBox(_feetCollider.bounds.center, _feetCollider.bounds.size, 0f, _terrainLayer) || _feetCollider.IsTouchingLayers(_platformLayer);
     public bool IsBodyTouching => Physics2D.OverlapBox(_bodyCollider.bounds.center, _bodyCollider.bounds.size, 0f, _terrainLayer);
@@ -32,7 +33,7 @@ public class PlayerSensor : MonoBehaviour
     {
         get
         {
-            Vector2 checkSize = new Vector2(0.1f, 0.1f);
+            Vector2 checkSize = new Vector2(SLIP_CHECK_BOX_SIZE, SLIP_CHECK_BOX_SIZE);
             Vector2 checkCenter = new Vector2(_bodyCollider.bounds.min.x, _bodyCollider.bounds.min.y);
             return Physics2D.OverlapBox(checkCenter, checkSize, 0f, _terrainLayer | _platformLayer);
         }
@@ -41,7 +42,7 @@ public class PlayerSensor : MonoBehaviour
     {
         get
         {
-            Vector2 checkSize = new Vector2(0.1f, 0.1f);
+            Vector2 checkSize = new Vector2(SLIP_CHECK_BOX_SIZE, SLIP_CHECK_BOX_SIZE);
             Vector2 checkCenter = new Vector2(_bodyCollider.bounds.max.x, _bodyCollider.bounds.min.y);
             return Physics2D.OverlapBox(checkCenter, checkSize, 0f, _terrainLayer | _platformLayer);
         }
