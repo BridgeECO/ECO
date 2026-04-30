@@ -1,18 +1,25 @@
 using UnityEngine;
+using VInspector;
 
 public class PlayerMotor : MonoBehaviour
 {
+    [Foldout("Project")]
+    [SerializeField]
+    private PhysicsMaterial2D _frictionlessMaterial;
+
     public Vector2 Velocity { get; private set; }
     public Vector2 ExternalVelocity { get; set; }
     private PlayerStateMachine _stateMachine;
     private Rigidbody2D _rigidbody;
-    private PhysicsMaterial2D _frictionlessMaterial;
 
     private void Awake()
     {
         _stateMachine = GetComponent<PlayerStateMachine>();
         _rigidbody = GetComponent<Rigidbody2D>();
-        InitPhysicsMaterials();
+        if (_frictionlessMaterial == null)
+        {
+            CreatePhysicsMaterial2D();
+        }
     }
 
     private void FixedUpdate()
@@ -20,7 +27,7 @@ public class PlayerMotor : MonoBehaviour
         _rigidbody.linearVelocity = Velocity + ExternalVelocity;
     }
 
-    private void InitPhysicsMaterials()
+    private void CreatePhysicsMaterial2D()
     {
         _frictionlessMaterial = new PhysicsMaterial2D();
         _frictionlessMaterial.friction = 0f;
