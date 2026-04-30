@@ -7,11 +7,8 @@ public class PlayerAirborneState : IPlayerState
     private PlayerSensor _sensor;
     private PlayerMotor _motor;
     private PlayerDataSO _data;
-
-    private bool _isJumpHeld;
-    private bool _isEarlyReleased;
-    private float _jumpHoldTimer;
-    private float _fallOffPosX;
+    private PlayerJump _jump;
+    private PlayerSlip _slip;
 
     public PlayerAirborneState(PlayerStateMachine stateMachine, PlayerDataSO data)
     {
@@ -20,63 +17,32 @@ public class PlayerAirborneState : IPlayerState
         _sensor = stateMachine.Sensor;
         _motor = stateMachine.Motor;
         _data = data;
+        _jump = new PlayerJump(stateMachine, _motor, data);
+        _slip = new PlayerSlip(_sensor, _motor, data);
     }
 
     public void Enter()
     {
-        _fallOffPosX = _sm.transform.position.x;
-
-        if (0f < _sm.JumpBufferTimer && 0f < _sm.CoyoteTimer)
-        {
-            ExecuteJump();
-        }
-        else
-        {
-            _isJumpHeld = false;
-            _isEarlyReleased = false;
-        }
-
-        _input.OnJumpReleased += HandleJumpReleased;
+        _jump.Init(_sm.transform.position.x);
+        _input.OnJumpReleased += _jump.HandleJumpReleased;
         _input.OnDashPressed += HandleDashPressed;
     }
 
     public void Update()
     {
-        CheckLateJump();
+        _jump.CheckLateJump();
         HandleHorizontalMovement();
-        HandleJumpHold();
-        HandleSlip();
+        _jump.HandleJumpHold();
+        _slip.Update();
         ApplyGravity();
         CheckStateTransitions();
     }
 
     public void Exit()
     {
-        _motor.SetFriction(true);
-        _input.OnJumpReleased -= HandleJumpReleased;
+        _slip.Reset();
+        _input.OnJumpReleased -= _jump.HandleJumpReleased;
         _input.OnDashPressed -= HandleDashPressed;
-    }
-
-    private void ExecuteJump()
-    {
-        _sm.JumpBufferTimer = 0f;
-        _sm.CoyoteTimer = 0f;
-        _isJumpHeld = true;
-        _isEarlyReleased = false;
-        _jumpHoldTimer = 0f;
-        _motor.SetVelocityY(_data.InitialJumpVelocity);
-    }
-
-    private void CheckLateJump()
-    {
-        if (_sm.JumpBufferTimer == 0f || _sm.CoyoteTimer == 0f)
-        {
-            return;
-        }
-        if (Mathf.Abs(_sm.transform.position.x - _fallOffPosX) <= _data.CoyoteDistance)
-        {
-            ExecuteJump();
-        }
     }
 
     private void HandleHorizontalMovement()
@@ -99,34 +65,6 @@ public class PlayerAirborneState : IPlayerState
         }
     }
 
-    private void HandleJumpHold()
-    {
-        if (!_isJumpHeld)
-        {
-            return;
-        }
-        _jumpHoldTimer += Time.deltaTime;
-        if (_jumpHoldTimer < _data.MaxJumpHoldTime)
-        {
-            return;
-        }
-        _isJumpHeld = false;
-    }
-
-    private void HandleSlip()
-    {
-        if (!_sensor.IsSliding || 0f < _motor.Velocity.y || _sensor.IsGrounded || _sensor.IsWallTouching)
-        {
-            _motor.SetFriction(true);
-            return;
-        }
-
-        _motor.SetFriction(false);
-        float velocityX = (_sensor.IsLeftSliding) ? 2f : -2f;
-        _motor.SetVelocityX(velocityX);
-        _motor.AddVelocity(Vector2.down * _data.SlipDownSpeed * Time.deltaTime);
-    }
-
     private void ApplyGravity()
     {
         float gravityScale = 1f;
@@ -134,7 +72,7 @@ public class PlayerAirborneState : IPlayerState
         {
             gravityScale = _data.FallGravityMultiplier;
         }
-        else if (_isEarlyReleased)
+        else if (_jump.IsEarlyReleased)
         {
             gravityScale = _data.EarlyReleaseFallMultiplier;
         }
@@ -170,25 +108,6 @@ public class PlayerAirborneState : IPlayerState
         }
 
         _sm.ChangeState(EPlayerState.WallSlide);
-    }
-
-    private void HandleJumpReleased()
-    {
-        if (0f < _sm.InputLockTimer)
-        {
-            return;
-        }
-
-        if (_isJumpHeld)
-        {
-            _isEarlyReleased = true;
-        }
-        _isJumpHeld = false;
-
-        if (0f < _motor.Velocity.y)
-        {
-            _motor.SetVelocityY(_motor.Velocity.y * _data.JumpCutMultiplier);
-        }
     }
 
     private void HandleDashPressed()
