@@ -13,7 +13,7 @@ public class PlayerSlip
         _data = data;
     }
 
-    public void Update()
+    public void Handle()
     {
         if (!_sensor.IsSliding || 0f < _motor.Velocity.y || _sensor.IsGrounded || _sensor.IsWallTouching)
         {

@@ -24,16 +24,17 @@ public class PlayerAirborneState : IPlayerState
     public void Enter()
     {
         _jump.Init(_sm.transform.position.x);
-        _input.OnJumpReleased += _jump.HandleJumpReleased;
+        _input.OnJumpReleased += _jump.HandleOnReleased;
         _input.OnDashPressed += HandleDashPressed;
     }
 
     public void Update()
     {
-        _jump.CheckLateJump();
         HandleHorizontalMovement();
-        _jump.HandleJumpHold();
-        _slip.Update();
+        _jump.CheckLateJump();
+        _jump.HandleOnHold();
+        _slip.Handle();
+
         ApplyGravity();
         CheckStateTransitions();
     }
@@ -41,7 +42,7 @@ public class PlayerAirborneState : IPlayerState
     public void Exit()
     {
         _slip.Reset();
-        _input.OnJumpReleased -= _jump.HandleJumpReleased;
+        _input.OnJumpReleased -= _jump.HandleOnReleased;
         _input.OnDashPressed -= HandleDashPressed;
     }
 

@@ -26,12 +26,22 @@ public class PlayerJump
 
         if (0f < _sm.JumpBufferTimer && 0f < _sm.CoyoteTimer)
         {
-            ExecuteJump();
+            Execute();
             return;
         }
 
         _isJumpHeld = false;
         _isEarlyReleased = false;
+    }
+
+    private void Execute()
+    {
+        _sm.JumpBufferTimer = 0f;
+        _sm.CoyoteTimer = 0f;
+        _isJumpHeld = true;
+        _isEarlyReleased = false;
+        _jumpHoldTimer = 0f;
+        _motor.SetVelocityY(_data.InitialJumpVelocity);
     }
 
     public void CheckLateJump()
@@ -42,11 +52,11 @@ public class PlayerJump
         }
         if (Mathf.Abs(_sm.transform.position.x - _fallOffPosX) <= _data.CoyoteDistance)
         {
-            ExecuteJump();
+            Execute();
         }
     }
 
-    public void HandleJumpHold()
+    public void HandleOnHold()
     {
         if (!_isJumpHeld)
         {
@@ -60,7 +70,7 @@ public class PlayerJump
         _isJumpHeld = false;
     }
 
-    public void HandleJumpReleased()
+    public void HandleOnReleased()
     {
         if (0f < _sm.InputLockTimer)
         {
@@ -77,15 +87,5 @@ public class PlayerJump
         {
             _motor.SetVelocityY(_motor.Velocity.y * _data.JumpCutMultiplier);
         }
-    }
-
-    private void ExecuteJump()
-    {
-        _sm.JumpBufferTimer = 0f;
-        _sm.CoyoteTimer = 0f;
-        _isJumpHeld = true;
-        _isEarlyReleased = false;
-        _jumpHoldTimer = 0f;
-        _motor.SetVelocityY(_data.InitialJumpVelocity);
     }
 }
