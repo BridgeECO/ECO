@@ -22,7 +22,7 @@ public class PlayerSlip
         }
 
         _motor.SetFriction(false);
-        float velocityX = (_sensor.IsLeftSliding) ? 2f : -2f;
+        float velocityX = (_sensor.IsLeftSliding) ? _data.SlipHorizontalSpeed : -_data.SlipHorizontalSpeed;
         _motor.SetVelocityX(velocityX);
         _motor.AddVelocity(Vector2.down * _data.SlipDownSpeed * Time.deltaTime);
     }
