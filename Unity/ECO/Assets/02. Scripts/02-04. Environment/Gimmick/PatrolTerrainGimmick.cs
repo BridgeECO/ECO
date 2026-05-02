@@ -8,6 +8,8 @@ public class PatrolTerrainGimmick : TerrainGimmickBase
     private CancellationTokenSource _patrolCts;
     private Vector2 _initialPosition;
     private bool _isInitialized;
+    private int _currentIndex = 0;
+    private bool _isMovingForward = true;
 
     public PatrolTerrainGimmick(EGimmickActivationType activationType, bool isInverted, TerrainGimmickEntry entry)
 
@@ -51,83 +53,75 @@ public class PatrolTerrainGimmick : TerrainGimmickBase
         }
         else
         {
-            ReturnToInitialPositionAsync(target, _patrolCts.Token).Forget();
+            target.GetComponent<TerrainRiderSynchronizer>()?.SetVelocity(Vector2.zero);
         }
     }
 
     private async UniTask PatrolAsync(TerrainObject target, CancellationToken ct)
     {
-        int currentIndex = 0;
-        int direction = 1;
-
         while (!ct.IsCancellationRequested)
         {
-            Vector2 targetPos = _initialPosition;
-            
-            if (0 <= currentIndex)
+            if (!TryGetTargetPosition(out Vector2 targetPos))
             {
-                Transform wp = _entry.Waypoints[currentIndex];
-                if (wp == null)
-                {
-                    break;
-                }
-                
-                targetPos = wp.position;
+                break;
             }
 
             Vector2 currentPos = target.Rigidbody.position;
             
             if (Vector2.Distance(currentPos, targetPos) <= 0.001f)
             {
-                target.GetComponent<TerrainRiderSynchronizer>()?.SetVelocity(Vector2.zero);
-                target.Rigidbody.MovePosition(targetPos);
-                currentIndex += direction;
-                
-                if (_entry.Waypoints.Count <= currentIndex)
-                {
-                    direction = -1;
-                    currentIndex = Mathf.Max(-1, _entry.Waypoints.Count - 2);
-                }
-                
-                if (currentIndex < -1)
-                {
-                    direction = 1;
-                    currentIndex = 0;
-                }
-                
+                UpdateNextWaypoint(target, targetPos);
                 continue;
             }
 
-            Vector2 nextPos = Vector2.MoveTowards(currentPos, targetPos, _entry.MoveSpeed * Time.fixedDeltaTime);
-            Vector2 velocity = (nextPos - currentPos) / Time.fixedDeltaTime;
-            target.GetComponent<TerrainRiderSynchronizer>()?.SetVelocity(velocity);
-            target.Rigidbody.MovePosition(nextPos);
+            MoveTowardsTarget(target, currentPos, targetPos);
 
             await UniTask.Yield(PlayerLoopTiming.FixedUpdate, ct);
         }
     }
 
-    private async UniTask ReturnToInitialPositionAsync(TerrainObject target, CancellationToken ct)
+    private bool TryGetTargetPosition(out Vector2 targetPos)
     {
-        while (!ct.IsCancellationRequested)
+        targetPos = _initialPosition;
+        if (0 <= _currentIndex)
         {
-            Vector2 targetPos = _initialPosition;
-            Vector2 currentPos = target.Rigidbody.position;
-            
-            if (Vector2.Distance(currentPos, targetPos) <= 0.001f)
+            if (_entry.Waypoints.Count <= _currentIndex) return true;
+            Transform wp = _entry.Waypoints[_currentIndex];
+            if (wp == null)
             {
-                target.GetComponent<TerrainRiderSynchronizer>()?.SetVelocity(Vector2.zero);
-                target.Rigidbody.MovePosition(targetPos);
-                break;
+                return false;
             }
-
-            Vector2 nextPos = Vector2.MoveTowards(currentPos, targetPos, _entry.MoveSpeed * Time.fixedDeltaTime);
-            Vector2 velocity = (nextPos - currentPos) / Time.fixedDeltaTime;
-            target.GetComponent<TerrainRiderSynchronizer>()?.SetVelocity(velocity);
-            target.Rigidbody.MovePosition(nextPos);
-
-            await UniTask.Yield(PlayerLoopTiming.FixedUpdate, ct);
+            targetPos = wp.position;
         }
+        return true;
+    }
+
+    private void UpdateNextWaypoint(TerrainObject target, Vector2 targetPos)
+    {
+        target.GetComponent<TerrainRiderSynchronizer>()?.SetVelocity(Vector2.zero);
+        target.Rigidbody.MovePosition(targetPos);
+        
+        _currentIndex += _isMovingForward ? 1 : -1;
+        
+        if (_entry.Waypoints.Count <= _currentIndex)
+        {
+            _isMovingForward = false;
+            _currentIndex = Mathf.Max(-1, _entry.Waypoints.Count - 2);
+        }
+        
+        if (_currentIndex < -1)
+        {
+            _isMovingForward = true;
+            _currentIndex = 0;
+        }
+    }
+
+    private void MoveTowardsTarget(TerrainObject target, Vector2 currentPos, Vector2 targetPos)
+    {
+        Vector2 nextPos = Vector2.MoveTowards(currentPos, targetPos, _entry.MoveSpeed * Time.fixedDeltaTime);
+        Vector2 velocity = (nextPos - currentPos) / Time.fixedDeltaTime;
+        target.GetComponent<TerrainRiderSynchronizer>()?.SetVelocity(velocity);
+        target.Rigidbody.MovePosition(nextPos);
     }
 
     public override void OnDestroy(TerrainObject target)

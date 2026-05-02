@@ -149,7 +149,7 @@ PrefabInstance:
     - target: {fileID: -1700845149179992264, guid: 9da0ec7f1828821469e8d306e0036f1b, type: 3}
       propertyPath: _gimmickEntries.Array.data[0]._gimmickData
       value: 
-      objectReference: {fileID: 11400000, guid: 8b18cc4386d6df04ca80465c694f996a, type: 2}
+      objectReference: {fileID: 11400000, guid: facb2a6e25d1cc24cbd57ebfba4405fd, type: 2}
     - target: {fileID: -1700845149179992264, guid: 9da0ec7f1828821469e8d306e0036f1b, type: 3}
       propertyPath: _gimmickEntries.Array.data[0]._waypoints.Array.size
       value: 4
@@ -232,6 +232,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3033913750483706159, guid: 9da0ec7f1828821469e8d306e0036f1b, type: 3}
   m_PrefabInstance: {fileID: 76545846}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &76545848 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: -1700845149179992264, guid: 9da0ec7f1828821469e8d306e0036f1b, type: 3}
+  m_PrefabInstance: {fileID: 76545846}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 168a35a394e16cc43843f35f1fbdb726, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &81072251
 GameObject:
   m_ObjectHideFlags: 0
@@ -1575,11 +1586,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6550696225412009948, guid: 625b96406323654499f0adfdac2d4bae, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 14
+      value: 15.01
       objectReference: {fileID: 0}
     - target: {fileID: 6550696225412009948, guid: 625b96406323654499f0adfdac2d4bae, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 5.68
+      value: 12.33
       objectReference: {fileID: 0}
     - target: {fileID: 6550696225412009948, guid: 625b96406323654499f0adfdac2d4bae, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1595,7 +1606,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9102165973239773961, guid: 625b96406323654499f0adfdac2d4bae, type: 3}
       propertyPath: _pathNodes.Array.size
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 9102165973239773961, guid: 625b96406323654499f0adfdac2d4bae, type: 3}
       propertyPath: _connectedTerrains.Array.size
@@ -1620,7 +1631,7 @@ PrefabInstance:
     - target: {fileID: 9102165973239773961, guid: 625b96406323654499f0adfdac2d4bae, type: 3}
       propertyPath: _pathNodes.Array.data[4]._terrain
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 76545848}
     - target: {fileID: 9102165973239773961, guid: 625b96406323654499f0adfdac2d4bae, type: 3}
       propertyPath: _pathNodes.Array.data[5]._terrain
       value: 
@@ -1664,7 +1675,7 @@ PrefabInstance:
     - target: {fileID: 9102165973239773961, guid: 625b96406323654499f0adfdac2d4bae, type: 3}
       propertyPath: _pathNodes.Array.data[4]._waypoint
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 318257524}
     - target: {fileID: 9102165973239773961, guid: 625b96406323654499f0adfdac2d4bae, type: 3}
       propertyPath: _connectedTerrains.Array.data[0]._terrain
       value: 
