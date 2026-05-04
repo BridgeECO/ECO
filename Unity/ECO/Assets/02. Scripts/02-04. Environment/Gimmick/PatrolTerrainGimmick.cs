@@ -2,7 +2,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-public class PatrolTerrainGimmick : TerrainGimmickBase
+public class PatrolTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizable
 {
     private TerrainGimmickEntry _entry;
     private CancellationTokenSource _patrolCts;
@@ -10,12 +10,15 @@ public class PatrolTerrainGimmick : TerrainGimmickBase
     private bool _isInitialized;
     private int _currentIndex = 0;
     private bool _isMovingForward = true;
+    private LineRenderer _pathLinePrefab;
+    private GimmickPathVisualizer _pathVisualizer;
 
-    public PatrolTerrainGimmick(EGimmickActivationType activationType, bool isInverted, TerrainGimmickEntry entry)
+    public PatrolTerrainGimmick(EGimmickActivationType activationType, bool isInverted, TerrainGimmickEntry entry, LineRenderer pathLinePrefab)
 
         : base(activationType, isInverted)
     {
         _entry = entry;
+        _pathLinePrefab = pathLinePrefab;
     }
 
     protected override void ApplyGimmick(TerrainObject target, bool isActivated)
@@ -36,6 +39,7 @@ public class PatrolTerrainGimmick : TerrainGimmickBase
         {
             _initialPosition = target.Rigidbody.position;
             _isInitialized = true;
+            _pathVisualizer = new GimmickPathVisualizer(_pathLinePrefab, _initialPosition, _entry.Waypoints);
         }
 
         _patrolCts?.Cancel();
@@ -49,12 +53,24 @@ public class PatrolTerrainGimmick : TerrainGimmickBase
                 Debug.LogWarning($"[PatrolTerrainGimmick] {target.name}에 Waypoints가 설정되지 않았습니다.");
                 return;
             }
+            ShowPath(target.transform);
             PatrolAsync(target, _patrolCts.Token).Forget();
         }
         else
         {
+            HidePath();
             target.GetComponent<TerrainRiderSynchronizer>()?.SetVelocity(Vector2.zero);
         }
+    }
+
+    public void ShowPath(Transform parent)
+    {
+        _pathVisualizer?.Show(parent);
+    }
+
+    public void HidePath()
+    {
+        _pathVisualizer?.Hide();
     }
 
     private async UniTask PatrolAsync(TerrainObject target, CancellationToken ct)
@@ -127,6 +143,7 @@ public class PatrolTerrainGimmick : TerrainGimmickBase
     public override void OnDestroy(TerrainObject target)
     {
         base.OnDestroy(target);
+        HidePath();
         _patrolCts?.Cancel();
         _patrolCts?.Dispose();
     }

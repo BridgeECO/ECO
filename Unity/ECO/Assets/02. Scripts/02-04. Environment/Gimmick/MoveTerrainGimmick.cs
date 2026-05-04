@@ -2,7 +2,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-public class MoveTerrainGimmick : TerrainGimmickBase
+public class MoveTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizable
 {
     private TerrainGimmickEntry _entry;
     private CancellationTokenSource _moveCts;
@@ -10,12 +10,15 @@ public class MoveTerrainGimmick : TerrainGimmickBase
     private bool _isInitialized;
     private int _targetWaypointIndex = 0;
     private bool _isCurrentlyForward = true;
+    private LineRenderer _pathLinePrefab;
+    private GimmickPathVisualizer _pathVisualizer;
 
-    public MoveTerrainGimmick(EGimmickActivationType activationType, bool isInverted, TerrainGimmickEntry entry)
+    public MoveTerrainGimmick(EGimmickActivationType activationType, bool isInverted, TerrainGimmickEntry entry, LineRenderer pathLinePrefab)
 
         : base(activationType, isInverted)
     {
         _entry = entry;
+        _pathLinePrefab = pathLinePrefab;
     }
 
     protected override void ApplyGimmick(TerrainObject target, bool isActivated)
@@ -38,6 +41,7 @@ public class MoveTerrainGimmick : TerrainGimmickBase
             _isInitialized = true;
             _targetWaypointIndex = 0;
             _isCurrentlyForward = true;
+            _pathVisualizer = new GimmickPathVisualizer(_pathLinePrefab, _initialPosition, _entry.Waypoints);
         }
 
         _moveCts?.Cancel();
@@ -62,7 +66,26 @@ public class MoveTerrainGimmick : TerrainGimmickBase
             _targetWaypointIndex--;
         }
 
+        if (isActivated)
+        {
+            ShowPath(target.transform);
+        }
+        else
+        {
+            HidePath();
+        }
+
         MoveRoutineAsync(target, isActivated, _moveCts.Token).Forget();
+    }
+
+    public void ShowPath(Transform parent)
+    {
+        _pathVisualizer?.Show(parent);
+    }
+
+    public void HidePath()
+    {
+        _pathVisualizer?.Hide();
     }
 
     private async UniTask MoveRoutineAsync(TerrainObject target, bool isForward, CancellationToken ct)
@@ -109,6 +132,7 @@ public class MoveTerrainGimmick : TerrainGimmickBase
     public override void OnDestroy(TerrainObject target)
     {
         base.OnDestroy(target);
+        HidePath();
         _moveCts?.Cancel();
         _moveCts?.Dispose();
     }

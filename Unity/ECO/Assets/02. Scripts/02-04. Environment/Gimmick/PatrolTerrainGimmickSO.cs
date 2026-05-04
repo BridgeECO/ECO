@@ -3,9 +3,12 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "GimmickSO_PatrolTerrain", menuName = "Scriptable Objects/Terrain Gimmick/PatrolTerrainGimmickSO")]
 public class PatrolTerrainGimmickSO : TerrainGimmickBaseSO
 {
+    [SerializeField]
+    private LineRenderer _pathLinePrefab;
+
     public override TerrainGimmickBase CreateGimmick(TerrainGimmickEntry entry)
     {
-        return new PatrolTerrainGimmick(ActivationType, IsInverted, entry);
+        return new PatrolTerrainGimmick(ActivationType, IsInverted, entry, _pathLinePrefab);
     }
 
     public override void DrawGizmos(TerrainObject target, TerrainGimmickEntry entry)

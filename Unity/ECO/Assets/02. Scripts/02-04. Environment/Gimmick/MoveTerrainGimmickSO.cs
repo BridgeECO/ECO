@@ -3,9 +3,12 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "GimmickSO_MoveTerrain", menuName = "Scriptable Objects/Terrain Gimmick/MoveTerrainGimmickSO")]
 public class MoveTerrainGimmickSO : TerrainGimmickBaseSO
 {
+    [SerializeField]
+    private LineRenderer _pathLinePrefab;
+
     public override TerrainGimmickBase CreateGimmick(TerrainGimmickEntry entry)
     {
-        return new MoveTerrainGimmick(ActivationType, IsInverted, entry);
+        return new MoveTerrainGimmick(ActivationType, IsInverted, entry, _pathLinePrefab);
     }
 
     public override void DrawGizmos(TerrainObject target, TerrainGimmickEntry entry)
