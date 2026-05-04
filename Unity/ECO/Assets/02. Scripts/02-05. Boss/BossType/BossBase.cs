@@ -13,11 +13,14 @@ public abstract class BossBase : MonoBehaviour
     [Foldout("Hierarchy")]
     [SerializeField]
     private BossAnimationController _animationController;
+    [SerializeField]
+    private BossRoomManager _bossRoomManager;
 
     protected Transform TargetPlayer;
 
     public BossDataSO BossData { get => _bossData; protected set => _bossData = value; }
     protected BossAnimationController AnimationController => _animationController;
+    protected BossRoomManager BossRoomManager => _bossRoomManager;
     protected EBossState CurrentState { get; private set; } = EBossState.Idle;
 
     protected virtual void Awake()
@@ -25,6 +28,11 @@ public abstract class BossBase : MonoBehaviour
         if (_animationController == null)
         {
             _animationController = GetComponentInChildren<BossAnimationController>();
+        }
+
+        if (_bossRoomManager == null)
+        {
+            _bossRoomManager = UnityEngine.Object.FindFirstObjectByType<BossRoomManager>();
         }
 
         GameObject player = GameObject.FindWithTag(nameof(ETags.Player));
