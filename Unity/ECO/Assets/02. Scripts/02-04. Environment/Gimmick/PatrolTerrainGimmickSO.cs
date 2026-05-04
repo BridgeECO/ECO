@@ -3,9 +3,12 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "GimmickSO_PatrolTerrain", menuName = "Scriptable Objects/Terrain Gimmick/PatrolTerrainGimmickSO")]
 public class PatrolTerrainGimmickSO : TerrainGimmickBaseSO
 {
+    [SerializeField]
+    private LineRenderer _pathLinePrefab;
+
     public override TerrainGimmickBase CreateGimmick(TerrainGimmickEntry entry)
     {
-        return new PatrolTerrainGimmick(ActivationType, IsInverted, entry);
+        return new PatrolTerrainGimmick(ActivationType, IsInverted, entry, _pathLinePrefab);
     }
 
     public override void DrawGizmos(TerrainObject target, TerrainGimmickEntry entry)
@@ -14,7 +17,7 @@ public class PatrolTerrainGimmickSO : TerrainGimmickBaseSO
         if (entry.Waypoints != null && 0 < entry.Waypoints.Count)
         {
             Gizmos.color = Color.yellow;
-            Vector3 prev = target.transform.position;
+            Vector3 prev = Application.isPlaying ? target.InitialPosition : target.transform.position;
             foreach (var wp in entry.Waypoints)
             {
                 if (wp != null)
