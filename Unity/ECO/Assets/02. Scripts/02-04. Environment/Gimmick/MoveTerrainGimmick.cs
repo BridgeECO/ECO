@@ -12,6 +12,7 @@ public class MoveTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizable
     private bool _isCurrentlyForward = true;
     private LineRenderer _pathLinePrefab;
     private GimmickPathVisualizer _pathVisualizer;
+    private TerrainRiderSynchronizer _synchronizer;
 
     public MoveTerrainGimmick(EGimmickActivationType activationType, bool isInverted, TerrainGimmickEntry entry, LineRenderer pathLinePrefab)
 
@@ -30,9 +31,13 @@ public class MoveTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizable
             target.Rigidbody.useFullKinematicContacts = true;
         }
 
-        if (target.GetComponent<TerrainRiderSynchronizer>() == null)
+        if (_synchronizer == null)
         {
-            target.gameObject.AddComponent<TerrainRiderSynchronizer>();
+            _synchronizer = target.GetComponent<TerrainRiderSynchronizer>();
+            if (_synchronizer == null)
+            {
+                _synchronizer = target.gameObject.AddComponent<TerrainRiderSynchronizer>();
+            }
         }
 
         if (!_isInitialized)
@@ -114,7 +119,7 @@ public class MoveTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizable
             
             if (Vector2.Distance(currentPos, targetPos) <= 0.001f)
             {
-                target.GetComponent<TerrainRiderSynchronizer>()?.SetVelocity(Vector2.zero);
+                _synchronizer?.SetVelocity(Vector2.zero);
                 target.Rigidbody.MovePosition(targetPos);
                 _targetWaypointIndex += isForward ? 1 : -1;
                 continue;
@@ -122,7 +127,7 @@ public class MoveTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizable
 
             Vector2 nextPos = Vector2.MoveTowards(currentPos, targetPos, _entry.MoveSpeed * Time.fixedDeltaTime);
             Vector2 velocity = (nextPos - currentPos) / Time.fixedDeltaTime;
-            target.GetComponent<TerrainRiderSynchronizer>()?.SetVelocity(velocity);
+            _synchronizer?.SetVelocity(velocity);
             target.Rigidbody.MovePosition(nextPos);
 
             await UniTask.Yield(PlayerLoopTiming.FixedUpdate, ct);

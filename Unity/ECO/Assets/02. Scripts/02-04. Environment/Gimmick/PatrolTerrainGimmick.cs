@@ -12,6 +12,7 @@ public class PatrolTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizable
     private bool _isMovingForward = true;
     private LineRenderer _pathLinePrefab;
     private GimmickPathVisualizer _pathVisualizer;
+    private TerrainRiderSynchronizer _synchronizer;
 
     public PatrolTerrainGimmick(EGimmickActivationType activationType, bool isInverted, TerrainGimmickEntry entry, LineRenderer pathLinePrefab)
 
@@ -30,9 +31,13 @@ public class PatrolTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizable
             target.Rigidbody.useFullKinematicContacts = true;
         }
 
-        if (target.GetComponent<TerrainRiderSynchronizer>() == null)
+        if (_synchronizer == null)
         {
-            target.gameObject.AddComponent<TerrainRiderSynchronizer>();
+            _synchronizer = target.GetComponent<TerrainRiderSynchronizer>();
+            if (_synchronizer == null)
+            {
+                _synchronizer = target.gameObject.AddComponent<TerrainRiderSynchronizer>();
+            }
         }
 
         if (!_isInitialized)
@@ -59,7 +64,7 @@ public class PatrolTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizable
         else
         {
             HidePath();
-            target.GetComponent<TerrainRiderSynchronizer>()?.SetVelocity(Vector2.zero);
+            _synchronizer?.SetVelocity(Vector2.zero);
         }
     }
 
@@ -114,7 +119,7 @@ public class PatrolTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizable
 
     private void UpdateNextWaypoint(TerrainObject target, Vector2 targetPos)
     {
-        target.GetComponent<TerrainRiderSynchronizer>()?.SetVelocity(Vector2.zero);
+        _synchronizer?.SetVelocity(Vector2.zero);
         target.Rigidbody.MovePosition(targetPos);
         
         _currentIndex += _isMovingForward ? 1 : -1;
@@ -136,7 +141,7 @@ public class PatrolTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizable
     {
         Vector2 nextPos = Vector2.MoveTowards(currentPos, targetPos, _entry.MoveSpeed * Time.fixedDeltaTime);
         Vector2 velocity = (nextPos - currentPos) / Time.fixedDeltaTime;
-        target.GetComponent<TerrainRiderSynchronizer>()?.SetVelocity(velocity);
+        _synchronizer?.SetVelocity(velocity);
         target.Rigidbody.MovePosition(nextPos);
     }
 
