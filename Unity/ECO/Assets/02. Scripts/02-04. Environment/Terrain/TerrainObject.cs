@@ -21,8 +21,10 @@ public class TerrainObject : MonoBehaviour, IEnergyReceiver
     public Transform DeactivationPosition => _deactivationPosition;
 
     private bool _isEnergyActive;
+    private Vector3 _initialPosition;
 
     public Rigidbody2D Rigidbody { get; set; }
+    public Vector3 InitialPosition => _initialPosition;
 
     public bool HasMovementGimmick
     {
@@ -42,6 +44,7 @@ public class TerrainObject : MonoBehaviour, IEnergyReceiver
 
     private void Awake()
     {
+        _initialPosition = transform.position;
         Rigidbody = GetComponent<Rigidbody2D>();
         foreach (var entry in _gimmickEntries)
         {

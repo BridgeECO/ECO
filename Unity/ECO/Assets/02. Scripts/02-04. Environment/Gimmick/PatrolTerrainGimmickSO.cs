@@ -17,7 +17,7 @@ public class PatrolTerrainGimmickSO : TerrainGimmickBaseSO
         if (entry.Waypoints != null && 0 < entry.Waypoints.Count)
         {
             Gizmos.color = Color.yellow;
-            Vector3 prev = target.transform.position;
+            Vector3 prev = Application.isPlaying ? target.InitialPosition : target.transform.position;
             foreach (var wp in entry.Waypoints)
             {
                 if (wp != null)
