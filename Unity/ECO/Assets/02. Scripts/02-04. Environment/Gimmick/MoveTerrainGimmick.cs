@@ -22,7 +22,50 @@ public class MoveTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizable
         _pathLinePrefab = pathLinePrefab;
     }
 
+    public override void OnDestroy(TerrainObject target)
+    {
+        base.OnDestroy(target);
+        HidePath();
+        _moveCts?.Cancel();
+        _moveCts?.Dispose();
+    }
+
     protected override void ApplyGimmick(TerrainObject target, bool isActivated)
+    {
+        EnsureComponents(target);
+        ResetCancellationToken();
+
+        if (_entry.Waypoints == null || _entry.Waypoints.Count == 0)
+        {
+            Debug.LogWarning($"[MoveTerrainGimmick] {target.name}에 Waypoints가 설정되지 않았습니다.");
+            return;
+        }
+
+        UpdateMoveDirection(isActivated);
+
+        if (isActivated)
+        {
+            StartMove(target);
+        }
+        else
+        {
+            StopMove();
+        }
+
+        MoveRoutineAsync(target, isActivated, _moveCts.Token).Forget();
+    }
+
+    public void ShowPath(Transform parent)
+    {
+        _pathVisualizer?.Show(parent);
+    }
+
+    public void HidePath()
+    {
+        _pathVisualizer?.Hide();
+    }
+
+    private void EnsureComponents(TerrainObject target)
     {
         if (target.Rigidbody == null)
         {
@@ -48,17 +91,17 @@ public class MoveTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizable
             _isCurrentlyForward = true;
             _pathVisualizer = new GimmickPathVisualizer(_pathLinePrefab, _initialPosition, _entry.Waypoints);
         }
+    }
 
+    private void ResetCancellationToken()
+    {
         _moveCts?.Cancel();
         _moveCts?.Dispose();
         _moveCts = new CancellationTokenSource();
+    }
 
-        if (_entry.Waypoints == null || _entry.Waypoints.Count == 0)
-        {
-            Debug.LogWarning($"[MoveTerrainGimmick] {target.name}에 Waypoints가 설정되지 않았습니다.");
-            return;
-        }
-
+    private void UpdateMoveDirection(bool isActivated)
+    {
         if (isActivated && !_isCurrentlyForward)
         {
             _isCurrentlyForward = true;
@@ -70,27 +113,16 @@ public class MoveTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizable
             _isCurrentlyForward = false;
             _targetWaypointIndex--;
         }
-
-        if (isActivated)
-        {
-            ShowPath(target.transform);
-        }
-        else
-        {
-            HidePath();
-        }
-
-        MoveRoutineAsync(target, isActivated, _moveCts.Token).Forget();
     }
 
-    public void ShowPath(Transform parent)
+    private void StartMove(TerrainObject target)
     {
-        _pathVisualizer?.Show(parent);
+        ShowPath(target.transform);
     }
 
-    public void HidePath()
+    private void StopMove()
     {
-        _pathVisualizer?.Hide();
+        HidePath();
     }
 
     private async UniTask MoveRoutineAsync(TerrainObject target, bool isForward, CancellationToken ct)
@@ -111,12 +143,12 @@ public class MoveTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizable
                 {
                     break;
                 }
-                
+
                 targetPos = wp.position;
             }
 
             Vector2 currentPos = target.Rigidbody.position;
-            
+
             if (Vector2.Distance(currentPos, targetPos) <= 0.001f)
             {
                 _synchronizer?.SetVelocity(Vector2.zero);
@@ -132,13 +164,5 @@ public class MoveTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizable
 
             await UniTask.Yield(PlayerLoopTiming.FixedUpdate, ct);
         }
-    }
-
-    public override void OnDestroy(TerrainObject target)
-    {
-        base.OnDestroy(target);
-        HidePath();
-        _moveCts?.Cancel();
-        _moveCts?.Dispose();
     }
 }

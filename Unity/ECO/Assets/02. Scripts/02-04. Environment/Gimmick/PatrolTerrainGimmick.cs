@@ -22,7 +22,40 @@ public class PatrolTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizable
         _pathLinePrefab = pathLinePrefab;
     }
 
+    public override void OnDestroy(TerrainObject target)
+    {
+        base.OnDestroy(target);
+        HidePath();
+        _patrolCts?.Cancel();
+        _patrolCts?.Dispose();
+    }
+
     protected override void ApplyGimmick(TerrainObject target, bool isActivated)
+    {
+        EnsureComponents(target);
+        ResetCancellationToken();
+
+        if (isActivated)
+        {
+            StartPatrol(target);
+        }
+        else
+        {
+            StopPatrol();
+        }
+    }
+
+    public void ShowPath(Transform parent)
+    {
+        _pathVisualizer?.Show(parent);
+    }
+
+    public void HidePath()
+    {
+        _pathVisualizer?.Hide();
+    }
+
+    private void EnsureComponents(TerrainObject target)
     {
         if (target.Rigidbody == null)
         {
@@ -46,36 +79,30 @@ public class PatrolTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizable
             _isInitialized = true;
             _pathVisualizer = new GimmickPathVisualizer(_pathLinePrefab, _initialPosition, _entry.Waypoints);
         }
+    }
 
+    private void ResetCancellationToken()
+    {
         _patrolCts?.Cancel();
         _patrolCts?.Dispose();
         _patrolCts = new CancellationTokenSource();
-
-        if (isActivated)
-        {
-            if (_entry.Waypoints == null || _entry.Waypoints.Count == 0)
-            {
-                Debug.LogWarning($"[PatrolTerrainGimmick] {target.name}에 Waypoints가 설정되지 않았습니다.");
-                return;
-            }
-            ShowPath(target.transform);
-            PatrolAsync(target, _patrolCts.Token).Forget();
-        }
-        else
-        {
-            HidePath();
-            _synchronizer?.SetVelocity(Vector2.zero);
-        }
     }
 
-    public void ShowPath(Transform parent)
+    private void StartPatrol(TerrainObject target)
     {
-        _pathVisualizer?.Show(parent);
+        if (_entry.Waypoints == null || _entry.Waypoints.Count == 0)
+        {
+            Debug.LogWarning($"[PatrolTerrainGimmick] {target.name}에 Waypoints가 설정되지 않았습니다.");
+            return;
+        }
+        ShowPath(target.transform);
+        PatrolAsync(target, _patrolCts.Token).Forget();
     }
 
-    public void HidePath()
+    private void StopPatrol()
     {
-        _pathVisualizer?.Hide();
+        HidePath();
+        _synchronizer?.SetVelocity(Vector2.zero);
     }
 
     private async UniTask PatrolAsync(TerrainObject target, CancellationToken ct)
@@ -88,7 +115,7 @@ public class PatrolTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizable
             }
 
             Vector2 currentPos = target.Rigidbody.position;
-            
+
             if (Vector2.Distance(currentPos, targetPos) <= 0.001f)
             {
                 UpdateNextWaypoint(target, targetPos);
@@ -106,7 +133,11 @@ public class PatrolTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizable
         targetPos = _initialPosition;
         if (0 <= _currentIndex)
         {
-            if (_entry.Waypoints.Count <= _currentIndex) return true;
+            if (_entry.Waypoints.Count <= _currentIndex)
+            {
+                return true;
+            }
+
             Transform wp = _entry.Waypoints[_currentIndex];
             if (wp == null)
             {
@@ -121,15 +152,15 @@ public class PatrolTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizable
     {
         _synchronizer?.SetVelocity(Vector2.zero);
         target.Rigidbody.MovePosition(targetPos);
-        
+
         _currentIndex += _isMovingForward ? 1 : -1;
-        
+
         if (_entry.Waypoints.Count <= _currentIndex)
         {
             _isMovingForward = false;
             _currentIndex = Mathf.Max(-1, _entry.Waypoints.Count - 2);
         }
-        
+
         if (_currentIndex < -1)
         {
             _isMovingForward = true;
@@ -143,13 +174,5 @@ public class PatrolTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizable
         Vector2 velocity = (nextPos - currentPos) / Time.fixedDeltaTime;
         _synchronizer?.SetVelocity(velocity);
         target.Rigidbody.MovePosition(nextPos);
-    }
-
-    public override void OnDestroy(TerrainObject target)
-    {
-        base.OnDestroy(target);
-        HidePath();
-        _patrolCts?.Cancel();
-        _patrolCts?.Dispose();
     }
 }
