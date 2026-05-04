@@ -24,6 +24,22 @@ public class TerrainObject : MonoBehaviour, IEnergyReceiver
 
     public Rigidbody2D Rigidbody { get; set; }
 
+    public bool HasMovementGimmick
+    {
+        get
+        {
+            for (int i = 0; i < _gimmickEntries.Count; i++)
+            {
+                if (_gimmickEntries[i].GimmickData is MoveTerrainGimmickSO ||
+                    _gimmickEntries[i].GimmickData is PatrolTerrainGimmickSO)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
     private void Awake()
     {
         Rigidbody = GetComponent<Rigidbody2D>();
@@ -93,6 +109,8 @@ public class TerrainObject : MonoBehaviour, IEnergyReceiver
         }
 #endif
     }
+
+
 
     public void SetEnergyActive(bool isActive)
     {
