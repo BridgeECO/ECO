@@ -22,16 +22,13 @@ public class PlayerHoverState : IPlayerState
     public void Enter()
     {
         _sm.HasUsedHover = true;
-        _sm.DashCooldownTimer = _data.DashCooldown;
         _motor.SetVelocity(Vector2.zero);
         _hoverTimer = 0f;
-
         _input.OnDashReleased += HandleDashReleased;
     }
 
     public void Update()
     {
-        _motor.SetVelocity(Vector2.zero);
         _hoverTimer += Time.deltaTime;
         if (_hoverTimer < _data.MaxHoverTime)
         {
@@ -42,11 +39,13 @@ public class PlayerHoverState : IPlayerState
 
     public void Exit()
     {
+        _sm.DashCooldownTimer = _data.DashCooldown;
         _input.OnDashReleased -= HandleDashReleased;
     }
 
     private void HandleDashReleased()
     {
+        _sm.DashCooldownTimer = _data.DashCooldown;
         _sm.ChangeState(EPlayerState.Dash);
     }
 }
