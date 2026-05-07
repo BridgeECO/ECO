@@ -30,7 +30,7 @@ public class PlayerFSMDebugger : MonoBehaviour
     [SerializeField, ReadOnly]
     private float _inputLockTimer;
 
-    private Queue<EPlayerState> _historyQueue = new Queue<EPlayerState>();
+    private Queue<EPlayerState> _histories = new Queue<EPlayerState>();
 
     private void Awake()
     {
@@ -39,20 +39,7 @@ public class PlayerFSMDebugger : MonoBehaviour
 
     private void OnEnable()
     {
-        if (_stateMachine == null)
-        {
-            return;
-        }
         _stateMachine.OnStateChanged += HandleStateChanged;
-    }
-
-    private void OnDisable()
-    {
-        if (_stateMachine == null)
-        {
-            return;
-        }
-        _stateMachine.OnStateChanged -= HandleStateChanged;
     }
 
     private void Update()
@@ -63,27 +50,27 @@ public class PlayerFSMDebugger : MonoBehaviour
         _inputLockTimer = _stateMachine.InputLockTimer;
     }
 
+    private void OnDisable()
+    {
+        _stateMachine.OnStateChanged -= HandleStateChanged;
+    }
+
     private void HandleStateChanged(EPlayerState newState)
     {
         _currentState = newState.ToString();
-        _historyQueue.Enqueue(newState);
+        _histories.Enqueue(newState);
 
-        if (4 < _historyQueue.Count)
+        if (4 < _histories.Count)
         {
-            _historyQueue.Dequeue();
+            _histories.Dequeue();
         }
 
-        _transitionHistory = string.Join(" -> ", _historyQueue);
+        _transitionHistory = string.Join(" -> ", _histories);
     }
 
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
-        if (_stateMachine == null)
-        {
-            return;
-        }
-
         if (Application.isPlaying)
         {
             Handles.Label(transform.position + Vector3.up * 1.5f, _currentState);
