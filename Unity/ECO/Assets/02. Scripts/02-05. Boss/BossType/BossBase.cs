@@ -27,6 +27,7 @@ public abstract class BossBase : MonoBehaviour
     protected BossRoomManager BossRoomManager => _bossRoomManager;
     protected EBossState CurrentState { get => _currentState; private set => _currentState = value; }
 
+
     protected virtual void Awake()
     {
         if (_animationController == null)

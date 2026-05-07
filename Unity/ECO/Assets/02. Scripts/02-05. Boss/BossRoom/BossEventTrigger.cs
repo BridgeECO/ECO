@@ -7,9 +7,10 @@ public class BossEventTrigger : MonoBehaviour
     private EBoss _targetBossType;
     [SerializeField]
     private float _eventTriggerDistance = 20f;
-
+    [SerializeField]
     private BossBase _targetBoss;
     private PlayerInput _playerInput;
+    [SerializeField]
     private Transform _playerTransform;
     private bool _isEventStarted = false;
 
@@ -23,17 +24,16 @@ public class BossEventTrigger : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        _targetBoss = BossManager.Instance.GetBoss(_targetBossType);
+    }
+
     private void Update()
     {
-        if (_isEventStarted || _playerTransform == null)
+        if (_isEventStarted)
         {
             return;
-        }
-
-        if (_targetBoss == null)
-        {
-            _targetBoss = BossManager.Instance.GetBoss(_targetBossType);
-            if (_targetBoss == null) return;
         }
 
         float distance = Vector2.Distance(_playerTransform.position, _targetBoss.transform.position);
