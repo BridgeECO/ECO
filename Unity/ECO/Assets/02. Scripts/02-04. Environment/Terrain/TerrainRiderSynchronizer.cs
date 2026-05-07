@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using R3;
 using UnityEngine;
 
 public class TerrainRiderSynchronizer : MonoBehaviour
@@ -9,17 +11,11 @@ public class TerrainRiderSynchronizer : MonoBehaviour
 
     private const float RIDER_COYOTE_TIME = 0.15f;
 
-    private void Update()
+    private IDisposable _exitDisposable;
+
+    private void OnDisable()
     {
-        if (_rider != null && _isExiting)
-        {
-            if (Time.time >= _exitingTime || _rider.Velocity.y > 0.1f)
-            {
-                _rider.ExternalVelocity = Vector2.zero;
-                _rider = null;
-                _isExiting = false;
-            }
-        }
+        _exitDisposable?.Dispose();
     }
 
     public void SetVelocity(Vector2 velocity)
@@ -32,11 +28,6 @@ public class TerrainRiderSynchronizer : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (!collision.gameObject.CompareTag(nameof(ETags.Player)))
-        {
-            return;
-        }
-
         bool isOnTop = false;
         foreach (ContactPoint2D contact in collision.contacts)
         {
@@ -46,18 +37,14 @@ public class TerrainRiderSynchronizer : MonoBehaviour
                 break;
             }
         }
+        if (!isOnTop || !collision.gameObject.CompareTag(nameof(ETags.Player)))
+        {
+            return;
+        }
 
-        if (!isOnTop)
-        {
-            return;
-        }
-        PlayerMotor motor = collision.gameObject.GetComponentInParent<PlayerMotor>();
-        if (motor == null)
-        {
-            return;
-        }
-        _rider = motor;
+        _rider = collision.gameObject.GetComponentInParent<PlayerMotor>();
         _isExiting = false;
+        _exitDisposable?.Dispose();
     }
 
     private void OnCollisionExit2D(Collision2D collision)
@@ -73,6 +60,31 @@ public class TerrainRiderSynchronizer : MonoBehaviour
             return;
         }
         _isExiting = true;
-        _exitingTime = Time.time + RIDER_COYOTE_TIME;
+        _exitDisposable?.Dispose();
+        SubscribeToRiderExit();
+    }
+
+    private void SubscribeToRiderExit()
+    {
+        float timeout = Time.time + RIDER_COYOTE_TIME;
+        _exitDisposable = Observable.EveryUpdate().Subscribe(_ => MonitorRiderExit(timeout));
+    }
+
+    private void MonitorRiderExit(float timeout)
+    {
+        if (_rider == null)
+        {
+            _isExiting = false;
+            _exitDisposable?.Dispose();
+            return;
+        }
+
+        if (timeout <= Time.time || 0.1f < _rider.Velocity.y)
+        {
+            _rider.ExternalVelocity = Vector2.zero;
+            _rider = null;
+            _isExiting = false;
+            _exitDisposable?.Dispose();
+        }
     }
 }

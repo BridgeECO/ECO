@@ -19,6 +19,7 @@ public class PlayerWallSlideState : IPlayerState
 
     public void Enter()
     {
+        _sm.HasUsedHover = false;
         _motor.SetVelocity(new Vector2(0f, -_data.WallSlideSpeed));
         _input.OnJumpPressed += HandleWallJump;
     }
