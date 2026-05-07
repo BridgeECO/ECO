@@ -19,7 +19,6 @@ public class ButtonInteraction : InteractionBase
 
     public override void OnTriggerEnter2D(Collider2D other)
     {
-        base.OnTriggerEnter2D(other);
         _inputDisposable?.Dispose();
         _inputDisposable = Observable.EveryUpdate()
             .Where(_ => Input.GetKeyDown(KeyCode.F))
@@ -38,7 +37,6 @@ public class ButtonInteraction : InteractionBase
 
     public override void OnTriggerExit2D(Collider2D other)
     {
-        base.OnTriggerExit2D(other);
         _inputDisposable?.Dispose();
     }
 

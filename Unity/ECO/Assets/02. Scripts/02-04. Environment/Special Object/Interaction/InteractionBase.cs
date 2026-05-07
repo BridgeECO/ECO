@@ -10,8 +10,7 @@ public abstract class InteractionBase : IDisposable
         TargetObject = target;
     }
 
-    public virtual void OnTriggerEnter2D(Collider2D other) { }
-    public virtual void OnTriggerExit2D(Collider2D other) { }
-
+    public abstract void OnTriggerEnter2D(Collider2D other);
+    public abstract void OnTriggerExit2D(Collider2D other);
     public virtual void Dispose() { }
 }
