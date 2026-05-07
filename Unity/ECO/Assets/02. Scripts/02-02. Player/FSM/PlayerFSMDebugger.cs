@@ -5,10 +5,9 @@ using VInspector;
 using UnityEditor;
 #endif
 
+[RequireComponent(typeof(PlayerStateMachine))]
 public class PlayerFSMDebugger : MonoBehaviour
 {
-    [Foldout("Hierarchy")]
-    [SerializeField]
     private PlayerStateMachine _stateMachine;
 
     [Foldout("Debug")]
@@ -33,6 +32,11 @@ public class PlayerFSMDebugger : MonoBehaviour
 
     private Queue<EPlayerState> _historyQueue = new Queue<EPlayerState>();
 
+    private void Awake()
+    {
+        _stateMachine = GetComponent<PlayerStateMachine>();
+    }
+
     private void OnEnable()
     {
         if (_stateMachine == null)
@@ -53,11 +57,6 @@ public class PlayerFSMDebugger : MonoBehaviour
 
     private void Update()
     {
-        if (ReferenceEquals(_stateMachine, null))
-        {
-            return;
-        }
-
         _jumpBufferTimer = _stateMachine.JumpBufferTimer;
         _coyoteTimer = _stateMachine.CoyoteTimer;
         _dashCooldownTimer = _stateMachine.DashCooldownTimer;
