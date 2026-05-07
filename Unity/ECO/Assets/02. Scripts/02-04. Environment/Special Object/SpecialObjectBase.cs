@@ -33,14 +33,15 @@ public abstract class SpecialObjectBase : MonoBehaviour
         }
     }
 
-    protected virtual void Update()
+    protected virtual void OnDisable()
     {
-        _interaction?.OnUpdate();
+        _interaction?.Dispose();
+        IsPlayerInRange = false;
     }
 
     protected virtual void OnTriggerEnter2D(Collider2D other)
     {
-        if (!other.CompareTag(ETags.Player.ToString()))
+        if (!other.CompareTag(nameof(ETags.PlayerInteract)))
         {
             return;
         }
@@ -52,7 +53,7 @@ public abstract class SpecialObjectBase : MonoBehaviour
 
     protected virtual void OnTriggerExit2D(Collider2D other)
     {
-        if (!other.CompareTag(ETags.Player.ToString()))
+        if (!other.CompareTag(nameof(ETags.PlayerInteract)))
         {
             return;
         }

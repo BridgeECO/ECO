@@ -35,7 +35,11 @@ public class PlayerInput : MonoBehaviour
         }
 
         HorizontalInput = Input.GetAxisRaw("Horizontal");
-        MouseWorldPosition = _mainCamera.ScreenToWorldPoint(Input.mousePosition);
+
+        Vector3 mouseScreenPos = Input.mousePosition;
+        mouseScreenPos.z = Mathf.Abs(_mainCamera.transform.position.z - transform.position.z);
+        MouseWorldPosition = _mainCamera.ScreenToWorldPoint(mouseScreenPos);
+
         Jump();
         Dash();
     }
