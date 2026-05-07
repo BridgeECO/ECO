@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using VInspector;
@@ -5,6 +6,7 @@ using VInspector;
 [RequireComponent(typeof(PlayerInput), typeof(PlayerSensor), typeof(PlayerMotor))]
 public class PlayerStateMachine : MonoBehaviour
 {
+    public Action<EPlayerState> OnStateChanged;
     [Foldout("Project")]
     [Header("Data")]
     [SerializeField]
@@ -78,7 +80,7 @@ public class PlayerStateMachine : MonoBehaviour
         if (_states.TryGetValue(newState, out IPlayerState state))
         {
             _currentState = state;
-            // Debug.Log($"State Transition : {newState}");
+            OnStateChanged?.Invoke(newState);
             _currentState?.Enter();
         }
         else
