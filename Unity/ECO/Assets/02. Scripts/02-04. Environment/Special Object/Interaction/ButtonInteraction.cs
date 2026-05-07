@@ -30,7 +30,7 @@ public class ButtonInteraction : InteractionBase
                 }
                 else
                 {
-                    CancelInteraction();
+                    Deactivate();
                 }
             });
     }
@@ -68,10 +68,9 @@ public class ButtonInteraction : InteractionBase
         _isInteracting = false;
     }
 
-    private void CancelInteraction()
+    private void Deactivate()
     {
         _delayCts?.Cancel();
-        TargetObject.CallInteract();
         TargetObject.CallSetState(false);
         _isInteracting = false;
     }
