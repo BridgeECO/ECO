@@ -43,22 +43,28 @@ public class DialogueObject : SpecialObjectBase
         ToggleUI();
     }
 
-    private void ToggleUI()
+    protected override void SetState(bool isOn)
     {
+        base.SetState(isOn);
         if (_uiDialogue == null)
         {
             return;
         }
 
-        _isUIVisible = !_isUIVisible;
-        
-        if (_isUIVisible)
+        if (isOn && !_isUIVisible)
         {
+            _isUIVisible = true;
             _uiDialogue.ShowDialogue(_dialogueText);
         }
-        else
+        else if (!isOn && _isUIVisible)
         {
+            _isUIVisible = false;
             _uiDialogue.HideDialogue();
         }
+    }
+
+    private void ToggleUI()
+    {
+        SetState(!_isUIVisible);
     }
 }
