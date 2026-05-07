@@ -5,6 +5,8 @@ public class BossManager : MonoBehaviourSingleton<BossManager>
 {
     private readonly Dictionary<EBoss, BossBase> _bosses = new Dictionary<EBoss, BossBase>();
 
+    public static bool HasInstance => Instance != null;
+
     public void RegisterBoss(EBoss bossType, BossBase boss)
     {
         if (!_bosses.TryAdd(bossType, boss))

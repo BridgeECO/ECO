@@ -1,7 +1,4 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.Playables;
-using VInspector;
 
 public class BossEventTrigger : MonoBehaviour
 {
@@ -12,7 +9,7 @@ public class BossEventTrigger : MonoBehaviour
     private float _eventTriggerDistance = 20f;
 
     private BossBase _targetBoss;
-    private PlayerInput _playerInput; //
+    private PlayerInput _playerInput;
     private Transform _playerTransform;
     private bool _isEventStarted = false;
 

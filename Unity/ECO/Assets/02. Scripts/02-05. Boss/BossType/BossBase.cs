@@ -45,6 +45,13 @@ public abstract class BossBase : MonoBehaviour
             TargetPlayer = player.transform;
         }
     }
+    protected virtual void OnDestroy()
+    {
+        if (BossManager.HasInstance)
+        {
+            BossManager.Instance.UnregisterBoss(_bossType);
+        }
+    }
 
     public virtual void InitBoss()
     {
@@ -64,12 +71,4 @@ public abstract class BossBase : MonoBehaviour
         OnStateChanged(newState);
     }
     protected abstract void OnStateChanged(EBossState newState);
-
-    protected virtual void OnDestroy()
-    {
-        if (BossManager.Instance != null)
-        {
-            BossManager.Instance.UnregisterBoss(_bossType);
-        }
-    }
 }
