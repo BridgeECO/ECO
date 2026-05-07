@@ -13,7 +13,7 @@ public class TerrainObject : MonoBehaviour, IEnergyReceiver
     [Foldout("Energy")]
     [SerializeField]
     private Transform _activationPosition;
-    
+
     [SerializeField]
     private Transform _deactivationPosition;
 
@@ -21,9 +21,31 @@ public class TerrainObject : MonoBehaviour, IEnergyReceiver
     public Transform DeactivationPosition => _deactivationPosition;
 
     private bool _isEnergyActive;
+    private Vector3 _initialPosition;
+
+    public Rigidbody2D Rigidbody { get; set; }
+    public Vector3 InitialPosition => _initialPosition;
+
+    public bool HasMovementGimmick
+    {
+        get
+        {
+            for (int i = 0; i < _gimmickEntries.Count; i++)
+            {
+                if (_gimmickEntries[i].GimmickData is MoveTerrainGimmickSO ||
+                    _gimmickEntries[i].GimmickData is PatrolTerrainGimmickSO)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
 
     private void Awake()
     {
+        _initialPosition = transform.position;
+        Rigidbody = GetComponent<Rigidbody2D>();
         foreach (var entry in _gimmickEntries)
         {
             if (entry.GimmickData != null)
@@ -42,6 +64,22 @@ public class TerrainObject : MonoBehaviour, IEnergyReceiver
         }
     }
 
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        foreach (var gimmick in _runtimeGimmicks)
+        {
+            gimmick.OnTerrainTriggerExit2D(other);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        foreach (var gimmick in _runtimeGimmicks)
+        {
+            gimmick?.OnDestroy(this);
+        }
+    }
+
     private void ApplyGimmicks()
     {
         foreach (var gimmick in _runtimeGimmicks)
@@ -52,6 +90,30 @@ public class TerrainObject : MonoBehaviour, IEnergyReceiver
             }
         }
     }
+
+    private void OnDrawGizmos()
+    {
+#if UNITY_EDITOR
+        if (_activationPosition != null)
+        {
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawLine(transform.position, _activationPosition.position);
+        }
+
+        if (_gimmickEntries != null)
+        {
+            foreach (var entry in _gimmickEntries)
+            {
+                if (entry.GimmickData != null)
+                {
+                    entry.GimmickData.DrawGizmos(this, entry);
+                }
+            }
+        }
+#endif
+    }
+
+
 
     public void SetEnergyActive(bool isActive)
     {

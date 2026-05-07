@@ -8,6 +8,6 @@ public enum ELayers
     Terrain = 6,
     Platform = 7,
     Interactable = 8,
+    Destructible = 9,
     GimmickActivation = 10,
-    Destructible = 12,
 }

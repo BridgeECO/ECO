@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ImageToggleGimmickSO", menuName = "Scriptable Objects/Terrain Gimmick/ImageToggleGimmickSO")]
+[CreateAssetMenu(fileName = "GimmickSO_ImageToggle", menuName = "Scriptable Objects/Terrain Gimmick/ImageToggleGimmickSO")]
 public class ImageToggleGimmickSO : TerrainGimmickBaseSO
 {
     public override TerrainGimmickBase CreateGimmick(TerrainGimmickEntry entry)

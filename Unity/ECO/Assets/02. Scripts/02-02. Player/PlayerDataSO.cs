@@ -88,9 +88,13 @@ public class PlayerDataSO : ScriptableObject
     private float _wallJumpInputLockTime;
 
     [Header("Slip")]
-    [Tooltip("플랫폼 모서리에 발이 아슬아슬하게 걸쳤을 때 허공에 뜨지 않도록 바닥으로 끌어내리는 속도. 너무 낮으면 모서리에 걸릴 수 있고, 너무 높으면 미끄러지는 느낌이 납니다.")]
+    [Tooltip("모서리 미끄러짐 중 매 프레임 누적 적용되는 하향 가속도. 높을수록 빠르게 아래로 떨어집니다.")]
     [SerializeField]
     private float _slipDownSpeed;
+
+    [Tooltip("모서리 미끄러짐 중 옆으로 밀어내는 수평 속도. 높을수록 튕기듯 빠르게 밀려납니다.")]
+    [SerializeField]
+    private float _slipHorizontalSpeed;
 
     public float GroundMoveSpeed { get => _groundMoveSpeed; }
 
@@ -134,7 +138,10 @@ public class PlayerDataSO : ScriptableObject
 
     public float WallJumpPowerY { get => _wallJumpPowerY; }
 
-    public float WallJumpInputLockTime { get => _wallJumpInputLockTime; }
-
     public float SlipDownSpeed { get => _slipDownSpeed; }
+
+    public float SlipHorizontalSpeed { get => _slipHorizontalSpeed; }
+
+    public float WallJumpInputLockTime { get => _wallJumpInputLockTime; }
 }
+

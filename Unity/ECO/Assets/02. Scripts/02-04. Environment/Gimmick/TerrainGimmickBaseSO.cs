@@ -12,4 +12,6 @@ public abstract class TerrainGimmickBaseSO : ScriptableObject
     public bool IsInverted => _isInverted;
 
     public abstract TerrainGimmickBase CreateGimmick(TerrainGimmickEntry entry);
+
+    public virtual void DrawGizmos(TerrainObject target, TerrainGimmickEntry entry) { }
 }
