@@ -6,9 +6,11 @@ public abstract class BossBase : MonoBehaviour
 {
     public Action OnBossDefeated;
 
-    [Foldout("Project")]
+    [Foldout("Identity")]
     [SerializeField]
     private BossDataSO _bossData;
+    [SerializeField]
+    private EBoss _bossType;
 
     [Foldout("Hierarchy")]
     [SerializeField]
@@ -16,12 +18,14 @@ public abstract class BossBase : MonoBehaviour
     [SerializeField]
     private BossRoomManager _bossRoomManager;
 
+    private EBossState _currentState;
     protected Transform TargetPlayer;
 
     public BossDataSO BossData { get => _bossData; protected set => _bossData = value; }
+    public EBoss BossType => _bossType;
     protected BossAnimationController AnimationController => _animationController;
     protected BossRoomManager BossRoomManager => _bossRoomManager;
-    protected EBossState CurrentState { get; private set; } = EBossState.Idle;
+    protected EBossState CurrentState { get => _currentState; private set => _currentState = value; }
 
     protected virtual void Awake()
     {
@@ -30,9 +34,9 @@ public abstract class BossBase : MonoBehaviour
             _animationController = GetComponentInChildren<BossAnimationController>();
         }
 
-        if (_bossRoomManager == null)
+        if (BossManager.Instance != null)
         {
-            _bossRoomManager = UnityEngine.Object.FindFirstObjectByType<BossRoomManager>();
+            BossManager.Instance.RegisterBoss(_bossType, this);
         }
 
         GameObject player = GameObject.FindWithTag(nameof(ETags.Player));
@@ -61,5 +65,11 @@ public abstract class BossBase : MonoBehaviour
     }
     protected abstract void OnStateChanged(EBossState newState);
 
-
+    protected virtual void OnDestroy()
+    {
+        if (BossManager.Instance != null)
+        {
+            BossManager.Instance.UnregisterBoss(_bossType);
+        }
+    }
 }
