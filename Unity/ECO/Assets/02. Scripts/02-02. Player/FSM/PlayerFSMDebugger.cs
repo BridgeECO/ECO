@@ -31,6 +31,7 @@ public class PlayerFSMDebugger : MonoBehaviour
     private float _inputLockTimer;
 
     private Queue<EPlayerState> _histories = new Queue<EPlayerState>();
+    private const int MAX_HISTORY_COUNT = 4;
 
     private void Awake()
     {
@@ -60,7 +61,7 @@ public class PlayerFSMDebugger : MonoBehaviour
         _currentState = newState.ToString();
         _histories.Enqueue(newState);
 
-        if (4 < _histories.Count)
+        if (MAX_HISTORY_COUNT < _histories.Count)
         {
             _histories.Dequeue();
         }
