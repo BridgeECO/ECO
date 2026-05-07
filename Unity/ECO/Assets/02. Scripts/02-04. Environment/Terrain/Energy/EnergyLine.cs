@@ -42,28 +42,57 @@ public class EnergyLine : MonoBehaviour
 
     private void Awake()
     {
+        CaptureMovementGimmickPositions();
         InitPathAndDistances();
+    }
+
+    private void Update()
+    {
+        _segmentController.UpdateSegments(Time.deltaTime, _totalDistance, _energySpeed);
+        UpdateTerrains();
+        _segmentController.RenderSegments(_computedWaypoints);
+    }
+
+    private void CaptureMovementGimmickPositions()
+    {
+        for (int i = 0; i < _pathNodes.Count; i++)
+        {
+            _pathNodes[i].CaptureStaticPositions();
+        }
     }
 
     private void OnDrawGizmos()
     {
 #if UNITY_EDITOR
-        InitPathAndDistances();
-        if (_computedWaypoints == null || _computedWaypoints.Count < 2)
+        List<Vector3> keyPoints = _pathCalculator.GetKeyPoints(_startPoint, _endPoint, transform, _pathNodes);
+        if (keyPoints.Count < 2)
         {
             return;
         }
 
+        List<Vector3> editorWaypoints;
+        float editorDistance;
+        _pathCalculator.CalculatePathAndDistances(
+            _startPoint,
+            _endPoint,
+            transform,
+            _pathNodes,
+            _curveResolution,
+            _splineTension,
+            out editorWaypoints,
+            out editorDistance
+        );
+
         Gizmos.color = Color.cyan;
-        for (int i = 0; i < _computedWaypoints.Count - 1; i++)
+        for (int i = 0; i < editorWaypoints.Count - 1; i++)
         {
-            Gizmos.DrawLine(_computedWaypoints[i], _computedWaypoints[i + 1]);
+            Gizmos.DrawLine(editorWaypoints[i], editorWaypoints[i + 1]);
         }
 
         Gizmos.color = Color.yellow;
-        foreach (Vector3 waypoint in _pathCalculator.GetKeyPoints(_startPoint, _endPoint, transform, _pathNodes))
+        for (int i = 0; i < keyPoints.Count; i++)
         {
-            Gizmos.DrawSphere(waypoint, 0.1f);
+            Gizmos.DrawSphere(keyPoints[i], 0.1f);
         }
 #endif
     }
@@ -90,13 +119,6 @@ public class EnergyLine : MonoBehaviour
             return;
         }
         _segmentController.StopCurrentSegmentAsync(_cutOffDelay).Forget();
-    }
-
-    private void Update()
-    {
-        _segmentController.UpdateSegments(Time.deltaTime, _totalDistance, _energySpeed);
-        UpdateTerrains();
-        _segmentController.RenderSegments(_computedWaypoints);
     }
 
     private void UpdateTerrains()

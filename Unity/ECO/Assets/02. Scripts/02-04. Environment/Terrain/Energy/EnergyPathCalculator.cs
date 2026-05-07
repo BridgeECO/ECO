@@ -85,8 +85,17 @@ public class EnergyPathCalculator
                 {
                     continue;
                 }
-                AddKeyPoint(points, node.Terrain.ActivationPosition, node.Terrain.transform);
-                AddKeyPoint(points, node.Terrain.DeactivationPosition, node.Terrain.transform);
+
+                if (node.IsCaptured)
+                {
+                    points.Add(node.StaticActivationPosition);
+                    points.Add(node.StaticDeactivationPosition);
+                }
+                else
+                {
+                    AddKeyPoint(points, node.Terrain.ActivationPosition, node.Terrain.transform);
+                    AddKeyPoint(points, node.Terrain.DeactivationPosition, node.Terrain.transform);
+                }
             }
             else
             {
