@@ -39,7 +39,6 @@ public class PlayerHoverState : IPlayerState
 
     public void Exit()
     {
-        _sm.DashCooldownTimer = _data.DashCooldown;
         _input.OnDashReleased -= HandleDashReleased;
     }
 
