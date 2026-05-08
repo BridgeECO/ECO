@@ -11,7 +11,7 @@ public class GimmickTriggerZone : MonoBehaviour
 
     [Foldout("Project")]
     [SerializeField]
-    private bool _isOneShot = true;
+    private bool _isOneShot;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
