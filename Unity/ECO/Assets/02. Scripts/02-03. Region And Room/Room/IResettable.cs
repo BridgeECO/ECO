@@ -1,4 +1,4 @@
-public interface IRoomResettable
+public interface IResettable
 {
     public void ResetState();
 }

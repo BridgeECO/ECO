@@ -67,4 +67,18 @@ public class DialogueObject : SpecialObjectBase
     {
         SetState(!_isUIVisible);
     }
+
+    public override void ResetState()
+    {
+        base.ResetState();
+        if (_isUIVisible)
+        {
+            ToggleUI();
+        }
+
+        if (_highlightObject != null)
+        {
+            _highlightObject.SetActive(false);
+        }
+    }
 }

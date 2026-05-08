@@ -18,4 +18,12 @@ public class VFX : MonoBehaviour
             particleSystem.Play();
         }
     }
+
+    public void Stop()
+    {
+        foreach (var particleSystem in _particleSystems)
+        {
+            particleSystem.Stop();
+        }
+    }
 }

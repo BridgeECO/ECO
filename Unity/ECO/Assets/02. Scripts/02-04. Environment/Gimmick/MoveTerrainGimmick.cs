@@ -32,6 +32,14 @@ public class MoveTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizable
         _moveCts?.Dispose();
     }
 
+    public override void ResetGimmick(TerrainObject target)
+    {
+        base.ResetGimmick(target);
+        ResetCancellationToken();
+        _targetWaypointIndex = 0;
+        _isCurrentlyForward = true;
+    }
+
     protected override void ApplyGimmick(TerrainObject target, bool isActivated)
     {
         EnsureComponents(target);

@@ -3,7 +3,7 @@ using UnityEngine;
 using VInspector;
 
 [RequireComponent(typeof(Collider2D))]
-public abstract class SpecialObjectBase : MonoBehaviour
+public abstract class SpecialObjectBase : MonoBehaviour, IResettable
 {
     public Action OnInteract;
 
@@ -37,6 +37,16 @@ public abstract class SpecialObjectBase : MonoBehaviour
     {
         _interaction?.Dispose();
         IsPlayerInRange = false;
+    }
+
+    public virtual void ResetState()
+    {
+        IsPlayerInRange = false;
+        if (_interactionType == EInteractionType.Button)
+        {
+            // Optional: Button interaction doesn't inherently store persistent state here, 
+            // but we can add more reset logic for interaction later if needed.
+        }
     }
 
     protected virtual void OnTriggerEnter2D(Collider2D other)

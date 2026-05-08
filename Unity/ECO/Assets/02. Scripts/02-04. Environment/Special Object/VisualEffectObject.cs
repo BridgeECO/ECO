@@ -71,4 +71,33 @@ public class VisualEffectObject : SpecialObjectBase
         _animator.SetTrigger(_animationTrigger);
         await UniTask.Yield();
     }
+
+    public override void ResetState()
+    {
+        base.ResetState();
+        _hasPlayed = false;
+
+        switch (_visualEffectPlayType)
+        {
+            case EVisualEffectPlayType.VFX:
+                StopVFX();
+                break;
+            case EVisualEffectPlayType.Animation:
+                if (_animator != null)
+                {
+                    _animator.Rebind();
+                    _animator.Update(0f);
+                }
+                break;
+        }
+    }
+
+    private void StopVFX()
+    {
+        if (_vfxs == null) return;
+        foreach (var vfx in _vfxs)
+        {
+            vfx.Stop();
+        }
+    }
 }
