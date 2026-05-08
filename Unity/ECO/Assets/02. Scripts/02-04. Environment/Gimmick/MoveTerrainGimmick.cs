@@ -13,13 +13,15 @@ public class MoveTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizable
     private LineRenderer _pathLinePrefab;
     private GimmickPathVisualizer _pathVisualizer;
     private TerrainRiderSynchronizer _synchronizer;
+    private bool _isPathVisible;
 
-    public MoveTerrainGimmick(EGimmickActivationType activationType, bool isInverted, TerrainGimmickEntry entry, LineRenderer pathLinePrefab)
+    public MoveTerrainGimmick(EGimmickActivationType activationType, bool isInverted, TerrainGimmickEntry entry, LineRenderer pathLinePrefab, bool isPathVisible)
 
         : base(activationType, isInverted)
     {
         _entry = entry;
         _pathLinePrefab = pathLinePrefab;
+        _isPathVisible = isPathVisible;
     }
 
     public override void OnDestroy(TerrainObject target)
@@ -117,7 +119,10 @@ public class MoveTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizable
 
     private void StartMove(TerrainObject target)
     {
-        ShowPath(target.transform);
+        if (_isPathVisible)
+        {
+            ShowPath(target.transform);
+        }
     }
 
     private void StopMove()
