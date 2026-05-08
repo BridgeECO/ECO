@@ -25,6 +25,7 @@ public abstract class TerrainGimmickBase
     public virtual void OnTerrainTriggerEnter2D(Collider2D other) { }
     public virtual void OnTerrainTriggerExit2D(Collider2D other) { }
     public virtual void OnDestroy(TerrainObject target) { }
+    public virtual void ResetGimmick(TerrainObject target) { }
 
     protected abstract void ApplyGimmick(TerrainObject target, bool isActivated);
 }
