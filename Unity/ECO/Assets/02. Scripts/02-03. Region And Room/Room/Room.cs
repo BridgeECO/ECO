@@ -30,6 +30,7 @@ public class Room : MonoBehaviour
         _resettables = GetComponentsInChildren<IRoomResettable>(true).ToList();
     }
 
+    [Button]
     public void ResetRoom()
     {
         if (_resettables == null)
