@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using VInspector;
 
-public class TerrainObject : MonoBehaviour, IEnergyReceiver, IRoomResettable
+public class TerrainObject : MonoBehaviour, IEnergyReceiver, IResettable
 {
     [Foldout("Project")]
     [SerializeField]

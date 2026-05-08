@@ -3,7 +3,7 @@ using UnityEngine;
 using VInspector;
 
 [RequireComponent(typeof(Collider2D))]
-public class GimmickTriggerZone : MonoBehaviour, IRoomResettable
+public class GimmickTriggerZone : MonoBehaviour, IResettable
 {
     [Foldout("Hierarchy")]
     [SerializeField]

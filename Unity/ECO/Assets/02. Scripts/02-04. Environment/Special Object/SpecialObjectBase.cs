@@ -3,7 +3,7 @@ using UnityEngine;
 using VInspector;
 
 [RequireComponent(typeof(Collider2D))]
-public abstract class SpecialObjectBase : MonoBehaviour, IRoomResettable
+public abstract class SpecialObjectBase : MonoBehaviour, IResettable
 {
     public Action OnInteract;
 
