@@ -16,14 +16,19 @@ public class RespawnManager : MonoBehaviourSingleton<RespawnManager>
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
+    private void Start()
+    {
+        EventManager.Instance.AddEventListener(EEventType.RespawnRequested, Respawn);
+        BindPlayer();
+    }
+
     private void OnDisable()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
-
-    private void Start()
-    {
-        BindPlayer();
+        if (MonoBehaviourSingleton<EventManager>.HasInstance)
+        {
+            EventManager.Instance.RemoveEventListener(EEventType.RespawnRequested, Respawn);
+        }
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
