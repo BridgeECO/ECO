@@ -44,4 +44,10 @@ public class EnergySwitch : SpecialObjectBase
             }
         }
     }
+
+    public override void ResetState()
+    {
+        base.ResetState();
+        SetSwitchState(false);
+    }
 }

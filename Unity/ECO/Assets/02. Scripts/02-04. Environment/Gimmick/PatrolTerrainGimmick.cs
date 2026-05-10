@@ -30,6 +30,14 @@ public class PatrolTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizable
         _patrolCts?.Dispose();
     }
 
+    public override void ResetGimmick(TerrainObject target)
+    {
+        base.ResetGimmick(target);
+        ResetCancellationToken();
+        _currentIndex = 0;
+        _isMovingForward = true;
+    }
+
     protected override void ApplyGimmick(TerrainObject target, bool isActivated)
     {
         EnsureComponents(target);

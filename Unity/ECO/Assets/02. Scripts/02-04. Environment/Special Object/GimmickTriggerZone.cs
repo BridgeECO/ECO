@@ -3,7 +3,7 @@ using UnityEngine;
 using VInspector;
 
 [RequireComponent(typeof(Collider2D))]
-public class GimmickTriggerZone : MonoBehaviour
+public class GimmickTriggerZone : MonoBehaviour, IResettable
 {
     [Foldout("Hierarchy")]
     [SerializeField]
@@ -31,6 +31,14 @@ public class GimmickTriggerZone : MonoBehaviour
         if (_isOneShot)
         {
             enabled = false;
+        }
+    }
+
+    public void ResetState()
+    {
+        if (_isOneShot)
+        {
+            enabled = true;
         }
     }
 }

@@ -21,11 +21,13 @@ public class MonoBehaviourSingleton<T> : MonoBehaviour where T : MonoBehaviour
         }
     }
 
+    public static bool HasInstance => _instance != null;
+
     protected virtual void Awake()
     {
         if (!_lazyInitialization)
         {
-            if (_instance == null)
+            if (_instance == null || _instance == this)
             {
                 _instance = this as T;
                 if (_isDontDestroyOnLoad)

@@ -16,13 +16,7 @@ public class RoomTransition : MonoBehaviour
     [SerializeField]
     private Transform _spawnPointB;
 
-    private CameraRoomTransition _cameraRoomTransition;
     private float _lastTriggerTime = -1f;
-
-    private void Start()
-    {
-        _cameraRoomTransition = Camera.main.GetComponent<CameraRoomTransition>();
-    }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -47,35 +41,33 @@ public class RoomTransition : MonoBehaviour
             return;
         }
 
-        Room currentRoom = RespawnManager.Instance.CurrentRoom;
         Room actualRoom = GetRoomByPosition(other);
-        if (actualRoom != null && actualRoom != currentRoom)
+        if (actualRoom == null || actualRoom == Region.Instance.CurrentRoom)
         {
-            _lastTriggerTime = Time.time;
-            ExecuteRoomTransition(actualRoom);
+            return;
         }
+        _lastTriggerTime = Time.time;
+        ExecuteRoomTransition(actualRoom);
     }
 
     private Room GetTargetRoom()
     {
-        Room currentRoom = RespawnManager.Instance.CurrentRoom;
+        Room currentRoom = Region.Instance.CurrentRoom;
         return (currentRoom == _roomB) ? _roomA : _roomB;
     }
 
     private void ExecuteRoomTransition(Room targetRoom)
     {
-        if (targetRoom == null || RespawnManager.Instance.CurrentRoom == targetRoom)
+        if (targetRoom == null || Region.Instance.CurrentRoom == targetRoom)
         {
             return;
         }
 
-        _cameraRoomTransition.StartRoomTransitionAsync
-            (targetRoom.MinBounds, targetRoom.MaxBounds,
-            this.GetCancellationTokenOnDestroy()).Forget();
-
         Vector3 spawnPosition = targetRoom == _roomA ? _spawnPointA.position : _spawnPointB.position;
         RespawnManager.Instance.UpdateSavePoint(targetRoom, spawnPosition);
+        Region.Instance.SetCurrentRoom(targetRoom);
         SaveManager.Instance.Save(targetRoom);
+        EventManager.Instance.BroadcastEvent(EEventType.RoomChanged);
     }
 
     private Room GetRoomByPosition(Collider2D playerCollider)
@@ -102,7 +94,7 @@ public class RoomTransition : MonoBehaviour
         {
             return _roomB;
         }
-        return RespawnManager.Instance.CurrentRoom;
+        return Region.Instance.CurrentRoom;
     }
 
     private Room GetRoomByVelocity(Collider2D playerCollider, Vector3 position)

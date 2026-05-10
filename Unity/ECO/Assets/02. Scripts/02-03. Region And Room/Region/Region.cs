@@ -16,6 +16,7 @@ public class Region : MonoBehaviourSingleton<Region>
 
     private Room _currentRoom;
 
+    public Room CurrentRoom => _currentRoom;
     public IReadOnlyList<Room> Rooms => _rooms;
     public ERegions RegionType => _regionType;
 
@@ -51,10 +52,23 @@ public class Region : MonoBehaviourSingleton<Region>
 
     private void InitSavePoint()
     {
-        if (_initialSpawnPoint != null)
+        if (_initialSpawnPoint == null)
         {
-            RespawnManager.Instance?.UpdateSavePoint(_currentRoom, _initialSpawnPoint.position);
+            Debug.LogWarning("초기 스폰 포인트를 찾을 수 없습니다.");
+            return;
         }
+        RespawnManager.Instance.UpdateSavePoint(_currentRoom, _initialSpawnPoint.position);
+    }
+
+    public void SetCurrentRoom(Room newRoom)
+    {
+        if (_currentRoom == newRoom)
+        {
+            return;
+        }
+
+        _currentRoom = newRoom;
+        _currentRoom.IsVisited = true;
     }
 
     public int GetRoomIndex(Room room)
