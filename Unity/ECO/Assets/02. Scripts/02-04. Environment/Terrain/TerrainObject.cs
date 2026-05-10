@@ -123,8 +123,11 @@ public class TerrainObject : MonoBehaviour, IEnergyReceiver, IResettable
 
     public void ResetState()
     {
-        transform.position = _initialPosition;
-        if (Rigidbody != null)
+        if (Rigidbody == null)
+        {
+            transform.position = _initialPosition;
+        }
+        else
         {
             Rigidbody.position = _initialPosition;
             Rigidbody.linearVelocity = Vector2.zero;
@@ -134,7 +137,6 @@ public class TerrainObject : MonoBehaviour, IEnergyReceiver, IResettable
         {
             gimmick.ResetGimmick(this);
         }
-
         _isEnergyActive = false;
         ApplyGimmicks();
     }

@@ -7,12 +7,6 @@ public class RespawnManager : MonoBehaviourSingleton<RespawnManager>
     private PlayerMotor _playerMotor;
     private Room _saveRoom;
     private Vector3 _respawnPosition;
-
-    public Room SaveRoom
-    {
-        get => _saveRoom;
-        set => _saveRoom = value;
-    }
     public Vector3 RespawnPosition => _respawnPosition;
 
     private void OnEnable()
