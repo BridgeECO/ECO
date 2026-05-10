@@ -19,7 +19,7 @@ public class Room : MonoBehaviour
     [SerializeField]
     private float _pixelHeight;
 
-    private List<IRoomResettable> _resettables;
+    private List<IResettable> _resettables;
 
     public Vector2 MinBounds => _cameraBounds.bounds.min;
     public Vector2 MaxBounds => _cameraBounds.bounds.max;
@@ -27,7 +27,7 @@ public class Room : MonoBehaviour
 
     private void Awake()
     {
-        _resettables = GetComponentsInChildren<IRoomResettable>(true).ToList();
+        _resettables = GetComponentsInChildren<IResettable>(true).ToList();
     }
 
     public void ResetRoom()
@@ -40,17 +40,6 @@ public class Room : MonoBehaviour
         for (int i = 0; i < _resettables.Count; i++)
         {
             _resettables[i]?.ResetState();
-        }
-    }
-
-    [Button]
-    private void RefreshBoundary()
-    {
-        if (_cameraBounds != null)
-        {
-            _cameraBounds.isTrigger = true;
-            _cameraBounds.size = new Vector2(_pixelWidth / PPU, _pixelHeight / PPU);
-            _cameraBounds.compositeOperation = Collider2D.CompositeOperation.Merge;
         }
     }
 

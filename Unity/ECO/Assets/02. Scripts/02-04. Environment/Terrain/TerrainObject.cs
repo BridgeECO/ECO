@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using VInspector;
 
-public class TerrainObject : MonoBehaviour, IEnergyReceiver
+public class TerrainObject : MonoBehaviour, IEnergyReceiver, IResettable
 {
     [Foldout("Project")]
     [SerializeField]
@@ -118,6 +118,26 @@ public class TerrainObject : MonoBehaviour, IEnergyReceiver
     public void SetEnergyActive(bool isActive)
     {
         _isEnergyActive = isActive;
+        ApplyGimmicks();
+    }
+
+    public void ResetState()
+    {
+        if (Rigidbody == null)
+        {
+            transform.position = _initialPosition;
+        }
+        else
+        {
+            Rigidbody.position = _initialPosition;
+            Rigidbody.linearVelocity = Vector2.zero;
+        }
+
+        foreach (var gimmick in _runtimeGimmicks)
+        {
+            gimmick.ResetGimmick(this);
+        }
+        _isEnergyActive = false;
         ApplyGimmicks();
     }
 }

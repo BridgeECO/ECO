@@ -3,7 +3,7 @@ using UnityEngine;
 using VInspector;
 
 [RequireComponent(typeof(Collider2D))]
-public abstract class SpecialObjectBase : MonoBehaviour
+public abstract class SpecialObjectBase : MonoBehaviour, IResettable
 {
     public Action OnInteract;
 
@@ -36,6 +36,11 @@ public abstract class SpecialObjectBase : MonoBehaviour
     protected virtual void OnDisable()
     {
         _interaction?.Dispose();
+        IsPlayerInRange = false;
+    }
+
+    public virtual void ResetState()
+    {
         IsPlayerInRange = false;
     }
 
