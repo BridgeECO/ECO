@@ -11,6 +11,11 @@ public class UI_InGame : MonoBehaviour
         InitButtons();
     }
 
+    private void OnDestroy()
+    {
+        _respawnButton.onClick.RemoveListener(OnClickRespawn);
+    }
+
     private void InitButtons()
     {
         _respawnButton.onClick.AddListener(OnClickRespawn);
