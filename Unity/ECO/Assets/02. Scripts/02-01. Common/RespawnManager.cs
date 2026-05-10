@@ -5,13 +5,13 @@ using VInspector;
 public class RespawnManager : MonoBehaviourSingleton<RespawnManager>
 {
     private PlayerMotor _playerMotor;
-    private Room _currentRoom;
+    private Room _saveRoom;
     private Vector3 _respawnPosition;
 
-    public Room CurrentRoom
+    public Room SaveRoom
     {
-        get => _currentRoom;
-        set => _currentRoom = value;
+        get => _saveRoom;
+        set => _saveRoom = value;
     }
     public Vector3 RespawnPosition => _respawnPosition;
 
@@ -47,7 +47,7 @@ public class RespawnManager : MonoBehaviourSingleton<RespawnManager>
 
     public void UpdateSavePoint(Room room, Vector3 position)
     {
-        _currentRoom = room;
+        _saveRoom = room;
         _respawnPosition = position;
     }
 
@@ -69,11 +69,11 @@ public class RespawnManager : MonoBehaviourSingleton<RespawnManager>
 
     private void ResetCurrentRoom()
     {
-        if (_currentRoom == null)
+        if (_saveRoom == null)
         {
             Debug.LogWarning("기믹 상태를 리셋할 방을 찾을 수 없습니다.");
             return;
         }
-        _currentRoom.ResetRoom();
+        _saveRoom.ResetRoom();
     }
 }

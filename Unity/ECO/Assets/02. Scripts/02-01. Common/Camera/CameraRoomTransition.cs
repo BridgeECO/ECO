@@ -27,9 +27,31 @@ public class CameraRoomTransition : MonoBehaviour
         _cameraController = GetComponent<CameraController>();
     }
 
+    private void OnEnable()
+    {
+        EventManager.Instance.AddEventListener(EEventType.RoomChanged, OnRoomChanged);
+    }
+
+    private void OnDisable()
+    {
+        if (MonoBehaviourSingleton<EventManager>.HasInstance)
+        {
+            EventManager.Instance.RemoveEventListener(EEventType.RoomChanged, OnRoomChanged);
+        }
+    }
+
     private void OnDestroy()
     {
         StopTransition();
+    }
+
+    private void OnRoomChanged()
+    {
+        Room currentRoom = Region.Instance.CurrentRoom;
+        if (currentRoom != null)
+        {
+            StartRoomTransitionAsync(currentRoom.MinBounds, currentRoom.MaxBounds, this.GetCancellationTokenOnDestroy()).Forget();
+        }
     }
 
 

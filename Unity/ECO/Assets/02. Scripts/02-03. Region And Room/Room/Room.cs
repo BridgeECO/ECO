@@ -30,7 +30,6 @@ public class Room : MonoBehaviour
         _resettables = GetComponentsInChildren<IResettable>(true).ToList();
     }
 
-    [Button]
     public void ResetRoom()
     {
         if (_resettables == null)
@@ -41,17 +40,6 @@ public class Room : MonoBehaviour
         for (int i = 0; i < _resettables.Count; i++)
         {
             _resettables[i]?.ResetState();
-        }
-    }
-
-    [Button]
-    private void RefreshBoundary()
-    {
-        if (_cameraBounds != null)
-        {
-            _cameraBounds.isTrigger = true;
-            _cameraBounds.size = new Vector2(_pixelWidth / PPU, _pixelHeight / PPU);
-            _cameraBounds.compositeOperation = Collider2D.CompositeOperation.Merge;
         }
     }
 
