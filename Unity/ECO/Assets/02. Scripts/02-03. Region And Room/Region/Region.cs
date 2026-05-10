@@ -30,7 +30,7 @@ public class Region : MonoBehaviourSingleton<Region>
         {
             return;
         }
-        _currentRoom = _rooms[0];
+        _currentRoom = RespawnManager.Instance.CurrentRoom = _rooms[0];
         _currentRoom.IsVisited = true;
         InitCameraBounds();
         InitSavePoint();
