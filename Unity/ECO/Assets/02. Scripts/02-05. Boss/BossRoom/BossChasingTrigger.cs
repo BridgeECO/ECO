@@ -4,11 +4,9 @@ using VInspector;
 
 public class BossChasingTrigger : MonoBehaviour
 {
-    [Foldout("Project")]
-    [SerializeField]
-    private BossBase _targetBoss;
-
     [Foldout("Settings")]
+    [SerializeField]
+    private EBoss _targetBossType;
     [SerializeField]
     [Tooltip("이 트리거에 닿았을 때 보스가 추격을 시작할지, 멈출지 선택하세요.")]
     private EBossState _triggerAction = EBossState.Chasing;
@@ -22,25 +20,35 @@ public class BossChasingTrigger : MonoBehaviour
             return;
         }
 
-        if (other.CompareTag(nameof(ETags.Player)))
+        if (other.CompareTag(nameof(ETags.Player)) && _triggerAction == EBossState.Chasing)
         {
-            if (_targetBoss != null)
-            {
-                _hasTriggered = true;
+            ExecuteAction();
+            return;
+        }
 
-                if (_triggerAction == EBossState.Chasing)
-                {
-                    _targetBoss.StartChase();
-                }
-                else if (_triggerAction == EBossState.Idle)
-                {
-                    _targetBoss.StopChase();
-                    if (other.GetComponentInParent<PlayerInput>() is PlayerInput playerInput)
-                    {
-                        playerInput.IsDashLocked = false;
-                    }
-                }
-            }
+        if(other.CompareTag(nameof(ETags.Boss)) && _triggerAction == EBossState.Idle)
+        {
+            ExecuteAction();
+        }
+    }
+
+    private void ExecuteAction()
+    {
+        BossBase targetBoss = BossManager.Instance.GetBoss(_targetBossType);
+        if (targetBoss == null)
+        {
+            return;
+        }
+
+        _hasTriggered = true;
+
+        if (_triggerAction == EBossState.Chasing)
+        {
+            targetBoss.StartChase();
+        }
+        else if (_triggerAction == EBossState.Idle)
+        {
+            targetBoss.StopChase();
         }
     }
 }

@@ -1,19 +1,45 @@
 using UnityEngine;
-using UnityEngine.Playables;
-using VInspector;
 
 public class BossEventTrigger : MonoBehaviour
 {
+    [Header("Target Settings")]
+    [SerializeField]
+    private EBoss _targetBossType;
+    [SerializeField]
+    private float _eventTriggerDistance = 20f;
+    [SerializeField]
+    private BossBase _targetBoss;
     private PlayerInput _playerInput;
+    [SerializeField]
+    private Transform _playerTransform;
+    private bool _isEventStarted = false;
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void Awake()
     {
-        if (other.CompareTag(nameof(ETags.Player)))
+        GameObject player = GameObject.FindWithTag(nameof(ETags.Player));
+        if (player != null)
         {
-            if (_playerInput = other.GetComponentInParent<PlayerInput>())
-            {
-                _playerInput.IsDashLocked = true;
-            }
+            _playerTransform = player.transform;
+            _playerInput = player.GetComponentInParent<PlayerInput>();
+        }
+    }
+
+    private void Start()
+    {
+        _targetBoss = BossManager.Instance.GetBoss(_targetBossType);
+    }
+
+    private void Update()
+    {
+        if (_isEventStarted)
+        {
+            return;
+        }
+
+        float distance = Vector2.Distance(_playerTransform.position, _targetBoss.transform.position);
+
+        if (distance <= _eventTriggerDistance)
+        {
             OnCutsceneStarted();
         }
     }
