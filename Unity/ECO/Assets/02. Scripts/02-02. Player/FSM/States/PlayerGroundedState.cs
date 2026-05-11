@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 public class PlayerGroundedState : IPlayerState
@@ -7,6 +8,7 @@ public class PlayerGroundedState : IPlayerState
     private PlayerSensor _sensor;
     private PlayerMotor _motor;
     private PlayerDataSO _data;
+    private PlayerUnderJump _underJump;
 
     public PlayerGroundedState(PlayerStateMachine stateMachine, PlayerDataSO data)
     {
@@ -15,6 +17,7 @@ public class PlayerGroundedState : IPlayerState
         _sensor = stateMachine.Sensor;
         _motor = stateMachine.Motor;
         _data = data;
+        _underJump = new PlayerUnderJump();
     }
 
     public void Enter()
@@ -32,7 +35,24 @@ public class PlayerGroundedState : IPlayerState
         _sm.CoyoteTimer = _data.CoyoteTime;
         Run();
 
-        if (0f < _sm.JumpBufferTimer || !_sensor.IsGrounded)
+        if (0f < _sm.JumpBufferTimer)
+        {
+            if (_input.VerticalInput < 0f)
+            {
+                if (_sensor.HasPlatformEffector)
+                {
+                    _sm.JumpBufferTimer = 0f;
+                    _underJump.ExecuteAsync(_sensor.CurrentPlatformEffector, _sm.GetCancellationTokenOnDestroy()).Forget();
+                    _sm.ChangeState(EPlayerState.Airborne);
+                    return;
+                }
+            }
+
+            _sm.ChangeState(EPlayerState.Airborne);
+            return;
+        }
+
+        if (!_sensor.IsGrounded)
         {
             _sm.ChangeState(EPlayerState.Airborne);
             return;
