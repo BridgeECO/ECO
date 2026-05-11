@@ -31,13 +31,13 @@ public class EnergyCore : MonoBehaviour, IEnergyReceiver
     public void SetEnergyActive(bool isActive)
     {
         _spriteRenderer.color = isActive ? _activeColor : _deactiveColor;
-        for (int i = 0; i < _registeredTerrains.Count; i++)
+        foreach (var terrain in _registeredTerrains)
         {
-            if (_registeredTerrains[i] == null)
+            if (terrain == null)
             {
                 continue;
             }
-            _registeredTerrains[i].SetEnergyActive(isActive);
+            terrain.SetEnergyActive(isActive);
         }
     }
 
@@ -45,13 +45,13 @@ public class EnergyCore : MonoBehaviour, IEnergyReceiver
     {
 #if UNITY_EDITOR
         Gizmos.color = Color.yellow;
-        for (int i = 0; i < _registeredTerrains.Count; i++)
+        foreach (var terrain in _registeredTerrains)
         {
-            if (_registeredTerrains[i] == null)
+            if (terrain == null)
             {
                 continue;
             }
-            Vector3 terrainPos = _registeredTerrains[i].transform.position;
+            Vector3 terrainPos = terrain.transform.position;
             Gizmos.DrawLine(transform.position, terrainPos);
             Gizmos.DrawSphere(terrainPos, 0.2f);
         }

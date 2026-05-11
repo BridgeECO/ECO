@@ -45,18 +45,22 @@ public class EnergyPathCalculator
             case EEnergyPathNodeType.Terrain:
                 AddTerrainKeyPoints(points, node);
                 break;
-            case EEnergyPathNodeType.EnergyCore:
-                AddKeyPoint(points, node.EnergyCore.ActivationPosition, node.EnergyCore.transform);
-                AddKeyPoint(points, node.EnergyCore.DeactivationPosition, node.EnergyCore.transform);
-                break;
             case EEnergyPathNodeType.Waypoint:
-                points.Add(node.Waypoint.position);
+                AddWaypointKeyPoints(points, node);
+                break;
+            case EEnergyPathNodeType.EnergyCore:
+                AddEnergyCoreKeyPoints(points, node);
                 break;
         }
     }
 
     private void AddTerrainKeyPoints(List<Vector3> points, EnergyPathNode node)
     {
+        if (node.Terrain == null)
+        {
+            return;
+        }
+
         if (node.IsCaptured)
         {
             points.Add(node.StaticActivationPosition);
@@ -65,6 +69,25 @@ public class EnergyPathCalculator
         }
         AddKeyPoint(points, node.Terrain.ActivationPosition, node.Terrain.transform);
         AddKeyPoint(points, node.Terrain.DeactivationPosition, node.Terrain.transform);
+    }
+
+    private void AddWaypointKeyPoints(List<Vector3> points, EnergyPathNode node)
+    {
+        if (node.Waypoint == null)
+        {
+            return;
+        }
+        points.Add(node.Waypoint.position);
+    }
+
+    private void AddEnergyCoreKeyPoints(List<Vector3> points, EnergyPathNode node)
+    {
+        if (node.EnergyCore == null)
+        {
+            return;
+        }
+        AddKeyPoint(points, node.EnergyCore.ActivationPosition, node.EnergyCore.transform);
+        AddKeyPoint(points, node.EnergyCore.DeactivationPosition, node.EnergyCore.transform);
     }
 
     private Dictionary<int, float> ComputeSpline(List<Vector3> keyPoints, Vector3[] tangents, int resolution, float tension, List<Vector3> computedWaypoints, ref float totalDistance)
