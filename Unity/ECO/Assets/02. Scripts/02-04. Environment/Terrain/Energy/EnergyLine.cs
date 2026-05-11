@@ -42,23 +42,15 @@ public class EnergyLine : MonoBehaviour
 
     private void Awake()
     {
-        CaptureMovementGimmickPositions();
+        InitPathNodes();
         InitPathAndDistances();
     }
 
     private void Update()
     {
         _segmentController.UpdateSegments(Time.deltaTime, _totalDistance, _energySpeed);
-        UpdateTerrains();
         _segmentController.RenderSegments(_computedWaypoints);
-    }
-
-    private void CaptureMovementGimmickPositions()
-    {
-        for (int i = 0; i < _pathNodes.Count; i++)
-        {
-            _pathNodes[i].CaptureStaticPositions();
-        }
+        UpdatePathNodes();
     }
 
     private void OnDrawGizmos()
@@ -97,6 +89,14 @@ public class EnergyLine : MonoBehaviour
 #endif
     }
 
+    private void InitPathNodes()
+    {
+        foreach (var node in _pathNodes)
+        {
+            node.Init();
+        }
+    }
+
     private void InitPathAndDistances()
     {
         _pathCalculator.CalculatePathAndDistances(
@@ -111,6 +111,48 @@ public class EnergyLine : MonoBehaviour
         );
     }
 
+    private void UpdatePathNodes()
+    {
+        foreach (var node in _pathNodes)
+        {
+            if (node.NodeType == EEnergyPathNodeType.Waypoint)
+            {
+                continue;
+            }
+
+            bool isActive = IsAnySegmentActive(node);
+            if (node.IsActiveInternal == isActive)
+            {
+                continue;
+            }
+
+            node.IsActiveInternal = isActive;
+            ApplyNodeActive(node, isActive);
+        }
+    }
+
+    private bool IsAnySegmentActive(EnergyPathNode node)
+    {
+        foreach (EnergySegment segment in _segmentController.ActiveSegments)
+        {
+            if (node.ActivationCenterDistance <= segment.HeadDistance &&
+                segment.TailDistance < node.DeactivationEndDistance)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void ApplyNodeActive(EnergyPathNode node, bool isActive)
+    {
+        if (node.EnergyReceiver == null)
+        {
+            return;
+        }
+        node.EnergyReceiver.SetEnergyActive(isActive);
+    }
+
     public void SetSwitchState(bool isOn)
     {
         if (isOn)
@@ -119,38 +161,5 @@ public class EnergyLine : MonoBehaviour
             return;
         }
         _segmentController.StopCurrentSegmentAsync(_cutOffDelay).Forget();
-    }
-
-    private void UpdateTerrains()
-    {
-        foreach (EnergyPathNode node in _pathNodes)
-        {
-            if (node.NodeType != EEnergyPathNodeType.Terrain)
-            {
-                continue;
-            }
-
-            if (node.Terrain == null)
-            {
-                continue;
-            }
-
-            bool isActive = false;
-            foreach (EnergySegment segment in _segmentController.ActiveSegments)
-            {
-                if (segment.HeadDistance >= node.ActivationCenterDistance &&
-                    segment.TailDistance < node.DeactivationEndDistance)
-                {
-                    isActive = true;
-                    break;
-                }
-            }
-
-            if (node.IsActiveInternal != isActive)
-            {
-                node.IsActiveInternal = isActive;
-                node.Terrain.SetEnergyActive(isActive);
-            }
-        }
     }
 }

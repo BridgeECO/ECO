@@ -61,6 +61,16 @@ public class EnergyPathCalculator
                 node.DeactivationEndDistance = keyPointDistances.ContainsKey(deactIndex) ? keyPointDistances[deactIndex] : 0f;
                 keyIndex += 2;
             }
+            else if (node.NodeType == EEnergyPathNodeType.EnergyCore)
+            {
+                if (node.Waypoint == null)
+                {
+                    continue;
+                }
+                node.ActivationCenterDistance = keyPointDistances.ContainsKey(keyIndex) ? keyPointDistances[keyIndex] : 0f;
+                node.DeactivationEndDistance = keyPointDistances.ContainsKey(keyIndex + 1) ? keyPointDistances[keyIndex + 1] : node.ActivationCenterDistance;
+                keyIndex += 1;
+            }
             else
             {
                 if (node.Waypoint == null)
@@ -96,6 +106,14 @@ public class EnergyPathCalculator
                     AddKeyPoint(points, node.Terrain.ActivationPosition, node.Terrain.transform);
                     AddKeyPoint(points, node.Terrain.DeactivationPosition, node.Terrain.transform);
                 }
+            }
+            else if (node.NodeType == EEnergyPathNodeType.EnergyCore)
+            {
+                if (node.Waypoint == null)
+                {
+                    continue;
+                }
+                points.Add(node.Waypoint.position);
             }
             else
             {

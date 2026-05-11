@@ -13,13 +13,28 @@ public class EnergyPathNode
     [SerializeField]
     private Transform _waypoint;
 
+    [SerializeField]
+    private EnergyCore _energyCore;
+
     private Vector3 _staticActivationPosition;
     private Vector3 _staticDeactivationPosition;
     private bool _isCaptured;
 
     public EEnergyPathNodeType NodeType => _nodeType;
+
+    #region Terrain
     public TerrainObject Terrain => _terrain;
+    #endregion
+
+    #region Waypoint
     public Transform Waypoint => _waypoint;
+    #endregion
+
+    #region EnergyCore
+    public EnergyCore EnergyCore => _energyCore;
+    #endregion
+
+    public IEnergyReceiver EnergyReceiver { get; private set; }
     public Vector3 StaticActivationPosition => _staticActivationPosition;
     public Vector3 StaticDeactivationPosition => _staticDeactivationPosition;
     public bool IsCaptured => _isCaptured;
@@ -28,7 +43,14 @@ public class EnergyPathNode
     public float DeactivationEndDistance { get; set; }
     public bool IsActiveInternal { get; set; }
 
-    public void CaptureStaticPositions()
+
+    public void Init()
+    {
+        CaptureStaticPositions();
+        AllocIEnergyReceiver();
+    }
+
+    private void CaptureStaticPositions()
     {
         if (_terrain == null || !_terrain.HasMovementGimmick)
         {
@@ -44,5 +66,20 @@ public class EnergyPathNode
             : _terrain.transform.position;
 
         _isCaptured = true;
+    }
+
+    private void AllocIEnergyReceiver()
+    {
+        switch (_nodeType)
+        {
+            case EEnergyPathNodeType.EnergyCore:
+                EnergyReceiver = _energyCore;
+                break;
+            case EEnergyPathNodeType.Terrain:
+                EnergyReceiver = _terrain;
+                break;
+            default:
+                break;
+        }
     }
 }
