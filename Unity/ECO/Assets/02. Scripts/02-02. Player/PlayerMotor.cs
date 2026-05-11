@@ -60,7 +60,12 @@ public class PlayerMotor : MonoBehaviour
         {
             return;
         }
-        transform.rotation = (0f < xInput) ? Quaternion.identity : Quaternion.Euler(0f, 180f, 0f);
+        Quaternion targetRotation = (0f < xInput) ? Quaternion.identity : Quaternion.Euler(0f, 180f, 0f);
+        if (transform.rotation == targetRotation)
+        {
+            return;
+        }
+        transform.rotation = targetRotation;
     }
 
     public void AddVelocity(Vector2 addedVelocity)

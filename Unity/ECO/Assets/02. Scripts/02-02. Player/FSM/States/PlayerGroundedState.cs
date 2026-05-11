@@ -61,7 +61,6 @@ public class PlayerGroundedState : IPlayerState
     {
         float xInput = _input.HorizontalInput;
         _motor.SetVelocityX(xInput * _data.GroundMoveSpeed);
-        _motor.SetFlip(xInput);
         _sm.Animator.SetBool(AnimatorHash.IsRunning, xInput != 0f);
     }
 }
