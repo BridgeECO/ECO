@@ -25,6 +25,12 @@ public class PlayerSensor : MonoBehaviour
     private const float WALL_CHECK_DISTANCE = 0.05f;
     private const float SLIP_CHECK_BOX_SIZE = 0.1f;
 
+    private Collider2D[] _overlapResults = new Collider2D[1];
+    private Collider2D _lastPlatformCollider;
+    private PlatformEffector2D _cachedEffector;
+    private ContactFilter2D _contactFilter;
+
+
     public bool IsGrounded { get; private set; }
     public bool HasPlatformEffector { get; private set; }
     public PlatformEffector2D CurrentPlatformEffector { get; private set; }
@@ -34,11 +40,6 @@ public class PlayerSensor : MonoBehaviour
     public bool IsLeftSliding { get; private set; }
     public bool IsRightSliding { get; private set; }
     public float WallDirection { get; private set; }
-
-    private Collider2D[] _overlapResults = new Collider2D[1];
-    private Collider2D _lastPlatformCollider;
-    private PlatformEffector2D _cachedEffector;
-    private ContactFilter2D _contactFilter;
 
     private void Start()
     {
