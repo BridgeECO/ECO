@@ -125,7 +125,6 @@ public class EnergyLine : MonoBehaviour
             {
                 continue;
             }
-
             node.IsActiveInternal = isActive;
             ApplyNodeActive(node, isActive);
         }

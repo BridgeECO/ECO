@@ -24,6 +24,8 @@ public class EnergyPathNode
 
     #region Terrain
     public TerrainObject Terrain => _terrain;
+    public Vector3 StaticActivationPosition => _staticActivationPosition;
+    public Vector3 StaticDeactivationPosition => _staticDeactivationPosition;
     #endregion
 
     #region Waypoint
@@ -35,8 +37,6 @@ public class EnergyPathNode
     #endregion
 
     public IEnergyReceiver EnergyReceiver { get; private set; }
-    public Vector3 StaticActivationPosition => _staticActivationPosition;
-    public Vector3 StaticDeactivationPosition => _staticDeactivationPosition;
     public bool IsCaptured => _isCaptured;
 
     public float ActivationCenterDistance { get; set; }

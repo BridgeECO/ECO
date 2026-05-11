@@ -8,8 +8,29 @@ public class EnergyCore : MonoBehaviour, IEnergyReceiver
     [SerializeField]
     private List<TerrainObject> _registeredTerrains = new List<TerrainObject>();
 
+    [Foldout("Energy")]
+    [SerializeField]
+    private Transform _activationPosition;
+
+    [SerializeField]
+    private Transform _deactivationPosition;
+
+    public Transform ActivationPosition => _activationPosition;
+    public Transform DeactivationPosition => _deactivationPosition;
+
+    private SpriteRenderer _spriteRenderer;
+    private Color _activeColor = Color.yellow;
+    private Color _deactiveColor;
+
+    private void Awake()
+    {
+        _spriteRenderer = GetComponent<SpriteRenderer>();
+        _deactiveColor = _spriteRenderer.color;
+    }
+
     public void SetEnergyActive(bool isActive)
     {
+        _spriteRenderer.color = isActive ? _activeColor : _deactiveColor;
         for (int i = 0; i < _registeredTerrains.Count; i++)
         {
             if (_registeredTerrains[i] == null)
