@@ -34,14 +34,24 @@ public class PlayerInput : MonoBehaviour
             return;
         }
 
-        HorizontalInput = Input.GetAxisRaw("Horizontal");
+        UpdateHorizontalInput();
+        UpdateMousePosition();
+        Jump();
+        Dash();
+    }
+    #endregion
 
+    #region Input Processings
+    private void UpdateHorizontalInput()
+    {
+        HorizontalInput = Input.GetAxisRaw("Horizontal");
+    }
+
+    private void UpdateMousePosition()
+    {
         Vector3 mouseScreenPos = Input.mousePosition;
         mouseScreenPos.z = Mathf.Abs(_mainCamera.transform.position.z - transform.position.z);
         MouseWorldPosition = _mainCamera.ScreenToWorldPoint(mouseScreenPos);
-
-        Jump();
-        Dash();
     }
     #endregion
 

@@ -54,6 +54,20 @@ public class PlayerMotor : MonoBehaviour
         Velocity = new Vector2(Velocity.x, y);
     }
 
+    public void SetFlip(float xInput)
+    {
+        if (xInput == 0f)
+        {
+            return;
+        }
+        Quaternion targetRotation = (0f < xInput) ? Quaternion.identity : Quaternion.Euler(0f, 180f, 0f);
+        if (transform.rotation == targetRotation)
+        {
+            return;
+        }
+        transform.rotation = targetRotation;
+    }
+
     public void AddVelocity(Vector2 addedVelocity)
     {
         Velocity += addedVelocity;
