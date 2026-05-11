@@ -33,7 +33,7 @@ public class PlayerStateMachine : MonoBehaviour
         Input = GetComponent<PlayerInput>();
         Sensor = GetComponent<PlayerSensor>();
         Motor = GetComponent<PlayerMotor>();
-        Animator = GetComponentInChildren<Animator>();
+        Animator = GetComponent<Animator>();
 
         _states = new Dictionary<EPlayerState, IPlayerState>
         {
@@ -61,6 +61,7 @@ public class PlayerStateMachine : MonoBehaviour
         CoyoteTimer = Mathf.Max(0f, CoyoteTimer - Time.deltaTime);
         InputLockTimer = Mathf.Max(0f, InputLockTimer - Time.deltaTime);
         DashCooldownTimer = Mathf.Max(0f, DashCooldownTimer - Time.deltaTime);
+        Motor.SetFlip(Input.HorizontalInput);
         _currentState?.Update();
     }
 

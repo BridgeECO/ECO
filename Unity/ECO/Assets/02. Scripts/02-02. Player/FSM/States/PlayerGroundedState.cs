@@ -30,17 +30,9 @@ public class PlayerGroundedState : IPlayerState
     public void Update()
     {
         _sm.CoyoteTimer = _data.CoyoteTime;
+        Run();
 
-        float xInput = _input.HorizontalInput;
-        _motor.SetVelocityX(xInput * _data.GroundMoveSpeed);
-
-        if (_sm.JumpBufferTimer > 0f)
-        {
-            _sm.ChangeState(EPlayerState.Airborne);
-            return;
-        }
-
-        if (!_sensor.IsGrounded)
+        if (0f < _sm.JumpBufferTimer || !_sensor.IsGrounded)
         {
             _sm.ChangeState(EPlayerState.Airborne);
             return;
@@ -63,5 +55,13 @@ public class PlayerGroundedState : IPlayerState
             return;
         }
         _sm.ChangeState(EPlayerState.Hover);
+    }
+
+    private void Run()
+    {
+        float xInput = _input.HorizontalInput;
+        _motor.SetVelocityX(xInput * _data.GroundMoveSpeed);
+        _motor.SetFlip(xInput);
+        _sm.Animator.SetBool(AnimatorHash.IsRunning, xInput != 0f);
     }
 }
