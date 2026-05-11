@@ -23,7 +23,10 @@ public class PlayerUnderJump
         }
         finally
         {
-            effector.rotationalOffset = originalOffset;
+            if (effector != null)
+            {
+                effector.rotationalOffset = originalOffset;
+            }
         }
     }
 }

@@ -40,6 +40,11 @@ public class PlayerSensor : MonoBehaviour
     private PlatformEffector2D _cachedEffector;
     private ContactFilter2D _contactFilter;
 
+    private void Start()
+    {
+        _contactFilter.useLayerMask = true;
+    }
+
     private void Update()
     {
         UpdateSensors();
@@ -48,7 +53,6 @@ public class PlayerSensor : MonoBehaviour
 
     private void UpdateSensors()
     {
-        _contactFilter.useLayerMask = true;
         bool touchingPlatform = _feetCollider.IsTouchingLayers(_platformLayer);
 
         UpdateGroundSensor(touchingPlatform);
