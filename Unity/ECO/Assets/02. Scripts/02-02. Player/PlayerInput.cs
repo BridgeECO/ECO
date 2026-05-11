@@ -10,6 +10,7 @@ public class PlayerInput : MonoBehaviour
     public Action OnDashReleased;
 
     public float HorizontalInput { get; private set; }
+    public float VerticalInput { get; private set; }
     public Vector2 MouseWorldPosition { get; private set; }
 
     [field: SerializeField]
@@ -35,6 +36,7 @@ public class PlayerInput : MonoBehaviour
         }
 
         UpdateHorizontalInput();
+        UpdateVerticalInput();
         UpdateMousePosition();
         Jump();
         Dash();
@@ -45,6 +47,11 @@ public class PlayerInput : MonoBehaviour
     private void UpdateHorizontalInput()
     {
         HorizontalInput = Input.GetAxisRaw("Horizontal");
+    }
+
+    private void UpdateVerticalInput()
+    {
+        VerticalInput = Input.GetAxisRaw("Vertical");
     }
 
     private void UpdateMousePosition()
