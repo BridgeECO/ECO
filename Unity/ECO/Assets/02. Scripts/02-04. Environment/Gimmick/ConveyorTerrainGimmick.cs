@@ -156,6 +156,11 @@ public class ConveyorTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizab
     {
         while (!ct.IsCancellationRequested)
         {
+            if (target == null || target.Rigidbody == null)
+            {
+                return;
+            }
+
             Vector2 targetPos = GetCurrentTargetPosition();
             Vector2 currentPos = target.Rigidbody.position;
 
@@ -173,7 +178,7 @@ public class ConveyorTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizab
 
     private bool HasValidWaypoints()
     {
-        return _entry.Waypoints != null && _entry.Waypoints.Count >= 2;
+        return _entry.Waypoints != null && 2 <= _entry.Waypoints.Count;
     }
 
     private Vector2 GetStartPosition()
