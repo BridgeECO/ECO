@@ -25,7 +25,8 @@ public class TerrainGimmickEntryDrawer : PropertyDrawer
             EditorGUI.PropertyField(currentRect, changeSpriteProperty, new GUIContent("Change Sprite"));
         }
 
-        if (IsMoveTerrainGimmick(gimmickDataProperty) || IsPatrolTerrainGimmick(gimmickDataProperty))
+        if (IsMoveTerrainGimmick(gimmickDataProperty) || IsPatrolTerrainGimmick(gimmickDataProperty)
+            || IsConveyorTerrainGimmick(gimmickDataProperty))
         {
             currentRect.y += lineHeight + spacing;
             EditorGUI.PropertyField(currentRect, moveSpeedProperty, new GUIContent("Move Speed"));
@@ -54,7 +55,8 @@ public class TerrainGimmickEntryDrawer : PropertyDrawer
             height += lineHeight + spacing;
         }
 
-        if (IsMoveTerrainGimmick(gimmickDataProperty) || IsPatrolTerrainGimmick(gimmickDataProperty))
+        if (IsMoveTerrainGimmick(gimmickDataProperty) || IsPatrolTerrainGimmick(gimmickDataProperty)
+            || IsConveyorTerrainGimmick(gimmickDataProperty))
         {
             height += lineHeight + spacing;
             height += EditorGUI.GetPropertyHeight(waypointsProperty, true) + spacing;
@@ -90,5 +92,14 @@ public class TerrainGimmickEntryDrawer : PropertyDrawer
         }
 
         return gimmickDataProperty.objectReferenceValue is PatrolTerrainGimmickSO;
+    }
+
+    private bool IsConveyorTerrainGimmick(SerializedProperty gimmickDataProperty)
+    {
+        if (gimmickDataProperty.objectReferenceValue == null)
+        {
+            return false;
+        }
+        return gimmickDataProperty.objectReferenceValue is ConveyorTerrainGimmickSO;
     }
 }
