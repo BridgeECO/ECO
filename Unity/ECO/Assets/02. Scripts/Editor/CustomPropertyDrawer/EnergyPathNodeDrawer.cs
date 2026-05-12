@@ -33,6 +33,7 @@ public class EnergyPathNodeDrawer : PropertyDrawer
             SerializedProperty nodeTypeProp = property.FindPropertyRelative("_nodeType");
             SerializedProperty terrainProp = property.FindPropertyRelative("_terrain");
             SerializedProperty waypointProp = property.FindPropertyRelative("_waypoint");
+            SerializedProperty energyCoreProp = property.FindPropertyRelative("_energyCore");
 
             float y = position.y + EditorGUIUtility.singleLineHeight + LINE_SPACING;
 
@@ -47,6 +48,10 @@ public class EnergyPathNodeDrawer : PropertyDrawer
             if (nodeType == EEnergyPathNodeType.Terrain)
             {
                 EditorGUI.PropertyField(valueRect, terrainProp);
+            }
+            else if (nodeType == EEnergyPathNodeType.EnergyCore)
+            {
+                EditorGUI.PropertyField(valueRect, energyCoreProp);
             }
             else
             {

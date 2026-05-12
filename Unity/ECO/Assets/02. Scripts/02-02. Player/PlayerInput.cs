@@ -10,6 +10,7 @@ public class PlayerInput : MonoBehaviour
     public Action OnDashReleased;
 
     public float HorizontalInput { get; private set; }
+    public float VerticalInput { get; private set; }
     public Vector2 MouseWorldPosition { get; private set; }
 
     [field: SerializeField]
@@ -34,14 +35,30 @@ public class PlayerInput : MonoBehaviour
             return;
         }
 
-        HorizontalInput = Input.GetAxisRaw("Horizontal");
+        UpdateHorizontalInput();
+        UpdateVerticalInput();
+        UpdateMousePosition();
+        Jump();
+        Dash();
+    }
+    #endregion
 
+    #region Input Processings
+    private void UpdateHorizontalInput()
+    {
+        HorizontalInput = Input.GetAxisRaw("Horizontal");
+    }
+
+    private void UpdateVerticalInput()
+    {
+        VerticalInput = Input.GetAxisRaw("Vertical");
+    }
+
+    private void UpdateMousePosition()
+    {
         Vector3 mouseScreenPos = Input.mousePosition;
         mouseScreenPos.z = Mathf.Abs(_mainCamera.transform.position.z - transform.position.z);
         MouseWorldPosition = _mainCamera.ScreenToWorldPoint(mouseScreenPos);
-
-        Jump();
-        Dash();
     }
     #endregion
 

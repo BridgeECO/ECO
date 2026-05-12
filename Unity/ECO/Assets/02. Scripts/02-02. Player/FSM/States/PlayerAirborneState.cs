@@ -23,6 +23,8 @@ public class PlayerAirborneState : IPlayerState
 
     public void Enter()
     {
+        _sm.Animator.SetBool(AnimatorHash.IsRunning, false);
+        _sm.Animator.SetTrigger(AnimatorHash.Jump1);
         _jump.Init(_sm.transform.position.x);
         _input.OnJumpReleased += _jump.HandleOnReleased;
         _input.OnDashPressed += HandleDashPressed;
@@ -41,6 +43,7 @@ public class PlayerAirborneState : IPlayerState
 
     public void Exit()
     {
+        _sm.Animator.SetTrigger(AnimatorHash.Jump3);
         _slip.Reset();
         _input.OnJumpReleased -= _jump.HandleOnReleased;
         _input.OnDashPressed -= HandleDashPressed;

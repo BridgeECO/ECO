@@ -1,5 +1,6 @@
 public enum EEnergyPathNodeType
 {
     Terrain,
-    Waypoint
+    Waypoint,
+    EnergyCore
 }
