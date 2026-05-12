@@ -6,7 +6,6 @@ public class ConveyorTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizab
 {
     private TerrainGimmickEntry _entry;
     private CancellationTokenSource _conveyorCts;
-    private Vector2 _initialPosition;
     private bool _isInitialized;
     private int _currentIndex;
     private LineRenderer _pathLinePrefab;
@@ -35,11 +34,11 @@ public class ConveyorTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizab
     {
         base.ResetGimmick(target);
         CancelToken();
-        _currentIndex = 0;
+        _currentIndex = 1;
 
         if (_isInitialized)
         {
-            target.Rigidbody.position = _initialPosition;
+            TeleportToStart(target);
         }
     }
 
@@ -72,7 +71,7 @@ public class ConveyorTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizab
     {
         EnsureRigidbody(target);
         EnsureSynchronizer(target);
-        EnsureInitialized(target);
+        EnsureInitialized();
     }
 
     private void EnsureRigidbody(TerrainObject target)
@@ -102,17 +101,21 @@ public class ConveyorTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizab
         }
     }
 
-    private void EnsureInitialized(TerrainObject target)
+    private void EnsureInitialized()
     {
         if (_isInitialized)
         {
             return;
         }
 
-        _initialPosition = target.Rigidbody.position;
-        _currentIndex = 0;
+        if (!HasValidWaypoints())
+        {
+            return;
+        }
+
+        _currentIndex = 1;
         _isInitialized = true;
-        _pathVisualizer = new GimmickPathVisualizer(_pathLinePrefab, _initialPosition, _entry.Waypoints);
+        _pathVisualizer = new GimmickPathVisualizer(_pathLinePrefab, GetStartPosition(), _entry.Waypoints);
     }
 
     private void CancelToken()
@@ -129,9 +132,9 @@ public class ConveyorTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizab
 
     private void StartConveyor(TerrainObject target)
     {
-        if (_entry.Waypoints == null || _entry.Waypoints.Count == 0)
+        if (!HasValidWaypoints())
         {
-            Debug.LogWarning($"[ConveyorTerrainGimmick] {target.name}에 Waypoints가 설정되지 않았습니다.");
+            Debug.LogWarning($"[ConveyorTerrainGimmick] {target.name}에 Waypoints가 최소 2개 이상 설정되어야 합니다.");
             return;
         }
 
@@ -153,16 +156,12 @@ public class ConveyorTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizab
     {
         while (!ct.IsCancellationRequested)
         {
-            if (!TryGetTargetPosition(out Vector2 targetPos))
-            {
-                break;
-            }
-
+            Vector2 targetPos = GetCurrentTargetPosition();
             Vector2 currentPos = target.Rigidbody.position;
 
             if (HasReachedTarget(currentPos, targetPos))
             {
-                AdvanceWaypoint(target, targetPos);
+                AdvanceIndex(target, targetPos);
                 continue;
             }
 
@@ -172,24 +171,19 @@ public class ConveyorTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizab
         }
     }
 
-    private bool TryGetTargetPosition(out Vector2 targetPos)
+    private bool HasValidWaypoints()
     {
-        targetPos = Vector2.zero;
+        return _entry.Waypoints != null && _entry.Waypoints.Count >= 2;
+    }
 
-        if (_currentIndex >= _entry.Waypoints.Count)
-        {
-            return false;
-        }
+    private Vector2 GetStartPosition()
+    {
+        return _entry.Waypoints[0].position;
+    }
 
-        Transform wp = _entry.Waypoints[_currentIndex];
-
-        if (wp == null)
-        {
-            return false;
-        }
-
-        targetPos = wp.position;
-        return true;
+    private Vector2 GetCurrentTargetPosition()
+    {
+        return _entry.Waypoints[_currentIndex].position;
     }
 
     private bool HasReachedTarget(Vector2 currentPos, Vector2 targetPos)
@@ -197,7 +191,7 @@ public class ConveyorTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizab
         return Vector2.Distance(currentPos, targetPos) <= 0.001f;
     }
 
-    private void AdvanceWaypoint(TerrainObject target, Vector2 targetPos)
+    private void AdvanceIndex(TerrainObject target, Vector2 targetPos)
     {
         _synchronizer?.SetVelocity(Vector2.zero);
         target.Rigidbody.MovePosition(targetPos);
@@ -211,8 +205,8 @@ public class ConveyorTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizab
 
     private void TeleportToStart(TerrainObject target)
     {
-        target.Rigidbody.position = _initialPosition;
-        _currentIndex = 0;
+        target.Rigidbody.position = GetStartPosition();
+        _currentIndex = 1;
     }
 
     private void MoveTowardsTarget(TerrainObject target, Vector2 currentPos, Vector2 targetPos)

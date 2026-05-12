@@ -24,24 +24,32 @@ public class ConveyorTerrainGimmickSO : TerrainGimmickBaseSO
 #if UNITY_EDITOR
     private void DrawPathGizmos(TerrainObject target, TerrainGimmickEntry entry)
     {
-        if (entry.Waypoints == null || entry.Waypoints.Count == 0)
+        if (entry.Waypoints == null || entry.Waypoints.Count < 2)
         {
             return;
         }
 
         Gizmos.color = Color.cyan;
-        Vector3 prev = Application.isPlaying ? target.InitialPosition : target.transform.position;
 
-        foreach (var wp in entry.Waypoints)
+        for (int i = 0; i < entry.Waypoints.Count - 1; i++)
         {
-            if (wp == null)
+            Transform from = entry.Waypoints[i];
+            Transform to = entry.Waypoints[i + 1];
+
+            if (from == null || to == null)
             {
                 continue;
             }
 
-            Gizmos.DrawLine(prev, wp.position);
-            Gizmos.DrawSphere(wp.position, 0.15f);
-            prev = wp.position;
+            Gizmos.DrawLine(from.position, to.position);
+            Gizmos.DrawSphere(from.position, 0.15f);
+        }
+
+        Transform last = entry.Waypoints[entry.Waypoints.Count - 1];
+
+        if (last != null)
+        {
+            Gizmos.DrawSphere(last.position, 0.15f);
         }
     }
 #endif
