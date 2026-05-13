@@ -46,7 +46,7 @@ public abstract class SpecialObjectBase : MonoBehaviour, IResettable
 
     protected virtual void OnTriggerEnter2D(Collider2D other)
     {
-        if (!other.CompareTag(nameof(ETags.PlayerInteract)))
+        if (!other.CompareTag(nameof(ETags.PlayerInteract)) && !other.CompareTag(nameof(ETags.PlayerFeet)))
         {
             return;
         }
@@ -58,7 +58,7 @@ public abstract class SpecialObjectBase : MonoBehaviour, IResettable
 
     protected virtual void OnTriggerExit2D(Collider2D other)
     {
-        if (!other.CompareTag(nameof(ETags.PlayerInteract)))
+        if (!other.CompareTag(nameof(ETags.PlayerInteract)) && !other.CompareTag(nameof(ETags.PlayerFeet)))
         {
             return;
         }
