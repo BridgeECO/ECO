@@ -6,11 +6,19 @@ public class PressurePlateInteraction : InteractionBase
 
     public override void OnTriggerEnter2D(Collider2D other)
     {
+        if (!other.CompareTag(nameof(ETags.PlayerFeet)))
+        {
+            return;
+        }
         TargetObject.CallSetState(true);
     }
 
     public override void OnTriggerExit2D(Collider2D other)
     {
+        if (!other.CompareTag(nameof(ETags.PlayerFeet)))
+        {
+            return;
+        }
         TargetObject.CallSetState(false);
     }
 }

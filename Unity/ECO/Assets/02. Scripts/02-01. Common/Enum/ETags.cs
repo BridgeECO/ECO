@@ -9,4 +9,5 @@ public enum ETags
     GameController,
     PlayerInteract,
     Boss,
+    PlayerFeet,
 }

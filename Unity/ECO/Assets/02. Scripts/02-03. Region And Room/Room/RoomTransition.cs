@@ -17,6 +17,12 @@ public class RoomTransition : MonoBehaviour
     private Transform _spawnPointB;
 
     private float _lastTriggerTime = -1f;
+    private Collider2D _transitionCollider;
+
+    private void Awake()
+    {
+        _transitionCollider = GetComponent<Collider2D>();
+    }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -41,7 +47,7 @@ public class RoomTransition : MonoBehaviour
             return;
         }
 
-        Room actualRoom = GetRoomByPosition(other);
+        Room actualRoom = GetRoomByAxis(other);
         if (actualRoom == null || actualRoom == Region.Instance.CurrentRoom)
         {
             return;
@@ -70,62 +76,38 @@ public class RoomTransition : MonoBehaviour
         EventManager.Instance.BroadcastEvent(EEventType.RoomChanged);
     }
 
-    private Room GetRoomByPosition(Collider2D playerCollider)
+    private Room GetRoomByAxis(Collider2D playerCollider)
     {
         Vector2 playerPos = playerCollider.transform.position;
-        float distA = Vector2.SqrMagnitude(playerPos - (Vector2)_spawnPointA.position);
-        float distB = Vector2.SqrMagnitude(playerPos - (Vector2)_spawnPointB.position);
-
-        if (Mathf.Abs(distA - distB) < 0.1f)
-        {
-            Room velocityRoom = GetRoomByVelocity(playerCollider, (Vector3)playerPos);
-            if (velocityRoom != null)
-            {
-                return velocityRoom;
-            }
-        }
-
-        if (distA < distB)
-        {
-            return _roomA;
-        }
-
-        if (distB < distA)
-        {
-            return _roomB;
-        }
-        return Region.Instance.CurrentRoom;
-    }
-
-    private Room GetRoomByVelocity(Collider2D playerCollider, Vector3 position)
-    {
-        if (!playerCollider.TryGetComponent<Rigidbody2D>(out var rb))
-        {
-            return null;
-        }
-
-        Vector2 velocity = rb.linearVelocity;
-        if (velocity.sqrMagnitude < 0.01f)
-        {
-            return null;
-        }
+        Vector2 transitionCenter = _transitionCollider.bounds.center;
+        Vector2 transitionSize = _transitionCollider.bounds.size;
 
         Vector2 centerA = (_roomA.MinBounds + _roomA.MaxBounds) / 2f;
         Vector2 centerB = (_roomB.MinBounds + _roomB.MaxBounds) / 2f;
-        Vector2 dirToA = (centerA - (Vector2)position).normalized;
-        Vector2 dirToB = (centerB - (Vector2)position).normalized;
 
-        float dotA = Vector2.Dot(velocity.normalized, dirToA);
-        float dotB = Vector2.Dot(velocity.normalized, dirToB);
+        bool isHorizontalCollider = transitionSize.x > transitionSize.y;
 
-        if (dotA > dotB)
+        if (isHorizontalCollider)
         {
-            return _roomA;
+            bool isAAboveB = centerA.y > centerB.y;
+            bool isPlayerAboveTransition = playerPos.y > transitionCenter.y;
+
+            if (isPlayerAboveTransition)
+            {
+                return isAAboveB ? _roomA : _roomB;
+            }
+            return isAAboveB ? _roomB : _roomA;
         }
-        if (dotB > dotA)
+        else
         {
-            return _roomB;
+            bool isARightOfB = centerA.x > centerB.x;
+            bool isPlayerRightOfTransition = playerPos.x > transitionCenter.x;
+
+            if (isPlayerRightOfTransition)
+            {
+                return isARightOfB ? _roomA : _roomB;
+            }
+            return isARightOfB ? _roomB : _roomA;
         }
-        return null;
     }
 }
