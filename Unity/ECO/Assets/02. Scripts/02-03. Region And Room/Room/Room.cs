@@ -12,12 +12,12 @@ public class Room : MonoBehaviour
     [SerializeField]
     private BoxCollider2D _cameraBounds;
 
-    [Foldout("Pixel Boundary")]
+    [Foldout("Boundary(Block)")]
     [SerializeField]
-    private float _pixelWidth;
+    private float _width;
 
     [SerializeField]
-    private float _pixelHeight;
+    private float _height;
 
     private List<IResettable> _resettables;
 
@@ -40,6 +40,18 @@ public class Room : MonoBehaviour
         for (int i = 0; i < _resettables.Count; i++)
         {
             _resettables[i]?.ResetState();
+        }
+    }
+
+
+    [Button]
+    private void RefreshRoomColliderSize()
+    {
+        if (_cameraBounds != null)
+        {
+            _cameraBounds.isTrigger = true;
+            _cameraBounds.size = new Vector2(_width, _height);
+            _cameraBounds.compositeOperation = Collider2D.CompositeOperation.Merge;
         }
     }
 
