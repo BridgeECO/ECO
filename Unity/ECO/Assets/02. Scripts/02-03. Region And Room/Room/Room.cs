@@ -7,18 +7,7 @@ using VInspector;
 public class Room : MonoBehaviour
 {
     private const int PPU = 256;
-
-    [Foldout("Hierarchy")]
-    [SerializeField]
     private BoxCollider2D _cameraBounds;
-
-    [Foldout("Boundary(Block)")]
-    [SerializeField]
-    private float _width;
-
-    [SerializeField]
-    private float _height;
-
     private List<IResettable> _resettables;
 
     public Vector2 MinBounds => _cameraBounds.bounds.min;
@@ -27,6 +16,7 @@ public class Room : MonoBehaviour
 
     private void Awake()
     {
+        _cameraBounds = GetComponent<BoxCollider2D>();
         _resettables = GetComponentsInChildren<IResettable>(true).ToList();
     }
 
@@ -43,21 +33,11 @@ public class Room : MonoBehaviour
         }
     }
 
-
-    [Button]
-    private void RefreshRoomColliderSize()
-    {
-        if (_cameraBounds != null)
-        {
-            _cameraBounds.isTrigger = true;
-            _cameraBounds.size = new Vector2(_width, _height);
-            _cameraBounds.compositeOperation = Collider2D.CompositeOperation.Merge;
-        }
-    }
-
     [Button]
     public void SetThisRoomToCurrentRoom()
     {
         RespawnManager.Instance.UpdateSavePoint(this, transform.position);
+        Region.Instance.SetCurrentRoom(this);
+        EventManager.Instance.BroadcastEvent(EEventType.RoomChanged);
     }
 }

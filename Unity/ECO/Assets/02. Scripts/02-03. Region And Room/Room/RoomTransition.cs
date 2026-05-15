@@ -72,7 +72,6 @@ public class RoomTransition : MonoBehaviour
         Vector3 spawnPosition = targetRoom == _roomA ? _spawnPointA.position : _spawnPointB.position;
         RespawnManager.Instance.UpdateSavePoint(targetRoom, spawnPosition);
         Region.Instance.SetCurrentRoom(targetRoom);
-        SaveManager.Instance.Save(targetRoom);
         EventManager.Instance.BroadcastEvent(EEventType.RoomChanged);
     }
 
