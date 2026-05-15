@@ -60,7 +60,7 @@ public class Region : MonoBehaviourSingleton<Region>
         RespawnManager.Instance.UpdateSavePoint(_currentRoom, _initialSpawnPoint.position);
     }
 
-    public void SetCurrentRoom(Room newRoom)
+    public void SetCurrentRoom(Room newRoom, Vector3 spawnPosition)
     {
         if (_currentRoom == newRoom)
         {
@@ -69,6 +69,8 @@ public class Region : MonoBehaviourSingleton<Region>
 
         _currentRoom = newRoom;
         _currentRoom.IsVisited = true;
+        RespawnManager.Instance.UpdateSavePoint(_currentRoom, spawnPosition);
+        EventManager.Instance.BroadcastEvent(EEventType.RoomChanged);
     }
 
     public int GetRoomIndex(Room room)

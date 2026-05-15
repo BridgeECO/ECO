@@ -43,6 +43,7 @@ public class RespawnManager : MonoBehaviourSingleton<RespawnManager>
     {
         _saveRoom = room;
         _respawnPosition = position;
+        SaveManager.Instance.Save(room);
     }
 
     public void Respawn()

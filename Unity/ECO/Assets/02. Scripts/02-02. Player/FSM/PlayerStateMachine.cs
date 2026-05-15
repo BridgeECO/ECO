@@ -43,6 +43,8 @@ public class PlayerStateMachine : MonoBehaviour
             { EPlayerState.Hover, new PlayerHoverState(this, _playerData) },
             { EPlayerState.Dash, new PlayerDashState(this, _playerData) }
         };
+
+        DebugTool.InitDebugTool(transform);
     }
 
     private void OnEnable()
