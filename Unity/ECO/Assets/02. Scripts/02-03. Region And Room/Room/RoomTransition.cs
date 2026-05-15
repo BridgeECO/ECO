@@ -70,9 +70,7 @@ public class RoomTransition : MonoBehaviour
         }
 
         Vector3 spawnPosition = targetRoom == _roomA ? _spawnPointA.position : _spawnPointB.position;
-        RespawnManager.Instance.UpdateSavePoint(targetRoom, spawnPosition);
-        Region.Instance.SetCurrentRoom(targetRoom);
-        EventManager.Instance.BroadcastEvent(EEventType.RoomChanged);
+        Region.Instance.SetCurrentRoom(targetRoom, spawnPosition);
     }
 
     private Room GetRoomByAxis(Collider2D playerCollider)

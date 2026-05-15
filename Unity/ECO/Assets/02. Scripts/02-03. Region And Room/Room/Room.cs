@@ -1,12 +1,14 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using VInspector;
 
 [RequireComponent(typeof(BoxCollider2D))]
 public class Room : MonoBehaviour
 {
-    private const int PPU = 256;
+    [Foldout("Hierarchy")]
+    [SerializeField]
+    private Transform _spawnPointForDebug;
+
     private BoxCollider2D _cameraBounds;
     private List<IResettable> _resettables;
 
@@ -17,7 +19,8 @@ public class Room : MonoBehaviour
     private void Awake()
     {
         _cameraBounds = GetComponent<BoxCollider2D>();
-        _resettables = GetComponentsInChildren<IResettable>(true).ToList();
+        _resettables = new List<IResettable>();
+        GetComponentsInChildren<IResettable>(true, _resettables);
     }
 
     public void ResetRoom()
@@ -34,10 +37,9 @@ public class Room : MonoBehaviour
     }
 
     [Button]
-    public void SetThisRoomToCurrentRoom()
+    private void SetThisRoomToCurrentRoom()
     {
-        RespawnManager.Instance.UpdateSavePoint(this, transform.position);
-        Region.Instance.SetCurrentRoom(this);
-        EventManager.Instance.BroadcastEvent(EEventType.RoomChanged);
+        Vector3 spawnPoint = _spawnPointForDebug != null ? _spawnPointForDebug.position : transform.position;
+        DebugTool.ChangeCurrentRoom(this, spawnPoint);
     }
 }
