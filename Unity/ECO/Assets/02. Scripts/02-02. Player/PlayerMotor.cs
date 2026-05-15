@@ -9,6 +9,7 @@ public class PlayerMotor : MonoBehaviour
 
     public Vector2 Velocity { get; private set; }
     public Vector2 ExternalVelocity { get; set; }
+    public bool IsForward { get; private set; }
     private PlayerStateMachine _stateMachine;
     private Rigidbody2D _rigidbody;
 
@@ -66,6 +67,7 @@ public class PlayerMotor : MonoBehaviour
             return;
         }
         transform.rotation = targetRotation;
+        IsForward = (0f < xInput);
     }
 
     public void AddVelocity(Vector2 addedVelocity)
