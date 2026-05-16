@@ -1,24 +1,15 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using VInspector;
 
 [RequireComponent(typeof(BoxCollider2D))]
 public class Room : MonoBehaviour
 {
-    private const int PPU = 256;
-
     [Foldout("Hierarchy")]
     [SerializeField]
+    private Transform _spawnPointForDebug;
+
     private BoxCollider2D _cameraBounds;
-
-    [Foldout("Pixel Boundary")]
-    [SerializeField]
-    private float _pixelWidth;
-
-    [SerializeField]
-    private float _pixelHeight;
-
     private List<IResettable> _resettables;
 
     public Vector2 MinBounds => _cameraBounds.bounds.min;
@@ -27,7 +18,9 @@ public class Room : MonoBehaviour
 
     private void Awake()
     {
-        _resettables = GetComponentsInChildren<IResettable>(true).ToList();
+        _cameraBounds = GetComponent<BoxCollider2D>();
+        _resettables = new List<IResettable>();
+        GetComponentsInChildren<IResettable>(true, _resettables);
     }
 
     public void ResetRoom()
@@ -44,8 +37,9 @@ public class Room : MonoBehaviour
     }
 
     [Button]
-    public void SetThisRoomToCurrentRoom()
+    private void SetThisRoomToCurrentRoom()
     {
-        RespawnManager.Instance.UpdateSavePoint(this, transform.position);
+        Vector3 spawnPoint = _spawnPointForDebug != null ? _spawnPointForDebug.position : transform.position;
+        DebugTool.ChangeCurrentRoom(this, spawnPoint);
     }
 }

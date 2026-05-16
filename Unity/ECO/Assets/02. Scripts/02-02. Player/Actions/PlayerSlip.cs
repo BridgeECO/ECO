@@ -15,20 +15,34 @@ public class PlayerSlip
 
     public void Handle()
     {
-        if (!_sensor.IsSliding || 0f < _motor.Velocity.y || _sensor.IsGrounded || _sensor.IsWallTouching)
+        if (!_sensor.IsSliding || _sensor.IsGrounded)
         {
             _motor.SetFriction(true);
             return;
         }
 
+        float velocityX = _data.SlipHorizontalSpeed * GetSlipDirection();
         _motor.SetFriction(false);
-        float velocityX = (_sensor.IsLeftSliding) ? _data.SlipHorizontalSpeed : -_data.SlipHorizontalSpeed;
         _motor.SetVelocityX(velocityX);
         _motor.AddVelocity(Vector2.down * _data.SlipDownSpeed * Time.deltaTime);
+        // PrintLog();
     }
 
     public void Reset()
     {
         _motor.SetFriction(true);
+    }
+
+    private float GetSlipDirection()
+    {
+        return (_sensor.IsLeftSlipColliderTouching && _motor.IsForward) ||
+               (_sensor.IsRightSlipColliderTouching && !_motor.IsForward)
+               ? 1f : -1f;
+    }
+
+    private void PrintLog()
+    {
+        Debug.Log($"Direction : {GetSlipDirection()}, VelocityX : {_motor.Velocity.x}, VelocityY : {_motor.Velocity.y}");
+        Debug.Log($"IsLeftSlipColliderTouching : {_sensor.IsLeftSlipColliderTouching}, IsRightSlipColliderTouching : {_sensor.IsRightSlipColliderTouching}");
     }
 }

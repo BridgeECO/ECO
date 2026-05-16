@@ -8,7 +8,7 @@ public class PlayerSensor : MonoBehaviour
     [SerializeField]
     private CircleCollider2D _interactionCollider;
     [SerializeField]
-    private BoxCollider2D _feetCollider;
+    private Collider2D _feetCollider;
     [SerializeField]
     private EdgeCollider2D _leftSlipCollider;
     [SerializeField]
@@ -37,8 +37,8 @@ public class PlayerSensor : MonoBehaviour
     public bool IsBodyTouching { get; private set; }
     public bool IsWallTouching { get; private set; }
     public bool IsSliding { get; private set; }
-    public bool IsLeftSliding { get; private set; }
-    public bool IsRightSliding { get; private set; }
+    public bool IsLeftSlipColliderTouching { get; private set; }
+    public bool IsRightSlipColliderTouching { get; private set; }
     public float WallDirection { get; private set; }
 
     private void Start()
@@ -103,14 +103,10 @@ public class PlayerSensor : MonoBehaviour
 
     private void UpdateSlipSensor()
     {
-        Vector2 slipCheckSize = new Vector2(SLIP_CHECK_BOX_SIZE, SLIP_CHECK_BOX_SIZE);
-        Vector2 leftCheckCenter = new Vector2(_bodyCollider.bounds.min.x, _bodyCollider.bounds.min.y);
-        Vector2 rightCheckCenter = new Vector2(_bodyCollider.bounds.max.x, _bodyCollider.bounds.min.y);
-
         LayerMask slipLayers = _terrainLayer | _platformLayer;
-        IsLeftSliding = CheckOverlap(leftCheckCenter, slipCheckSize, slipLayers);
-        IsRightSliding = CheckOverlap(rightCheckCenter, slipCheckSize, slipLayers);
-        IsSliding = IsLeftSliding || IsRightSliding;
+        IsLeftSlipColliderTouching = _leftSlipCollider.IsTouchingLayers(slipLayers);
+        IsRightSlipColliderTouching = _rightSlipCollider.IsTouchingLayers(slipLayers);
+        IsSliding = IsLeftSlipColliderTouching || IsRightSlipColliderTouching;
     }
 
     private bool CheckOverlap(Vector2 center, Vector2 size, LayerMask layerMask)
