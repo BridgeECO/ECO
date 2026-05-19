@@ -58,6 +58,7 @@ public class PlayerSensor : MonoBehaviour
         UpdateOnGroundSensor(touchingPlatform);
         UpdateOnPlatformSensor(touchingPlatform);
         UpdateBodySensor();
+        UpdateWallSensor();
         UpdateSlipSensor();
     }
 

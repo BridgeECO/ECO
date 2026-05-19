@@ -79,8 +79,8 @@ public class RoomTransition : MonoBehaviour
         Vector2 transitionCenter = _transitionCollider.bounds.center;
 
         return IsHorizontalCollider()
-            ? GetRoomByHorizontalPosition(playerPos.x, transitionCenter.x, _roomA.Center.x, _roomB.Center.x)
-            : GetRoomByVerticalPosition(playerPos.y, transitionCenter.y, _roomA.Center.y, _roomB.Center.y);
+            ? GetRoomByVerticalPosition(playerPos.y, transitionCenter.y, _roomA.Center.y, _roomB.Center.y)
+            : GetRoomByHorizontalPosition(playerPos.x, transitionCenter.x, _roomA.Center.x, _roomB.Center.x);
     }
 
     private bool IsHorizontalCollider()
@@ -89,17 +89,17 @@ public class RoomTransition : MonoBehaviour
         return transitionSize.y < transitionSize.x;
     }
 
-    private Room GetRoomByHorizontalPosition(float playerX, float transitionCenterX, float centerAX, float centerBX)
-    {
-        bool isARightOfB = centerBX < centerAX;
-        bool isPlayerRightOfTransition = playerX > transitionCenterX;
-        return (isPlayerRightOfTransition == isARightOfB) ? _roomA : _roomB;
-    }
-
     private Room GetRoomByVerticalPosition(float playerY, float transitionCenterY, float centerAY, float centerBY)
     {
         bool isAAboveB = centerBY < centerAY;
         bool isPlayerAboveTransition = playerY > transitionCenterY;
         return (isPlayerAboveTransition == isAAboveB) ? _roomA : _roomB;
+    }
+
+    private Room GetRoomByHorizontalPosition(float playerX, float transitionCenterX, float centerAX, float centerBX)
+    {
+        bool isARightOfB = centerBX < centerAX;
+        bool isPlayerRightOfTransition = playerX > transitionCenterX;
+        return (isPlayerRightOfTransition == isARightOfB) ? _roomA : _roomB;
     }
 }
