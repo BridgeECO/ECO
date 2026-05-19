@@ -31,8 +31,8 @@ public class PlayerSensor : MonoBehaviour
     private ContactFilter2D _contactFilter;
 
 
-    public bool IsGrounded { get; private set; }
-    public bool HasPlatformEffector { get; private set; }
+    public bool IsOnGround { get; private set; }
+    public bool IsOnPlatform { get; private set; }
     public PlatformEffector2D CurrentPlatformEffector { get; private set; }
     public bool IsBodyTouching { get; private set; }
     public bool IsWallTouching { get; private set; }
@@ -55,20 +55,19 @@ public class PlayerSensor : MonoBehaviour
     private void UpdateSensors()
     {
         bool touchingPlatform = _feetCollider.IsTouchingLayers(_platformLayer);
-
-        UpdateGroundSensor(touchingPlatform);
-        UpdatePlatformEffectorSensor(touchingPlatform);
-        UpdateBodyAndWallSensor();
+        UpdateOnGroundSensor(touchingPlatform);
+        UpdateOnPlatformSensor(touchingPlatform);
+        UpdateBodySensor();
         UpdateSlipSensor();
     }
 
-    private void UpdateGroundSensor(bool touchingPlatform)
+    private void UpdateOnGroundSensor(bool touchingPlatform)
     {
         bool touchingTerrain = CheckOverlap(_feetCollider.bounds.center, _feetCollider.bounds.size, _terrainLayer);
-        IsGrounded = touchingTerrain || touchingPlatform;
+        IsOnGround = touchingTerrain || touchingPlatform;
     }
 
-    private void UpdatePlatformEffectorSensor(bool touchingPlatform)
+    private void UpdateOnPlatformSensor(bool touchingPlatform)
     {
         if (!touchingPlatform)
         {
@@ -76,8 +75,7 @@ public class PlayerSensor : MonoBehaviour
             return;
         }
 
-        int platformCount = CheckOverlapCount(_feetCollider.bounds.center, _feetCollider.bounds.size, _platformLayer);
-        if (0 < platformCount)
+        if (CheckOverlap(_feetCollider.bounds.center, _feetCollider.bounds.size, _platformLayer))
         {
             Collider2D hit = _overlapResults[0];
             if (!ReferenceEquals(hit, _lastPlatformCollider))
@@ -87,7 +85,7 @@ public class PlayerSensor : MonoBehaviour
             }
 
             CurrentPlatformEffector = _cachedEffector;
-            HasPlatformEffector = !ReferenceEquals(_cachedEffector, null);
+            IsOnPlatform = !ReferenceEquals(_cachedEffector, null);
         }
         else
         {
@@ -95,10 +93,15 @@ public class PlayerSensor : MonoBehaviour
         }
     }
 
-    private void UpdateBodyAndWallSensor()
+    private void UpdateBodySensor()
     {
         IsBodyTouching = CheckOverlap(_bodyCollider.bounds.center, _bodyCollider.bounds.size, _terrainLayer);
-        IsWallTouching = CheckOverlap(_bodyCollider.bounds.center, (Vector2)_bodyCollider.bounds.size + new Vector2(WALL_CHECK_DISTANCE * 2f, 0f), _terrainLayer);
+    }
+
+    private void UpdateWallSensor()
+    {
+        IsWallTouching = CheckOverlap(_bodyCollider.bounds.center,
+        (Vector2)_bodyCollider.bounds.size + new Vector2(WALL_CHECK_DISTANCE * 2f, 0f), _terrainLayer);
     }
 
     private void UpdateSlipSensor()
@@ -111,13 +114,8 @@ public class PlayerSensor : MonoBehaviour
 
     private bool CheckOverlap(Vector2 center, Vector2 size, LayerMask layerMask)
     {
-        return 0 < CheckOverlapCount(center, size, layerMask);
-    }
-
-    private int CheckOverlapCount(Vector2 center, Vector2 size, LayerMask layerMask)
-    {
         _contactFilter.layerMask = layerMask;
-        return Physics2D.OverlapBox(center, size, 0f, _contactFilter, _overlapResults);
+        return 0 < Physics2D.OverlapBox(center, size, 0f, _contactFilter, _overlapResults);
     }
 
     private void ClearPlatformCache()
@@ -125,7 +123,7 @@ public class PlayerSensor : MonoBehaviour
         _lastPlatformCollider = null;
         _cachedEffector = null;
         CurrentPlatformEffector = null;
-        HasPlatformEffector = false;
+        IsOnPlatform = false;
     }
 
     private void HandleWallDirection()

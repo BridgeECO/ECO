@@ -29,7 +29,7 @@ public class PlayerWallSlideState : IPlayerState
         float xInput = _input.HorizontalInput;
         _motor.SetVelocityY(-_data.WallSlideSpeed);
 
-        if (_sensor.IsGrounded)
+        if (_sensor.IsOnGround)
         {
             _sm.ChangeState(EPlayerState.Grounded);
             return;
