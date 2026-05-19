@@ -78,33 +78,25 @@ public class RoomTransition : MonoBehaviour
         Vector2 playerPos = playerCollider.transform.position;
         Vector2 transitionCenter = _transitionCollider.bounds.center;
         Vector2 transitionSize = _transitionCollider.bounds.size;
+        Vector2 centerA = (_roomA.MinBounds + _roomA.MaxBounds) / 2f, centerB = (_roomB.MinBounds + _roomB.MaxBounds) / 2f;
 
-        Vector2 centerA = (_roomA.MinBounds + _roomA.MaxBounds) / 2f;
-        Vector2 centerB = (_roomB.MinBounds + _roomB.MaxBounds) / 2f;
+        bool isHorizontalCollider = transitionSize.y < transitionSize.x;
+        return (isHorizontalCollider)
+        ? GetRoomByHorizontalPosition(playerPos.x, transitionCenter.x, centerA.x, centerB.x)
+        : GetRoomByVerticalPosition(playerPos.y, transitionCenter.y, centerA.y, centerB.y);
+    }
 
-        bool isHorizontalCollider = transitionSize.x > transitionSize.y;
+    private Room GetRoomByHorizontalPosition(float playerX, float transitionCenterX, float centerAX, float centerBX)
+    {
+        bool isARightOfB = centerBX < centerAX;
+        bool isPlayerRightOfTransition = playerX > transitionCenterX;
+        return (isPlayerRightOfTransition == isARightOfB) ? _roomA : _roomB;
+    }
 
-        if (isHorizontalCollider)
-        {
-            bool isAAboveB = centerA.y > centerB.y;
-            bool isPlayerAboveTransition = playerPos.y > transitionCenter.y;
-
-            if (isPlayerAboveTransition)
-            {
-                return isAAboveB ? _roomA : _roomB;
-            }
-            return isAAboveB ? _roomB : _roomA;
-        }
-        else
-        {
-            bool isARightOfB = centerA.x > centerB.x;
-            bool isPlayerRightOfTransition = playerPos.x > transitionCenter.x;
-
-            if (isPlayerRightOfTransition)
-            {
-                return isARightOfB ? _roomA : _roomB;
-            }
-            return isARightOfB ? _roomB : _roomA;
-        }
+    private Room GetRoomByVerticalPosition(float playerY, float transitionCenterY, float centerAY, float centerBY)
+    {
+        bool isAAboveB = centerBY < centerAY;
+        bool isPlayerAboveTransition = playerY > transitionCenterY;
+        return (isPlayerAboveTransition == isAAboveB) ? _roomA : _roomB;
     }
 }
