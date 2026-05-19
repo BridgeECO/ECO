@@ -39,7 +39,7 @@ public class PlayerGroundedState : IPlayerState
         {
             if (_input.VerticalInput < 0f)
             {
-                if (_sensor.HasPlatformEffector)
+                if (_sensor.IsOnPlatform)
                 {
                     _sm.JumpBufferTimer = 0f;
                     _underJump.ExecuteAsync(_sensor.CurrentPlatformEffector, _sm.GetCancellationTokenOnDestroy()).Forget();
@@ -52,7 +52,7 @@ public class PlayerGroundedState : IPlayerState
             return;
         }
 
-        if (!_sensor.IsGrounded)
+        if (!_sensor.IsOnGround)
         {
             _sm.ChangeState(EPlayerState.Airborne);
             return;

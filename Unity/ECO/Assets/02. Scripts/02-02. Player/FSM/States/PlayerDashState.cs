@@ -40,7 +40,7 @@ public class PlayerDashState : IPlayerState
         }
         _motor.SetVelocity(Vector2.zero);
 
-        if (_sensor.IsGrounded)
+        if (_sensor.IsOnGround)
         {
             _sm.ChangeState(EPlayerState.Grounded);
             return;

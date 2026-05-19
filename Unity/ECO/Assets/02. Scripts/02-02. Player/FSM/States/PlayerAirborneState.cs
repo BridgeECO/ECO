@@ -89,7 +89,7 @@ public class PlayerAirborneState : IPlayerState
 
     private void CheckStateTransitions()
     {
-        if (_sensor.IsGrounded && _motor.Velocity.y <= 0f)
+        if (_sensor.IsOnGround && _motor.Velocity.y <= 0f)
         {
             _sm.ChangeState(EPlayerState.Grounded);
             return;
