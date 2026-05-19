@@ -77,13 +77,16 @@ public class RoomTransition : MonoBehaviour
     {
         Vector2 playerPos = playerCollider.transform.position;
         Vector2 transitionCenter = _transitionCollider.bounds.center;
-        Vector2 transitionSize = _transitionCollider.bounds.size;
-        Vector2 centerA = (_roomA.MinBounds + _roomA.MaxBounds) / 2f, centerB = (_roomB.MinBounds + _roomB.MaxBounds) / 2f;
 
-        bool isHorizontalCollider = transitionSize.y < transitionSize.x;
-        return (isHorizontalCollider)
-        ? GetRoomByHorizontalPosition(playerPos.x, transitionCenter.x, centerA.x, centerB.x)
-        : GetRoomByVerticalPosition(playerPos.y, transitionCenter.y, centerA.y, centerB.y);
+        return IsHorizontalCollider()
+            ? GetRoomByHorizontalPosition(playerPos.x, transitionCenter.x, _roomA.Center.x, _roomB.Center.x)
+            : GetRoomByVerticalPosition(playerPos.y, transitionCenter.y, _roomA.Center.y, _roomB.Center.y);
+    }
+
+    private bool IsHorizontalCollider()
+    {
+        Vector2 transitionSize = _transitionCollider.bounds.size;
+        return transitionSize.y < transitionSize.x;
     }
 
     private Room GetRoomByHorizontalPosition(float playerX, float transitionCenterX, float centerAX, float centerBX)
