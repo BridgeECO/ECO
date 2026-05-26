@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2880924315852423759}
   - component: {fileID: 7007658605278046237}
+  - component: {fileID: 3316975631330394866}
   m_Layer: 0
   m_Name: Collider_Body
   m_TagString: Player
@@ -78,6 +79,18 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1.2, y: 1.1}
   m_EdgeRadius: 0
+--- !u!114 &3316975631330394866
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2186237406310684039}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8191461fc5c31944b5c3181fdd753d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3674542899653550961
 GameObject:
   m_ObjectHideFlags: 0
@@ -88,6 +101,7 @@ GameObject:
   m_Component:
   - component: {fileID: 913328505856375256}
   - component: {fileID: 2647105256023885049}
+  - component: {fileID: 159604959986288365}
   m_Layer: 0
   m_Name: Collider_Head_Right
   m_TagString: Player
@@ -156,6 +170,18 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.25, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &159604959986288365
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3674542899653550961}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8191461fc5c31944b5c3181fdd753d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5432847474108508918
 GameObject:
   m_ObjectHideFlags: 0
@@ -172,6 +198,7 @@ GameObject:
   - component: {fileID: 6589222269968114734}
   - component: {fileID: 3351409275882012709}
   - component: {fileID: 1060159870696771493}
+  - component: {fileID: 6754039644612557562}
   - component: {fileID: 7638663563288020855}
   m_Layer: 0
   m_Name: P_Player
@@ -371,6 +398,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _playerData: {fileID: 11400000, guid: d6dc24969df40ce449edb46e2fdb3e96, type: 2}
+--- !u!114 &6754039644612557562
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5432847474108508918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8754b08fb0641b7468d9c46e5f5c8be7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &7638663563288020855
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -399,6 +438,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4169754874561904264}
   - component: {fileID: 1225047660419385324}
+  - component: {fileID: 4208329748858143645}
   m_Layer: 0
   m_Name: Collider_Head_Left
   m_TagString: Player
@@ -467,6 +507,18 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.25, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &4208329748858143645
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6792456261665792733}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8191461fc5c31944b5c3181fdd753d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7368091525517128637
 GameObject:
   m_ObjectHideFlags: 0
@@ -477,6 +529,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5329594135758221114}
   - component: {fileID: 7583278151814217612}
+  - component: {fileID: 731725566671277026}
   m_Layer: 0
   m_Name: Collider_Feet
   m_TagString: PlayerFeet
@@ -545,6 +598,18 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.4, y: 0.3}
   m_EdgeRadius: 0
+--- !u!114 &731725566671277026
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7368091525517128637}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8191461fc5c31944b5c3181fdd753d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7672914800122953553
 GameObject:
   m_ObjectHideFlags: 0
@@ -555,6 +620,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2102535504845343056}
   - component: {fileID: 5936386177182231084}
+  - component: {fileID: 3513380579485272509}
   m_Layer: 0
   m_Name: Collider_Slipping_Left
   m_TagString: Player
@@ -620,6 +686,18 @@ EdgeCollider2D:
   m_AdjacentEndPoint: {x: 0, y: 0}
   m_UseAdjacentStartPoint: 0
   m_UseAdjacentEndPoint: 0
+--- !u!114 &3513380579485272509
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7672914800122953553}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8191461fc5c31944b5c3181fdd753d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7820069476631403912
 GameObject:
   m_ObjectHideFlags: 0
@@ -630,6 +708,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7593459395383744796}
   - component: {fileID: 5319890683635861963}
+  - component: {fileID: 1012379214971676656}
   m_Layer: 0
   m_Name: Collider_Slipping_Right
   m_TagString: Player
@@ -695,6 +774,18 @@ EdgeCollider2D:
   m_AdjacentEndPoint: {x: 0, y: 0}
   m_UseAdjacentStartPoint: 0
   m_UseAdjacentEndPoint: 0
+--- !u!114 &1012379214971676656
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7820069476631403912}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8191461fc5c31944b5c3181fdd753d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7854738496788213214
 GameObject:
   m_ObjectHideFlags: 0
@@ -705,6 +796,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1164072036277829888}
   - component: {fileID: 1672996112868391292}
+  - component: {fileID: 5222579331986742741}
   m_Layer: 0
   m_Name: Collider_Interact
   m_TagString: PlayerInteract
@@ -763,6 +855,18 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.55
+--- !u!114 &5222579331986742741
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7854738496788213214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8191461fc5c31944b5c3181fdd753d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8643017143786767591
 GameObject:
   m_ObjectHideFlags: 0
@@ -773,6 +877,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1812542666919395241}
   - component: {fileID: 3440412087158003516}
+  - component: {fileID: 7181281509254402490}
   m_Layer: 0
   m_Name: Collider_Head_Center
   m_TagString: Player
@@ -841,6 +946,18 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.7, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &7181281509254402490
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8643017143786767591}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8191461fc5c31944b5c3181fdd753d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8797778297228754221
 GameObject:
   m_ObjectHideFlags: 0

@@ -10,4 +10,6 @@ public enum ETags
     PlayerInteract,
     Boss,
     PlayerFeet,
+    Obstacle,
+    InstantKill,
 }

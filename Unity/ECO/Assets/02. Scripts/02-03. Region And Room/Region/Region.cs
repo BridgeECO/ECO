@@ -70,6 +70,7 @@ public class Region : MonoBehaviourSingleton<Region>
         _currentRoom = newRoom;
         _currentRoom.IsVisited = true;
         RespawnManager.Instance.UpdateSavePoint(_currentRoom, spawnPosition);
+        LifeManager.Instance.RecoverToRoomTransition();
         EventManager.Instance.BroadcastEvent(EEventType.RoomChanged);
     }
 

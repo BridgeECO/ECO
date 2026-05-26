@@ -23,6 +23,6 @@ public class UI_InGame : MonoBehaviour
 
     private void OnClickRespawn()
     {
-        EventManager.Instance.BroadcastEvent(EEventType.RespawnRequested);
+        LifeManager.Instance.InstantKill();
     }
 }
