@@ -37,7 +37,7 @@ public class LifeManager : MonoBehaviourSingleton<LifeManager>
 
     public void RecoverOne()
     {
-        if (_currentLife >= MaxLife)
+        if (MaxLife <= _currentLife)
         {
             return;
         }
@@ -47,7 +47,7 @@ public class LifeManager : MonoBehaviourSingleton<LifeManager>
 
     public void RecoverToRoomTransition()
     {
-        if (_currentLife >= RespawnLife)
+        if (RespawnLife <= _currentLife)
         {
             return;
         }
