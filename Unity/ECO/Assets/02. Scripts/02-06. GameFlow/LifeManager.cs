@@ -2,62 +2,67 @@ using UnityEngine;
 
 public class LifeManager : MonoBehaviourSingleton<LifeManager>
 {
-    private const int MaxLife = 3;
-    private const int RespawnLife = 2;
+    private const int MAX_LIFE = 3;
+    private const int RESPAWN_LIFE = 2;
 
     private int _currentLife;
 
-    public int CurrentLife => _currentLife;
-    public int LifeMax => MaxLife;
+    public int CurrentLife
+    {
+        get => _currentLife;
+        private set
+        {
+            int clampedValue = Mathf.Clamp(value, 0, MAX_LIFE);
+            if (_currentLife == clampedValue)
+            {
+                return;
+            }
+            _currentLife = clampedValue;
+            EventManager.Instance.BroadcastEvent(EEventType.LifeChanged);
+            if (_currentLife <= 0)
+            {
+                EventManager.Instance.BroadcastEvent(EEventType.PlayerDied);
+            }
+        }
+    }
+    public int LifeMax => MAX_LIFE;
 
     protected override void Awake()
     {
         base.Awake();
-        _currentLife = MaxLife;
+        _currentLife = MAX_LIFE;
     }
 
     public void TakeDamage()
     {
-        _currentLife -= 1;
-        if (_currentLife <= 0)
-        {
-            _currentLife = 0;
-            EventManager.Instance.BroadcastEvent(EEventType.PlayerDied);
-        }
-        else
-        {
-            EventManager.Instance.BroadcastEvent(EEventType.LifeChanged);
-        }
+        CurrentLife -= 1;
     }
 
     public void InstantKill()
     {
-        EventManager.Instance.BroadcastEvent(EEventType.PlayerDied);
+        CurrentLife = 0;
     }
 
     public void RecoverOne()
     {
-        if (MaxLife <= _currentLife)
+        if (MAX_LIFE <= CurrentLife)
         {
             return;
         }
-        _currentLife += 1;
-        EventManager.Instance.BroadcastEvent(EEventType.LifeChanged);
+        CurrentLife += 1;
     }
 
     public void RecoverToRoomTransition()
     {
-        if (RespawnLife <= _currentLife)
+        if (RESPAWN_LIFE <= CurrentLife)
         {
             return;
         }
-        _currentLife = RespawnLife;
-        EventManager.Instance.BroadcastEvent(EEventType.LifeChanged);
+        CurrentLife = RESPAWN_LIFE;
     }
 
     public void SetLifeOnRespawn()
     {
-        _currentLife = RespawnLife;
-        EventManager.Instance.BroadcastEvent(EEventType.LifeChanged);
+        CurrentLife = RESPAWN_LIFE;
     }
 }

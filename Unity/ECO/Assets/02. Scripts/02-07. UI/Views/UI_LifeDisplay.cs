@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using VInspector;
 
 public class UI_LifeDisplay : MonoBehaviour
 {
+    [Foldout("Hierarchy")]
     [SerializeField]
     private List<Image> _lifeIcons;
 
