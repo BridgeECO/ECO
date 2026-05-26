@@ -13,6 +13,7 @@ public class PlayerLife : MonoBehaviour
     private void Awake()
     {
         _spriteRenderer = GetComponent<SpriteRenderer>();
+        _isInvincible = false;
     }
 
     private void Update()
@@ -31,7 +32,7 @@ public class PlayerLife : MonoBehaviour
         UpdateSpriteAlpha();
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    public void RelayTriggerEnter2D(Collider2D other)
     {
         if (_isInvincible)
         {
