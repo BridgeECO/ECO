@@ -16,7 +16,7 @@ public class RespawnManager : MonoBehaviourSingleton<RespawnManager>
 
     private void Start()
     {
-        EventManager.Instance.AddEventListener(EEventType.RespawnRequested, Respawn);
+        EventManager.Instance.AddEventListener(EEventType.PlayerDied, Respawn);
         BindPlayer();
     }
 
@@ -25,7 +25,7 @@ public class RespawnManager : MonoBehaviourSingleton<RespawnManager>
         SceneManager.sceneLoaded -= OnSceneLoaded;
         if (MonoBehaviourSingleton<EventManager>.HasInstance)
         {
-            EventManager.Instance.RemoveEventListener(EEventType.RespawnRequested, Respawn);
+            EventManager.Instance.RemoveEventListener(EEventType.PlayerDied, Respawn);
         }
     }
 
@@ -48,6 +48,7 @@ public class RespawnManager : MonoBehaviourSingleton<RespawnManager>
 
     public void Respawn()
     {
+        LifeManager.Instance.SetLifeOnRespawn();
         MovePlayerToSavePoint();
         ResetCurrentRoom();
     }
