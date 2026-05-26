@@ -16,6 +16,11 @@ public class PlayerLife : MonoBehaviour
         _isInvincible = false;
     }
 
+    private void Start()
+    {
+        EventManager.Instance.AddEventListener(EEventType.PlayerDied, ResetInvincibility);
+    }
+
     private void Update()
     {
         if (!_isInvincible)
@@ -30,6 +35,14 @@ public class PlayerLife : MonoBehaviour
             return;
         }
         UpdateSpriteAlpha();
+    }
+
+    private void OnDestroy()
+    {
+        if (MonoBehaviourSingleton<EventManager>.HasInstance)
+        {
+            EventManager.Instance.RemoveEventListener(EEventType.PlayerDied, ResetInvincibility);
+        }
     }
 
     public void RelayTriggerEnter2D(Collider2D other)
