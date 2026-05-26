@@ -3,7 +3,7 @@ public class LifeRecoveryObject : SpecialObjectBase
     protected override void Interact()
     {
         base.Interact();
-        LifeManager.Instance.RecoverOne();
+        LifeManager.Instance.Recover();
         SetState(false);
     }
 

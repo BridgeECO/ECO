@@ -1,4 +1,5 @@
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 public class PlayerLife : MonoBehaviour
 {
@@ -18,7 +19,7 @@ public class PlayerLife : MonoBehaviour
 
     private void Start()
     {
-        EventManager.Instance.AddEventListener(EEventType.PlayerDied, ResetInvincibility);
+        EventManager.Instance.AddEventListener(EEventType.PlayerRespawned, OnPlayerRespawned);
     }
 
     private void Update()
@@ -41,7 +42,7 @@ public class PlayerLife : MonoBehaviour
     {
         if (MonoBehaviourSingleton<EventManager>.HasInstance)
         {
-            EventManager.Instance.RemoveEventListener(EEventType.PlayerDied, ResetInvincibility);
+            EventManager.Instance.RemoveEventListener(EEventType.PlayerRespawned, OnPlayerRespawned);
         }
     }
 
@@ -60,8 +61,8 @@ public class PlayerLife : MonoBehaviour
 
         if (other.CompareTag(nameof(ETags.Obstacle)))
         {
-            LifeManager.Instance.TakeDamage();
             BeginInvincibility();
+            LifeManager.Instance.TakeDamage();
         }
     }
 
@@ -79,6 +80,17 @@ public class PlayerLife : MonoBehaviour
         _invincibilityTimer = DURATION_INVINCIBILITY;
     }
 
+    private void OnPlayerRespawned()
+    {
+        StopInvincibilityAsync().Forget();
+    }
+
+    private async UniTaskVoid StopInvincibilityAsync()
+    {
+        await UniTask.Yield();
+        StopInvincibility();
+    }
+
     private void StopInvincibility()
     {
         _isInvincible = false;
@@ -86,10 +98,5 @@ public class PlayerLife : MonoBehaviour
         Color color = _spriteRenderer.color;
         color.a = 1f;
         _spriteRenderer.color = color;
-    }
-
-    public void ResetInvincibility()
-    {
-        StopInvincibility();
     }
 }

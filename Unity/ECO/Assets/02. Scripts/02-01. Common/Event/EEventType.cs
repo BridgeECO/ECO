@@ -4,5 +4,6 @@ public enum EEventType
     RoomChanged,
     PlayerDied,
     LifeChanged,
+    PlayerRespawned,
     MaxCount
 }

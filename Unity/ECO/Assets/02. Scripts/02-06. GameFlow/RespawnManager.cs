@@ -48,9 +48,9 @@ public class RespawnManager : MonoBehaviourSingleton<RespawnManager>
 
     public void Respawn()
     {
-        LifeManager.Instance.SetLifeOnRespawn();
         MovePlayerToSavePoint();
         ResetCurrentRoom();
+        EventManager.Instance.BroadcastEvent(EEventType.PlayerRespawned);
     }
 
     private void MovePlayerToSavePoint()
