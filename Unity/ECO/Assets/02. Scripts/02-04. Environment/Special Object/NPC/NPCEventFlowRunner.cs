@@ -57,7 +57,7 @@ public class NPCEventFlowRunner
         {
             token.ThrowIfCancellationRequested();
 
-            if (nextEvent.DialogueLines != null && nextEvent.DialogueLines.Length > 0)
+            if (nextEvent.DialogueLines is not null && nextEvent.DialogueLines.Length > 0)
             {
                 NPCEventSO chosenEvent = await ShowDialogueAndGetChoiceAsync(nextEvent, token);
 
@@ -161,7 +161,7 @@ public class NPCEventFlowRunner
             _uiNPCDialogue.OnDialogueCompleted = null;
             _uiNPCDialogue.OnDialogueCompleted = () =>
             {
-                if (eventData.HasChoices && eventData.Choices != null && eventData.Choices.Count > 0)
+                if (eventData.HasChoices && eventData.Choices is not null && eventData.Choices.Count > 0)
                 {
                     _uiNPCDialogue.ShowChoices(eventData.Choices, (selectedEvent) =>
                     {
@@ -182,8 +182,18 @@ public class NPCEventFlowRunner
             }
             catch (OperationCanceledException)
             {
-                _uiNPCDialogue.Close();
+                if (_uiNPCDialogue != null)
+                {
+                    _uiNPCDialogue.Close();
+                }
                 throw;
+            }
+            finally
+            {
+                if (_uiNPCDialogue != null)
+                {
+                    _uiNPCDialogue.OnDialogueCompleted = null;
+                }
             }
         }
     }

@@ -37,11 +37,11 @@ public class NPC : SpecialObjectBase
 
     protected virtual void Start()
     {
-        if (_specialEvents != null)
+        if (_specialEvents is not null)
         {
             for (int i = 0; i < _specialEvents.Count; i++)
             {
-                if (_specialEvents[i] != null)
+                if (_specialEvents[i] is not null)
                 {
                     ActivateSpecialEvent(_specialEvents[i]);
                 }
@@ -55,12 +55,6 @@ public class NPC : SpecialObjectBase
         {
             _flowRunner.CancelInteraction();
         }
-    }
-
-    protected override void OnDisable()
-    {
-        base.OnDisable();
-        _flowRunner.CancelInteraction();
     }
 
     protected override void OnTriggerEnter2D(Collider2D other)
@@ -79,6 +73,12 @@ public class NPC : SpecialObjectBase
             _playerInput = null;
         }
         base.OnTriggerExit2D(other);
+    }
+
+    protected override void OnDisable()
+    {
+        base.OnDisable();
+        _flowRunner.CancelInteraction();
     }
 
     public override void ResetState()

@@ -47,7 +47,7 @@ public class NPCEventExecutor
         {
             if (eventData.TargetTerrains[i] != null)
             {
-                eventData.TargetTerrains[i].SetEnergyActive(eventData.ActivateGimmick);
+                eventData.TargetTerrains[i].SetEnergyActive(eventData.IsGimmickActive);
             }
         }
     }

@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class UI_NPCChoiceItem : MonoBehaviour
 {
+    public Action<NPCEventSO> OnSelectedCallback;
+
     [SerializeField]
     private TextMeshProUGUI _choiceText;
 
@@ -12,7 +14,6 @@ public class UI_NPCChoiceItem : MonoBehaviour
     private Button _choiceButton;
 
     private NPCEventSO _nextEvent;
-    private Action<NPCEventSO> _onSelectedCallback;
 
     private void Awake()
     {
@@ -30,11 +31,11 @@ public class UI_NPCChoiceItem : MonoBehaviour
         }
 
         _nextEvent = option.NextEvent;
-        _onSelectedCallback = onSelected;
+        OnSelectedCallback = onSelected;
     }
 
     private void OnButtonClicked()
     {
-        _onSelectedCallback?.Invoke(_nextEvent);
+        OnSelectedCallback?.Invoke(_nextEvent);
     }
 }

@@ -5,6 +5,8 @@ using VInspector;
 
 public class UI_NPCChoice : MonoBehaviour
 {
+    public Action<NPCEventSO> OnChoiceSelected;
+
     [Foldout("Hierarchy")]
     [SerializeField]
     private GameObject _choiceContainer;
@@ -13,12 +15,34 @@ public class UI_NPCChoice : MonoBehaviour
     private UI_NPCChoiceItem[] _choiceItems;
 
     private List<NPCChoiceOption> _currentOptions;
-    private Action<NPCEventSO> _onChoiceSelected;
     private bool _isOpen;
 
     private void Awake()
     {
         Close();
+    }
+
+    private void Update()
+    {
+        if (!_isOpen || _currentOptions == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < _currentOptions.Count; i++)
+        {
+            if (i >= 9)
+            {
+                break;
+            }
+            
+            KeyCode key = KeyCode.Alpha1 + i;
+            if (Input.GetKeyDown(key))
+            {
+                SelectChoice(i);
+                break;
+            }
+        }
     }
 
     public void Open(List<NPCChoiceOption> options, Action<NPCEventSO> onChoiceSelected)
@@ -29,7 +53,7 @@ public class UI_NPCChoice : MonoBehaviour
         }
 
         _currentOptions = options;
-        _onChoiceSelected = onChoiceSelected;
+        OnChoiceSelected = onChoiceSelected;
         _isOpen = true;
 
         if (_choiceContainer != null)
@@ -59,7 +83,7 @@ public class UI_NPCChoice : MonoBehaviour
     {
         _isOpen = false;
         _currentOptions = null;
-        _onChoiceSelected = null;
+        OnChoiceSelected = null;
 
         if (_choiceContainer != null)
         {
@@ -72,29 +96,6 @@ public class UI_NPCChoice : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        if (!_isOpen || _currentOptions == null)
-        {
-            return;
-        }
-
-        for (int i = 0; i < _currentOptions.Count; i++)
-        {
-            if (i >= 9)
-            {
-                break;
-            }
-            
-            KeyCode key = KeyCode.Alpha1 + i;
-            if (Input.GetKeyDown(key))
-            {
-                SelectChoice(i);
-                break;
-            }
-        }
-    }
-
     private void SelectChoice(int index)
     {
         if (_currentOptions == null || index < 0 || index >= _currentOptions.Count)
@@ -103,7 +104,7 @@ public class UI_NPCChoice : MonoBehaviour
         }
 
         NPCEventSO nextEvent = _currentOptions[index].NextEvent;
-        Action<NPCEventSO> callback = _onChoiceSelected;
+        Action<NPCEventSO> callback = OnChoiceSelected;
 
         Close();
         callback?.Invoke(nextEvent);

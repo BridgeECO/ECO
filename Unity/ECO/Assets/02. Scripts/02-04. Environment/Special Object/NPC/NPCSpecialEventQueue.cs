@@ -69,7 +69,7 @@ public class NPCSpecialEventQueue
         int insertIndex = _activeEvents.Count;
         for (int i = 0; i < _activeEvents.Count; i++)
         {
-            if (eventData.Priority < _activeEvents[i].Priority)
+            if (eventData.Priority > _activeEvents[i].Priority)
             {
                 insertIndex = i;
                 break;
