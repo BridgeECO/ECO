@@ -25,7 +25,7 @@ public class PlayerSensor : MonoBehaviour
     private const float WALL_CHECK_DISTANCE = 0.05f;
     private const float SLIP_CHECK_BOX_SIZE = 0.1f;
 
-    private Collider2D[] _overlapResults = new Collider2D[1];
+    private Collider2D[] _overlapResults = new Collider2D[4];
     private Collider2D _lastPlatformCollider;
     private PlatformEffector2D _cachedEffector;
     private ContactFilter2D _contactFilter;
@@ -108,9 +108,33 @@ public class PlayerSensor : MonoBehaviour
     private void UpdateSlipSensor()
     {
         LayerMask slipLayers = _terrainLayer | _platformLayer;
-        IsLeftSlipColliderTouching = _leftSlipCollider.IsTouchingLayers(slipLayers);
-        IsRightSlipColliderTouching = _rightSlipCollider.IsTouchingLayers(slipLayers);
+        IsLeftSlipColliderTouching = CheckSlipOverlap(_leftSlipCollider, slipLayers);
+        IsRightSlipColliderTouching = CheckSlipOverlap(_rightSlipCollider, slipLayers);
         IsSliding = IsLeftSlipColliderTouching || IsRightSlipColliderTouching;
+    }
+
+    private bool CheckSlipOverlap(EdgeCollider2D slipCollider, LayerMask slipLayers)
+    {
+        _contactFilter.layerMask = slipLayers;
+        int count = slipCollider.Overlap(_contactFilter, _overlapResults);
+        for (int i = 0; i < count; i++)
+        {
+            Collider2D col = _overlapResults[i];
+            if (col == null)
+            {
+                continue;
+            }
+
+            if (((1 << col.gameObject.layer) & _platformLayer) != 0)
+            {
+                if (col.TryGetComponent(out PlatformEffector2D effector) && effector.rotationalOffset == 180f)
+                {
+                    continue;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     private bool CheckOverlap(Vector2 center, Vector2 size, LayerMask layerMask)
