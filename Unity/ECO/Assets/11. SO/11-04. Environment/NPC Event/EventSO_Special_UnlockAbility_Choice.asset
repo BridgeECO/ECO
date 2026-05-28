@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1c01cc830d9e0446b18a683a4cd296f, type: 3}
+  m_Name: EventSO_Special_UnlockAbility_Choice
+  m_EditorClassIdentifier: 
+  _eventId: EVT_SPECIAL
+  _eventType: 0
+  _priority: 100
+  _dialogueLines:
+  - I have a special offer.
+  - Do you want to proceed?
+  _hasChoices: 1
+  _choices:
+  - ChoiceText: Proceed
+    NextEvent: {fileID: 11400000, guid: 9e9b2937ef8d2464dae2670c32dc9f6c, type: 2}
+  - ChoiceText: Cancel
+    NextEvent: {fileID: 0}
+  _abilityToUnlock: 0
+  _targetTerrains: []
+  _activateGimmick: 0
