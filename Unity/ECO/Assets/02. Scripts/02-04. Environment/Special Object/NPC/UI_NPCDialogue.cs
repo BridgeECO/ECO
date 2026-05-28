@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using VInspector;
+using Cysharp.Threading.Tasks;
 
 public class UI_NPCDialogue : MonoBehaviour
 {
@@ -34,12 +35,21 @@ public class UI_NPCDialogue : MonoBehaviour
 
     private string[] _lines;
     private int _currentPageIndex;
+    private bool _isShowingChoices;
 
     public bool IsDialogueOpen { get; private set; }
 
     private void Awake()
     {
         InitCanvasGroup();
+    }
+
+    private void Update()
+    {
+        if (IsDialogueOpen && !_isShowingChoices && Input.GetKeyDown(KeyCode.Space))
+        {
+            AdvancePage();
+        }
     }
 
     public void Open(string[] lines)
@@ -49,6 +59,12 @@ public class UI_NPCDialogue : MonoBehaviour
             return;
         }
 
+        if (_choiceUI != null)
+        {
+            _choiceUI.Close();
+        }
+
+        _isShowingChoices = false;
         _lines = lines;
         _currentPageIndex = 0;
         IsDialogueOpen = true;
@@ -77,6 +93,7 @@ public class UI_NPCDialogue : MonoBehaviour
 
     public void ShowChoices(System.Collections.Generic.List<NPCChoiceOption> options, Action<NPCEventSO> onChoiceSelected)
     {
+        _isShowingChoices = true;
         if (_choiceUI != null)
         {
             _choiceUI.Open(options, onChoiceSelected);
@@ -85,6 +102,7 @@ public class UI_NPCDialogue : MonoBehaviour
 
     public void Close()
     {
+        _isShowingChoices = false;
         if (!IsDialogueOpen)
         {
             return;
@@ -92,6 +110,23 @@ public class UI_NPCDialogue : MonoBehaviour
 
         IsDialogueOpen = false;
         PlayFadeOut();
+        
+        if (_choiceUI != null)
+        {
+            _choiceUI.Close();
+        }
+    }
+
+    public async UniTask CloseAsync()
+    {
+        _isShowingChoices = false;
+        if (!IsDialogueOpen)
+        {
+            return;
+        }
+
+        IsDialogueOpen = false;
+        await PlayFadeOutAsync();
         
         if (_choiceUI != null)
         {
@@ -170,5 +205,16 @@ public class UI_NPCDialogue : MonoBehaviour
 
         _dialogueCanvasGroup.DOKill();
         _dialogueCanvasGroup.DOFade(0f, _fadeOutDuration).SetEase(Ease.InQuad);
+    }
+
+    private async UniTask PlayFadeOutAsync()
+    {
+        if (_dialogueCanvasGroup == null)
+        {
+            return;
+        }
+
+        _dialogueCanvasGroup.DOKill();
+        await _dialogueCanvasGroup.DOFade(0f, _fadeOutDuration).SetEase(Ease.InQuad).ToUniTask();
     }
 }

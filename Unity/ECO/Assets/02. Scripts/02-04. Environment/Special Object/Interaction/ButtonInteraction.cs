@@ -21,7 +21,7 @@ public class ButtonInteraction : InteractionBase
     {
         _inputDisposable?.Dispose();
         _inputDisposable = Observable.EveryUpdate()
-            .Where(_ => Input.GetKeyDown(KeyCode.F))
+            .Where(_ => !InputHandler.IsInputBlocked && Input.GetKeyDown(KeyCode.F))
             .Subscribe(_ =>
             {
                 if (!_isInteracting)

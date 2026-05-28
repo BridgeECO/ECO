@@ -16,6 +16,11 @@ public class UI_NPCChoice : MonoBehaviour
     private Action<NPCEventSO> _onChoiceSelected;
     private bool _isOpen;
 
+    private void Awake()
+    {
+        Close();
+    }
+
     public void Open(List<NPCChoiceOption> options, Action<NPCEventSO> onChoiceSelected)
     {
         if (options == null || options.Count == 0)
