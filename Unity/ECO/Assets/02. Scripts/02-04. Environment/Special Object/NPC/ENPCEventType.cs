@@ -1,5 +1,6 @@
 public enum ENPCEventType
 {
     UnlockAbility,
-    ActivateGimmick
+    ActivateGimmick,
+    PlayCutscene
 }

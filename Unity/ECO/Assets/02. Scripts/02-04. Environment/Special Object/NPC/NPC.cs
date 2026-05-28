@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using VInspector;
+using Cysharp.Threading.Tasks;
 
 public class NPC : SpecialObjectBase
 {
@@ -16,11 +17,22 @@ public class NPC : SpecialObjectBase
     private NPCEventSO _defaultEvent;
 
     [SerializeField]
+    private NPCEventSO _conditionMetDefaultEvent;
+
+    [SerializeField]
     private List<NPCEventSO> _specialEvents;
 
     private PlayerInput _playerInput;
     private NPCSpecialEventQueue _specialEventQueue;
     private NPCEventExecutor _executor;
+    
+    private bool _isInteracting;
+    private bool _isDefaultEventConditionMet;
+
+    public void SetDefaultEventConditionMet(bool isMet)
+    {
+        _isDefaultEventConditionMet = isMet;
+    }
 
     protected override void Awake()
     {
@@ -110,23 +122,40 @@ public class NPC : SpecialObjectBase
     {
         base.Interact();
 
-        if (_uiNPCDialogue != null && _uiNPCDialogue.IsDialogueOpen)
+        if (_isInteracting)
         {
-            _uiNPCDialogue.AdvancePage();
+            if (_uiNPCDialogue != null && _uiNPCDialogue.IsDialogueOpen)
+            {
+                _uiNPCDialogue.AdvancePage();
+            }
             return;
         }
 
-        if (_specialEventQueue.HasActiveEvent)
+        InteractAsync().Forget();
+    }
+
+    private async UniTaskVoid InteractAsync()
+    {
+        _isInteracting = true;
+
+        try
         {
-            FireHighestPrioritySpecialEvent();
+            if (_specialEventQueue.HasActiveEvent)
+            {
+                await FireHighestPrioritySpecialEventAsync();
+            }
+            else
+            {
+                await FireDefaultEventAsync();
+            }
         }
-        else
+        finally
         {
-            FireDefaultEvent();
+            _isInteracting = false;
         }
     }
 
-    private void FireHighestPrioritySpecialEvent()
+    private async UniTask FireHighestPrioritySpecialEventAsync()
     {
         NPCEventSO eventData = _specialEventQueue.GetHighestPriority();
         if (eventData == null)
@@ -134,41 +163,73 @@ public class NPC : SpecialObjectBase
             return;
         }
 
-        FireEvent(eventData);
-        _specialEventQueue.MarkFired(eventData);
-    }
+        NPCEventSO eventToExecute = eventData;
 
-    private void FireDefaultEvent()
-    {
-        if (_defaultEvent == null)
-        {
-            return;
-        }
-
-        FireEvent(_defaultEvent);
-    }
-
-    private void FireEvent(NPCEventSO eventData)
-    {
         if (eventData.DialogueLines != null && eventData.DialogueLines.Length > 0)
         {
-            ShowDialogueWithCallback(eventData);
+            eventToExecute = await ShowDialogueAndGetChoiceAsync(eventData);
+        }
+
+        if (eventToExecute != null)
+        {
+            _executor.Execute(eventToExecute, _playerInput);
+            
+            // Mark the original event as fired, since a choice was made (or there were no choices)
+            // If eventToExecute is null, it means the user cancelled the interaction via choices.
+            _specialEventQueue.MarkFired(eventData);
+        }
+    }
+
+    private async UniTask FireDefaultEventAsync()
+    {
+        NPCEventSO targetEvent = _isDefaultEventConditionMet && _conditionMetDefaultEvent != null ? _conditionMetDefaultEvent : _defaultEvent;
+
+        if (targetEvent == null)
+        {
             return;
         }
 
-        _executor.Execute(eventData, _playerInput);
+        NPCEventSO eventToExecute = targetEvent;
+
+        if (targetEvent.DialogueLines != null && targetEvent.DialogueLines.Length > 0)
+        {
+            eventToExecute = await ShowDialogueAndGetChoiceAsync(targetEvent);
+        }
+
+        if (eventToExecute != null)
+        {
+            _executor.Execute(eventToExecute, _playerInput);
+        }
     }
 
-    private void ShowDialogueWithCallback(NPCEventSO eventData)
+    private async UniTask<NPCEventSO> ShowDialogueAndGetChoiceAsync(NPCEventSO eventData)
     {
         if (_uiNPCDialogue == null)
         {
-            return;
+            return eventData;
         }
 
+        var tcs = new UniTaskCompletionSource<NPCEventSO>();
+
         _uiNPCDialogue.OnDialogueCompleted = null;
-        _uiNPCDialogue.OnDialogueCompleted = () => _executor.Execute(eventData, _playerInput);
+        _uiNPCDialogue.OnDialogueCompleted = () =>
+        {
+            if (eventData.HasChoices && eventData.Choices != null && eventData.Choices.Count > 0)
+            {
+                _uiNPCDialogue.ShowChoices(eventData.Choices, (selectedEvent) =>
+                {
+                    tcs.TrySetResult(selectedEvent);
+                });
+            }
+            else
+            {
+                tcs.TrySetResult(eventData);
+            }
+        };
+
         _uiNPCDialogue.Open(eventData.DialogueLines);
+
+        return await tcs.Task;
     }
 
     private void HideDialogue()

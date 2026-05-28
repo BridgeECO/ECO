@@ -12,7 +12,15 @@ public class NPCEventExecutor
             case ENPCEventType.ActivateGimmick:
                 ExecuteActivateGimmick(eventData);
                 break;
+            case ENPCEventType.PlayCutscene:
+                ExecutePlayCutscene(eventData);
+                break;
         }
+    }
+
+    private void ExecutePlayCutscene(NPCEventSO eventData)
+    {
+        // TODO: Implement cutscene execution logic
     }
 
     private void ExecuteUnlockAbility(EPlayerUnlockableAbility abilityType, PlayerInput playerInput)

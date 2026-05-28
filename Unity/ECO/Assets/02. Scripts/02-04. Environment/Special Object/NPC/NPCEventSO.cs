@@ -19,6 +19,13 @@ public class NPCEventSO : ScriptableObject
     [SerializeField]
     private string[] _dialogueLines;
 
+    [SerializeField]
+    private bool _hasChoices;
+
+    [ShowIf("_hasChoices", true)]
+    [SerializeField]
+    private List<NPCChoiceOption> _choices;
+
     [ShowIf("_eventType", ENPCEventType.UnlockAbility)]
     [Foldout("Ability Unlock")]
     [SerializeField]
@@ -38,6 +45,8 @@ public class NPCEventSO : ScriptableObject
     public ENPCEventType EventType => _eventType;
     public int Priority => _priority;
     public string[] DialogueLines => _dialogueLines;
+    public bool HasChoices => _hasChoices;
+    public List<NPCChoiceOption> Choices => _choices;
     public EPlayerUnlockableAbility AbilityToUnlock => _abilityToUnlock;
     public List<TerrainObject> TargetTerrains => _targetTerrains;
     public bool ActivateGimmick => _activateGimmick;
