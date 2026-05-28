@@ -108,10 +108,25 @@ public class PlayerSensor : MonoBehaviour
     private void UpdateSlipSensor()
     {
         LayerMask slipLayers = _terrainLayer | _platformLayer;
-        _contactFilter.layerMask = slipLayers;
-        IsLeftSlipColliderTouching = _leftSlipCollider.Overlap(_contactFilter, _overlapResults) > 0;
-        IsRightSlipColliderTouching = _rightSlipCollider.Overlap(_contactFilter, _overlapResults) > 0;
+        IsLeftSlipColliderTouching = CheckSlipOverlap(_leftSlipCollider, slipLayers);
+        IsRightSlipColliderTouching = CheckSlipOverlap(_rightSlipCollider, slipLayers);
         IsSliding = IsLeftSlipColliderTouching || IsRightSlipColliderTouching;
+    }
+
+    private bool CheckSlipOverlap(EdgeCollider2D slipCollider, LayerMask slipLayers)
+    {
+        _contactFilter.layerMask = slipLayers;
+        int count = slipCollider.Overlap(_contactFilter, _overlapResults);
+        for (int i = 0; i < count; i++)
+        {
+            PlatformEffector2D effector = _overlapResults[i].GetComponent<PlatformEffector2D>();
+            if (effector != null && effector.rotationalOffset == 180f)
+            {
+                continue;
+            }
+            return true;
+        }
+        return false;
     }
 
     private bool CheckOverlap(Vector2 center, Vector2 size, LayerMask layerMask)
