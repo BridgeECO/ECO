@@ -15,7 +15,7 @@ public class PlayerSlip
 
     public void Handle()
     {
-        if (!_sensor.IsSliding || _sensor.IsOnGround)
+        if (!_sensor.IsSliding || _sensor.IsOnGround || 0f < _motor.Velocity.y)
         {
             _motor.SetFriction(true);
             return;
