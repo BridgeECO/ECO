@@ -163,21 +163,13 @@ public class NPC : SpecialObjectBase
             return;
         }
 
-        NPCEventSO eventToExecute = eventData;
-
-        if (eventData.DialogueLines != null && eventData.DialogueLines.Length > 0)
+        bool isExecuted = await ExecuteEventFlowAsync(eventData);
+        if (isExecuted)
         {
-            eventToExecute = await ShowDialogueAndGetChoiceAsync(eventData);
-        }
-
-        if (eventToExecute != null)
-        {
-            _executor.Execute(eventToExecute, _playerInput);
-            
-            // Mark the original event as fired, since a choice was made (or there were no choices)
-            // If eventToExecute is null, it means the user cancelled the interaction via choices.
             _specialEventQueue.MarkFired(eventData);
         }
+
+        HideDialogue();
     }
 
     private async UniTask FireDefaultEventAsync()
@@ -189,17 +181,44 @@ public class NPC : SpecialObjectBase
             return;
         }
 
-        NPCEventSO eventToExecute = targetEvent;
+        await ExecuteEventFlowAsync(targetEvent);
+        HideDialogue();
+    }
 
-        if (targetEvent.DialogueLines != null && targetEvent.DialogueLines.Length > 0)
+    private async UniTask<bool> ExecuteEventFlowAsync(NPCEventSO eventData)
+    {
+        if (eventData == null)
         {
-            eventToExecute = await ShowDialogueAndGetChoiceAsync(targetEvent);
+            return false;
         }
 
-        if (eventToExecute != null)
+        NPCEventSO nextEvent = eventData;
+        bool isExecuted = false;
+
+        while (nextEvent != null)
         {
-            _executor.Execute(eventToExecute, _playerInput);
+            if (nextEvent.DialogueLines != null && nextEvent.DialogueLines.Length > 0)
+            {
+                NPCEventSO chosenEvent = await ShowDialogueAndGetChoiceAsync(nextEvent);
+
+                if (chosenEvent == null)
+                {
+                    return false;
+                }
+
+                if (chosenEvent != nextEvent)
+                {
+                    nextEvent = chosenEvent;
+                    continue;
+                }
+            }
+
+            _executor.Execute(nextEvent, _playerInput);
+            isExecuted = true;
+            break;
         }
+
+        return isExecuted;
     }
 
     private async UniTask<NPCEventSO> ShowDialogueAndGetChoiceAsync(NPCEventSO eventData)

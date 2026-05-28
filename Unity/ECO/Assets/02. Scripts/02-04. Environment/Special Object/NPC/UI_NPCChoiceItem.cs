@@ -22,11 +22,11 @@ public class UI_NPCChoiceItem : MonoBehaviour
         }
     }
 
-    public void Setup(NPCChoiceOption option, Action<NPCEventSO> onSelected)
+    public void Setup(int index, NPCChoiceOption option, Action<NPCEventSO> onSelected)
     {
         if (_choiceText != null)
         {
-            _choiceText.text = option.ChoiceText;
+            _choiceText.text = $"{index + 1}. {option.ChoiceText}";
         }
 
         _nextEvent = option.NextEvent;
