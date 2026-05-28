@@ -25,7 +25,7 @@ public class PlayerSensor : MonoBehaviour
     private const float WALL_CHECK_DISTANCE = 0.05f;
     private const float SLIP_CHECK_BOX_SIZE = 0.1f;
 
-    private Collider2D[] _overlapResults = new Collider2D[1];
+    private Collider2D[] _overlapResults = new Collider2D[4];
     private Collider2D _lastPlatformCollider;
     private PlatformEffector2D _cachedEffector;
     private ContactFilter2D _contactFilter;
@@ -119,10 +119,18 @@ public class PlayerSensor : MonoBehaviour
         int count = slipCollider.Overlap(_contactFilter, _overlapResults);
         for (int i = 0; i < count; i++)
         {
-            PlatformEffector2D effector = _overlapResults[i].GetComponent<PlatformEffector2D>();
-            if (effector != null && effector.rotationalOffset == 180f)
+            Collider2D col = _overlapResults[i];
+            if (col == null)
             {
                 continue;
+            }
+
+            if (((1 << col.gameObject.layer) & _platformLayer) != 0)
+            {
+                if (col.TryGetComponent(out PlatformEffector2D effector) && effector.rotationalOffset == 180f)
+                {
+                    continue;
+                }
             }
             return true;
         }
