@@ -22,6 +22,9 @@ public class UI_NPCDialogue : MonoBehaviour
     [SerializeField]
     private GameObject _continueIndicator;
 
+    [SerializeField]
+    private UI_NPCChoice _choiceUI;
+
     [Foldout("Settings")]
     [SerializeField]
     private float _fadeInDuration;
@@ -73,6 +76,14 @@ public class UI_NPCDialogue : MonoBehaviour
         RefreshPage();
     }
 
+    public void ShowChoices(System.Collections.Generic.List<NPCChoiceOption> options, Action<NPCEventSO> onChoiceSelected)
+    {
+        if (_choiceUI != null)
+        {
+            _choiceUI.Open(options, onChoiceSelected);
+        }
+    }
+
     public void Close()
     {
         if (!IsDialogueOpen)
@@ -82,6 +93,11 @@ public class UI_NPCDialogue : MonoBehaviour
 
         IsDialogueOpen = false;
         PlayFadeOut();
+        
+        if (_choiceUI != null)
+        {
+            _choiceUI.Close();
+        }
     }
 
     private void InitCanvasGroup()
