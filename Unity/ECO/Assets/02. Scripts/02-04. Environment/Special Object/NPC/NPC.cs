@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using VInspector;
-using Cysharp.Threading.Tasks;
 
 public class NPC : SpecialObjectBase
 {
@@ -25,20 +24,15 @@ public class NPC : SpecialObjectBase
     private PlayerInput _playerInput;
     private NPCSpecialEventQueue _specialEventQueue;
     private NPCEventExecutor _executor;
-    
-    private bool _isInteracting;
+    private NPCEventFlowRunner _flowRunner;
     private bool _isDefaultEventConditionMet;
-
-    public void SetDefaultEventConditionMet(bool isMet)
-    {
-        _isDefaultEventConditionMet = isMet;
-    }
 
     protected override void Awake()
     {
         base.Awake();
         _specialEventQueue = new NPCSpecialEventQueue();
         _executor = new NPCEventExecutor();
+        _flowRunner = new NPCEventFlowRunner(_uiNPCDialogue, _executor);
     }
 
     protected virtual void Start()
@@ -55,10 +49,18 @@ public class NPC : SpecialObjectBase
         }
     }
 
+    private void Update()
+    {
+        if (_flowRunner.IsInteracting && Input.GetKeyDown(KeyCode.Escape))
+        {
+            _flowRunner.CancelInteraction();
+        }
+    }
+
     protected override void OnDisable()
     {
         base.OnDisable();
-        HideDialogue();
+        _flowRunner.CancelInteraction();
     }
 
     protected override void OnTriggerEnter2D(Collider2D other)
@@ -83,7 +85,7 @@ public class NPC : SpecialObjectBase
     {
         base.ResetState();
         _specialEventQueue.ResetToSavedState();
-        HideDialogue();
+        _flowRunner.CancelInteraction();
         RefreshHighlight(false);
     }
 
@@ -107,6 +109,11 @@ public class NPC : SpecialObjectBase
         _defaultEvent = eventData;
     }
 
+    public void SetDefaultEventConditionMet(bool isMet)
+    {
+        _isDefaultEventConditionMet = isMet;
+    }
+
     protected override void HandlePlayerEnter()
     {
         RefreshHighlight(true);
@@ -115,148 +122,19 @@ public class NPC : SpecialObjectBase
     protected override void HandlePlayerExit()
     {
         RefreshHighlight(false);
-        HideDialogue();
+        _flowRunner.CancelInteraction();
     }
 
     protected override void Interact()
     {
         base.Interact();
 
-        if (_isInteracting)
-        {
-            if (_uiNPCDialogue != null && _uiNPCDialogue.IsDialogueOpen)
-            {
-                _uiNPCDialogue.AdvancePage();
-            }
-            return;
-        }
-
-        InteractAsync().Forget();
-    }
-
-    private async UniTaskVoid InteractAsync()
-    {
-        _isInteracting = true;
-
-        try
-        {
-            if (_specialEventQueue.HasActiveEvent)
-            {
-                await FireHighestPrioritySpecialEventAsync();
-            }
-            else
-            {
-                await FireDefaultEventAsync();
-            }
-        }
-        finally
-        {
-            _isInteracting = false;
-        }
-    }
-
-    private async UniTask FireHighestPrioritySpecialEventAsync()
-    {
-        NPCEventSO eventData = _specialEventQueue.GetHighestPriority();
-        if (eventData == null)
+        if (_flowRunner.IsInteracting)
         {
             return;
         }
 
-        bool isExecuted = await ExecuteEventFlowAsync(eventData);
-        if (isExecuted)
-        {
-            _specialEventQueue.MarkFired(eventData);
-        }
-
-        HideDialogue();
-    }
-
-    private async UniTask FireDefaultEventAsync()
-    {
-        NPCEventSO targetEvent = _isDefaultEventConditionMet && _conditionMetDefaultEvent != null ? _conditionMetDefaultEvent : _defaultEvent;
-
-        if (targetEvent == null)
-        {
-            return;
-        }
-
-        await ExecuteEventFlowAsync(targetEvent);
-        HideDialogue();
-    }
-
-    private async UniTask<bool> ExecuteEventFlowAsync(NPCEventSO eventData)
-    {
-        if (eventData == null)
-        {
-            return false;
-        }
-
-        NPCEventSO nextEvent = eventData;
-        bool isExecuted = false;
-
-        while (nextEvent != null)
-        {
-            if (nextEvent.DialogueLines != null && nextEvent.DialogueLines.Length > 0)
-            {
-                NPCEventSO chosenEvent = await ShowDialogueAndGetChoiceAsync(nextEvent);
-
-                if (chosenEvent == null)
-                {
-                    return false;
-                }
-
-                if (chosenEvent != nextEvent)
-                {
-                    nextEvent = chosenEvent;
-                    continue;
-                }
-            }
-
-            _executor.Execute(nextEvent, _playerInput);
-            isExecuted = true;
-            break;
-        }
-
-        return isExecuted;
-    }
-
-    private async UniTask<NPCEventSO> ShowDialogueAndGetChoiceAsync(NPCEventSO eventData)
-    {
-        if (_uiNPCDialogue == null)
-        {
-            return eventData;
-        }
-
-        var tcs = new UniTaskCompletionSource<NPCEventSO>();
-
-        _uiNPCDialogue.OnDialogueCompleted = null;
-        _uiNPCDialogue.OnDialogueCompleted = () =>
-        {
-            if (eventData.HasChoices && eventData.Choices != null && eventData.Choices.Count > 0)
-            {
-                _uiNPCDialogue.ShowChoices(eventData.Choices, (selectedEvent) =>
-                {
-                    tcs.TrySetResult(selectedEvent);
-                });
-            }
-            else
-            {
-                tcs.TrySetResult(eventData);
-            }
-        };
-
-        _uiNPCDialogue.Open(eventData.DialogueLines);
-
-        return await tcs.Task;
-    }
-
-    private void HideDialogue()
-    {
-        if (_uiNPCDialogue != null)
-        {
-            _uiNPCDialogue.Close();
-        }
+        _flowRunner.StartInteraction(_defaultEvent, _conditionMetDefaultEvent, _isDefaultEventConditionMet, _specialEventQueue, _playerInput);
     }
 
     private void RefreshHighlight(bool isActive)
