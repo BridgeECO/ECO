@@ -1,8 +1,6 @@
 using System;
-using DG.Tweening;
-using TMPro;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using VInspector;
 using Cysharp.Threading.Tasks;
 
@@ -12,43 +10,39 @@ public class UI_NPCDialogue : MonoBehaviour
 
     [Foldout("Hierarchy")]
     [SerializeField]
-    private CanvasGroup _dialogueCanvasGroup;
+    private UI_NPCDialogueAnimator _animator;
 
     [SerializeField]
-    private TextMeshProUGUI _dialogueText;
-
-    [SerializeField]
-    private TextMeshProUGUI _pageIndicatorText;
-
-    [SerializeField]
-    private GameObject _continueIndicator;
+    private UI_NPCDialogueTextBox _textBox;
 
     [SerializeField]
     private UI_NPCChoice _choiceUI;
 
-    [Foldout("Settings")]
-    [SerializeField]
-    private float _fadeInDuration;
-
-    [SerializeField]
-    private float _fadeOutDuration;
-
     private string[] _lines;
     private int _currentPageIndex;
     private bool _isShowingChoices;
+    private bool _isTransitioning;
+    private bool _isPrintingText;
 
     public bool IsDialogueOpen { get; private set; }
 
-    private void Awake()
-    {
-        InitCanvasGroup();
-    }
-
     private void Update()
     {
-        if (IsDialogueOpen && !_isShowingChoices && Input.GetKeyDown(KeyCode.Space))
+        if (!IsDialogueOpen || _isShowingChoices || _isTransitioning)
         {
-            AdvancePage();
+            return;
+        }
+
+        if (Input.GetKeyDown(KeyCode.F) || Input.GetMouseButtonDown(0))
+        {
+            if (_isPrintingText)
+            {
+                _textBox.SkipPrinting();
+            }
+            else
+            {
+                AdvancePage();
+            }
         }
     }
 
@@ -69,8 +63,7 @@ public class UI_NPCDialogue : MonoBehaviour
         _currentPageIndex = 0;
         IsDialogueOpen = true;
 
-        RefreshPage();
-        PlayFadeIn();
+        OpenDialogueFlowAsync().Forget();
     }
 
     public void AdvancePage()
@@ -80,18 +73,16 @@ public class UI_NPCDialogue : MonoBehaviour
             return;
         }
 
-        _currentPageIndex++;
-
-        if (_currentPageIndex >= _lines.Length)
+        if (_currentPageIndex >= _lines.Length - 1)
         {
             OnDialogueCompleted?.Invoke();
             return;
         }
 
-        RefreshPage();
+        TransitionToNextPageAsync().Forget();
     }
 
-    public void ShowChoices(System.Collections.Generic.List<NPCChoiceOption> options, Action<NPCEventSO> onChoiceSelected)
+    public void ShowChoices(List<NPCChoiceOption> options, Action<NPCEventSO> onChoiceSelected)
     {
         _isShowingChoices = true;
         if (_choiceUI != null)
@@ -103,14 +94,16 @@ public class UI_NPCDialogue : MonoBehaviour
     public void Close()
     {
         _isShowingChoices = false;
+        _isTransitioning = false;
+        _isPrintingText = false;
         if (!IsDialogueOpen)
         {
             return;
         }
 
         IsDialogueOpen = false;
-        PlayFadeOut();
-        
+        _animator.PlayFadeOut();
+
         if (_choiceUI != null)
         {
             _choiceUI.Close();
@@ -120,101 +113,47 @@ public class UI_NPCDialogue : MonoBehaviour
     public async UniTask CloseAsync()
     {
         _isShowingChoices = false;
+        _isTransitioning = false;
+        _isPrintingText = false;
         if (!IsDialogueOpen)
         {
             return;
         }
 
         IsDialogueOpen = false;
-        await PlayFadeOutAsync();
-        
+        await _animator.PlayFadeOutAsync();
+
         if (_choiceUI != null)
         {
             _choiceUI.Close();
         }
     }
 
-    private void InitCanvasGroup()
+    private async UniTaskVoid OpenDialogueFlowAsync()
     {
-        if (_dialogueCanvasGroup == null)
-        {
-            return;
-        }
+        _isTransitioning = true;
+        await _animator.PlayFadeInAsync();
 
-        _dialogueCanvasGroup.alpha = 0f;
-        _dialogueCanvasGroup.interactable = false;
-        _dialogueCanvasGroup.blocksRaycasts = false;
+        _isPrintingText = true;
+        _isTransitioning = false;
+
+        await _textBox.ShowPageAsync(_lines[_currentPageIndex], _currentPageIndex, _lines.Length);
+
+        _isPrintingText = false;
     }
 
-    private void RefreshPage()
+    private async UniTaskVoid TransitionToNextPageAsync()
     {
-        if (_dialogueText != null)
-        {
-            _dialogueText.text = _lines[_currentPageIndex];
-        }
+        _isTransitioning = true;
+        await _textBox.HideAsync();
 
-        RefreshPageIndicator();
-        RefreshContinueIndicator();
-    }
+        _currentPageIndex++;
+        
+        _isPrintingText = true;
+        _isTransitioning = false;
 
-    private void RefreshPageIndicator()
-    {
-        if (_pageIndicatorText == null)
-        {
-            return;
-        }
+        await _textBox.ShowPageAsync(_lines[_currentPageIndex], _currentPageIndex, _lines.Length);
 
-        if (_lines.Length <= 1)
-        {
-            _pageIndicatorText.gameObject.SetActive(false);
-            return;
-        }
-
-        _pageIndicatorText.gameObject.SetActive(true);
-        _pageIndicatorText.text = $"{_currentPageIndex + 1} / {_lines.Length}";
-    }
-
-    private void RefreshContinueIndicator()
-    {
-        if (_continueIndicator == null)
-        {
-            return;
-        }
-
-        bool isLastPage = _currentPageIndex >= _lines.Length - 1;
-        _continueIndicator.SetActive(!isLastPage);
-    }
-
-    private void PlayFadeIn()
-    {
-        if (_dialogueCanvasGroup == null)
-        {
-            return;
-        }
-
-        _dialogueCanvasGroup.DOKill();
-        _dialogueCanvasGroup.DOFade(1f, _fadeInDuration).SetEase(Ease.OutQuad);
-    }
-
-    private void PlayFadeOut()
-    {
-        if (_dialogueCanvasGroup == null)
-        {
-            return;
-        }
-
-        _dialogueCanvasGroup.DOKill();
-        _dialogueCanvasGroup.DOFade(0f, _fadeOutDuration).SetEase(Ease.InQuad);
-    }
-
-    private async UniTask PlayFadeOutAsync()
-    {
-        if (_dialogueCanvasGroup == null)
-        {
-            return;
-        }
-
-        _dialogueCanvasGroup.DOKill();
-        await _dialogueCanvasGroup.DOFade(0f, _fadeOutDuration).SetEase(Ease.InQuad).ToUniTask();
+        _isPrintingText = false;
     }
 }

@@ -738,8 +738,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 131606618}
-  - component: {fileID: 131606617}
   - component: {fileID: 131606621}
+  - component: {fileID: 131606624}
+  - component: {fileID: 131606625}
+  - component: {fileID: 131606622}
   m_Layer: 0
   m_Name: UI_NPCDialogueTab
   m_TagString: Untagged
@@ -747,25 +749,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &131606617
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 131606616}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b750929898f52764aa04c7231022ed3b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _dialogueCanvasGroup: {fileID: 1556907968}
-  _dialogueText: {fileID: 990688833}
-  _pageIndicatorText: {fileID: 0}
-  _continueIndicator: {fileID: 0}
-  _choiceUI: {fileID: 116679034}
-  _fadeInDuration: 0.2
-  _fadeOutDuration: 0.2
 --- !u!224 &131606618
 RectTransform:
   m_ObjectHideFlags: 0
@@ -795,6 +778,52 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 131606616}
   m_CullTransparentMesh: 1
+--- !u!114 &131606622
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 131606616}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a78e06e79b07fe24cb72b0102ce7de75, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _dialogueText: {fileID: 990688833}
+  _pageIndicatorText: {fileID: 0}
+  _continueIndicator: {fileID: 0}
+  _fadeDuration: 0.3
+  _textPrintSpeed: 100
+--- !u!114 &131606624
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 131606616}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b750929898f52764aa04c7231022ed3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _animator: {fileID: 131606625}
+  _textBox: {fileID: 131606622}
+  _choiceUI: {fileID: 116679034}
+--- !u!114 &131606625
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 131606616}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bc5ed0213083274d8b49ef5c5b8fef3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _dialogueCanvasGroup: {fileID: 1556907968}
+  _fadeDuration: 0.3
 --- !u!4 &227532235 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1270019691385230102, guid: b596518fa74425844944b3bb87ddf7fa, type: 3}
@@ -1689,8 +1718,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interactionType: 0
-  _highlightObject: {fileID: 0}
-  _uiNPCDialogue: {fileID: 131606617}
+  _highlightObject: {fileID: 650268012}
+  _uiNPCDialogue: {fileID: 131606624}
   _defaultEvent: {fileID: 11400000, guid: 32f601bbdf6896d46baeccbdc8e435c0, type: 2}
   _conditionMetDefaultEvent: {fileID: 11400000, guid: b125cf198c864f94e8713beede27ef09, type: 2}
   _specialEvents:
