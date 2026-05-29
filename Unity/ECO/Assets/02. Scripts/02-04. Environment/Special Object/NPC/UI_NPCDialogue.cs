@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using VInspector;
 using Cysharp.Threading.Tasks;
 
@@ -33,7 +34,7 @@ public class UI_NPCDialogue : MonoBehaviour
             return;
         }
 
-        if (Input.GetKeyDown(KeyCode.F) || Input.GetMouseButtonDown(0))
+        if (Input.GetKeyDown(KeyCode.F) || (Input.GetMouseButtonDown(0) && (EventSystem.current == null || !EventSystem.current.IsPointerOverGameObject())))
         {
             if (_isPrintingText)
             {
@@ -133,11 +134,19 @@ public class UI_NPCDialogue : MonoBehaviour
     {
         _isTransitioning = true;
         await _animator.PlayFadeInAsync();
+        if (this == null || !IsDialogueOpen)
+        {
+            return;
+        }
 
         _isPrintingText = true;
         _isTransitioning = false;
 
         await _textBox.ShowPageAsync(_lines[_currentPageIndex], _currentPageIndex, _lines.Length);
+        if (this == null || !IsDialogueOpen)
+        {
+            return;
+        }
 
         _isPrintingText = false;
     }
@@ -146,6 +155,10 @@ public class UI_NPCDialogue : MonoBehaviour
     {
         _isTransitioning = true;
         await _textBox.HideAsync();
+        if (this == null || !IsDialogueOpen)
+        {
+            return;
+        }
 
         _currentPageIndex++;
         
@@ -153,6 +166,10 @@ public class UI_NPCDialogue : MonoBehaviour
         _isTransitioning = false;
 
         await _textBox.ShowPageAsync(_lines[_currentPageIndex], _currentPageIndex, _lines.Length);
+        if (this == null || !IsDialogueOpen)
+        {
+            return;
+        }
 
         _isPrintingText = false;
     }

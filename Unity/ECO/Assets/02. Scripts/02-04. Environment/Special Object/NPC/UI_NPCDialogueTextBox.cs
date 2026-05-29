@@ -1,10 +1,12 @@
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using VInspector;
 using Cysharp.Threading.Tasks;
 
 public class UI_NPCDialogueTextBox : MonoBehaviour
 {
+    [Foldout("Hierarchy")]
     [SerializeField]
     private TextMeshProUGUI _dialogueText;
 
@@ -14,6 +16,7 @@ public class UI_NPCDialogueTextBox : MonoBehaviour
     [SerializeField]
     private GameObject _continueIndicator;
 
+    [Foldout("Settings")]
     [SerializeField]
     private float _fadeDuration;
 
@@ -39,7 +42,7 @@ public class UI_NPCDialogueTextBox : MonoBehaviour
 
     public void SkipPrinting()
     {
-        if (_typewriterTween != null && _typewriterTween.IsActive())
+        if (_typewriterTween is not null && _typewriterTween.IsActive())
         {
             _typewriterTween.Complete();
         }
@@ -97,7 +100,7 @@ public class UI_NPCDialogueTextBox : MonoBehaviour
 
     private void KillTypewriter()
     {
-        if (_typewriterTween != null && _typewriterTween.IsActive())
+        if (_typewriterTween is not null && _typewriterTween.IsActive())
         {
             _typewriterTween.Kill();
         }
@@ -135,6 +138,10 @@ public class UI_NPCDialogueTextBox : MonoBehaviour
         .SetUpdate(UpdateType.Normal, true);
 
         await _typewriterTween.ToUniTask();
+        if (this == null || _dialogueText == null)
+        {
+            return;
+        }
 
         _dialogueText.maxVisibleCharacters = totalVisibleCharacters;
     }

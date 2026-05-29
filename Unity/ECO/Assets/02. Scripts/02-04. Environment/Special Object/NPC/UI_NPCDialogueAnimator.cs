@@ -1,12 +1,15 @@
 using DG.Tweening;
 using UnityEngine;
+using VInspector;
 using Cysharp.Threading.Tasks;
 
 public class UI_NPCDialogueAnimator : MonoBehaviour
 {
+    [Foldout("Hierarchy")]
     [SerializeField]
     private CanvasGroup _dialogueCanvasGroup;
 
+    [Foldout("Settings")]
     [SerializeField]
     private float _fadeDuration;
 
