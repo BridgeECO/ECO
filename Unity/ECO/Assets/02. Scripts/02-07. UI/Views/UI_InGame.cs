@@ -1,10 +1,13 @@
 using UnityEngine;
 using UnityEngine.UI;
+using VInspector;
 
 public class UI_InGame : MonoBehaviour
 {
+    [Foldout("Hierarchy")]
     [SerializeField]
     private Button _respawnButton;
+
 
     private void Start()
     {
