@@ -256,15 +256,15 @@
 
 
 
-\*\*1-b-(5).\*\* `\[SerializeField]` 속성을 가진 필드는 코드로 기본값을 할당하지 않고, 항상 Inspector 상에서 값을 할당한다.
+\*\*1-b-(5).\*\* `\[SerializeField]` 속성을 가진 필드는 인스펙터에서의 할당 누락으로 인한 버그(NullReferenceException 또는 기본값 누락)를 방지하기 위해, 가급적 합리적인 기본값을 코드로 할당해 둔다.
 
-\* ❌ \*\*지양할 예시\*\*
+\* ✅ \*\*권장할 예시\*\*
 
 &#x20; ```csharp
 
 &#x20; \[SerializeField] 
 
-&#x20; private int \_movementSpeed = 5f;
+&#x20; private int \_movementSpeed = 5;
 
 &#x20; ```
 
@@ -495,9 +495,11 @@
 \- \*\*Unity 객체\*\*의 경우, \*\*fake null을 감지할 수 있는 == 및 != 연산자\*\*를 통해 null 체크를 진행한다.
 
 
-\*\*1-d-(2).\*\* 객체의 프레임 단위의 빈번한 null 체크는 기본적으로 지양한다. 불가피하게 프레임 단위의 null 체크가 필요하다면 반드시 \*\*ReferenceEquals()\*\*를 사용한다.
+\*\*1-d-(2).\*\* 객체의 프레임 단위의 빈번한 null 체크는 기본적으로 지양한다. 불가피하게 프레임 단위의 빈번한 null 체크가 필요한 경우:
+- \*\*순수 C# 객체(POCO)\*\*인 경우에만 \*\*`ReferenceEquals(obj, null)`\*\*를 사용한다.
+- \*\*Unity 객체(MonoBehaviour, GameObject 등)\*\*는 `ReferenceEquals` 사용 시 이미 `Destroy`된 상태(가짜 null/Fake null)를 감지하지 못해 런타임 오류가 발생할 수 있으므로, 성능 오버헤드가 있더라도 일반 \*\*`== null` 또는 `!= null` 연산자\*\*를 사용하거나 수명 주기 진입 시 캐싱하여 불필요한 null 체크 자체를 줄인다.
 
-\* ❌ \*\*지양할 예시\*\*
+\* ❌ \*\*지양할 예시 (Unity 객체에 ReferenceEquals 사용)\*\*
 
 &#x20; ```csharp
 
@@ -511,7 +513,7 @@
 
 &#x20; {
 
-&#x20;     if (\_unityGo == null)
+&#x20;     if (ReferenceEquals(\_unityGO, null)) // 이미 Destroy된 Unity 객체를 감지하지 못함
 
 &#x20;     {
 
@@ -523,13 +525,11 @@
 
 &#x20; ```
 
-\* ✅ \*\*권장할 예시\*\*
+\* ✅ \*\*권장할 예시 (순수 C# 객체에 ReferenceEquals 사용)\*\*
 
 &#x20; ```csharp
 
-&#x20; \[SerializeField]
-
-&#x20; private GameObject \_unityGO;
+&#x20; private MyPureCSharpClass \_pureObject;
 
 &#x20; 
 
@@ -537,7 +537,7 @@
 
 &#x20; {
 
-&#x20;     if (ReferenceEquals(\_unityGO, null))
+&#x20;     if (ReferenceEquals(\_pureObject, null)) // 순수 C# 객체는 가짜 null 문제가 없으므로 성능상 안전함
 
 &#x20;     {
 
@@ -775,6 +775,34 @@
 
 
 
+\*\*1-g-(4).\*\* 대리자나 이벤트에 메서드를 구독(`+=`)한 경우, 메모리 누수(Memory Leak)를 방지하기 위해 해당 클래스의 비활성화(`OnDisable`) 또는 파괴(`OnDestroy`) 시점에 반드시 구독 해제(`-=`)를 명시해 주어야 한다.
+
+\* ✅ \*\*권장할 예시\*\*
+
+&#x20; ```csharp
+
+&#x20; private void OnEnable()
+
+&#x20; {
+
+&#x20;     GameManager.Instance.OnScoreChanged += RefreshScore;
+
+&#x20; }
+
+&#x20; 
+
+&#x20; private void OnDisable()
+
+&#x20; {
+
+&#x20;     GameManager.Instance.OnScoreChanged -= RefreshScore;
+
+&#x20; }
+
+&#x20; ```
+
+
+
 \### 1-h. 스크립트 파일 분리
 
 
@@ -784,6 +812,19 @@
 
 
 \*\*1-h-(2).\*\* 파일(스크립트)명과 해당 클래스/인터페이스/열거형/구조체의 이름은 동일해야 한다.
+
+
+
+\### 1-i. 반응형 프로그래밍 (R3)
+
+\*\*1-i-(1).\*\* 프로젝트에는 UniRx의 후속작인 \*\*R3\*\* 라이브러리가 도입되어 있습니다. 반응형 프로그래밍은 강제 사항이 아니며, 이벤트 데이터 바인딩, 복잡한 입력 스트림 처리, 프레임 단위 모니터링 등 반응형 패턴이 적합한 상황에 한해 \*\*선택적\*\*으로 사용합니다.
+
+\*\*1-i-(2).\*\* 구독 관리와 메모리 누수 방지:
+- R3 구독(`Subscribe`) 발생 시 반환되는 `IDisposable`은 메모리 누수를 방지하기 위해 반드시 생명주기에 맞춰 해제해야 합니다.
+- 단일 구독은 필드로 관리하여 `OnDisable`/`OnDestroy` 또는 해제 조건이 충족되었을 때 `Dispose()`를 수행합니다.
+- 여러 구독을 함께 관리할 때는 `CompositeDisposable`을 사용하거나, `.AddTo(this)` 또는 `DisposableBag`을 활용하여 객체 소멸 시점에 자동으로 해제되도록 구현합니다.
+
+\*\*1-i-(3).\*\* 단순 비동기 처리(예: 단순 지연 대기 등)의 경우, Observable 스트림 대신 `UniTask`를 사용하여 코드의 가독성을 높이고 호출 스택을 단순화합니다.
 
 
 
