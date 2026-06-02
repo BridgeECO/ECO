@@ -38,8 +38,8 @@
 
 ### 1-d. null 체크
 * 순수 C# 객체(POCO)는 `is` 또는 `ReferenceEquals()`로 null 체크를 진행합니다.
-* Unity 객체는 null 체크 주기 및 fake null을 고려해 상황에 맞는 문법을 사용합니다.
-* 프레임 단위의 빈번한 null 체크는 지양하되, 불가피할 경우 반드시 `ReferenceEquals()`를 사용합니다.
+* Unity 객체는 호출 빈도가 빈번하지 않을 때, fake null을 감지할 수 있는 == 및 != 연산자를 통해 null 체크를 진행합니다.
+* 프레임 단위의 빈번한 null 체크는 지양해야 합니다. 불가피할 경우 반드시 `ReferenceEquals()`를 사용합니다.
 
 ### 1-e. 싱글톤
 * 객체 타입에 따라 `POCOSingleton<T>` 또는 `MonoBehaviourSingleton<T>`를 상속하여 구현합니다.
