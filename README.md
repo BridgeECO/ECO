@@ -20,7 +20,7 @@
 | **프로젝트 명** | ECO |
 |:---:|:---:|
 | **프로젝트 기간** | 2026.03 - 진행중 |
-| **팀원** | 최민규, 이서림(Se01im), 정수지(sooji), 심형준, 이치우, helloSalmon, solhh2 |
+| **팀원** | ? |
 | **기술 스택** | (추후 추가 예정) |
 | **플랫폼 및 장르** | <img src="https://img.shields.io/badge/Platform-Windows-lightgrey?style=for-the-badge" height="25"> <img src="https://img.shields.io/badge/Genre-2D%20Co--op%20Platformer-blue?style=for-the-badge" height="25"> |
 <br>
@@ -43,8 +43,8 @@ ECO는 플레이어가 쓰레기 매립지(Dump Site)와 침묵의 도시(City o
 - 지형 사이에 숨겨진 페이크 블록(Fake Terrain)과 즉사 지형(Kill on Collision)을 파악하고 헤쳐나가야 합니다. <br>
 
 #### 3. 위협적인 보스 레이드 ⚔️
-- 스테이지 끝에 도사리고 있는 보스('SilenceCityBoss')를 대면하게 됩니다.
-- 보스의 강력한 공격 패턴과 기믹을 학습하고, 최적의 타이밍에 대쉬와 컨트롤을 활용해 공략을 달성합니다. <br>
+- 스테이지 끝에 도사리고 있는 보스를 대면하게 됩니다.
+- 보스의 공격과 추격을 따돌려 지역을 탈출합니다. <br>
 
 <br>
 
@@ -64,19 +64,8 @@ ECO는 플레이어가 쓰레기 매립지(Dump Site)와 침묵의 도시(City o
 <br>
 
 ### 주요 화면
-#### 1. 거점 및 준비 단계
-|거점 화면|튜토리얼 구역|장비 설정 및 정비|기믹 연습 구역|
+|타이틀 화면|중앙 지역|튜토리얼|보스전|
 |:---:|:---:|:---:|:---:|
 |![image](https://github.com/user-attachments/assets/Placeholder_Center_Asset_ID)|![image](https://github.com/user-attachments/assets/Placeholder_Tutorial_Asset_ID)|![image](https://github.com/user-attachments/assets/Placeholder_Setup_Asset_ID)|![image](https://github.com/user-attachments/assets/Placeholder_Practice_Asset_ID)|
-|중앙 거점에서 게임 시작 및 모험을 준비합니다.|기초적인 조작과 대쉬, 벽점프 등을 학습합니다.|탐험을 앞두고 다양한 캐릭터 설정을 조율합니다.|스테이지의 특수 기믹들을 미리 체험하고 연습합니다.|
+|?|?|?|?|
 <br>
-
-#### 2. 스테이지 탐험 단계
-![ECO-Exploration-Gif-Placeholder](https://github.com/user-attachments/assets/Placeholder_Exploration_Gif_ID)
-<br><br>
-
-#### 3. 보스전 단계
-|보스 조우 팝업|보스 전투 화면|보스 클리어 정산|
-|:---:|:---:|:---:|
-|![image](https://github.com/user-attachments/assets/Placeholder_BossIntro_Asset_ID)|![image](https://github.com/user-attachments/assets/Placeholder_BossBattle_Asset_ID)|![image](https://github.com/user-attachments/assets/Placeholder_BossClear_Asset_ID)|
-|침묵의 도시 보스 등장 연출 및 정보가 출력됩니다.|보스의 고유 패턴과 지형 기믹을 극복하며 전투를 치릅니다.|보스 처치 시간 및 점수, 보상을 확인합니다.|
