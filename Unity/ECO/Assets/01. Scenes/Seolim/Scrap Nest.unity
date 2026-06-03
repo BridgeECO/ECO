@@ -336,37 +336,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _isDontDestroyOnLoad: 1
   _lazyInitialization: 0
---- !u!1 &808248162
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 808248163}
-  m_Layer: 0
-  m_Name: spawn_1
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &808248163
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 808248162}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -7.32, y: -2.76, z: -0.11245008}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1800290636}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &842623128
 GameObject:
   m_ObjectHideFlags: 0
@@ -457,7 +426,7 @@ Transform:
   m_GameObject: {fileID: 842623128}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalPosition: {x: -13.54, y: -3.27, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -665,15 +634,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5776003008716666939, guid: c4859a728bb40ee4c94d7adee5ded22c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.6706948
+      value: -22.72
       objectReference: {fileID: 0}
     - target: {fileID: 5776003008716666939, guid: c4859a728bb40ee4c94d7adee5ded22c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -4.64
       objectReference: {fileID: 0}
     - target: {fileID: 5776003008716666939, guid: c4859a728bb40ee4c94d7adee5ded22c, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 4.6073933
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5776003008716666939, guid: c4859a728bb40ee4c94d7adee5ded22c, type: 3}
       propertyPath: m_LocalRotation.w
@@ -787,11 +756,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1281565562}
   m_CullTransparentMesh: 1
---- !u!4 &1800290636 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 7029558020125010893, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
-  m_PrefabInstance: {fileID: 6277913269822648675}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1956861094
 GameObject:
   m_ObjectHideFlags: 0
@@ -938,6 +902,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 999096769915603295, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -8.65
+      objectReference: {fileID: 0}
+    - target: {fileID: 999096769915603295, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -6.24
+      objectReference: {fileID: 0}
     - target: {fileID: 2053815310187168446, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
       propertyPath: m_LocalPosition.x
       value: -11.4
@@ -982,24 +954,33 @@ PrefabInstance:
       propertyPath: m_Name
       value: Scrap Nest_Region
       objectReference: {fileID: 0}
+    - target: {fileID: 2845654473629755713, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5938331165540568500, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -8.650001
+      objectReference: {fileID: 0}
+    - target: {fileID: 5938331165540568500, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 8.76
+      objectReference: {fileID: 0}
     - target: {fileID: 6097498077194496002, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
       propertyPath: _initialSpawnPoint
       value: 
-      objectReference: {fileID: 808248163}
+      objectReference: {fileID: 0}
     - target: {fileID: 8110630494353832711, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 5.3
+      value: -16
       objectReference: {fileID: 0}
     - target: {fileID: 8110630494353832711, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -5.42
+      value: -4.76
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 7029558020125010893, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 808248163}
+    m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
 --- !u!1660057539 &9223372036854775807
