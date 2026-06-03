@@ -1,26 +1,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UI_PopupHandler : MonoBehaviourSingleton<UI_PopupHandler>
+public class UI_PopupHandler
 {
     private Stack<UI_Popup> _popups = new Stack<UI_Popup>();
 
     public bool HasPopups => _popups.Count > 0;
 
-    protected override void Awake()
+    public void Init()
     {
-        base.Awake();
+        // 이벤트 구독을 UIManager로 중앙집중화하여 중복 호출 방지
     }
 
-    private void Start()
+    public void Dispose()
     {
-        // ESC key to close current popup
-        InputHandler.OnCancelEvent += OnCancelPressed;
-    }
-
-    private void OnDisable()
-    {
-        InputHandler.OnCancelEvent -= OnCancelPressed;
     }
 
     public void OpenPopup(UI_Popup popup)
@@ -47,7 +40,7 @@ public class UI_PopupHandler : MonoBehaviourSingleton<UI_PopupHandler>
         }
     }
 
-    private void CloseLatestPopup()
+    public void CloseLatestPopup()
     {
         if (_popups.TryPop(out UI_Popup latestPopup))
         {
@@ -78,12 +71,6 @@ public class UI_PopupHandler : MonoBehaviourSingleton<UI_PopupHandler>
             selector.enabled = state;
         }
     }
-
-    private void OnCancelPressed()
-    {
-        if (_popups.Count > 0)
-        {
-            CloseLatestPopup();
-        }
-    }
 }
+
+
