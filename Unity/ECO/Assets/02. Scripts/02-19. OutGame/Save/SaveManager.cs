@@ -46,6 +46,15 @@ public class SaveManager : MonoBehaviourSingleton<SaveManager>
         File.WriteAllText(filePath, json);
     }
 
+    public void DeleteSave(int slotIndex)
+    {
+        string filePath = GetSaveFilePath(slotIndex);
+        if (File.Exists(filePath))
+        {
+            File.Delete(filePath);
+        }
+    }
+
     public SaveData Load(int slotIndex)
     {
         string filePath = GetSaveFilePath(slotIndex);
