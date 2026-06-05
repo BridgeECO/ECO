@@ -140,4 +140,35 @@ public class TerrainObject : MonoBehaviour, IEnergyReceiver, IResettable
         _isEnergyActive = false;
         ApplyGimmicks();
     }
+
+#if UNITY_EDITOR
+    [Button("Adjust Collider Size")]
+    private void AdjustColliderSize()
+    {
+        BoxCollider2D col = GetComponent<BoxCollider2D>();
+
+        if (col != null)
+        {
+            float scaleX = Mathf.Abs(transform.localScale.x);
+            float scaleY = Mathf.Abs(transform.localScale.y);
+
+            if (0f < scaleX && 0f < scaleY)
+            {
+                UnityEditor.Undo.RecordObject(col, "Adjust Collider Size");
+
+                col.edgeRadius = 0.2f;
+                float sizeX = 1f - (0.4f / scaleX);
+                float sizeY = 1f - (0.4f / scaleY);
+                col.size = new Vector2(sizeX, sizeY);
+
+                UnityEditor.EditorUtility.SetDirty(col);
+                Debug.Log($"[TerrainObject] BoxCollider2D 사이즈 조정 완료. (Local Size: {col.size}, Local Edge Radius: {col.edgeRadius})");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("[TerrainObject] BoxCollider2D 컴포넌트를 찾을 수 없습니다.");
+        }
+    }
+#endif
 }

@@ -7,12 +7,17 @@ public class CameraController : MonoBehaviour
     [SerializeField]
     private float _cameraYOffset;
 
+    [Header("Smooth Tracking")]
+    [SerializeField]
+    private float _trackingTimeAfterTransition = 0.2f;
+
     private Vector2 _currentRoomMin;
     private Vector2 _currentRoomMax;
     private Transform _playerTransform;
 
     private float _halfCamHeight;
     private float _halfCamWidth;
+    private Vector3 _velocity = Vector3.zero;
 
     public bool IsFollowingPlayer { get; set; } = true;
 
@@ -43,7 +48,8 @@ public class CameraController : MonoBehaviour
 
     private void FollowPlayer()
     {
-        transform.position = GetClampedPosition();
+        Vector3 targetPosition = GetClampedPosition();
+        transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref _velocity, _trackingTimeAfterTransition);
     }
 
     public void SetRoomBounds(Vector2 roomMin, Vector2 roomMax)
