@@ -152,8 +152,10 @@ public class TerrainObject : MonoBehaviour, IEnergyReceiver, IResettable
             float scaleX = Mathf.Abs(transform.localScale.x);
             float scaleY = Mathf.Abs(transform.localScale.y);
 
-            if (scaleX > 0f && scaleY > 0f)
+            if (0f < scaleX && 0f < scaleY)
             {
+                UnityEditor.Undo.RecordObject(col, "Adjust Collider Size");
+
                 col.edgeRadius = 0.2f;
                 float sizeX = 1f - (0.4f / scaleX);
                 float sizeY = 1f - (0.4f / scaleY);
