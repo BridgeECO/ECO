@@ -8,9 +8,20 @@ public class UI_KeyboardSelector : MonoBehaviour
     [SerializeField]
     private List<ButtonSelectionItem> _items;
 
+    [SerializeField]
+    private CanvasGroup _canvasGroup;
+
     private int _currentIndex;
 
     #region Unity Lifecycle Methods
+    private void Awake()
+    {
+        if (_canvasGroup == null)
+        {
+            _canvasGroup = GetComponentInParent<CanvasGroup>();
+        }
+    }
+
     private void Start()
     {
         InitSelection();
@@ -25,6 +36,11 @@ public class UI_KeyboardSelector : MonoBehaviour
     #region Input Processings
     private void HandleKeyboardInput()
     {
+        if (_canvasGroup != null && !_canvasGroup.interactable)
+        {
+            return;
+        }
+
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
             ChangeSelection(-1);

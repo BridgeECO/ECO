@@ -81,6 +81,8 @@ public class UI_TitleScene : MonoBehaviour
         _pressAnyKeyText.DOKill();
         await _pressAnyKeyCanvasGroup.DOFade(0f, 0.5f).ToUniTask(cancellationToken: ct);
         await _buttonsCanvasGroup.DOFade(1f, 0.5f).ToUniTask(cancellationToken: ct);
+        _buttonsCanvasGroup.interactable = true;
+        _buttonsCanvasGroup.blocksRaycasts = true;
     }
 
     private void InitUIState()
@@ -98,6 +100,11 @@ public class UI_TitleScene : MonoBehaviour
         _pressAnyKeyText.color = textColor;
 
         _pressAnyKeyCanvasGroup.alpha = 0f;
+        _pressAnyKeyCanvasGroup.interactable = false;
+        _pressAnyKeyCanvasGroup.blocksRaycasts = false;
+
         _buttonsCanvasGroup.alpha = 0f;
+        _buttonsCanvasGroup.interactable = false;
+        _buttonsCanvasGroup.blocksRaycasts = false;
     }
 }
