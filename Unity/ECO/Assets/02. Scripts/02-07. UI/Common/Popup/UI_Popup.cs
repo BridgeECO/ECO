@@ -2,6 +2,8 @@ using UnityEngine;
 
 public abstract class UI_Popup : MonoBehaviour
 {
+    public float destroyTime = 0.5f;
+
     public virtual void InitPopup()
     {
     }

@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using VInspector;
 
-public class UI_SettingsPopup : Popup
+public class UI_SettingsPopup : UI_Popup
 {
     [Foldout("Hierarchy")]
     [SerializeField]
@@ -107,7 +107,7 @@ public class UI_SettingsPopup : Popup
         }
     }
 
-    public new void Close()
+    public override void Close()
     {
         Animator animator = GetComponent<Animator>();
         if (animator != null && animator.GetCurrentAnimatorStateInfo(0).IsName("Open"))
