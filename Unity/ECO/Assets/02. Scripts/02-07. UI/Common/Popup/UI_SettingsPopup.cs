@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using VInspector;
 
-public class UI_SettingsPopup : Popup
+public class UI_SettingsPopup : UI_Popup
 {
     [Foldout("Hierarchy")]
     [SerializeField]
@@ -89,9 +89,9 @@ public class UI_SettingsPopup : Popup
         HandleBackAsync().Forget();
     }
 
-    public void ShowSettings()
+    public override void Open()
     {
-        gameObject.SetActive(true);
+        base.Open();
         CustomOpen();
 
         for (int i = 0; i < _settingTabs.Count; i++)
@@ -107,7 +107,7 @@ public class UI_SettingsPopup : Popup
         }
     }
 
-    public new void Close()
+    public override void Close()
     {
         Animator animator = GetComponent<Animator>();
         if (animator != null && animator.GetCurrentAnimatorStateInfo(0).IsName("Open"))
@@ -169,22 +169,22 @@ public class UI_SettingsPopup : Popup
             if (result == UI_SystemPopup.EPopupResult.Confirm)
             {
                 _settingTabs[_activeTabIndex].SaveTabSettings();
-                Close();
+                UIManager.Instance.PopupHandler.ClosePopup(this);
             }
             else if (result == UI_SystemPopup.EPopupResult.Ignore)
             {
-                Close();
+                UIManager.Instance.PopupHandler.ClosePopup(this);
             }
         }
         else
         {
-            Close();
+            UIManager.Instance.PopupHandler.ClosePopup(this);
         }
     }
 
     private async UniTaskVoid WaitAndDisableAsync()
     {
-        await UniTask.Delay(System.TimeSpan.FromSeconds(destroyTime));
+        await UniTask.Delay(System.TimeSpan.FromSeconds(DestroyTime));
         gameObject.SetActive(false);
     }
 }

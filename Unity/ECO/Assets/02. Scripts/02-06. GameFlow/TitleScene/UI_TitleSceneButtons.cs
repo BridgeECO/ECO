@@ -18,6 +18,9 @@ public class UI_TitleSceneButtons : MonoBehaviour
     [SerializeField]
     private Button _exitButton;
 
+    [SerializeField]
+    private UI_SaveSlotPanel _saveSlotPanel;
+
     private void Awake()
     {
         _startButton.onClick.AddListener(OnClickStartBtn);
@@ -41,10 +44,12 @@ public class UI_TitleSceneButtons : MonoBehaviour
 
     private void OnClickContinueBtn()
     {
+        UIManager.Instance.PopupHandler.OpenPopup(_saveSlotPanel);
     }
 
     private void OnClickSettingBtn()
     {
+        UIManager.Instance.OpenSettingsPopup();
     }
 
     private void OnClickExitBtn()

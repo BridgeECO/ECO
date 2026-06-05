@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using VInspector;
 using Ricimi;
 
-public class UI_SystemPopup : Popup
+public class UI_SystemPopup : UI_Popup
 {
     public enum EPopupResult
     {
@@ -15,12 +15,23 @@ public class UI_SystemPopup : Popup
     }
 
     [Foldout("UI")]
-    [SerializeField] private TextMeshProUGUI UI_TitleText;
-    [SerializeField] private TextMeshProUGUI UI_MessageText;
-    [SerializeField] private Button UI_ConfirmButton;
-    [SerializeField] private Button UI_CancelButton;
-    [SerializeField] private Button UI_IgnoreButton; 
-    [SerializeField] private Image UI_BackgroundOverlay;
+    [SerializeField] 
+    private TextMeshProUGUI UI_TitleText;
+
+    [SerializeField] 
+    private TextMeshProUGUI UI_MessageText;
+
+    [SerializeField] 
+    private Button UI_ConfirmButton;
+
+    [SerializeField] 
+    private Button UI_CancelButton;
+
+    [SerializeField] 
+    private Button UI_IgnoreButton;
+
+    [SerializeField] 
+    private Image UI_BackgroundOverlay;
 
     private UniTaskCompletionSource<EPopupResult> tcs;
 
@@ -32,7 +43,7 @@ public class UI_SystemPopup : Popup
             tcs = null;
         }
 
-        Close();
+        UIManager.Instance.PopupHandler.ClosePopup(this);
     }
 
     public async UniTask<EPopupResult> ShowPopupAsync(string title, string message, bool useIgnore = false)
@@ -60,15 +71,20 @@ public class UI_SystemPopup : Popup
             }
         }
 
-        gameObject.SetActive(true);
-        CustomOpen();
+        UIManager.Instance.PopupHandler.OpenPopup(this);
 
         tcs = new UniTaskCompletionSource<EPopupResult>();
         
         return await tcs.Task;
     }
 
-    public new void Close()
+    public override void Open()
+    {
+        base.Open();
+        CustomOpen();
+    }
+
+    public override void Close()
     {
         Animator animator = GetComponent<Animator>();
         if (animator != null && animator.GetCurrentAnimatorStateInfo(0).IsName("Open"))
@@ -96,7 +112,7 @@ public class UI_SystemPopup : Popup
 
     private async UniTaskVoid WaitAndDisableAsync()
     {
-        await UniTask.Delay(System.TimeSpan.FromSeconds(destroyTime));
+        await UniTask.Delay(System.TimeSpan.FromSeconds(DestroyTime));
         gameObject.SetActive(false);
     }
 }

@@ -2,6 +2,11 @@ using UnityEngine;
 
 public abstract class UI_Popup : MonoBehaviour
 {
+    [SerializeField]
+    private float _destroyTime = 0.5f;
+
+    public float DestroyTime => _destroyTime;
+
     public virtual void InitPopup()
     {
     }
