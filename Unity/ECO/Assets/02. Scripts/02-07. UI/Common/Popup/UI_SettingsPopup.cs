@@ -184,7 +184,7 @@ public class UI_SettingsPopup : UI_Popup
 
     private async UniTaskVoid WaitAndDisableAsync()
     {
-        await UniTask.Delay(System.TimeSpan.FromSeconds(destroyTime));
+        await UniTask.Delay(System.TimeSpan.FromSeconds(DestroyTime));
         gameObject.SetActive(false);
     }
 }

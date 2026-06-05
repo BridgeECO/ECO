@@ -2,7 +2,10 @@ using UnityEngine;
 
 public abstract class UI_Popup : MonoBehaviour
 {
-    public float destroyTime = 0.5f;
+    [SerializeField]
+    private float _destroyTime = 0.5f;
+
+    public float DestroyTime => _destroyTime;
 
     public virtual void InitPopup()
     {

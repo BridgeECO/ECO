@@ -58,10 +58,20 @@ public class UI_SpriteAnimator : MonoBehaviour
 
         while (!cancellationToken.IsCancellationRequested)
         {
-            float cycleStartTime = Time.time;
+            if (_targetImage == null)
+            {
+                return;
+            }
+
+            float cycleStartTime = Time.unscaledTime;
 
             for (int i = 0; i < _sprites.Count; i++)
             {
+                if (_targetImage == null)
+                {
+                    return;
+                }
+
                 _targetImage.sprite = _sprites[i];
 
                 if (i < _sprites.Count - 1)
@@ -71,6 +81,11 @@ public class UI_SpriteAnimator : MonoBehaviour
                         await UniTask.DelayFrame(_frameDelay, PlayerLoopTiming.Update, cancellationToken: cancellationToken);
                     }
                     catch (OperationCanceledException)
+                    {
+                        return;
+                    }
+
+                    if (_targetImage == null)
                     {
                         return;
                     }
@@ -85,7 +100,7 @@ public class UI_SpriteAnimator : MonoBehaviour
             }
 
             // 루프 대기 로직: 애니메이션 시작 시점부터 _loopInterval만큼 대기하도록 잔여 시간 계산
-            float elapsed = Time.time - cycleStartTime;
+            float elapsed = Time.unscaledTime - cycleStartTime;
             float remainingDelay = _loopInterval - elapsed;
 
             if (remainingDelay > 0f)

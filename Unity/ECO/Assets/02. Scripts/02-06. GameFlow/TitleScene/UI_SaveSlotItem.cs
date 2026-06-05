@@ -44,8 +44,15 @@ public class UI_SaveSlotItem : MonoBehaviour
 
         // EventSystem 자동 네비게이션 끄기 (수동 제어)
         Navigation noneNav = new Navigation { mode = Navigation.Mode.None };
-        if (_continueButton != null) _continueButton.navigation = noneNav;
-        if (_deleteButton != null) _deleteButton.navigation = noneNav;
+        if (_continueButton != null)
+        {
+            _continueButton.navigation = noneNav;
+        }
+
+        if (_deleteButton != null)
+        {
+            _deleteButton.navigation = noneNav;
+        }
     }
 
     private void OnDestroy()
@@ -74,17 +81,27 @@ public class UI_SaveSlotItem : MonoBehaviour
             _verticalLayoutGroup.spacing = 30f;
             
             // 빈 슬롯이면 버튼들 비활성화
-            if (_continueButton != null) _continueButton.interactable = _hasSaveData;
-            if (_deleteButton != null) _deleteButton.interactable = _hasSaveData;
+            if (_continueButton != null)
+            {
+                _continueButton.interactable = _hasSaveData;
+            }
+
+            if (_deleteButton != null)
+            {
+                _deleteButton.interactable = _hasSaveData;
+            }
 
             // 선택될 때 첫 번째 상호작용 가능한 버튼에 포커스
-            if (_hasSaveData && _continueButton != null)
+            if (UnityEngine.EventSystems.EventSystem.current != null)
             {
-                UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(_continueButton.gameObject);
-            }
-            else
-            {
-                UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
+                if (_hasSaveData && _continueButton != null)
+                {
+                    UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(_continueButton.gameObject);
+                }
+                else
+                {
+                    UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
+                }
             }
         }
         else
@@ -97,7 +114,15 @@ public class UI_SaveSlotItem : MonoBehaviour
     // 외부에서 상하 방향키 입력 시 호출
     public void MoveButtonSelection(int direction)
     {
-        if (!_hasSaveData) return;
+        if (!_hasSaveData)
+        {
+            return;
+        }
+
+        if (UnityEngine.EventSystems.EventSystem.current == null)
+        {
+            return;
+        }
 
         GameObject currentSelected = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject;
         
@@ -120,7 +145,15 @@ public class UI_SaveSlotItem : MonoBehaviour
     // 외부에서 엔터/스페이스바 입력 시 호출
     public void PressSelectedButton()
     {
-        if (!_hasSaveData) return;
+        if (!_hasSaveData)
+        {
+            return;
+        }
+
+        if (UnityEngine.EventSystems.EventSystem.current == null)
+        {
+            return;
+        }
 
         GameObject currentSelected = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject;
         if (currentSelected == _continueButton.gameObject)
@@ -148,7 +181,10 @@ public class UI_SaveSlotItem : MonoBehaviour
 
     private void RefreshRegionNameText(SaveData saveData)
     {
-        if (_regionNameText == null) return;
+        if (_regionNameText == null)
+        {
+            return;
+        }
 
         if (_hasSaveData)
         {
@@ -196,7 +232,10 @@ public class UI_SaveSlotItem : MonoBehaviour
             _deleteButton.interactable = false;
         }
 
-        UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
+        if (UnityEngine.EventSystems.EventSystem.current != null)
+        {
+            UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
+        }
         
         await UniTask.Delay(300, cancellationToken: ct);
     }
