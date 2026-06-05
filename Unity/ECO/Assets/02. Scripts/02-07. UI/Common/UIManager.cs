@@ -79,11 +79,6 @@ public class UIManager : MonoBehaviourSingleton<UIManager>
         }
     }
 
-    public void OpenSettingPopup()
-    {
-        OpenSettingsPopup();
-    }
-
     public void FadeInLoadingPanel(Action onComplete = null)
     {
         _loadingPanel.DOFade(1f, 1f).SetEase(Ease.InQuad)

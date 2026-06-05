@@ -2544,6 +2544,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 4705363414994119768, guid: 620fe023cfa7e204dbeb43d42d927293, type: 3}
   m_PrefabInstance: {fileID: 1955695978}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1955695980 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3576279817001842526, guid: 620fe023cfa7e204dbeb43d42d927293, type: 3}
+  m_PrefabInstance: {fileID: 1955695978}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fa1db68545fe884aa560bbe7e1a7574, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2008068534
 GameObject:
   m_ObjectHideFlags: 0
@@ -2599,9 +2610,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 344374889}
     - target: {fileID: 4143074803813431946, guid: fddbb2706c7050c40b5b5029b544f51d, type: 3}
+      propertyPath: _popupSettings
+      value: 
+      objectReference: {fileID: 1955695980}
+    - target: {fileID: 4143074803813431946, guid: fddbb2706c7050c40b5b5029b544f51d, type: 3}
       propertyPath: _popupPauseMenu
       value: 
       objectReference: {fileID: 446881156}
+    - target: {fileID: 4143074803813431946, guid: fddbb2706c7050c40b5b5029b544f51d, type: 3}
+      propertyPath: _popupSettingsConfirm
+      value: 
+      objectReference: {fileID: 14673961}
     - target: {fileID: 7579147376322705185, guid: fddbb2706c7050c40b5b5029b544f51d, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

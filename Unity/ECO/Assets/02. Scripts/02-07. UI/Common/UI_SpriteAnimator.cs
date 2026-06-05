@@ -25,7 +25,7 @@ public class UI_SpriteAnimator : MonoBehaviour
     [SerializeField]
     private bool _isLoop = true;
 
-    [SerializeField]
+    [SerializeField, Range(2f, 10f)]
     private float _loopInterval = 2f;
 
     private CancellationTokenSource _cts;
@@ -56,41 +56,52 @@ public class UI_SpriteAnimator : MonoBehaviour
             return;
         }
 
-        int currentIndex = 0;
-
         while (!cancellationToken.IsCancellationRequested)
         {
-            _targetImage.sprite = _sprites[currentIndex];
+            float cycleStartTime = Time.time;
 
-            if (currentIndex == _sprites.Count - 1)
+            for (int i = 0; i < _sprites.Count; i++)
             {
-                OnAnimationComplete?.Invoke();
+                _targetImage.sprite = _sprites[i];
 
-                if (!_isLoop)
+                if (i < _sprites.Count - 1)
                 {
-                    break;
-                }
-
-                try
-                {
-                    if (_loopInterval > 0f)
-                    {
-                        await UniTask.Delay(TimeSpan.FromSeconds(_loopInterval), cancellationToken: cancellationToken);
-                    }
-                    else
+                    try
                     {
                         await UniTask.DelayFrame(_frameDelay, PlayerLoopTiming.Update, cancellationToken: cancellationToken);
                     }
+                    catch (OperationCanceledException)
+                    {
+                        return;
+                    }
+                }
+            }
+
+            OnAnimationComplete?.Invoke();
+
+            if (!_isLoop)
+            {
+                break;
+            }
+
+            // 루프 대기 로직: 애니메이션 시작 시점부터 _loopInterval만큼 대기하도록 잔여 시간 계산
+            float elapsed = Time.time - cycleStartTime;
+            float remainingDelay = _loopInterval - elapsed;
+
+            if (remainingDelay > 0f)
+            {
+                try
+                {
+                    await UniTask.Delay(TimeSpan.FromSeconds(remainingDelay), cancellationToken: cancellationToken);
                 }
                 catch (OperationCanceledException)
                 {
                     break;
                 }
-
-                currentIndex = 0;
             }
             else
             {
+                // _loopInterval이 경과했거나 0 이하인 경우 최소 프레임 딜레이 대기하여 오버헤드 방지
                 try
                 {
                     await UniTask.DelayFrame(_frameDelay, PlayerLoopTiming.Update, cancellationToken: cancellationToken);
@@ -99,8 +110,6 @@ public class UI_SpriteAnimator : MonoBehaviour
                 {
                     break;
                 }
-
-                currentIndex++;
             }
         }
     }
