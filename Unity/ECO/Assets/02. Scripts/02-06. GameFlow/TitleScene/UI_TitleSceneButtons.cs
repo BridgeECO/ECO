@@ -49,6 +49,7 @@ public class UI_TitleSceneButtons : MonoBehaviour
 
     private void OnClickSettingBtn()
     {
+        UIManager.Instance.OpenSettingsPopup();
     }
 
     private void OnClickExitBtn()

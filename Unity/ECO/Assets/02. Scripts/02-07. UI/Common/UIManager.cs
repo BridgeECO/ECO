@@ -13,7 +13,14 @@ public class UIManager : MonoBehaviourSingleton<UIManager>
     [SerializeField]
     private UI_PauseMenuPopup _popupPauseMenu;
 
+    [SerializeField]
+    private UI_SettingsPopup _popupSettings;
+
+    [SerializeField]
+    private UI_SystemPopup _popupSettingsConfirm;
+
     public UI_PopupHandler PopupHandler { get; private set; }
+    public UI_SystemPopup SettingsConfirmPopup => _popupSettingsConfirm;
 
     protected override void Awake()
     {
@@ -33,25 +40,49 @@ public class UIManager : MonoBehaviourSingleton<UIManager>
 
     private void Update()
     {
-        // 최상단 관리자에서 글로벌 UI 키(Esc) 입력 감지
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            // 팝업이 열려있다면 최상단 팝업 닫기
-            if (PopupHandler != null && PopupHandler.HasPopups)
-            {
-                PopupHandler.CloseLatestPopup();
-            }
-            // 팝업이 없다면 일시정지 메뉴 열기
-            else if (_popupPauseMenu != null)
-            {
-                PopupHandler.OpenPopup(_popupPauseMenu);
-            }
-            
-            // 기타 다른 인게임 로직 취소를 위해 이벤트 브로드캐스트
-            InputHandler.TriggerCancelEvent();
+            HandleEscapeInput();
         }
     }
 
+    private void HandleEscapeInput()
+    {
+        // 팝업이 열려있다면 최상단 팝업 닫기
+        if (PopupHandler != null && PopupHandler.HasPopups)
+        {
+            PopupHandler.CloseLatestPopup();
+        }
+        // 팝업이 없다면 일시정지 메뉴 열기 (인게임 플레이 중일 때만 허용)
+        else if (SceneTransitionManager.Instance != null && SceneTransitionManager.Instance.IsGameplayScene)
+        {
+            OpenPauseMenuPopup();
+        }
+
+        InputHandler.TriggerCancelEvent();
+    }
+
+
+    public void OpenPauseMenuPopup()
+    {
+        if (_popupPauseMenu != null)
+        {
+            PopupHandler.OpenPopup(_popupPauseMenu);
+        }
+    }
+
+    public void OpenSettingsPopup()
+    {
+        if (_popupSettings != null)
+        {
+            PopupHandler.OpenPopup(_popupSettings);
+        }
+    }
+
+    public void OpenSettingPopup()
+    {
+        OpenSettingsPopup();
+    }
 
     public void FadeInLoadingPanel(Action onComplete = null)
     {

@@ -15,12 +15,23 @@ public class UI_SystemPopup : UI_Popup
     }
 
     [Foldout("UI")]
-    [SerializeField] private TextMeshProUGUI UI_TitleText;
-    [SerializeField] private TextMeshProUGUI UI_MessageText;
-    [SerializeField] private Button UI_ConfirmButton;
-    [SerializeField] private Button UI_CancelButton;
-    [SerializeField] private Button UI_IgnoreButton; 
-    [SerializeField] private Image UI_BackgroundOverlay;
+    [SerializeField] 
+    private TextMeshProUGUI UI_TitleText;
+
+    [SerializeField] 
+    private TextMeshProUGUI UI_MessageText;
+
+    [SerializeField] 
+    private Button UI_ConfirmButton;
+
+    [SerializeField] 
+    private Button UI_CancelButton;
+
+    [SerializeField] 
+    private Button UI_IgnoreButton;
+
+    [SerializeField] 
+    private Image UI_BackgroundOverlay;
 
     private UniTaskCompletionSource<EPopupResult> tcs;
 
@@ -32,7 +43,7 @@ public class UI_SystemPopup : UI_Popup
             tcs = null;
         }
 
-        Close();
+        UIManager.Instance.PopupHandler.ClosePopup(this);
     }
 
     public async UniTask<EPopupResult> ShowPopupAsync(string title, string message, bool useIgnore = false)
@@ -60,12 +71,17 @@ public class UI_SystemPopup : UI_Popup
             }
         }
 
-        gameObject.SetActive(true);
-        CustomOpen();
+        UIManager.Instance.PopupHandler.OpenPopup(this);
 
         tcs = new UniTaskCompletionSource<EPopupResult>();
         
         return await tcs.Task;
+    }
+
+    public override void Open()
+    {
+        base.Open();
+        CustomOpen();
     }
 
     public override void Close()

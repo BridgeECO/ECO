@@ -48,6 +48,7 @@ public class UI_PauseMenuPopup : UI_Popup
 
     private void OnClickSettingBtn()
     {
+        UIManager.Instance.OpenSettingsPopup();
     }
 
     private void OnClickTitleBtn()

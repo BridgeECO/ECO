@@ -9,6 +9,10 @@ public class SceneTransitionManager : MonoBehaviourSingleton<SceneTransitionMana
 
     private bool _isTransitioning;
 
+    public string CurrentLoadedRegionScene => _currentLoadedRegionScene;
+    public bool IsTransitioning => _isTransitioning;
+    public bool IsGameplayScene => !string.IsNullOrEmpty(_currentLoadedRegionScene) && _currentLoadedRegionScene != ESceneNames.TitleScene.ToString();
+
     protected override void Awake()
     {
         base.Awake();

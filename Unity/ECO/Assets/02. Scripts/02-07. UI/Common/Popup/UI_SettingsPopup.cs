@@ -89,9 +89,9 @@ public class UI_SettingsPopup : UI_Popup
         HandleBackAsync().Forget();
     }
 
-    public void ShowSettings()
+    public override void Open()
     {
-        gameObject.SetActive(true);
+        base.Open();
         CustomOpen();
 
         for (int i = 0; i < _settingTabs.Count; i++)
@@ -169,16 +169,16 @@ public class UI_SettingsPopup : UI_Popup
             if (result == UI_SystemPopup.EPopupResult.Confirm)
             {
                 _settingTabs[_activeTabIndex].SaveTabSettings();
-                Close();
+                UIManager.Instance.PopupHandler.ClosePopup(this);
             }
             else if (result == UI_SystemPopup.EPopupResult.Ignore)
             {
-                Close();
+                UIManager.Instance.PopupHandler.ClosePopup(this);
             }
         }
         else
         {
-            Close();
+            UIManager.Instance.PopupHandler.ClosePopup(this);
         }
     }
 
