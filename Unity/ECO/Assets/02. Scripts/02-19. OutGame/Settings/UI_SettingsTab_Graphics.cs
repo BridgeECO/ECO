@@ -203,9 +203,8 @@ public class UI_SettingsTab_Graphics : UI_SettingsTabBase
 
     public override void RefreshTab()
     {
-        LoadSavedSettings();
+        // 탭 전환 시 저장되지 않은 변경사항을 유지하도록 LoadSavedSettings 제외
         SyncUIToCurrentValues();
-        _isDirty = false;
     }
 
     public override void ResetTabToDefault()

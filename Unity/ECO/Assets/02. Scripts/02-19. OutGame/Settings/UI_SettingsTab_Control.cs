@@ -37,9 +37,29 @@ public class UI_SettingsTab_Control : UI_SettingsTabBase
     private bool _isInitialized;
     private CancellationTokenSource _cts;
 
+    private int _currentInputDeviceIndex;
+    private float _currentMouseSensitivity;
+    private float _currentInvertY;
+    private float _currentVibration;
+
+    private const string PrefKey_InputDevice = "Settings_Control_InputDevice";
+    private const string PrefKey_MouseSensitivity = "Settings_Control_MouseSensitivity";
+    private const string PrefKey_InvertY = "Settings_Control_InvertY";
+    private const string PrefKey_Vibration = "Settings_Control_Vibration";
+
     private void Awake()
     {
         InitTab();
+    }
+
+    private void OnDisable()
+    {
+        if (_isDirty)
+        {
+            LoadSavedSettings();
+            SyncUIToCurrentValues();
+            _isDirty = false;
+        }
     }
 
     public override void InitTab()
@@ -49,10 +69,13 @@ public class UI_SettingsTab_Control : UI_SettingsTabBase
             return;
         }
 
-        if (_inputDeviceDropdown != null) _inputDeviceDropdown.onValueChanged.AddListener(val => SetDirty());
-        if (_mouseSensitivitySlider != null) _mouseSensitivitySlider.onValueChanged.AddListener(val => SetDirty());
-        if (_invertYSwitch != null) _invertYSwitch.onValueChanged.AddListener(val => SetDirty());
-        if (_vibrationSwitch != null) _vibrationSwitch.onValueChanged.AddListener(val => SetDirty());
+        LoadSavedSettings();
+        SyncUIToCurrentValues();
+
+        if (_inputDeviceDropdown != null) _inputDeviceDropdown.onValueChanged.AddListener(val => { _currentInputDeviceIndex = val; ApplySettingsImmediately(); SetDirty(); });
+        if (_mouseSensitivitySlider != null) _mouseSensitivitySlider.onValueChanged.AddListener(val => { _currentMouseSensitivity = val; ApplySettingsImmediately(); SetDirty(); });
+        if (_invertYSwitch != null) _invertYSwitch.onValueChanged.AddListener(val => { _currentInvertY = val; ApplySettingsImmediately(); SetDirty(); });
+        if (_vibrationSwitch != null) _vibrationSwitch.onValueChanged.AddListener(val => { _currentVibration = val; ApplySettingsImmediately(); SetDirty(); });
         if (_rebindJumpButton != null) _rebindJumpButton.onClick.AddListener(OnClick_RebindJump);
         if (_rebindInteractionButton != null) _rebindInteractionButton.onClick.AddListener(OnClick_RebindInteraction);
         _cts = new CancellationTokenSource();
@@ -60,21 +83,52 @@ public class UI_SettingsTab_Control : UI_SettingsTabBase
         _isInitialized = true;
     }
 
+    private void LoadSavedSettings()
+    {
+        _currentInputDeviceIndex = PlayerPrefs.GetInt(PrefKey_InputDevice, 0);
+        _currentMouseSensitivity = PlayerPrefs.GetFloat(PrefKey_MouseSensitivity, 0.5f);
+        _currentInvertY = PlayerPrefs.GetFloat(PrefKey_InvertY, 0f);
+        _currentVibration = PlayerPrefs.GetFloat(PrefKey_Vibration, 1f);
+    }
+
+    private void SyncUIToCurrentValues()
+    {
+        if (_inputDeviceDropdown != null) _inputDeviceDropdown.SetValueWithoutNotify(_currentInputDeviceIndex);
+        if (_mouseSensitivitySlider != null) _mouseSensitivitySlider.SetValueWithoutNotify(_currentMouseSensitivity);
+        if (_invertYSwitch != null) _invertYSwitch.SetValueWithoutNotify(_currentInvertY);
+        if (_vibrationSwitch != null) _vibrationSwitch.SetValueWithoutNotify(_currentVibration);
+    }
+
+    private void ApplySettingsImmediately()
+    {
+        // 실제 컨트롤 매니저와 연동하는 코드 작성 필요
+    }
+
     public override void RefreshTab()
     {
-        _isDirty = false;
+        SyncUIToCurrentValues();
     }
 
     public override void ResetTabToDefault()
     {
-        _mouseSensitivitySlider.value = 0.5f;
-        _invertYSwitch.value = 0f;
-        _vibrationSwitch.value = 1f;
+        _currentInputDeviceIndex = 0;
+        _currentMouseSensitivity = 0.5f;
+        _currentInvertY = 0f;
+        _currentVibration = 1f;
+
+        SyncUIToCurrentValues();
+        ApplySettingsImmediately();
         SetDirty();
     }
 
     public override void SaveTabSettings()
     {
+        PlayerPrefs.SetInt(PrefKey_InputDevice, _currentInputDeviceIndex);
+        PlayerPrefs.SetFloat(PrefKey_MouseSensitivity, _currentMouseSensitivity);
+        PlayerPrefs.SetFloat(PrefKey_InvertY, _currentInvertY);
+        PlayerPrefs.SetFloat(PrefKey_Vibration, _currentVibration);
+        PlayerPrefs.Save();
+
         _isDirty = false;
     }
 

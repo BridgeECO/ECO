@@ -11,6 +11,7 @@ using VInspector;
 public class UI_ClickSlider : MonoBehaviour, IPointerDownHandler, IDragHandler
 {
     public Action<float> OnValueChanged;
+    public Action<float> OnVisualsUpdated;
 
     [Foldout("Hierarchy")]
     [SerializeField]
@@ -62,6 +63,7 @@ public class UI_ClickSlider : MonoBehaviour, IPointerDownHandler, IDragHandler
     {
         _currentValue = Mathf.Clamp(value, _minValue, _maxValue);
         RefreshFill();
+        OnVisualsUpdated?.Invoke(_currentValue);
     }
 
     // 포인터 위치를 슬라이더 배경 RectTransform 로컬 좌표로 변환 후 비율 계산
@@ -97,6 +99,18 @@ public class UI_ClickSlider : MonoBehaviour, IPointerDownHandler, IDragHandler
         }
 
         float ratio = Mathf.InverseLerp(_minValue, _maxValue, _currentValue);
-        _fillImage.fillAmount = ratio;
+        
+        if (_fillImage.type == Image.Type.Filled)
+        {
+            _fillImage.fillAmount = ratio;
+        }
+        else
+        {
+            RectTransform fillRect = _fillImage.rectTransform;
+            fillRect.anchorMin = new Vector2(0f, fillRect.anchorMin.y);
+            fillRect.anchorMax = new Vector2(ratio, fillRect.anchorMax.y);
+            fillRect.offsetMin = new Vector2(0f, fillRect.offsetMin.y);
+            fillRect.offsetMax = new Vector2(0f, fillRect.offsetMax.y);
+        }
     }
 }

@@ -36,6 +36,7 @@ public class UI_SliderValueText : MonoBehaviour
         if (_slider != null)
         {
             _slider.OnValueChanged += RefreshText;
+            _slider.OnVisualsUpdated += RefreshText;
         }
 
         RefreshText(_slider != null ? _slider.Value : 0f);
@@ -46,6 +47,7 @@ public class UI_SliderValueText : MonoBehaviour
         if (_slider != null)
         {
             _slider.OnValueChanged -= RefreshText;
+            _slider.OnVisualsUpdated -= RefreshText;
         }
     }
 
