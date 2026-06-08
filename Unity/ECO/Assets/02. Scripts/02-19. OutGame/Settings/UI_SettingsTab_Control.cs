@@ -49,12 +49,12 @@ public class UI_SettingsTab_Control : UI_SettingsTabBase
             return;
         }
 
-        _inputDeviceDropdown.onValueChanged.AddListener(val => SetDirty());
-        _mouseSensitivitySlider.onValueChanged.AddListener(val => SetDirty());
-        _invertYSwitch.onValueChanged.AddListener(val => SetDirty());
-        _vibrationSwitch.onValueChanged.AddListener(val => SetDirty());
-        _rebindJumpButton.onClick.AddListener(OnClick_RebindJump);
-        _rebindInteractionButton.onClick.AddListener(OnClick_RebindInteraction);
+        if (_inputDeviceDropdown != null) _inputDeviceDropdown.onValueChanged.AddListener(val => SetDirty());
+        if (_mouseSensitivitySlider != null) _mouseSensitivitySlider.onValueChanged.AddListener(val => SetDirty());
+        if (_invertYSwitch != null) _invertYSwitch.onValueChanged.AddListener(val => SetDirty());
+        if (_vibrationSwitch != null) _vibrationSwitch.onValueChanged.AddListener(val => SetDirty());
+        if (_rebindJumpButton != null) _rebindJumpButton.onClick.AddListener(OnClick_RebindJump);
+        if (_rebindInteractionButton != null) _rebindInteractionButton.onClick.AddListener(OnClick_RebindInteraction);
         _cts = new CancellationTokenSource();
 
         _isInitialized = true;

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7232512211547206284}
   - component: {fileID: 3320890798148401846}
   - component: {fileID: 7739895088828684671}
-  - component: {fileID: 1540507410603822369}
+  - component: {fileID: 3934159297597308123}
   m_Layer: 5
   m_Name: P_UI_Settings_Tab4_Gameplay
   m_TagString: Untagged
@@ -120,7 +120,7 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
---- !u!114 &1540507410603822369
+--- !u!114 &3934159297597308123
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -129,14 +129,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 8842313192795231752}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3bb7f2395f2ca574497d1b2c1abf18f7, type: 3}
+  m_Script: {fileID: 11500000, guid: b49c84ffe39eb2241aa9c4257ea08e4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _resolutionSpinner: {fileID: 609490836062025473}
-  _displayModeSpinner: {fileID: 0}
-  _screenShakingSpinner: {fileID: 0}
-  _brightnessSlider: {fileID: 0}
-  _contrastSlider: {fileID: 0}
+  _languageDropdown: {fileID: 0}
+  _subtitlesSwitch: {fileID: 0}
+  _cameraShakeSwitch: {fileID: 0}
+  _uiScaleSlider: {fileID: 0}
 --- !u!1001 &492697354419984976
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -464,17 +463,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3a08b4202593c5844b6ee5623f5767e0, type: 3}
---- !u!114 &609490836062025473 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1152138418070570212, guid: 3a08b4202593c5844b6ee5623f5767e0, type: 3}
-  m_PrefabInstance: {fileID: 542806242674373605}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc65dc5af43368b40957c9c2e07d5e2b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &5644877361971130085 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5322917670462856448, guid: 3a08b4202593c5844b6ee5623f5767e0, type: 3}

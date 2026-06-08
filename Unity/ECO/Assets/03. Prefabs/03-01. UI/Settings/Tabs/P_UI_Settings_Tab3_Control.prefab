@@ -150,7 +150,7 @@ GameObject:
   - component: {fileID: 7232512211547206284}
   - component: {fileID: 3320890798148401846}
   - component: {fileID: 7739895088828684671}
-  - component: {fileID: 1540507410603822369}
+  - component: {fileID: 5304351129499550709}
   m_Layer: 5
   m_Name: P_UI_Settings_Tab3_Control
   m_TagString: Untagged
@@ -257,7 +257,7 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
---- !u!114 &1540507410603822369
+--- !u!114 &5304351129499550709
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -266,14 +266,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 8842313192795231752}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3bb7f2395f2ca574497d1b2c1abf18f7, type: 3}
+  m_Script: {fileID: 11500000, guid: 2650663c84e569a4eb0dcf2434e8352f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _resolutionSpinner: {fileID: 0}
-  _displayModeSpinner: {fileID: 0}
-  _screenShakingSpinner: {fileID: 0}
-  _brightnessSlider: {fileID: 0}
-  _contrastSlider: {fileID: 0}
+  _inputDeviceDropdown: {fileID: 0}
+  _mouseSensitivitySlider: {fileID: 0}
+  _invertYSwitch: {fileID: 0}
+  _vibrationSwitch: {fileID: 0}
+  _rebindJumpButton: {fileID: 0}
+  _jumpKeyText: {fileID: 0}
+  _rebindInteractionButton: {fileID: 0}
+  _interactionKeyText: {fileID: 0}
 --- !u!1001 &492697354419984976
 PrefabInstance:
   m_ObjectHideFlags: 0

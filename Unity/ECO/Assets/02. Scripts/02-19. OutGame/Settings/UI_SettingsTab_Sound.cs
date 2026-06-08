@@ -1,21 +1,20 @@
 using UnityEngine;
-using UnityEngine.UI;
 using VInspector;
 
 public class UI_SettingsTab_Sound : UI_SettingsTabBase
 {
     [Foldout("Hierarchy")]
     [SerializeField]
-    private Slider _masterVolumeSlider;
+    private UI_ClickSlider _masterVolumeSlider;
 
     [SerializeField]
-    private Slider _bgmVolumeSlider;
+    private UI_ClickSlider _bgmVolumeSlider;
 
     [SerializeField]
-    private Slider _sfxVolumeSlider;
+    private UI_ClickSlider _sfxVolumeSlider;
 
     [SerializeField]
-    private Slider _voiceVolumeSlider;
+    private UI_ClickSlider _voiceVolumeSlider;
 
     private bool _isDirty;
     private bool _isInitialized;
@@ -32,10 +31,10 @@ public class UI_SettingsTab_Sound : UI_SettingsTabBase
             return;
         }
 
-        _masterVolumeSlider.onValueChanged.AddListener(val => SetDirty());
-        _bgmVolumeSlider.onValueChanged.AddListener(val => SetDirty());
-        _sfxVolumeSlider.onValueChanged.AddListener(val => SetDirty());
-        _voiceVolumeSlider.onValueChanged.AddListener(val => SetDirty());
+        if (_masterVolumeSlider != null) _masterVolumeSlider.OnValueChanged += _ => SetDirty();
+        if (_bgmVolumeSlider != null) _bgmVolumeSlider.OnValueChanged += _ => SetDirty();
+        if (_sfxVolumeSlider != null) _sfxVolumeSlider.OnValueChanged += _ => SetDirty();
+        if (_voiceVolumeSlider != null) _voiceVolumeSlider.OnValueChanged += _ => SetDirty();
 
         _isInitialized = true;
     }
@@ -47,10 +46,10 @@ public class UI_SettingsTab_Sound : UI_SettingsTabBase
 
     public override void ResetTabToDefault()
     {
-        _masterVolumeSlider.value = 1f;
-        _bgmVolumeSlider.value = 1f;
-        _sfxVolumeSlider.value = 1f;
-        _voiceVolumeSlider.value = 1f;
+        if (_masterVolumeSlider != null) _masterVolumeSlider.SetValueWithoutNotify(1f);
+        if (_bgmVolumeSlider != null) _bgmVolumeSlider.SetValueWithoutNotify(1f);
+        if (_sfxVolumeSlider != null) _sfxVolumeSlider.SetValueWithoutNotify(1f);
+        if (_voiceVolumeSlider != null) _voiceVolumeSlider.SetValueWithoutNotify(1f);
         SetDirty();
     }
 

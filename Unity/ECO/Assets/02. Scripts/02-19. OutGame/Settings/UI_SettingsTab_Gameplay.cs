@@ -1,22 +1,11 @@
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 using VInspector;
 
 public class UI_SettingsTab_Gameplay : UI_SettingsTabBase
 {
     [Foldout("Hierarchy")]
     [SerializeField]
-    private TMP_Dropdown _languageDropdown;
-
-    [SerializeField]
-    private Slider _subtitlesSwitch;
-
-    [SerializeField]
-    private Slider _cameraShakeSwitch;
-
-    [SerializeField]
-    private Slider _uiScaleSlider;
+    private UI_Spinner _languageSpinner;
 
     private bool _isDirty;
     private bool _isInitialized;
@@ -33,10 +22,7 @@ public class UI_SettingsTab_Gameplay : UI_SettingsTabBase
             return;
         }
 
-        _languageDropdown.onValueChanged.AddListener(val => SetDirty());
-        _subtitlesSwitch.onValueChanged.AddListener(val => SetDirty());
-        _cameraShakeSwitch.onValueChanged.AddListener(val => SetDirty());
-        _uiScaleSlider.onValueChanged.AddListener(val => SetDirty());
+        if (_languageSpinner != null) _languageSpinner.OnValueChanged += (index, option) => SetDirty();
 
         _isInitialized = true;
     }
@@ -48,9 +34,7 @@ public class UI_SettingsTab_Gameplay : UI_SettingsTabBase
 
     public override void ResetTabToDefault()
     {
-        _subtitlesSwitch.value = 1f;
-        _cameraShakeSwitch.value = 1f;
-        _uiScaleSlider.value = 1f;
+        if (_languageSpinner != null) _languageSpinner.SetValueWithoutNotify(0);
         SetDirty();
     }
 
