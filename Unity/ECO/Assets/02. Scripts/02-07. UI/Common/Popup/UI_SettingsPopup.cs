@@ -27,11 +27,6 @@ public class UI_SettingsPopup : UI_Popup
     private Image _backgroundOverlay;
 
 
-    [Foldout("Hierarchy")]
-    [Header("References")]
-    [SerializeField]
-    private UI_SystemPopup _confirmPopup;
-
     private int _activeTabIndex = 0;
 
     private void Awake()
@@ -135,13 +130,14 @@ public class UI_SettingsPopup : UI_Popup
 
     private async UniTaskVoid HandleResetAsync()
     {
-        UI_SystemPopup.EPopupResult result = await _confirmPopup.ShowPopupAsync(
-            "초기화",
-            "모든 설정을 기본값으로 되돌리시겠습니까?",
-            false
+        if (UIManager.Instance.SettingsResetConfirmPopup == null) return;
+
+        UI_Popup_Settings_ResetConfirm.EResult result = await UIManager.Instance.SettingsResetConfirmPopup.ShowPopupAsync(
+            "설정 초기화",
+            "기본 설정값으로 초기화하시겠습니까?"
         );
 
-        if (result == UI_SystemPopup.EPopupResult.Confirm)
+        if (result == UI_Popup_Settings_ResetConfirm.EResult.ResetAndClose)
         {
             if (_activeTabIndex >= 0 && _activeTabIndex < _settingTabs.Count)
             {
@@ -158,20 +154,19 @@ public class UI_SettingsPopup : UI_Popup
             hasUnsaved = _settingTabs[_activeTabIndex].HasUnsavedChanges();
         }
 
-        if (hasUnsaved)
+        if (hasUnsaved && UIManager.Instance.SettingsCloseConfirmPopup != null)
         {
-            UI_SystemPopup.EPopupResult result = await _confirmPopup.ShowPopupAsync(
-                "Unsaved Changes",
-                "You have unsaved changes. Would you like to confirm the changes before leaving, or ignore them and exit anyway?",
-                true
+            UI_Popup_Settings_CloseConfirm.EResult result = await UIManager.Instance.SettingsCloseConfirmPopup.ShowPopupAsync(
+                "변경사항 미저장",
+                "저장하지 않고 나가시겠습니까?"
             );
 
-            if (result == UI_SystemPopup.EPopupResult.Confirm)
+            if (result == UI_Popup_Settings_CloseConfirm.EResult.SaveAndClose)
             {
                 _settingTabs[_activeTabIndex].SaveTabSettings();
                 UIManager.Instance.PopupHandler.ClosePopup(this);
             }
-            else if (result == UI_SystemPopup.EPopupResult.Ignore)
+            else if (result == UI_Popup_Settings_CloseConfirm.EResult.DontSaveAndClose)
             {
                 UIManager.Instance.PopupHandler.ClosePopup(this);
             }

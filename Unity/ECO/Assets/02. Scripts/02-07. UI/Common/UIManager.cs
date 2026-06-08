@@ -17,10 +17,18 @@ public class UIManager : MonoBehaviourSingleton<UIManager>
     private UI_SettingsPopup _popupSettings;
 
     [SerializeField]
-    private UI_SystemPopup _popupSettingsConfirm;
+    private UI_Popup_Settings_CloseConfirm _popupSettingsCloseConfirm;
+
+    [SerializeField]
+    private UI_Popup_Settings_ResetConfirm _popupSettingsResetConfirm;
+
+    [SerializeField]
+    private UI_Popup_ExitConfirm _popupExitConfirm;
 
     public UI_PopupHandler PopupHandler { get; private set; }
-    public UI_SystemPopup SettingsConfirmPopup => _popupSettingsConfirm;
+    public UI_Popup_Settings_CloseConfirm SettingsCloseConfirmPopup => _popupSettingsCloseConfirm;
+    public UI_Popup_Settings_ResetConfirm SettingsResetConfirmPopup => _popupSettingsResetConfirm;
+    public UI_Popup_ExitConfirm ExitConfirmPopup => _popupExitConfirm;
 
     protected override void Awake()
     {
