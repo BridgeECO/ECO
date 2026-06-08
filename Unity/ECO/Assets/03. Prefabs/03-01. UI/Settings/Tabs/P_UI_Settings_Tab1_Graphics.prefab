@@ -145,6 +145,17 @@ MonoBehaviour:
   _screenShakingSpinner: {fileID: 1402791732148207943}
   _brightnessSlider: {fileID: 4996991231728872050}
   _contrastSlider: {fileID: 1639026619669889715}
+  _resolutionOptions:
+  - 1280 * 720
+  - 1920 * 1080
+  - 2560 * 1440
+  - 3840 * 2160
+  _displayModeOptions:
+  - "\uCC3D \uBAA8\uB4DC"
+  - "\uC804\uCCB4 \uD654\uBA74"
+  _screenShakingOptions:
+  - "\uB044\uAE30"
+  - "\uCF1C\uAE30"
 --- !u!1001 &475621294797363133
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -287,6 +298,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4585703971925817752, guid: 01e3ea1712e720c4b879ebabfe331506, type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6808824988292122257, guid: 01e3ea1712e720c4b879ebabfe331506, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6808824988292122257, guid: 01e3ea1712e720c4b879ebabfe331506, type: 3}
+      propertyPath: m_AnchoredPosition.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7550298320698743099, guid: 01e3ea1712e720c4b879ebabfe331506, type: 3}
