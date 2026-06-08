@@ -38,12 +38,12 @@ public class UI_Popup_Settings_ResetConfirm : UI_SystemPopup
 
     private void OnClick_Button(EResult result)
     {
+        UIManager.Instance.PopupHandler.ClosePopup(this);
+
         if (_tcs != null)
         {
             _tcs.TrySetResult(result);
             _tcs = null;
         }
-
-        UIManager.Instance.PopupHandler.ClosePopup(this);
     }
 }

@@ -63,12 +63,12 @@ public class UI_Popup_ConfirmBase : UI_SystemPopup
 
     private void OnClick_Button(EPopupResult result)
     {
+        UIManager.Instance.PopupHandler.ClosePopup(this);
+
         if (_tcs != null)
         {
             _tcs.TrySetResult(result);
             _tcs = null;
         }
-
-        UIManager.Instance.PopupHandler.ClosePopup(this);
     }
 }
