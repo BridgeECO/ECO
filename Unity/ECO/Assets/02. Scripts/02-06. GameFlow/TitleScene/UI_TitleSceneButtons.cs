@@ -54,6 +54,24 @@ public class UI_TitleSceneButtons : MonoBehaviour
 
     private void OnClickExitBtn()
     {
-        Application.Quit();
+        HandleExitAsync().Forget();
+    }
+
+    private async UniTaskVoid HandleExitAsync()
+    {
+        bool shouldExit = true;
+        if (UIManager.Instance.ExitConfirmPopup != null)
+        {
+            var result = await UIManager.Instance.ExitConfirmPopup.ShowPopupAsync("게임 종료", "정말 게임을 종료하시겠습니까?");
+            shouldExit = (result == UI_Popup_ExitConfirm.EResult.ExitGame);
+        }
+
+        if (shouldExit)
+        {
+            Application.Quit();
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#endif
+        }
     }
 }
