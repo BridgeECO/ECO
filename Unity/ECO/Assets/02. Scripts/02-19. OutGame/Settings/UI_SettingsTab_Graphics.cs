@@ -81,9 +81,18 @@ public class UI_SettingsTab_Graphics : UI_SettingsTabBase
             return;
         }
 
-        if (_resolutionSpinner != null) _resolutionSpinner.SetOptions(_resolutionOptions);
-        if (_displayModeSpinner != null) _displayModeSpinner.SetOptions(_displayModeOptions);
-        if (_screenShakingSpinner != null) _screenShakingSpinner.SetOptions(_screenShakingOptions);
+        if (_resolutionSpinner != null)
+        {
+            _resolutionSpinner.SetOptions(_resolutionOptions);
+        }
+        if (_displayModeSpinner != null)
+        {
+            _displayModeSpinner.SetOptions(_displayModeOptions);
+        }
+        if (_screenShakingSpinner != null)
+        {
+            _screenShakingSpinner.SetOptions(_screenShakingOptions);
+        }
 
         LoadSavedSettings();
         SyncUIToCurrentValues();
@@ -152,12 +161,27 @@ public class UI_SettingsTab_Graphics : UI_SettingsTabBase
 
     private void SyncUIToCurrentValues()
     {
-        if (_resolutionSpinner != null) _resolutionSpinner.SetValueWithoutNotify(_currentResolutionIndex);
-        if (_displayModeSpinner != null) _displayModeSpinner.SetValueWithoutNotify(_currentDisplayModeIndex);
-        if (_screenShakingSpinner != null) _screenShakingSpinner.SetValueWithoutNotify(_currentScreenShakingIndex);
+        if (_resolutionSpinner != null)
+        {
+            _resolutionSpinner.SetValueWithoutNotify(_currentResolutionIndex);
+        }
+        if (_displayModeSpinner != null)
+        {
+            _displayModeSpinner.SetValueWithoutNotify(_currentDisplayModeIndex);
+        }
+        if (_screenShakingSpinner != null)
+        {
+            _screenShakingSpinner.SetValueWithoutNotify(_currentScreenShakingIndex);
+        }
 
-        if (_brightnessSlider != null) _brightnessSlider.SetValueWithoutNotify(_currentBrightness);
-        if (_contrastSlider != null) _contrastSlider.SetValueWithoutNotify(_currentContrast);
+        if (_brightnessSlider != null)
+        {
+            _brightnessSlider.SetValueWithoutNotify(_currentBrightness);
+        }
+        if (_contrastSlider != null)
+        {
+            _contrastSlider.SetValueWithoutNotify(_currentContrast);
+        }
     }
 
     private void ApplyAllSettings()

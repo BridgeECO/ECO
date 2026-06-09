@@ -130,7 +130,10 @@ public class UI_SettingsPopup : UI_Popup
 
     private async UniTaskVoid HandleResetAsync()
     {
-        if (UIManager.Instance.SettingsResetConfirmPopup == null) return;
+        if (UIManager.Instance.SettingsResetConfirmPopup == null)
+        {
+            return;
+        }
 
         UI_Popup_Settings_ResetConfirm.EResult result = await UIManager.Instance.SettingsResetConfirmPopup.ShowPopupAsync(
             "설정 초기화",

@@ -28,6 +28,11 @@ public class UI_SettingsTab_Sound : UI_SettingsTabBase
     private const string PrefKey_SfxVolume = "Settings_Sound_Sfx";
     private const string PrefKey_VoiceVolume = "Settings_Sound_Voice";
 
+    private void Awake()
+    {
+        InitTab();
+    }
+
     private void OnEnable()
     {
         if (_isInitialized)
@@ -47,11 +52,6 @@ public class UI_SettingsTab_Sound : UI_SettingsTabBase
         }
     }
 
-    private void Awake()
-    {
-        InitTab();
-    }
-
     public override void InitTab()
     {
         if (_isInitialized)
@@ -62,10 +62,22 @@ public class UI_SettingsTab_Sound : UI_SettingsTabBase
         LoadSavedSettings();
         SyncUIToCurrentValues();
 
-        if (_masterVolumeSlider != null) _masterVolumeSlider.OnValueChanged += val => { _currentMasterVolume = val; ApplySettingsImmediately(); IsDirty = true; };
-        if (_bgmVolumeSlider != null) _bgmVolumeSlider.OnValueChanged += val => { _currentBgmVolume = val; ApplySettingsImmediately(); IsDirty = true; };
-        if (_sfxVolumeSlider != null) _sfxVolumeSlider.OnValueChanged += val => { _currentSfxVolume = val; ApplySettingsImmediately(); IsDirty = true; };
-        if (_voiceVolumeSlider != null) _voiceVolumeSlider.OnValueChanged += val => { _currentVoiceVolume = val; ApplySettingsImmediately(); IsDirty = true; };
+        if (_masterVolumeSlider != null)
+        {
+            _masterVolumeSlider.OnValueChanged += val => { _currentMasterVolume = val; ApplySettingsImmediately(); IsDirty = true; };
+        }
+        if (_bgmVolumeSlider != null)
+        {
+            _bgmVolumeSlider.OnValueChanged += val => { _currentBgmVolume = val; ApplySettingsImmediately(); IsDirty = true; };
+        }
+        if (_sfxVolumeSlider != null)
+        {
+            _sfxVolumeSlider.OnValueChanged += val => { _currentSfxVolume = val; ApplySettingsImmediately(); IsDirty = true; };
+        }
+        if (_voiceVolumeSlider != null)
+        {
+            _voiceVolumeSlider.OnValueChanged += val => { _currentVoiceVolume = val; ApplySettingsImmediately(); IsDirty = true; };
+        }
 
         _isInitialized = true;
     }
@@ -80,10 +92,22 @@ public class UI_SettingsTab_Sound : UI_SettingsTabBase
 
     private void SyncUIToCurrentValues()
     {
-        if (_masterVolumeSlider != null) _masterVolumeSlider.SetValueWithoutNotify(_currentMasterVolume);
-        if (_bgmVolumeSlider != null) _bgmVolumeSlider.SetValueWithoutNotify(_currentBgmVolume);
-        if (_sfxVolumeSlider != null) _sfxVolumeSlider.SetValueWithoutNotify(_currentSfxVolume);
-        if (_voiceVolumeSlider != null) _voiceVolumeSlider.SetValueWithoutNotify(_currentVoiceVolume);
+        if (_masterVolumeSlider != null)
+        {
+            _masterVolumeSlider.SetValueWithoutNotify(_currentMasterVolume);
+        }
+        if (_bgmVolumeSlider != null)
+        {
+            _bgmVolumeSlider.SetValueWithoutNotify(_currentBgmVolume);
+        }
+        if (_sfxVolumeSlider != null)
+        {
+            _sfxVolumeSlider.SetValueWithoutNotify(_currentSfxVolume);
+        }
+        if (_voiceVolumeSlider != null)
+        {
+            _voiceVolumeSlider.SetValueWithoutNotify(_currentVoiceVolume);
+        }
     }
 
     private void ApplySettingsImmediately()

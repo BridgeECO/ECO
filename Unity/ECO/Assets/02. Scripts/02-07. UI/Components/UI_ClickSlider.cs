@@ -30,9 +30,9 @@ public class UI_ClickSlider : MonoBehaviour, IPointerDownHandler, IDragHandler
     [SerializeField]
     private float _currentValue = 0f;
 
-    public float Value => _currentValue;
-
     private Camera _uiCamera;
+
+    public float Value => _currentValue;
 
     private void Awake()
     {

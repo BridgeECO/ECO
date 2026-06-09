@@ -46,6 +46,11 @@ public class UI_SettingsTab_Control : UI_SettingsTabBase
     private const string PrefKey_InvertY = "Settings_Control_InvertY";
     private const string PrefKey_Vibration = "Settings_Control_Vibration";
 
+    private void Awake()
+    {
+        InitTab();
+    }
+
     private void OnEnable()
     {
         if (_isInitialized)
@@ -65,11 +70,6 @@ public class UI_SettingsTab_Control : UI_SettingsTabBase
         }
     }
 
-    private void Awake()
-    {
-        InitTab();
-    }
-
     public override void InitTab()
     {
         if (_isInitialized)
@@ -80,12 +80,30 @@ public class UI_SettingsTab_Control : UI_SettingsTabBase
         LoadSavedSettings();
         SyncUIToCurrentValues();
 
-        if (_inputDeviceDropdown != null) _inputDeviceDropdown.onValueChanged.AddListener(val => { _currentInputDeviceIndex = val; ApplySettingsImmediately(); IsDirty = true; });
-        if (_mouseSensitivitySlider != null) _mouseSensitivitySlider.onValueChanged.AddListener(val => { _currentMouseSensitivity = val; ApplySettingsImmediately(); IsDirty = true; });
-        if (_invertYSwitch != null) _invertYSwitch.onValueChanged.AddListener(val => { _currentInvertY = val; ApplySettingsImmediately(); IsDirty = true; });
-        if (_vibrationSwitch != null) _vibrationSwitch.onValueChanged.AddListener(val => { _currentVibration = val; ApplySettingsImmediately(); IsDirty = true; });
-        if (_rebindJumpButton != null) _rebindJumpButton.onClick.AddListener(OnClick_RebindJump);
-        if (_rebindInteractionButton != null) _rebindInteractionButton.onClick.AddListener(OnClick_RebindInteraction);
+        if (_inputDeviceDropdown != null)
+        {
+            _inputDeviceDropdown.onValueChanged.AddListener(val => { _currentInputDeviceIndex = val; ApplySettingsImmediately(); IsDirty = true; });
+        }
+        if (_mouseSensitivitySlider != null)
+        {
+            _mouseSensitivitySlider.onValueChanged.AddListener(val => { _currentMouseSensitivity = val; ApplySettingsImmediately(); IsDirty = true; });
+        }
+        if (_invertYSwitch != null)
+        {
+            _invertYSwitch.onValueChanged.AddListener(val => { _currentInvertY = val; ApplySettingsImmediately(); IsDirty = true; });
+        }
+        if (_vibrationSwitch != null)
+        {
+            _vibrationSwitch.onValueChanged.AddListener(val => { _currentVibration = val; ApplySettingsImmediately(); IsDirty = true; });
+        }
+        if (_rebindJumpButton != null)
+        {
+            _rebindJumpButton.onClick.AddListener(OnClick_RebindJump);
+        }
+        if (_rebindInteractionButton != null)
+        {
+            _rebindInteractionButton.onClick.AddListener(OnClick_RebindInteraction);
+        }
         _cts = new CancellationTokenSource();
 
         _isInitialized = true;
@@ -101,10 +119,22 @@ public class UI_SettingsTab_Control : UI_SettingsTabBase
 
     private void SyncUIToCurrentValues()
     {
-        if (_inputDeviceDropdown != null) _inputDeviceDropdown.SetValueWithoutNotify(_currentInputDeviceIndex);
-        if (_mouseSensitivitySlider != null) _mouseSensitivitySlider.SetValueWithoutNotify(_currentMouseSensitivity);
-        if (_invertYSwitch != null) _invertYSwitch.SetValueWithoutNotify(_currentInvertY);
-        if (_vibrationSwitch != null) _vibrationSwitch.SetValueWithoutNotify(_currentVibration);
+        if (_inputDeviceDropdown != null)
+        {
+            _inputDeviceDropdown.SetValueWithoutNotify(_currentInputDeviceIndex);
+        }
+        if (_mouseSensitivitySlider != null)
+        {
+            _mouseSensitivitySlider.SetValueWithoutNotify(_currentMouseSensitivity);
+        }
+        if (_invertYSwitch != null)
+        {
+            _invertYSwitch.SetValueWithoutNotify(_currentInvertY);
+        }
+        if (_vibrationSwitch != null)
+        {
+            _vibrationSwitch.SetValueWithoutNotify(_currentVibration);
+        }
     }
 
     private void ApplySettingsImmediately()

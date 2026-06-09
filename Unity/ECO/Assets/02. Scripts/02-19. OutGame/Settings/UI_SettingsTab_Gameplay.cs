@@ -13,6 +13,11 @@ public class UI_SettingsTab_Gameplay : UI_SettingsTabBase
 
     private const string PrefKey_Language = "Settings_Gameplay_Language";
 
+    private void Awake()
+    {
+        InitTab();
+    }
+
     private void OnEnable()
     {
         if (_isInitialized)
@@ -32,11 +37,6 @@ public class UI_SettingsTab_Gameplay : UI_SettingsTabBase
         }
     }
 
-    private void Awake()
-    {
-        InitTab();
-    }
-
     public override void InitTab()
     {
         if (_isInitialized)
@@ -47,7 +47,10 @@ public class UI_SettingsTab_Gameplay : UI_SettingsTabBase
         LoadSavedSettings();
         SyncUIToCurrentValues();
 
-        if (_languageSpinner != null) _languageSpinner.OnValueChanged += (index, option) => { _currentLanguageIndex = index; ApplySettingsImmediately(); IsDirty = true; };
+        if (_languageSpinner != null)
+        {
+            _languageSpinner.OnValueChanged += (index, option) => { _currentLanguageIndex = index; ApplySettingsImmediately(); IsDirty = true; };
+        }
 
         _isInitialized = true;
     }
@@ -59,7 +62,10 @@ public class UI_SettingsTab_Gameplay : UI_SettingsTabBase
 
     private void SyncUIToCurrentValues()
     {
-        if (_languageSpinner != null) _languageSpinner.SetValueWithoutNotify(_currentLanguageIndex);
+        if (_languageSpinner != null)
+        {
+            _languageSpinner.SetValueWithoutNotify(_currentLanguageIndex);
+        }
     }
 
     private void ApplySettingsImmediately()

@@ -31,10 +31,10 @@ public class UI_TitleSceneButtons : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (_startButton != null) _startButton.onClick.RemoveListener(OnClickStartBtn);
-        if (_continueButton != null) _continueButton.onClick.RemoveListener(OnClickContinueBtn);
-        if (_settingButton != null) _settingButton.onClick.RemoveListener(OnClickSettingBtn);
-        if (_exitButton != null) _exitButton.onClick.RemoveListener(OnClickExitBtn);
+        _startButton.onClick.RemoveListener(OnClickStartBtn);
+        _continueButton.onClick.RemoveListener(OnClickContinueBtn);
+        _settingButton.onClick.RemoveListener(OnClickSettingBtn);
+        _exitButton.onClick.RemoveListener(OnClickExitBtn);
     }
 
     private void OnClickStartBtn()
@@ -59,18 +59,14 @@ public class UI_TitleSceneButtons : MonoBehaviour
 
     private async UniTaskVoid HandleExitAsync()
     {
+        bool shouldExit = true;
         if (UIManager.Instance.ExitConfirmPopup != null)
         {
             var result = await UIManager.Instance.ExitConfirmPopup.ShowPopupAsync("게임 종료", "정말 게임을 종료하시겠습니까?");
-            if (result == UI_Popup_ExitConfirm.EResult.ExitGame)
-            {
-                Application.Quit();
-#if UNITY_EDITOR
-                UnityEditor.EditorApplication.isPlaying = false;
-#endif
-            }
+            shouldExit = (result == UI_Popup_ExitConfirm.EResult.ExitGame);
         }
-        else
+
+        if (shouldExit)
         {
             Application.Quit();
 #if UNITY_EDITOR
