@@ -1,17 +1,19 @@
 using Cysharp.Threading.Tasks;
-using Ricimi;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using VInspector;
+using Ricimi;
 
 public abstract class UI_SystemPopup : UI_Popup
 {
     [Foldout("UI")]
-    [SerializeField]
+    [UnityEngine.Serialization.FormerlySerializedAs("UI_TitleText")]
+    [SerializeField] 
     private TextMeshProUGUI _uiTitleText;
 
-    [SerializeField]
+    [UnityEngine.Serialization.FormerlySerializedAs("UI_MessageText")]
+    [SerializeField] 
     private TextMeshProUGUI _uiMessageText;
 
     protected void SetPopupText(string title, string message)

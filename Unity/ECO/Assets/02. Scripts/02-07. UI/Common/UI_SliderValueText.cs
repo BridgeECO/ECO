@@ -42,6 +42,11 @@ public class UI_SliderValueText : MonoBehaviour
         RefreshText(_slider != null ? _slider.Value : 0f);
     }
 
+    private void Start()
+    {
+        RefreshText(_slider != null ? _slider.Value : 0f);
+    }
+
     private void OnDisable()
     {
         if (_slider != null)

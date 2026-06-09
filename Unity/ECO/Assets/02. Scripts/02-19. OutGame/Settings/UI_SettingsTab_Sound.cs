@@ -16,7 +16,6 @@ public class UI_SettingsTab_Sound : UI_SettingsTabBase
     [SerializeField]
     private UI_ClickSlider _voiceVolumeSlider;
 
-    private bool _isDirty;
     private bool _isInitialized;
 
     private float _currentMasterVolume;
@@ -29,19 +28,28 @@ public class UI_SettingsTab_Sound : UI_SettingsTabBase
     private const string PrefKey_SfxVolume = "Settings_Sound_Sfx";
     private const string PrefKey_VoiceVolume = "Settings_Sound_Voice";
 
-    private void Awake()
+    private void OnEnable()
     {
-        InitTab();
+        if (_isInitialized)
+        {
+            SyncUIToCurrentValues();
+        }
     }
 
     private void OnDisable()
     {
-        if (_isDirty)
+        // 팝업이 닫힐 때(적용 버튼을 누르지 않고 무시했을 경우 등) 원래의 저장된 상태로 복원
+        if (IsDirty)
         {
             LoadSavedSettings();
-            SyncUIToCurrentValues();
-            _isDirty = false;
+            ApplySettingsImmediately();
+            IsDirty = false;
         }
+    }
+
+    private void Awake()
+    {
+        InitTab();
     }
 
     public override void InitTab()
@@ -54,10 +62,10 @@ public class UI_SettingsTab_Sound : UI_SettingsTabBase
         LoadSavedSettings();
         SyncUIToCurrentValues();
 
-        if (_masterVolumeSlider != null) _masterVolumeSlider.OnValueChanged += val => { _currentMasterVolume = val; ApplySettingsImmediately(); SetDirty(); };
-        if (_bgmVolumeSlider != null) _bgmVolumeSlider.OnValueChanged += val => { _currentBgmVolume = val; ApplySettingsImmediately(); SetDirty(); };
-        if (_sfxVolumeSlider != null) _sfxVolumeSlider.OnValueChanged += val => { _currentSfxVolume = val; ApplySettingsImmediately(); SetDirty(); };
-        if (_voiceVolumeSlider != null) _voiceVolumeSlider.OnValueChanged += val => { _currentVoiceVolume = val; ApplySettingsImmediately(); SetDirty(); };
+        if (_masterVolumeSlider != null) _masterVolumeSlider.OnValueChanged += val => { _currentMasterVolume = val; ApplySettingsImmediately(); IsDirty = true; };
+        if (_bgmVolumeSlider != null) _bgmVolumeSlider.OnValueChanged += val => { _currentBgmVolume = val; ApplySettingsImmediately(); IsDirty = true; };
+        if (_sfxVolumeSlider != null) _sfxVolumeSlider.OnValueChanged += val => { _currentSfxVolume = val; ApplySettingsImmediately(); IsDirty = true; };
+        if (_voiceVolumeSlider != null) _voiceVolumeSlider.OnValueChanged += val => { _currentVoiceVolume = val; ApplySettingsImmediately(); IsDirty = true; };
 
         _isInitialized = true;
     }
@@ -98,7 +106,7 @@ public class UI_SettingsTab_Sound : UI_SettingsTabBase
 
         SyncUIToCurrentValues();
         ApplySettingsImmediately();
-        SetDirty();
+        IsDirty = true;
     }
 
     public override void SaveTabSettings()
@@ -109,16 +117,7 @@ public class UI_SettingsTab_Sound : UI_SettingsTabBase
         PlayerPrefs.SetFloat(PrefKey_VoiceVolume, _currentVoiceVolume);
         PlayerPrefs.Save();
 
-        _isDirty = false;
+        IsDirty = false;
     }
 
-    public override bool HasUnsavedChanges()
-    {
-        return _isDirty;
-    }
-
-    private void SetDirty()
-    {
-        _isDirty = true;
-    }
 }

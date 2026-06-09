@@ -7,26 +7,34 @@ public class UI_SettingsTab_Gameplay : UI_SettingsTabBase
     [SerializeField]
     private UI_Spinner _languageSpinner;
 
-    private bool _isDirty;
     private bool _isInitialized;
 
     private int _currentLanguageIndex;
 
     private const string PrefKey_Language = "Settings_Gameplay_Language";
 
-    private void Awake()
+    private void OnEnable()
     {
-        InitTab();
+        if (_isInitialized)
+        {
+            SyncUIToCurrentValues();
+        }
     }
 
     private void OnDisable()
     {
-        if (_isDirty)
+        // 팝업이 닫힐 때(적용 버튼을 누르지 않고 무시했을 경우 등) 원래의 저장된 상태로 복원
+        if (IsDirty)
         {
             LoadSavedSettings();
-            SyncUIToCurrentValues();
-            _isDirty = false;
+            ApplySettingsImmediately();
+            IsDirty = false;
         }
+    }
+
+    private void Awake()
+    {
+        InitTab();
     }
 
     public override void InitTab()
@@ -39,7 +47,7 @@ public class UI_SettingsTab_Gameplay : UI_SettingsTabBase
         LoadSavedSettings();
         SyncUIToCurrentValues();
 
-        if (_languageSpinner != null) _languageSpinner.OnValueChanged += (index, option) => { _currentLanguageIndex = index; ApplySettingsImmediately(); SetDirty(); };
+        if (_languageSpinner != null) _languageSpinner.OnValueChanged += (index, option) => { _currentLanguageIndex = index; ApplySettingsImmediately(); IsDirty = true; };
 
         _isInitialized = true;
     }
@@ -70,7 +78,7 @@ public class UI_SettingsTab_Gameplay : UI_SettingsTabBase
 
         SyncUIToCurrentValues();
         ApplySettingsImmediately();
-        SetDirty();
+        IsDirty = true;
     }
 
     public override void SaveTabSettings()
@@ -78,16 +86,7 @@ public class UI_SettingsTab_Gameplay : UI_SettingsTabBase
         PlayerPrefs.SetInt(PrefKey_Language, _currentLanguageIndex);
         PlayerPrefs.Save();
 
-        _isDirty = false;
+        IsDirty = false;
     }
 
-    public override bool HasUnsavedChanges()
-    {
-        return _isDirty;
-    }
-
-    private void SetDirty()
-    {
-        _isDirty = true;
-    }
 }

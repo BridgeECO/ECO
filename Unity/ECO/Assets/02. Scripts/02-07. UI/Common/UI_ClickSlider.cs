@@ -46,6 +46,16 @@ public class UI_ClickSlider : MonoBehaviour, IPointerDownHandler, IDragHandler
         RefreshFill();
     }
 
+    private void OnEnable()
+    {
+        RefreshFill();
+    }
+
+    private void Start()
+    {
+        RefreshFill();
+    }
+
     public void OnPointerDown(PointerEventData eventData)
     {
         ApplyPointerPosition(eventData);

@@ -33,7 +33,6 @@ public class UI_SettingsTab_Control : UI_SettingsTabBase
     private TextMeshProUGUI _interactionKeyText;
 
     private static readonly KeyCode[] _allKeyCodes = (KeyCode[])System.Enum.GetValues(typeof(KeyCode));
-    private bool _isDirty;
     private bool _isInitialized;
     private CancellationTokenSource _cts;
 
@@ -47,19 +46,28 @@ public class UI_SettingsTab_Control : UI_SettingsTabBase
     private const string PrefKey_InvertY = "Settings_Control_InvertY";
     private const string PrefKey_Vibration = "Settings_Control_Vibration";
 
-    private void Awake()
+    private void OnEnable()
     {
-        InitTab();
+        if (_isInitialized)
+        {
+            SyncUIToCurrentValues();
+        }
     }
 
     private void OnDisable()
     {
-        if (_isDirty)
+        // 팝업이 닫힐 때(적용 버튼을 누르지 않고 무시했을 경우 등) 원래의 저장된 상태로 복원
+        if (IsDirty)
         {
             LoadSavedSettings();
-            SyncUIToCurrentValues();
-            _isDirty = false;
+            ApplySettingsImmediately();
+            IsDirty = false;
         }
+    }
+
+    private void Awake()
+    {
+        InitTab();
     }
 
     public override void InitTab()
@@ -72,10 +80,10 @@ public class UI_SettingsTab_Control : UI_SettingsTabBase
         LoadSavedSettings();
         SyncUIToCurrentValues();
 
-        if (_inputDeviceDropdown != null) _inputDeviceDropdown.onValueChanged.AddListener(val => { _currentInputDeviceIndex = val; ApplySettingsImmediately(); SetDirty(); });
-        if (_mouseSensitivitySlider != null) _mouseSensitivitySlider.onValueChanged.AddListener(val => { _currentMouseSensitivity = val; ApplySettingsImmediately(); SetDirty(); });
-        if (_invertYSwitch != null) _invertYSwitch.onValueChanged.AddListener(val => { _currentInvertY = val; ApplySettingsImmediately(); SetDirty(); });
-        if (_vibrationSwitch != null) _vibrationSwitch.onValueChanged.AddListener(val => { _currentVibration = val; ApplySettingsImmediately(); SetDirty(); });
+        if (_inputDeviceDropdown != null) _inputDeviceDropdown.onValueChanged.AddListener(val => { _currentInputDeviceIndex = val; ApplySettingsImmediately(); IsDirty = true; });
+        if (_mouseSensitivitySlider != null) _mouseSensitivitySlider.onValueChanged.AddListener(val => { _currentMouseSensitivity = val; ApplySettingsImmediately(); IsDirty = true; });
+        if (_invertYSwitch != null) _invertYSwitch.onValueChanged.AddListener(val => { _currentInvertY = val; ApplySettingsImmediately(); IsDirty = true; });
+        if (_vibrationSwitch != null) _vibrationSwitch.onValueChanged.AddListener(val => { _currentVibration = val; ApplySettingsImmediately(); IsDirty = true; });
         if (_rebindJumpButton != null) _rebindJumpButton.onClick.AddListener(OnClick_RebindJump);
         if (_rebindInteractionButton != null) _rebindInteractionButton.onClick.AddListener(OnClick_RebindInteraction);
         _cts = new CancellationTokenSource();
@@ -118,7 +126,7 @@ public class UI_SettingsTab_Control : UI_SettingsTabBase
 
         SyncUIToCurrentValues();
         ApplySettingsImmediately();
-        SetDirty();
+        IsDirty = true;
     }
 
     public override void SaveTabSettings()
@@ -129,18 +137,10 @@ public class UI_SettingsTab_Control : UI_SettingsTabBase
         PlayerPrefs.SetFloat(PrefKey_Vibration, _currentVibration);
         PlayerPrefs.Save();
 
-        _isDirty = false;
+        IsDirty = false;
     }
 
-    public override bool HasUnsavedChanges()
-    {
-        return _isDirty;
-    }
 
-    private void SetDirty()
-    {
-        _isDirty = true;
-    }
 
     private void OnClick_RebindJump()
     {
@@ -172,7 +172,7 @@ public class UI_SettingsTab_Control : UI_SettingsTabBase
                     {
                         targetText.text = _allKeyCodes[i].ToString();
                         keyBound = true;
-                        SetDirty();
+                        IsDirty = true;
                         break;
                     }
                 }

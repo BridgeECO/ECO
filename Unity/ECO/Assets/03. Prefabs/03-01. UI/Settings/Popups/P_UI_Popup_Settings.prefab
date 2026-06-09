@@ -326,9 +326,9 @@ GameObject:
   - component: {fileID: 78038966035136200}
   - component: {fileID: 5536003905027065558}
   - component: {fileID: 5602485674727874193}
+  - component: {fileID: 2221349229050461439}
   - component: {fileID: 6824335176899605466}
   - component: {fileID: 3576279817001842526}
-  - component: {fileID: 2221349229050461439}
   m_Layer: 5
   m_Name: P_UI_Popup_Settings
   m_TagString: Untagged
@@ -435,6 +435,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 0
   m_VerticalFit: 0
+--- !u!222 &2221349229050461439
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5636884118460415536}
+  m_CullTransparentMesh: 1
 --- !u!114 &6824335176899605466
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -488,15 +496,6 @@ MonoBehaviour:
   _applyButton: {fileID: 5275978019286085651}
   _backButton: {fileID: 9043522487057105462}
   _backgroundOverlay: {fileID: 0}
-  _confirmPopup: {fileID: 1516790834003606526, guid: efba0f1786548574e823bf809de1e4c8, type: 3}
---- !u!222 &2221349229050461439
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5636884118460415536}
-  m_CullTransparentMesh: 1
 --- !u!1 &5777101736058789554
 GameObject:
   m_ObjectHideFlags: 0

@@ -34,7 +34,6 @@ public class UI_SettingsTab_Graphics : UI_SettingsTabBase
     [SerializeField]
     private List<string> _screenShakingOptions = new List<string> { "끄기", "켜기" };
 
-    private bool _isDirty;
     private bool _isInitialized;
 
     // 현재 설정/적용 중인 임시 값들
@@ -56,14 +55,22 @@ public class UI_SettingsTab_Graphics : UI_SettingsTabBase
         InitTab();
     }
 
+    private void OnEnable()
+    {
+        if (_isInitialized)
+        {
+            SyncUIToCurrentValues();
+        }
+    }
+
     private void OnDisable()
     {
         // 팝업이 닫힐 때(적용 버튼을 누르지 않고 무시했을 경우 등) 원래의 저장된 상태로 복원
-        if (_isDirty)
+        if (IsDirty)
         {
             LoadSavedSettings();
             ApplyAllSettings();
-            _isDirty = false;
+            IsDirty = false;
         }
     }
 
@@ -87,7 +94,7 @@ public class UI_SettingsTab_Graphics : UI_SettingsTabBase
             {
                 _currentResolutionIndex = index;
                 ApplyResolutionImmediately();
-                SetDirty();
+                IsDirty = true;
             };
         }
 
@@ -97,7 +104,7 @@ public class UI_SettingsTab_Graphics : UI_SettingsTabBase
             {
                 _currentDisplayModeIndex = index;
                 ApplyDisplayModeImmediately();
-                SetDirty();
+                IsDirty = true;
             };
         }
 
@@ -107,7 +114,7 @@ public class UI_SettingsTab_Graphics : UI_SettingsTabBase
             {
                 _currentScreenShakingIndex = index;
                 ApplyScreenShakingImmediately();
-                SetDirty();
+                IsDirty = true;
             };
         }
 
@@ -117,7 +124,7 @@ public class UI_SettingsTab_Graphics : UI_SettingsTabBase
             {
                 _currentBrightness = val;
                 ApplyBrightnessImmediately();
-                SetDirty();
+                IsDirty = true;
             };
         }
 
@@ -127,7 +134,7 @@ public class UI_SettingsTab_Graphics : UI_SettingsTabBase
             {
                 _currentContrast = val;
                 ApplyContrastImmediately();
-                SetDirty();
+                IsDirty = true;
             };
         }
 
@@ -218,7 +225,7 @@ public class UI_SettingsTab_Graphics : UI_SettingsTabBase
         SyncUIToCurrentValues();
         ApplyAllSettings();
 
-        SetDirty();
+        IsDirty = true;
     }
 
     public override void SaveTabSettings()
@@ -230,16 +237,7 @@ public class UI_SettingsTab_Graphics : UI_SettingsTabBase
         PlayerPrefs.SetFloat(PrefKey_Contrast, _currentContrast);
         PlayerPrefs.Save();
 
-        _isDirty = false;
+        IsDirty = false;
     }
 
-    public override bool HasUnsavedChanges()
-    {
-        return _isDirty;
-    }
-
-    private void SetDirty()
-    {
-        _isDirty = true;
-    }
 }
