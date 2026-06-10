@@ -65,31 +65,10 @@ public class UI_SpriteAnimator : MonoBehaviour
 
             float cycleStartTime = Time.unscaledTime;
 
-            for (int i = 0; i < _sprites.Count; i++)
+            bool success = await PlaySingleCycleAsync(cancellationToken);
+            if (!success)
             {
-                if (_targetImage == null)
-                {
-                    return;
-                }
-
-                _targetImage.sprite = _sprites[i];
-
-                if (i < _sprites.Count - 1)
-                {
-                    try
-                    {
-                        await UniTask.DelayFrame(_frameDelay, PlayerLoopTiming.Update, cancellationToken: cancellationToken);
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        return;
-                    }
-
-                    if (_targetImage == null)
-                    {
-                        return;
-                    }
-                }
+                return;
             }
 
             OnAnimationComplete?.Invoke();
@@ -99,33 +78,67 @@ public class UI_SpriteAnimator : MonoBehaviour
                 break;
             }
 
-            // 루프 대기 로직: 애니메이션 시작 시점부터 _loopInterval만큼 대기하도록 잔여 시간 계산
-            float elapsed = Time.unscaledTime - cycleStartTime;
-            float remainingDelay = _loopInterval - elapsed;
-
-            if (remainingDelay > 0f)
+            bool delaySuccess = await WaitForNextCycleAsync(cycleStartTime, cancellationToken);
+            if (!delaySuccess)
             {
-                try
-                {
-                    await UniTask.Delay(TimeSpan.FromSeconds(remainingDelay), cancellationToken: cancellationToken);
-                }
-                catch (OperationCanceledException)
-                {
-                    break;
-                }
+                break;
             }
-            else
+        }
+    }
+
+    private async UniTask<bool> PlaySingleCycleAsync(CancellationToken cancellationToken)
+    {
+        for (int i = 0; i < _sprites.Count; i++)
+        {
+            if (_targetImage == null)
             {
-                // _loopInterval이 경과했거나 0 이하인 경우 최소 프레임 딜레이 대기하여 오버헤드 방지
+                return false;
+            }
+
+            _targetImage.sprite = _sprites[i];
+
+            if (i < _sprites.Count - 1)
+            {
                 try
                 {
                     await UniTask.DelayFrame(_frameDelay, PlayerLoopTiming.Update, cancellationToken: cancellationToken);
                 }
                 catch (OperationCanceledException)
                 {
-                    break;
+                    return false;
+                }
+
+                if (_targetImage == null)
+                {
+                    return false;
                 }
             }
+        }
+
+        return true;
+    }
+
+    private async UniTask<bool> WaitForNextCycleAsync(float cycleStartTime, CancellationToken cancellationToken)
+    {
+        float elapsed = Time.unscaledTime - cycleStartTime;
+        float remainingDelay = _loopInterval - elapsed;
+
+        try
+        {
+            if (remainingDelay > 0f)
+            {
+                await UniTask.Delay(TimeSpan.FromSeconds(remainingDelay), cancellationToken: cancellationToken);
+            }
+            else
+            {
+                // _loopInterval이 경과했거나 0 이하인 경우 최소 프레임 딜레이 대기하여 오버헤드 방지
+                await UniTask.DelayFrame(_frameDelay, PlayerLoopTiming.Update, cancellationToken: cancellationToken);
+            }
+            return true;
+        }
+        catch (OperationCanceledException)
+        {
+            return false;
         }
     }
     #endregion
