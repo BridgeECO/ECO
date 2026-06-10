@@ -1,23 +1,25 @@
 using UnityEngine;
 using UnityEditor;
+using System.Linq;
 
 public class StressTestSetup
 {
     [MenuItem("Tools/Test/Setup Stress Test (Settings Popup)")]
     public static void SetupStressTest()
     {
-        // 씬 내에서 기존 테스트용 팝업 찾기
-        var uniTaskObj = GameObject.Find("UI_Popup_Settings");
-        var animatorObj = GameObject.Find("UI_Popup_Settings_Animator");
+        // 씬 내에서 기존 테스트용 팝업 찾기 (비활성화 상태인 것도 포함, 프리팹 에셋 제외)
+        var allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
+        var uniTaskObj = allObjects.FirstOrDefault(g => g.name == "P_UI_Popup_Settings" && g.scene.isLoaded);
+        var animatorObj = allObjects.FirstOrDefault(g => g.name == "P_UI_Popup_Settings_Animator" && g.scene.isLoaded);
 
         if (uniTaskObj == null)
         {
-            Debug.LogError("현재 씬에서 'UI_Popup_Settings' 오브젝트를 찾을 수 없습니다.");
+            Debug.LogError("현재 씬에서 'P_UI_Popup_Settings' 오브젝트를 찾을 수 없습니다. (비활성화 상태라도 씬에 있어야 합니다)");
             return;
         }
         if (animatorObj == null)
         {
-            Debug.LogError("현재 씬에서 'UI_Popup_Settings_Animator' 오브젝트를 찾을 수 없습니다.");
+            Debug.LogError("현재 씬에서 'P_UI_Popup_Settings_Animator' 오브젝트를 찾을 수 없습니다.");
             return;
         }
 
@@ -35,12 +37,12 @@ public class StressTestSetup
             if (clone != null)
             {
                 clone.transform.SetParent(utGroup.transform, false);
-                clone.name = "UI_Popup_Settings_Clone";
+                clone.name = "P_UI_Popup_Settings_Clone";
             }
             else
             {
                 var fallbackClone = Object.Instantiate(uniTaskObj, utGroup.transform);
-                fallbackClone.name = "UI_Popup_Settings_Clone";
+                fallbackClone.name = "P_UI_Popup_Settings_Clone";
             }
         }
 
@@ -56,12 +58,12 @@ public class StressTestSetup
             if (clone != null)
             {
                 clone.transform.SetParent(animGroup.transform, false);
-                clone.name = "UI_Popup_Settings_Animator_Clone";
+                clone.name = "P_UI_Popup_Settings_Animator_Clone";
             }
             else
             {
                 var fallbackClone = Object.Instantiate(animatorObj, animGroup.transform);
-                fallbackClone.name = "UI_Popup_Settings_Animator_Clone";
+                fallbackClone.name = "P_UI_Popup_Settings_Animator_Clone";
             }
         }
 
