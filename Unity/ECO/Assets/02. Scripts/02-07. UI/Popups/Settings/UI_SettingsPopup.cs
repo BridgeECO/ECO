@@ -69,13 +69,19 @@ public class UI_SettingsPopup : UI_Popup
 
     private void OnClick_Reset()
     {
-        if (IsClosing) return;
+        if (IsClosing)
+        {
+            return;
+        }
         HandleResetAsync().Forget();
     }
 
     private void OnClick_Apply()
     {
-        if (IsClosing) return;
+        if (IsClosing)
+        {
+            return;
+        }
         if (_activeTabIndex >= 0 && _activeTabIndex < _settingTabs.Count)
         {
             _settingTabs[_activeTabIndex].SaveTabSettings();
@@ -84,7 +90,10 @@ public class UI_SettingsPopup : UI_Popup
 
     private void OnClick_Back()
     {
-        if (IsClosing) return;
+        if (IsClosing)
+        {
+            return;
+        }
         HandleBackAsync().Forget();
     }
 
