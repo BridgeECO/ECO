@@ -100,8 +100,7 @@ public class UI_SpriteAnimator : MonoBehaviour
             {
                 try
                 {
-                    await UniTask.DelayFrame
-                    (_frameDelay, PlayerLoopTiming.Update, cancellationToken: cancellationToken);
+                    await UniTask.DelayFrame(_frameDelay, PlayerLoopTiming.Update, cancellationToken: cancellationToken);
                 }
                 catch (OperationCanceledException)
                 {

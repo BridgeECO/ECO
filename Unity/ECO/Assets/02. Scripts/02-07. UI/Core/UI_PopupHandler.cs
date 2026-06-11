@@ -50,19 +50,19 @@ public class UI_PopupHandler
 
     private async UniTaskVoid CloseLatestPopupAsync()
     {
-        if (_popups.TryPeek(out UI_Popup latestPopup))
+        if (_popups.TryPop(out UI_Popup latestPopup))
         {
             _isClosing = true;
             SetPopupFocusState(latestPopup, false);
 
-            await latestPopup.CloseAsync();
-
-            if (_popups.TryPeek(out UI_Popup p) && p == latestPopup)
+            try
             {
-                _popups.Pop();
+                await latestPopup.CloseAsync();
             }
-
-            _isClosing = false;
+            finally
+            {
+                _isClosing = false;
+            }
 
             if (_popups.Count <= 0)
             {
