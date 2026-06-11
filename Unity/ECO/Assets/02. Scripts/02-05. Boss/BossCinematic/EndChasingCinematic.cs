@@ -1,7 +1,4 @@
 using Cysharp.Threading.Tasks;
-using DG.Tweening;
-using ECO;
-using NPOI.SS.Formula.Functions;
 using UnityEngine;
 using VInspector;
 
@@ -36,6 +33,11 @@ public class EndChasingCinematic : BossCinematicBase
 
         while (!isGroggy)
         {
+            if (boss == null)
+            {
+                break;
+            }
+
             Vector3 targetPos = _camController.GetClampedPosition(boss.transform.position);
 
             Camera.main.transform.position = Vector3.MoveTowards(

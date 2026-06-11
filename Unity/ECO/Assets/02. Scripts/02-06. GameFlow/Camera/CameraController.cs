@@ -1,7 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
-using VInspector;
 
 public class CameraController : MonoBehaviour
 {
@@ -21,7 +20,8 @@ public class CameraController : MonoBehaviour
     private float _halfCamWidth;
     private Vector3 _velocity = Vector3.zero;
 
-    [SerializeField]private Camera _mainCamera;
+    [SerializeField]
+    private Camera _mainCamera;
 
     public bool IsFollowingPlayer { get; set; } = true;
 

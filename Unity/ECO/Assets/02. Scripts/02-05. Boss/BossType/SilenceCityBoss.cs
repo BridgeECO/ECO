@@ -13,6 +13,7 @@ public class FloorData
 }
 
 [RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(Collider2D))]
 public class SilenceCityBoss : BossBase
 {
     [Header("Target Settings")]
@@ -27,14 +28,14 @@ public class SilenceCityBoss : BossBase
     private int _currentFloorIndex = 0;
     private CancellationTokenSource _groggyCts;
     private float _currentSpeed;
-    private Transform _player;
+    private GameObject _player;
 
     protected override void Awake()
     {
         base.Awake();
         _rigidbody = GetComponent<Rigidbody2D>();
         _collider = GetComponent<Collider2D>();
-        _player = GameObject.FindWithTag(nameof(ETags.Player)).transform;
+        _player = GameObject.FindWithTag(nameof(ETags.Player));
     }
 
     private void FixedUpdate()
@@ -103,7 +104,7 @@ public class SilenceCityBoss : BossBase
 
         Transform currentTarget = _floorData[_currentFloorIndex].EndPosition;
 
-        float distanceToPlayer = Vector2.Distance(transform.position, _player.position);
+        float distanceToPlayer = Vector2.Distance(transform.position, _player.transform.position);
         _currentSpeed = (distanceToPlayer >= BossData.CatchUpDistanceThreshold)
             ? BossData.CatchUpSpeed
             : BossData.BaseSpeed;
