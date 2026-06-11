@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using VInspector;
 
@@ -20,7 +21,8 @@ public class UI_SpriteAnimator : MonoBehaviour
 
     [Foldout("Settings")]
     [SerializeField]
-    private int _frameDelay = 4;
+    [FormerlySerializedAs("_frameDelay")]
+    private float _frameInterval = 0.0333f;
 
     [SerializeField]
     private bool _isLoop = true;
@@ -100,7 +102,7 @@ public class UI_SpriteAnimator : MonoBehaviour
             {
                 try
                 {
-                    await UniTask.DelayFrame(_frameDelay, PlayerLoopTiming.Update, cancellationToken: cancellationToken);
+                    await UniTask.Delay(TimeSpan.FromSeconds(_frameInterval), ignoreTimeScale: true, cancellationToken: cancellationToken);
                 }
                 catch (OperationCanceledException)
                 {
@@ -131,13 +133,54 @@ public class UI_SpriteAnimator : MonoBehaviour
             else
             {
                 // _loopInterval이 경과했거나 0 이하인 경우 최소 프레임 딜레이 대기하여 오버헤드 방지
-                await UniTask.DelayFrame(_frameDelay, PlayerLoopTiming.Update, cancellationToken: cancellationToken);
+                await UniTask.DelayFrame(1, PlayerLoopTiming.Update, cancellationToken: cancellationToken);
             }
             return true;
         }
         catch (OperationCanceledException)
         {
             return false;
+        }
+    }
+
+    public async UniTask PlayReverseAsync(CancellationToken cancellationToken)
+    {
+        if (_sprites == null || _sprites.Count == 0 || _targetImage == null)
+        {
+            return;
+        }
+
+        if (_cts != null)
+        {
+            _cts.Cancel();
+            _cts.Dispose();
+            _cts = null;
+        }
+
+        for (int i = _sprites.Count - 1; i >= 0; i--)
+        {
+            if (_targetImage == null)
+            {
+                return;
+            }
+            _targetImage.sprite = _sprites[i];
+
+            if (i > 0)
+            {
+                try
+                {
+                    await UniTask.Delay(TimeSpan.FromSeconds(_frameInterval), ignoreTimeScale: true, cancellationToken: cancellationToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    return;
+                }
+
+                if (_targetImage == null)
+                {
+                    return;
+                }
+            }
         }
     }
     #endregion

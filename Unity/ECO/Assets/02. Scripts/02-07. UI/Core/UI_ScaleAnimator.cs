@@ -9,7 +9,7 @@ public class UI_ScaleAnimator : MonoBehaviour
     private float _openDuration = 0.3f;
 
     [SerializeField]
-    private float _closeDuration = 0.2f;
+    private float _closeDuration = 1.0f;
 
     [SerializeField]
     private Ease _openEase = Ease.OutBack;

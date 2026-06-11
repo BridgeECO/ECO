@@ -29,8 +29,9 @@ public class UI_SettingsPopup : UI_Popup
 
     private int _activeTabIndex = 0;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         for (int i = 0; i < _tabToggles.Count; i++)
         {
             int index = i;
