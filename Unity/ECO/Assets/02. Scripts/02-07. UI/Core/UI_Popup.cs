@@ -4,6 +4,7 @@ using Cysharp.Threading.Tasks;
 
 public abstract class UI_Popup : MonoBehaviour
 {
+    public bool IsClosing { get; private set; }
 
     private UI_SpriteAnimator[] _spriteAnimators;
 
@@ -27,6 +28,8 @@ public abstract class UI_Popup : MonoBehaviour
 
     public virtual async UniTask CloseAsync()
     {
+        IsClosing = true;
+
         CanvasGroup canvasGroup = gameObject.GetComponent<CanvasGroup>();
         if (canvasGroup == null)
         {
@@ -36,10 +39,9 @@ public abstract class UI_Popup : MonoBehaviour
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
 
-        var tasks = new List<UniTask>();
-
         if (_spriteAnimators != null && _spriteAnimators.Length > 0)
         {
+            var tasks = new List<UniTask>();
             foreach (var spriteAnimator in _spriteAnimators)
             {
                 if (spriteAnimator != null && spriteAnimator.gameObject.activeInHierarchy)
@@ -47,19 +49,20 @@ public abstract class UI_Popup : MonoBehaviour
                     tasks.Add(spriteAnimator.PlayReverseAsync(this.GetCancellationTokenOnDestroy()));
                 }
             }
+            
+            if (tasks.Count > 0)
+            {
+                await UniTask.WhenAll(tasks);
+            }
         }
 
         if (TryGetComponent<UI_ScaleAnimator>(out var animator))
         {
-            tasks.Add(animator.PlayCloseAsync(this.GetCancellationTokenOnDestroy()));
-        }
-
-        if (tasks.Count > 0)
-        {
-            await UniTask.WhenAll(tasks);
+            await animator.PlayCloseAsync(this.GetCancellationTokenOnDestroy());
         }
 
         gameObject.SetActive(false);
+        IsClosing = false;
 
         canvasGroup.interactable = true;
         canvasGroup.blocksRaycasts = true;

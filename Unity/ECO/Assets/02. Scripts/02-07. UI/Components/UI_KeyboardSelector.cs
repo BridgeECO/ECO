@@ -41,6 +41,12 @@ public class UI_KeyboardSelector : MonoBehaviour
             return;
         }
 
+        UI_Popup popup = GetComponentInParent<UI_Popup>();
+        if (popup != null && popup.IsClosing)
+        {
+            return;
+        }
+
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
             ChangeSelection(-1);
