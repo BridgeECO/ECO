@@ -20,8 +20,9 @@ public class UI_SaveSlotPanel : UI_Popup
     private int _selectedIndex = 0;
     private bool _isOpen = false;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         InitSlots();
     }
 

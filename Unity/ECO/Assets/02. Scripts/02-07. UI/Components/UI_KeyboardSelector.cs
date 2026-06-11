@@ -12,6 +12,7 @@ public class UI_KeyboardSelector : MonoBehaviour
     private CanvasGroup _canvasGroup;
 
     private int _currentIndex;
+    private UI_Popup _parentPopup;
 
     #region Unity Lifecycle Methods
     private void Awake()
@@ -20,6 +21,7 @@ public class UI_KeyboardSelector : MonoBehaviour
         {
             _canvasGroup = GetComponentInParent<CanvasGroup>();
         }
+        _parentPopup = GetComponentInParent<UI_Popup>();
     }
 
     private void Start()
@@ -37,6 +39,11 @@ public class UI_KeyboardSelector : MonoBehaviour
     private void HandleKeyboardInput()
     {
         if (_canvasGroup != null && !_canvasGroup.interactable)
+        {
+            return;
+        }
+
+        if (_parentPopup != null && _parentPopup.IsClosing)
         {
             return;
         }

@@ -32,8 +32,9 @@ public class UI_PauseMenuPopup : UI_Popup
         Time.timeScale = 1f;
     }
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         _settingButton.onClick.AddListener(OnClickSettingBtn);
         _titleButton.onClick.AddListener(OnClickTitleBtn);
         _exitButton.onClick.AddListener(OnClickExitBtn);
