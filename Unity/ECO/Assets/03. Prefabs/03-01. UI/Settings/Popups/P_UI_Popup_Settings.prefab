@@ -322,13 +322,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4705363414994119768}
-  - component: {fileID: 1626910571033059415}
   - component: {fileID: 78038966035136200}
+  - component: {fileID: 2221349229050461439}
   - component: {fileID: 5536003905027065558}
   - component: {fileID: 5602485674727874193}
-  - component: {fileID: 2221349229050461439}
   - component: {fileID: 6824335176899605466}
   - component: {fileID: 3576279817001842526}
+  - component: {fileID: 1665180305141478780}
   m_Layer: 5
   m_Name: P_UI_Popup_Settings
   m_TagString: Untagged
@@ -357,28 +357,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!95 &1626910571033059415
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5636884118460415536}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: ee7a3479233ad4835a9fdccccf03e0d8, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &78038966035136200
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -409,6 +387,14 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!222 &2221349229050461439
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5636884118460415536}
+  m_CullTransparentMesh: 1
 --- !u!225 &5536003905027065558
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -435,14 +421,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 0
   m_VerticalFit: 0
---- !u!222 &2221349229050461439
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5636884118460415536}
-  m_CullTransparentMesh: 1
 --- !u!114 &6824335176899605466
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -496,6 +474,24 @@ MonoBehaviour:
   _applyButton: {fileID: 5275978019286085651}
   _backButton: {fileID: 9043522487057105462}
   _backgroundOverlay: {fileID: 0}
+--- !u!114 &1665180305141478780
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5636884118460415536}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17c82527f0b36244f83dd7d5826ddcbd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _openDuration: 0.3
+  _closeDuration: 0.2
+  _openEase: 27
+  _closeEase: 26
+  _startScale: {x: 0.5, y: 0.5, z: 0.5}
+  _targetScale: {x: 1, y: 1, z: 1}
 --- !u!1 &5777101736058789554
 GameObject:
   m_ObjectHideFlags: 0

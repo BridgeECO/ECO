@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 public class UI_PopupHandler
 {
     private Stack<UI_Popup> _popups = new Stack<UI_Popup>();
+    private bool _isClosing = false;
 
     public bool HasPopups => _popups.Count > 0;
 
@@ -26,7 +28,7 @@ public class UI_PopupHandler
         SetTopPopupFocusState(false);
 
         _popups.Push(popup);
-        popup.Open();
+        popup.OpenAsync().Forget();
 
         InputHandler.ChangeToUIInput();
         SetPopupFocusState(popup, true);
@@ -42,9 +44,25 @@ public class UI_PopupHandler
 
     public void CloseLatestPopup()
     {
+        if (_isClosing) return;
+        CloseLatestPopupAsync().Forget();
+    }
+
+    private async UniTaskVoid CloseLatestPopupAsync()
+    {
         if (_popups.TryPop(out UI_Popup latestPopup))
         {
-            latestPopup.Close();
+            _isClosing = true;
+            SetPopupFocusState(latestPopup, false);
+
+            try
+            {
+                await latestPopup.CloseAsync();
+            }
+            finally
+            {
+                _isClosing = false;
+            }
 
             if (_popups.Count <= 0)
             {

@@ -1,4 +1,5 @@
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 public abstract class UI_Popup : MonoBehaviour
 {
@@ -11,13 +12,21 @@ public abstract class UI_Popup : MonoBehaviour
     {
     }
 
-    public virtual void Open()
+    public virtual async UniTask OpenAsync()
     {
         gameObject.SetActive(true);
+        if (TryGetComponent<UI_ScaleAnimator>(out var animator))
+        {
+            await animator.PlayOpenAsync(this.GetCancellationTokenOnDestroy());
+        }
     }
 
-    public virtual void Close()
+    public virtual async UniTask CloseAsync()
     {
+        if (TryGetComponent<UI_ScaleAnimator>(out var animator))
+        {
+            await animator.PlayCloseAsync(this.GetCancellationTokenOnDestroy());
+        }
         gameObject.SetActive(false);
     }
 
