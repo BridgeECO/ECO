@@ -20,15 +20,15 @@ public class UI_PauseMenuPopup : UI_Popup
         base.InitPopup();
     }
 
-    public override void Open()
+    public override async UniTask OpenAsync()
     {
-        base.Open();
+        await base.OpenAsync();
         Time.timeScale = 0f;
     }
 
-    public override void Close()
+    public override async UniTask CloseAsync()
     {
-        base.Close();
+        await base.CloseAsync();
         Time.timeScale = 1f;
     }
 

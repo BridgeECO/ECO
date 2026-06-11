@@ -35,21 +35,22 @@ public class UI_SaveSlotPanel : UI_Popup
         HandleKeyboardInput();
     }
 
-    public override void Open()
+    public override async UniTask OpenAsync()
     {
-        base.Open();
+        await base.OpenAsync();
         _isOpen = true;
         _selectedIndex = 0;
 
         RefreshAllSlots();
         ApplySelection();
-        PlayOpenAnimation().Forget();
+        await PlayOpenAnimation();
     }
 
-    public override void Close()
+    public override async UniTask CloseAsync()
     {
         _isOpen = false;
-        PlayCloseAnimation(() => base.Close()).Forget();
+        await PlayCloseAnimation();
+        await base.CloseAsync();
     }
 
     private void HandleKeyboardInput()
@@ -134,17 +135,16 @@ public class UI_SaveSlotPanel : UI_Popup
         }
     }
 
-    private async UniTaskVoid PlayOpenAnimation()
+    private async UniTask PlayOpenAnimation()
     {
         var ct = this.GetCancellationTokenOnDestroy();
         _panelCanvasGroup.alpha = 0f;
         await _panelCanvasGroup.DOFade(1f, 0.3f).SetEase(Ease.OutQuad).ToUniTask(cancellationToken: ct);
     }
 
-    private async UniTaskVoid PlayCloseAnimation(System.Action onComplete)
+    private async UniTask PlayCloseAnimation()
     {
         var ct = this.GetCancellationTokenOnDestroy();
         await _panelCanvasGroup.DOFade(0f, 0.2f).SetEase(Ease.InQuad).ToUniTask(cancellationToken: ct);
-        onComplete?.Invoke();
     }
 }

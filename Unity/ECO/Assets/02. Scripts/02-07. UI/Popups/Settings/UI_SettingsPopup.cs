@@ -84,9 +84,9 @@ public class UI_SettingsPopup : UI_Popup
         HandleBackAsync().Forget();
     }
 
-    public override void Open()
+    public override async UniTask OpenAsync()
     {
-        base.Open();
+        await base.OpenAsync();
         CustomOpen();
 
         for (int i = 0; i < _settingTabs.Count; i++)
@@ -102,20 +102,14 @@ public class UI_SettingsPopup : UI_Popup
         }
     }
 
-    public override void Close()
+    public override async UniTask CloseAsync()
     {
-        Animator animator = GetComponent<Animator>();
-        if (animator != null && animator.GetCurrentAnimatorStateInfo(0).IsName("Open"))
-        {
-            animator.Play("Close");
-        }
-
         if (_backgroundOverlay != null)
         {
             _backgroundOverlay.CrossFadeAlpha(0.0f, 0.2f, false);
         }
 
-        WaitAndDisableAsync().Forget();
+        await base.CloseAsync();
     }
 
     private void CustomOpen()
@@ -180,9 +174,5 @@ public class UI_SettingsPopup : UI_Popup
         }
     }
 
-    private async UniTaskVoid WaitAndDisableAsync()
-    {
-        await UniTask.Delay(System.TimeSpan.FromSeconds(DestroyTime));
-        gameObject.SetActive(false);
-    }
+
 }

@@ -323,9 +323,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4705363414994119768}
   - component: {fileID: 78038966035136200}
+  - component: {fileID: 2221349229050461439}
   - component: {fileID: 5536003905027065558}
   - component: {fileID: 5602485674727874193}
-  - component: {fileID: 2221349229050461439}
   - component: {fileID: 6824335176899605466}
   - component: {fileID: 3576279817001842526}
   - component: {fileID: 1665180305141478780}
@@ -387,6 +387,14 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!222 &2221349229050461439
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5636884118460415536}
+  m_CullTransparentMesh: 1
 --- !u!225 &5536003905027065558
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -413,14 +421,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 0
   m_VerticalFit: 0
---- !u!222 &2221349229050461439
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5636884118460415536}
-  m_CullTransparentMesh: 1
 --- !u!114 &6824335176899605466
 MonoBehaviour:
   m_ObjectHideFlags: 0
