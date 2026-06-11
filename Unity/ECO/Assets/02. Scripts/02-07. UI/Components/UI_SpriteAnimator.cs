@@ -48,7 +48,7 @@ public class UI_SpriteAnimator : MonoBehaviour
     }
     #endregion
 
-    #region Logic & Visuals
+    #region Logic
     private async UniTask PlayAnimationAsync(CancellationToken cancellationToken)
     {
         if (_sprites == null || _sprites.Count == 0 || _targetImage == null)
@@ -94,14 +94,14 @@ public class UI_SpriteAnimator : MonoBehaviour
             {
                 return false;
             }
-
             _targetImage.sprite = _sprites[i];
 
             if (i < _sprites.Count - 1)
             {
                 try
                 {
-                    await UniTask.DelayFrame(_frameDelay, PlayerLoopTiming.Update, cancellationToken: cancellationToken);
+                    await UniTask.DelayFrame
+                    (_frameDelay, PlayerLoopTiming.Update, cancellationToken: cancellationToken);
                 }
                 catch (OperationCanceledException)
                 {
