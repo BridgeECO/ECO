@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8345430850642345740}
   - component: {fileID: 3516310784583665325}
+  - component: {fileID: -1544595989083452524}
   m_Layer: 5
   m_Name: P_UI_Popup_PauseMenu
   m_TagString: Untagged
@@ -50,9 +51,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 656b628aaf57afc459d2a1db6b119802, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _destroyTime: 0.5
   _settingButton: {fileID: 1400443196750349169}
   _titleButton: {fileID: 2895575530573857307}
   _exitButton: {fileID: 8160354449274349086}
+--- !u!114 &-1544595989083452524
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 936064517839527119}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17c82527f0b36244f83dd7d5826ddcbd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _openDuration: 0.3
+  _closeDuration: 0.2
+  _openEase: 27
+  _closeEase: 26
+  _startScale: {x: 0.5, y: 0.5, z: 0.5}
+  _targetScale: {x: 1, y: 1, z: 1}
 --- !u!1 &2080409763423834152
 GameObject:
   m_ObjectHideFlags: 0
