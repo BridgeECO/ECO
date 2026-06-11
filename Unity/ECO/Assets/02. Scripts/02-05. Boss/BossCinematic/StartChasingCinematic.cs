@@ -1,0 +1,61 @@
+using Cysharp.Threading.Tasks;
+using DG.Tweening;
+using System.Collections.Generic;
+using UnityEngine;
+using VInspector;
+
+public class StartChasingCinematic : BossCinematicBase
+{
+    [Foldout("Cinematic Settings")]
+    [SerializeField, Tooltip("보스에게 카메라가 이동하는 시간")]
+    private float _panToBossDuration = 1.2f;
+    [SerializeField, Tooltip("카메라를 흔드는 시간")]
+    private float _shakeDuration = 1.5f;
+    [SerializeField, Tooltip("포효 시 카메라 흔들림 강도")]
+    private float _shakeStrength = 1f;
+    [SerializeField, Tooltip("플레이어에게 다시 돌아오는 시간")]
+    private float _returnDuration = 1.0f;
+
+    [Foldout("Energy Settings")]
+    [SerializeField, Tooltip("컷신 도중 활성화할 에너지 라인들")]
+    private List<EnergyLine> _connectedLines = new List<EnergyLine>();
+
+    public override async UniTask PlayCinematicAsync(BossBase boss)
+    {
+        CameraController _camController = Camera.main.GetComponent<CameraController>();
+        CameraEffect _camEffect = Camera.main.GetComponent<CameraEffect>();
+
+        if (_camController == null || _camEffect == null)
+        {
+            return;
+        }
+
+        InputHandler.BlockInput();
+
+        await _camEffect.ShakeCameraAsync(_shakeDuration, _shakeStrength);
+
+        _camController.IsFollowingPlayer = false;
+
+        Vector3 bossTargetPos = _camController.GetClampedPosition(boss.transform.position);
+
+        await Camera.main.transform.DOMove(bossTargetPos, _panToBossDuration).SetEase(Ease.InOutCubic).ToUniTask();
+
+        ActivateEnergyLines();
+        boss.StartChase();
+        await boss.WaitForStateAsync(EBossState.Chasing);
+
+        InputHandler.UnblockInput();
+
+        _camController.IsFollowingPlayer = true;
+    }
+    private void ActivateEnergyLines()
+    {
+        foreach (EnergyLine line in _connectedLines)
+        {
+            if (line != null)
+            {
+                line.SetSwitchState(true);
+            }
+        }
+    }
+}

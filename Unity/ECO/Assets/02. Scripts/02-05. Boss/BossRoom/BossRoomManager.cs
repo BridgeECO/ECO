@@ -14,8 +14,10 @@ public class BossRoomManager : MonoBehaviour
 
     private void Awake()
     {
-        foreach (Transform child in transform)
+        foreach (Transform child in transform.GetComponentsInChildren<Transform>(true))
         {
+            if (child == transform) continue;
+
             _initialStates.Add(new ObjectState
             {
                 Obj = child.gameObject,
@@ -35,6 +37,4 @@ public class BossRoomManager : MonoBehaviour
         }
     }
 
-    //플레이어가 들어오고 나간것을 체크해서 playerinput설정
-    //대쉬를 가지고있는지? -> 대쉬있으면 대쉬 끄기 -> 클리어 후 대쉬 키기
 }

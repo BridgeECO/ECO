@@ -1,4 +1,6 @@
+using Cysharp.Threading.Tasks;
 using System;
+using System.Threading;
 using UnityEngine;
 using VInspector;
 
@@ -18,15 +20,16 @@ public abstract class BossBase : MonoBehaviour
     [SerializeField]
     private BossRoomManager _bossRoomManager;
 
+    [SerializeField] 
     private EBossState _currentState;
-    protected Transform TargetPlayer;
+    private Vector3 _resetPosition;
 
     public BossDataSO BossData { get => _bossData; protected set => _bossData = value; }
     public EBoss BossType => _bossType;
     protected BossAnimationController AnimationController => _animationController;
     protected BossRoomManager BossRoomManager => _bossRoomManager;
     protected EBossState CurrentState { get => _currentState; private set => _currentState = value; }
-
+    protected Vector3 ResetPosition { get => _resetPosition; private set => _resetPosition = value; }
 
     protected virtual void Awake()
     {
@@ -39,13 +42,13 @@ public abstract class BossBase : MonoBehaviour
         {
             BossManager.Instance.RegisterBoss(_bossType, this);
         }
-
-        GameObject player = GameObject.FindWithTag(nameof(ETags.Player));
-        if (player != null)
-        {
-            TargetPlayer = player.transform;
-        }
     }
+    private void Start()
+    {
+        InitBoss();
+        ResetPosition = transform.position;
+    }
+
     protected virtual void OnDestroy()
     {
         if (BossManager.HasInstance)
@@ -61,6 +64,7 @@ public abstract class BossBase : MonoBehaviour
 
     public virtual void StartChase() => ChangeState(EBossState.Chasing);
     public virtual void StopChase() => ChangeState(EBossState.Idle);
+    public virtual void StartGroggy() => ChangeState(EBossState.Groggy);
 
     protected void ChangeState(EBossState newState)
     {
@@ -72,4 +76,9 @@ public abstract class BossBase : MonoBehaviour
         OnStateChanged(newState);
     }
     protected abstract void OnStateChanged(EBossState newState);
+
+    public async UniTask WaitForStateAsync(EBossState targetState)
+    {
+        await UniTask.WaitUntil(() => this.CurrentState == targetState);
+    }
 }

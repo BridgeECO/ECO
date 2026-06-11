@@ -12,4 +12,5 @@ public enum ETags
     PlayerFeet,
     Obstacle,
     InstantKill,
+    Map,
 }
