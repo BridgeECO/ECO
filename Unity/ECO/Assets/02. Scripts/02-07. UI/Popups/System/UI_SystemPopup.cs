@@ -22,20 +22,5 @@ public abstract class UI_SystemPopup : UI_Popup
         if (_uiMessageText != null) _uiMessageText.text = message;
     }
 
-    public override void Close()
-    {
-        Animator animator = GetComponent<Animator>();
-        if (animator != null && animator.GetCurrentAnimatorStateInfo(0).IsName("Open"))
-        {
-            animator.Play("Close");
-        }
 
-        WaitAndDisableAsync().Forget();
-    }
-
-    private async UniTaskVoid WaitAndDisableAsync()
-    {
-        await UniTask.Delay(System.TimeSpan.FromSeconds(DestroyTime));
-        gameObject.SetActive(false);
-    }
 }
