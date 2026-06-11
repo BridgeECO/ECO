@@ -13,7 +13,7 @@ public class BossAnimationController : MonoBehaviour
         }
     }
 
-    public void SetChasingState(bool isChasing)
+    public void SetChangeState(EBossState newState)
     {
         
     }
