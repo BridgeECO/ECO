@@ -43,7 +43,7 @@ public abstract class BossBase : MonoBehaviour
             BossManager.Instance.RegisterBoss(_bossType, this);
         }
     }
-    private void Start()
+    protected virtual void Start()
     {
         InitBoss();
         ResetPosition = transform.position;

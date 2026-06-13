@@ -55,12 +55,7 @@ public class CameraController : MonoBehaviour
         Vector3 targetPosition = GetClampedPosition();
         transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref _velocity, _trackingTimeAfterTransition);
     }
-    //public?
-    public void FollowBoss(BossBase boss)
-    {
-        Vector3 targetPosition = GetClampedPosition(boss.transform.position);
-        transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref _velocity, _trackingTimeAfterTransition);
-    }
+
     private void UpdateCameraDimensions()
     {
         if (_mainCamera == null)

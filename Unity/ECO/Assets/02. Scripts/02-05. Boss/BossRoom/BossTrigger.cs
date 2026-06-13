@@ -3,7 +3,7 @@ using ECO;
 using UnityEngine;
 using VInspector;
 
-public class BossTrigger : MonoBehaviour
+public class BossTrigger : MonoBehaviour, IResettable
 {
     public enum ETriggerTarget { Player, Boss }
 
@@ -15,16 +15,14 @@ public class BossTrigger : MonoBehaviour
     [SerializeField]
     [Tooltip("이 트리거에 닿았을 때 변경할 보스 상태를 선택하세요.")]
     private EBossState _triggerAction = EBossState.Chasing;
+    [SerializeField]
+    [Tooltip("보스방이 리셋되었을 때 이 트리거를 다시 작동하게 할지 선택하세요.")]
+    private bool _isResettable = true;
 
     [Foldout("Cinematic")]
     [SerializeField]
     [Tooltip("실행할 연출 오브젝트를 넣으세요.")]
     private BossCinematicBase _cinematicSequence;
-
-    [Foldout("Energy")]
-    [SerializeField]
-    [Tooltip("활성화할 에너지 오브젝트를 넣으세요.")]
-    private BossEnergySwitch _energySwitch;
 
     private bool _hasTriggered = false;
 
@@ -78,6 +76,14 @@ public class BossTrigger : MonoBehaviour
             {
                 boss.StopChase();
             }
+        }
+    }
+
+    public void ResetState()
+    {
+        if (_isResettable)
+        {
+            _hasTriggered = false;
         }
     }
 }
