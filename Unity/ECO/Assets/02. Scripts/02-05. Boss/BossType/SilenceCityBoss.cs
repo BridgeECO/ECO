@@ -27,6 +27,7 @@ public class SilenceCityBoss : BossBase
     private bool _isJump = false;
     private int _currentFloorIndex = 0;
     private CancellationTokenSource _groggyCts;
+    private CancellationTokenSource _actionCts; //추가?
     private float _currentSpeed;
     private GameObject _player;
 
@@ -163,6 +164,9 @@ public class SilenceCityBoss : BossBase
         }
 
         StopChase();
+        CancelActionTasks();
+        CancelGroggyTimer();
+        _isJump = false;
 
         InputHandler.BlockInput();
 
@@ -203,24 +207,31 @@ public class SilenceCityBoss : BossBase
     }
     public async UniTask FloorTransition(Transform startPoint, Transform endPoint, Vector2 velocity)
     {
+        CancelActionTasks();
         CancelGroggyTimer();
 
         ChangeState(EBossState.ReadyToJump);
-        await MoveToPoint(startPoint.position, BossData.CatchUpSpeed);
 
-        ChangeState(EBossState.Jumping);
+        _actionCts = new CancellationTokenSource();
+        var linkedToken = CancellationTokenSource.CreateLinkedTokenSource(_actionCts.Token, this.GetCancellationTokenOnDestroy()).Token;
 
-        _isJump = true;
+        try
+        {
+            await MoveToPoint(startPoint.position, BossData.CatchUpSpeed, linkedToken);
 
-        _rigidbody.linearVelocity = velocity;
+            ChangeState(EBossState.Jumping);
+            _isJump = true;
+            _rigidbody.linearVelocity = velocity;
 
-        var cancellationToken = this.GetCancellationTokenOnDestroy();
-        await UniTask.WaitUntil(() => !_isJump, cancellationToken: cancellationToken);
+            await UniTask.WaitUntil(() => !_isJump, cancellationToken: linkedToken);
+        }
+        catch (OperationCanceledException)
+        {
+            Debug.Log("[SilenceCityBoss] FloorTransition 작업이 취소되었습니다.");
+        }
     }
-    private async UniTask MoveToPoint(Vector3 targetPos, float speed)
+    private async UniTask MoveToPoint(Vector3 targetPos, float speed, CancellationToken cancellationToken)
     {
-        var cancellationToken = this.GetCancellationTokenOnDestroy();
-
         float targetX = targetPos.x;
         float initialDirectionX = Mathf.Sign(targetX - transform.position.x);
 
@@ -271,6 +282,16 @@ public class SilenceCityBoss : BossBase
             _groggyCts.Cancel();
             _groggyCts.Dispose();
             _groggyCts = null;
+        }
+    }
+
+    private void CancelActionTasks()
+    {
+        if (_actionCts != null)
+        {
+            _actionCts.Cancel();
+            _actionCts.Dispose();
+            _actionCts = null;
         }
     }
 }
