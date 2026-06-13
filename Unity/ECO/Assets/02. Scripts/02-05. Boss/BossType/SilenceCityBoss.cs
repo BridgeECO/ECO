@@ -27,7 +27,7 @@ public class SilenceCityBoss : BossBase
     private bool _isJump = false;
     private int _currentFloorIndex = 0;
     private CancellationTokenSource _groggyCts;
-    private CancellationTokenSource _actionCts; //추가?
+    private CancellationTokenSource _actionCts;
     private float _currentSpeed;
     private GameObject _player;
 
@@ -124,14 +124,13 @@ public class SilenceCityBoss : BossBase
 
         if (CurrentState == EBossState.Idle || CurrentState == EBossState.Groggy) return;
 
-        if (other.gameObject.CompareTag(nameof(ETags.Player)))
+        if (other.gameObject.CompareTag(nameof(ETags.Player)) && !_isReset)
         {
-            if (!_isReset)
-            {
-                ResetEncounterAsync().Forget();
-            }
+            ResetEncounterAsync().Forget();
+
             return;
-        }else if (other.gameObject.CompareTag(nameof(ETags.Map)))
+        }
+        else if (other.gameObject.CompareTag(nameof(ETags.Map)))
         {
             return;
         }
@@ -143,7 +142,7 @@ public class SilenceCityBoss : BossBase
 
     private void CheckIsJump(GameObject collidedObject)
     {
-        if (_isJump && collidedObject.layer == LayerMask.NameToLayer("Terrain"))
+        if (_isJump && collidedObject.layer == (int)ELayers.Terrain)
         {
             _isJump = false;
             _rigidbody.linearVelocity = Vector2.zero;
@@ -212,8 +211,8 @@ public class SilenceCityBoss : BossBase
 
         ChangeState(EBossState.ReadyToJump);
 
-        _actionCts = new CancellationTokenSource();
-        var linkedToken = CancellationTokenSource.CreateLinkedTokenSource(_actionCts.Token, this.GetCancellationTokenOnDestroy()).Token;
+        _actionCts = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
+        var linkedToken = _actionCts.Token;
 
         try
         {
@@ -227,7 +226,11 @@ public class SilenceCityBoss : BossBase
         }
         catch (OperationCanceledException)
         {
-            Debug.Log("[SilenceCityBoss] FloorTransition 작업이 취소되었습니다.");
+            Debug.Log("[SilenctCityCoss.cs] FloorTransition");
+        }
+        finally
+        {
+            CancelActionTasks();
         }
     }
     private async UniTask MoveToPoint(Vector3 targetPos, float speed, CancellationToken cancellationToken)
@@ -256,13 +259,15 @@ public class SilenceCityBoss : BossBase
     private async UniTask StartGroggyTimer()
     {
         CancelGroggyTimer();
-        _groggyCts = new CancellationTokenSource();
+
+        _groggyCts = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
+        var token = _groggyCts.Token;
 
         try
         {
             float duration = _floorData[_currentFloorIndex].GroggyDuration;
 
-            await UniTask.Delay(TimeSpan.FromSeconds(duration), cancellationToken: _groggyCts.Token);
+            await UniTask.Delay(TimeSpan.FromSeconds(duration), cancellationToken: token);
 
             if (_floorData[_currentFloorIndex].Floor != null)
             {
@@ -271,7 +276,11 @@ public class SilenceCityBoss : BossBase
         }
         catch (OperationCanceledException)
         {
-
+            Debug.Log("[SilenctCityCoss.cs] StartGroggyTimer");
+        }
+        finally
+        {
+            CancelGroggyTimer();
         }
     }
 
@@ -287,7 +296,7 @@ public class SilenceCityBoss : BossBase
 
     private void CancelActionTasks()
     {
-        if (_actionCts != null)
+        if (_actionCts is not null)
         {
             _actionCts.Cancel();
             _actionCts.Dispose();
