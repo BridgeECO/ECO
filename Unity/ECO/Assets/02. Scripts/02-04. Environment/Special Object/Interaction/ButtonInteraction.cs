@@ -1,34 +1,26 @@
 using System;
-using System.Threading;
-using Cysharp.Threading.Tasks;
 using R3;
 using UnityEngine;
 
 public class ButtonInteraction : InteractionBase
 {
-    private readonly float _deactivateDelayTime;
     private bool _isInteracting = false;
     private IDisposable _inputDisposable;
-    private CancellationTokenSource _delayCts;
 
-    public ButtonInteraction(SpecialObjectBase target) : base(target)
-    {
-        ButtonInteractionData data = target.GetComponent<ButtonInteractionData>();
-        _deactivateDelayTime = data != null ? data.DeactivateDelayTime : 2f;
-    }
+    public ButtonInteraction(SpecialObjectBase target) : base(target) { }
 
     public override void OnTriggerEnter2D(Collider2D other)
     {
         _inputDisposable?.Dispose();
         _inputDisposable = Observable.EveryUpdate()
-            .Where(_ => !InputHandler.IsInputBlocked && Input.GetKeyDown(KeyCode.F))
+            .Where(_ => !InputHandler.IsInputBlocked)
             .Subscribe(_ =>
             {
-                if (!_isInteracting)
+                if (!_isInteracting && Input.GetKeyDown(KeyCode.F))
                 {
-                    InteractAsync().Forget();
+                    Activate();
                 }
-                else
+                else if (_isInteracting && Input.GetKeyUp(KeyCode.F))
                 {
                     Deactivate();
                 }
@@ -37,41 +29,30 @@ public class ButtonInteraction : InteractionBase
 
     public override void OnTriggerExit2D(Collider2D other)
     {
+        Deactivate();
         _inputDisposable?.Dispose();
     }
 
     public override void Dispose()
     {
         base.Dispose();
+        Deactivate();
         _inputDisposable?.Dispose();
-        _delayCts?.Cancel();
-        _delayCts?.Dispose();
     }
 
-    private async UniTaskVoid InteractAsync()
+    private void Activate()
     {
         _isInteracting = true;
         TargetObject.CallInteract();
-
-        _delayCts?.Cancel();
-        _delayCts?.Dispose();
-        _delayCts = CancellationTokenSource.CreateLinkedTokenSource(TargetObject.GetCancellationTokenOnDestroy());
-
-        bool isCancelled = await UniTask.Delay(System.TimeSpan.FromSeconds(_deactivateDelayTime), cancellationToken: _delayCts.Token).SuppressCancellationThrow();
-
-        if (isCancelled)
-        {
-            return;
-        }
-
-        TargetObject.CallSetState(false);
-        _isInteracting = false;
     }
 
     private void Deactivate()
     {
-        _delayCts?.Cancel();
-        TargetObject.CallSetState(false);
+        if (!_isInteracting)
+        {
+            return;
+        }
         _isInteracting = false;
+        TargetObject.CallSetState(false);
     }
 }
