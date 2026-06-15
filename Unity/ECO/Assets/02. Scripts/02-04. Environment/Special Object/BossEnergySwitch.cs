@@ -6,7 +6,7 @@ public class BossEnergySwitch : SpecialObjectBase
 {
     [Foldout("Hierarchy")]
     [SerializeField]
-    private List<EnergyLine> _connectedLines = new List<EnergyLine>();
+    private List<TerrainObject> _connectedTargets = new List<TerrainObject>();
 
     private bool _isOn = false;
 
@@ -18,7 +18,7 @@ public class BossEnergySwitch : SpecialObjectBase
             return;
         }
     }
-
+    
     protected override void Interact()
     {
         base.Interact();
@@ -45,12 +45,12 @@ public class BossEnergySwitch : SpecialObjectBase
 
         _isOn = isOn;
 
-        foreach (EnergyLine line in _connectedLines)
+        foreach (TerrainObject target in _connectedTargets)
         {
-            if (line != null)
+            if (target != null)
             {
-                Debug.Log("에너지 활성화");
-                line.SetSwitchState(_isOn);
+                Debug.Log($"기믹 활성화");
+                target.SetEnergyActive(_isOn);
             }
         }
     }

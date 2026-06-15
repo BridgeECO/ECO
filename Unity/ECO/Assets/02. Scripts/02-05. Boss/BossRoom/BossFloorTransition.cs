@@ -11,8 +11,6 @@ public class BossFloorTransition : MonoBehaviour
     private Transform _jumpEndPoint;
     [SerializeField] 
     private float _jumpHeight = 10f;
-    [SerializeField] 
-    private float _horizontalForce = 5f;
 
     private BossBase _boss;
     private bool _hasTriggered = false;
@@ -37,17 +35,10 @@ public class BossFloorTransition : MonoBehaviour
         if (_boss is SilenceCityBoss silenceBoss)
         {
             _hasTriggered = true;
-            Vector2 jumpVelocity = BossPhysicsUtility.CalculateParabolicVelocity(
-                _jumpStartPoint.position,
-                _jumpEndPoint.position,
-                _jumpHeight,
-                _horizontalForce
-            );
 
-            silenceBoss.FloorTransition(_jumpStartPoint, _jumpEndPoint, jumpVelocity).Forget();
+            silenceBoss.FloorTransition(_jumpStartPoint, _jumpEndPoint, _jumpHeight).Forget();
         }
     }
-
     public void ResetFloorTransition()
     {
         _hasTriggered = false;
@@ -63,19 +54,18 @@ public class BossFloorTransition : MonoBehaviour
         Gizmos.DrawWireCube(_jumpEndPoint.position, Vector3.one);
 
         Gizmos.color = Color.red;
-
-        Vector2 vel = BossPhysicsUtility.CalculateParabolicVelocity(_jumpStartPoint.position, _jumpEndPoint.position, _jumpHeight, _horizontalForce);
-
-        Gizmos.color = Color.red;
         int resolution = 30;
-        float gravity = Mathf.Abs(Physics2D.gravity.y) * 50f;
-        float totalTime = (vel.y / gravity) * 2;
 
         Vector2 lastPoint = _jumpStartPoint.position;
         for (int i = 1; i <= resolution; i++)
         {
-            float t = (totalTime * i) / resolution;
-            Vector2 nextPoint = (Vector2)_jumpStartPoint.position + BossPhysicsUtility.GetParabolicPosition(t, vel.x, vel.y);
+            float t = (float)i / resolution;
+            Vector2 nextPoint = BossPhysicsUtility.GetGeometricParabola(
+                _jumpStartPoint.position,
+                _jumpEndPoint.position,
+                _jumpHeight,
+                t
+            );
 
             Gizmos.DrawLine(lastPoint, nextPoint);
             lastPoint = nextPoint;

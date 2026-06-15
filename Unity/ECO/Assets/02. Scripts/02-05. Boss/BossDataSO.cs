@@ -15,7 +15,11 @@ public class BossDataSO : ScriptableObject
     [SerializeField]
     private float _catchUpDistanceThreshold;
 
+    [SerializeField]
+    private float _jumpSpeed;
+
     public float BaseSpeed => _baseSpeed;
     public float CatchUpSpeed => _catchUpSpeed;
     public float CatchUpDistanceThreshold => _catchUpDistanceThreshold;
+    public float JumpSpeed => _jumpSpeed;
 }

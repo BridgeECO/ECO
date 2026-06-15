@@ -2,19 +2,27 @@ using UnityEngine;
 
 public static class BossPhysicsUtility
 {
-    public static Vector2 CalculateParabolicVelocity(Vector3 start, Vector3 end, float height, float horizontalForce)
+    public static Vector2 GetGeometricParabola(Vector2 start, Vector2 end, float height, float t)
     {
-        float gravity = Mathf.Abs(Physics2D.gravity.y) * 50f;
-        float directionX = Mathf.Sign(end.x - start.x);
-        float vx = horizontalForce * directionX;
-        float vy = Mathf.Sqrt(2 * gravity * height);
-        return new Vector2(vx, vy);
+        Vector2 mid = Vector2.Lerp(start, end, t);
+
+        float arc = 4f * height * t * (1f - t);
+
+        return new Vector2(mid.x, mid.y + arc);
     }
-    public static Vector2 GetParabolicPosition(float t, float vx, float vy)
+
+    public static float ApproximateParabolaLength(Vector2 start, Vector2 end, float height, int samples = 10)
     {
-        float gravity = Mathf.Abs(Physics2D.gravity.y) * 50f;
-        float x = vx * t;
-        float y = (vy * t) - (0.5f * gravity * t * t);
-        return new Vector2(x, y);
+        float length = 0f;
+        Vector2 lastPoint = start;
+
+        for (int i = 1; i <= samples; i++)
+        {
+            float t = (float)i / samples;
+            Vector2 nextPoint = GetGeometricParabola(start, end, height, t);
+            length += Vector2.Distance(lastPoint, nextPoint);
+            lastPoint = nextPoint;
+        }
+        return length;
     }
 }
