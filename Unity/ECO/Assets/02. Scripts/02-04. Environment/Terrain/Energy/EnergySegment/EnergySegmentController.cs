@@ -59,6 +59,24 @@ public class EnergySegmentController
         }
     }
 
+    // cutOffDelay 없이 즉시 꼬리 추적을 시작한다. 홀드 방식 스위치처럼 즉각적인 차단이 필요할 때 사용한다.
+    public void StopCurrentSegmentImmediately()
+    {
+        if (_activeSegments.Count == 0)
+        {
+            return;
+        }
+
+        EnergySegment targetSegment = _activeSegments[_activeSegments.Count - 1];
+        if (targetSegment.IsCuttingOff)
+        {
+            return;
+        }
+
+        targetSegment.IsWaitingToCutOff = false;
+        targetSegment.IsCuttingOff = true;
+    }
+
     public void UpdateSegments(float deltaTime, float totalDistance, float energySpeed)
     {
         for (int i = _activeSegments.Count - 1; i >= 0; i--)
