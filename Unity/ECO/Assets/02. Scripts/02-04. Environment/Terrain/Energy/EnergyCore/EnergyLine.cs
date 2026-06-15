@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
 using UnityEngine;
 using VInspector;
 
@@ -22,10 +21,6 @@ public class EnergyLine : MonoBehaviour
     [Tooltip("에너지 조각의 이동 속도")]
     [SerializeField]
     private float _energySpeed;
-
-    [Tooltip("에너지 차단 후 꼬리가 출발지점에서 떨어지기까지의 지연 시간, 값이 클수록 에너지 조각이 길어짐.")]
-    [SerializeField]
-    private float _cutOffDelay;
 
     [Tooltip("스플라인 곡선 경로의 장력 및 휘어짐 강도 (적정값: 0.0 ~ 1.2)")]
     [SerializeField]
@@ -159,6 +154,6 @@ public class EnergyLine : MonoBehaviour
             _segmentController.StartNewSegment(_lineRendererPrefab, transform);
             return;
         }
-        _segmentController.StopCurrentSegmentAsync(_cutOffDelay).Forget();
+        _segmentController.StopCurrentSegmentImmediately();
     }
 }
