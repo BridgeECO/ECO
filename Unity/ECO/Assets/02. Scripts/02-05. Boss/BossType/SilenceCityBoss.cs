@@ -8,7 +8,7 @@ using UnityEngine;
 public class FloorData
 {
     public BossFloorTransition Floor;
-    public Transform EndPosition;
+    public BossChasingLine ChasingLine;
     public float GroggyDuration;
 }
 
@@ -24,12 +24,14 @@ public class SilenceCityBoss : BossBase
     private Collider2D _collider;
 
     private bool _isReset = false;
-    private bool _isJump = false;
     private int _currentFloorIndex = 0;
     private CancellationTokenSource _groggyCts;
     private CancellationTokenSource _actionCts;
     private float _currentSpeed;
     private GameObject _player;
+
+    private List<Vector3> _currentComputedPath = new List<Vector3>();
+    private int _targetPathIndex = 0;
 
     protected override void Awake()
     {
@@ -37,6 +39,8 @@ public class SilenceCityBoss : BossBase
         _rigidbody = GetComponent<Rigidbody2D>();
         _collider = GetComponent<Collider2D>();
         _player = GameObject.FindWithTag(nameof(ETags.Player));
+
+        UpdateCurrentFloorPath();
     }
 
     private void FixedUpdate()
@@ -63,18 +67,14 @@ public class SilenceCityBoss : BossBase
         switch (newState)
         {
             case EBossState.Chasing:
-                _rigidbody.bodyType = RigidbodyType2D.Dynamic;
-                _collider.isTrigger = false;
+                _rigidbody.bodyType = RigidbodyType2D.Kinematic;
+                _collider.isTrigger = true;
                 break;
 
             case EBossState.ReadyToJump:
-                _rigidbody.bodyType = RigidbodyType2D.Dynamic;
-                _collider.isTrigger = false;
-                break;
-
             case EBossState.Jumping:
-                _rigidbody.bodyType = RigidbodyType2D.Dynamic;
-                _collider.isTrigger = false;
+                _rigidbody.bodyType = RigidbodyType2D.Kinematic;
+                _collider.isTrigger = true;
                 break;
 
             case EBossState.Idle:
@@ -82,47 +82,71 @@ public class SilenceCityBoss : BossBase
                 _rigidbody.bodyType = RigidbodyType2D.Kinematic;
                 _collider.isTrigger = true;
                 break;
-
             case EBossState.Groggy:
-                StartGroggyTimer().Forget();
                 _rigidbody.linearVelocity = Vector2.zero;
                 _rigidbody.bodyType = RigidbodyType2D.Kinematic;
                 _collider.isTrigger = true;
+                StartGroggyTimer().Forget();
                 break;
+
             case EBossState.Berserk:
                 //광분상태
                 break;
         }
     }
+    private void UpdateCurrentFloorPath()
+    {
+        _currentComputedPath.Clear();
+        _targetPathIndex = 0;
+
+        if (_floorData == null || _currentFloorIndex >= _floorData.Count) return;
+
+        FloorData currentFloor = _floorData[_currentFloorIndex];
+        if (currentFloor.ChasingLine != null && currentFloor.ChasingLine != null)
+        {
+            _currentComputedPath = new List<Vector3>(currentFloor.ChasingLine.GetComputedPath());
+        }
+    }
 
     private void ProcessChaseLogic()
     {
-        if (_floorData == null || _currentFloorIndex >= _floorData.Count || _floorData[_currentFloorIndex].EndPosition == null)
+        if (_currentComputedPath == null || _currentComputedPath.Count == 0)
         {
             return;
         }
-        if (_player == null) return;
 
-        Transform currentTarget = _floorData[_currentFloorIndex].EndPosition;
+        if (_targetPathIndex >= _currentComputedPath.Count)
+        {
+            _rigidbody.linearVelocity = Vector2.zero;
+            return;
+        }
+
+        if (_player == null)
+        {
+            return;
+        }
 
         float distanceToPlayer = Vector2.Distance(transform.position, _player.transform.position);
         _currentSpeed = (distanceToPlayer >= BossData.CatchUpDistanceThreshold)
             ? BossData.CatchUpSpeed
             : BossData.BaseSpeed;
-        //가속도 느낌으로 하려면
-        //float smoothedSpeed = Mathf.MoveTowards(Mathf.Abs(_rigidbody.linearVelocity.x), _currentSpeed, Time.fixedDeltaTime * 10f);
-        
-        Vector2 direction = ((Vector2)currentTarget.position - (Vector2)transform.position).normalized;
-        _rigidbody.linearVelocity = new Vector2(direction.x * _currentSpeed, _rigidbody.linearVelocity.y);
+
+        Vector2 currentTargetPos = _currentComputedPath[_targetPathIndex];
+        Vector2 direction = (currentTargetPos - (Vector2)transform.position).normalized;
+
+        _rigidbody.linearVelocity = direction * _currentSpeed;
+
+        if (Vector2.Distance(transform.position, currentTargetPos) <= 0.25f)
+        {
+            _targetPathIndex++;
+        }
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (_isJump)
+        if (CurrentState == EBossState.Idle || CurrentState == EBossState.Groggy)
         {
-            CheckIsJump(other.gameObject);
+            return;
         }
-
-        if (CurrentState == EBossState.Idle || CurrentState == EBossState.Groggy) return;
 
         if (other.gameObject.CompareTag(nameof(ETags.Player)) && !_isReset)
         {
@@ -139,19 +163,6 @@ public class SilenceCityBoss : BossBase
             other.gameObject.SetActive(false);
         }
     }
-
-    private void CheckIsJump(GameObject collidedObject)
-    {
-        if (_isJump && collidedObject.layer == (int)ELayers.Terrain)
-        {
-            _isJump = false;
-            _rigidbody.linearVelocity = Vector2.zero;
-
-            _currentFloorIndex++;
-            StartChase();
-        }
-    }
-
     private async UniTask ResetEncounterAsync()
     {
         _isReset = true;
@@ -165,7 +176,6 @@ public class SilenceCityBoss : BossBase
         StopChase();
         CancelActionTasks();
         CancelGroggyTimer();
-        _isJump = false;
 
         InputHandler.BlockInput();
 
@@ -184,6 +194,7 @@ public class SilenceCityBoss : BossBase
                 }
             }
             _currentFloorIndex = 0;
+            UpdateCurrentFloorPath();
 
             transform.position = ResetPosition;
             _rigidbody.linearVelocity = Vector2.zero;
@@ -204,7 +215,7 @@ public class SilenceCityBoss : BossBase
             InputHandler.UnblockInput();
         }
     }
-    public async UniTask FloorTransition(Transform startPoint, Transform endPoint, Vector2 velocity)
+    public async UniTask FloorTransition(Transform startPoint, Transform endPoint, float jumpHeight)
     {
         CancelActionTasks();
         CancelGroggyTimer();
@@ -219,10 +230,37 @@ public class SilenceCityBoss : BossBase
             await MoveToPoint(startPoint.position, BossData.CatchUpSpeed, linkedToken);
 
             ChangeState(EBossState.Jumping);
-            _isJump = true;
-            _rigidbody.linearVelocity = velocity;
 
-            await UniTask.WaitUntil(() => !_isJump, cancellationToken: linkedToken);
+            Vector2 startPos = startPoint.position;
+            Vector2 endPos = endPoint.position;
+
+            float arcLength = BossPhysicsUtility.ApproximateParabolaLength(startPos, endPos, jumpHeight);
+            float duration = arcLength / BossData.JumpSpeed;
+
+            float elapsed = 0f;
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.fixedDeltaTime;
+                float t = Mathf.Clamp01(elapsed / duration);
+
+                Vector2 nextPos = BossPhysicsUtility.GetGeometricParabola(startPos, endPos, jumpHeight, t);
+                _rigidbody.MovePosition(nextPos);
+
+                await UniTask.Yield(PlayerLoopTiming.FixedUpdate, linkedToken);
+            }
+
+            if (_rigidbody == null)
+            {
+                return;
+            }
+
+            _rigidbody.MovePosition(endPos);
+            _rigidbody.linearVelocity = Vector2.zero;
+
+            _currentFloorIndex++;
+            UpdateCurrentFloorPath();
+            StartChase();
         }
         catch (OperationCanceledException)
         {
