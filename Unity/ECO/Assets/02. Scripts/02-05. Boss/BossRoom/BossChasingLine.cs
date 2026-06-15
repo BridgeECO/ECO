@@ -44,19 +44,31 @@ public class BossChasingLine : MonoBehaviour
         _computedWaypoints.Clear();
 
         List<Vector3> keyPoints = new List<Vector3>();
-        if (_startPoint != null) keyPoints.Add(_startPoint.position);
+        if (_startPoint != null)
+        {
+            keyPoints.Add(_startPoint.position);
+        }
         else keyPoints.Add(transform.position);
 
         foreach (var wp in _waypoints)
         {
-            if (wp != null) keyPoints.Add(wp.position);
+            if (wp != null)
+            {
+                keyPoints.Add(wp.position);
+            }
         }
 
-        if (_endPoint != null) keyPoints.Add(_endPoint.position);
+        if (_endPoint != null)
+        {
+            keyPoints.Add(_endPoint.position);
+        }
 
         if (keyPoints.Count < 2)
         {
-            if (keyPoints.Count == 1) _computedWaypoints.Add(keyPoints[0]);
+            if (keyPoints.Count == 1)
+            {
+                _computedWaypoints.Add(keyPoints[0]);
+            }
             return;
         }
 
@@ -106,7 +118,6 @@ public class BossChasingLine : MonoBehaviour
             Vector3 p1 = keyPoints[i + 1];
             float dist = Vector3.Distance(p0, p1);
 
-            // 장력(Tension) 적용
             Vector3 m0 = tangents[i] * (dist * _splineTension);
             Vector3 m1 = tangents[i + 1] * (dist * _splineTension);
 
@@ -118,13 +129,11 @@ public class BossChasingLine : MonoBehaviour
                 float t = j / (float)res;
                 Vector3 nextPoint = SplineUtility.GetHermiteCurvePosition(t, p0, p1, m0, m1);
 
-                // 각 구간별로 선을 그어 연결합니다.
                 Gizmos.DrawLine(prevPoint, nextPoint);
                 prevPoint = nextPoint;
             }
         }
 
-        // 제어 포인트 시각화 (노란색 구)
         Gizmos.color = Color.yellow;
         foreach (var kp in keyPoints) Gizmos.DrawSphere(kp, 0.2f);
 #endif

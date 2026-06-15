@@ -102,7 +102,7 @@ public class SilenceCityBoss : BossBase
         if (_floorData == null || _currentFloorIndex >= _floorData.Count) return;
 
         FloorData currentFloor = _floorData[_currentFloorIndex];
-        if (currentFloor.ChasingLine != null)
+        if (currentFloor.ChasingLine != null && currentFloor.ChasingLine != null)
         {
             _currentComputedPath = new List<Vector3>(currentFloor.ChasingLine.GetComputedPath());
         }
@@ -110,7 +110,10 @@ public class SilenceCityBoss : BossBase
 
     private void ProcessChaseLogic()
     {
-        if (_currentComputedPath == null || _currentComputedPath.Count == 0) return;
+        if (_currentComputedPath == null || _currentComputedPath.Count == 0)
+        {
+            return;
+        }
 
         if (_targetPathIndex >= _currentComputedPath.Count)
         {
@@ -118,7 +121,10 @@ public class SilenceCityBoss : BossBase
             return;
         }
 
-        if (_player == null) return;
+        if (_player == null)
+        {
+            return;
+        }
 
         float distanceToPlayer = Vector2.Distance(transform.position, _player.transform.position);
         _currentSpeed = (distanceToPlayer >= BossData.CatchUpDistanceThreshold)
@@ -137,7 +143,10 @@ public class SilenceCityBoss : BossBase
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (CurrentState == EBossState.Idle || CurrentState == EBossState.Groggy) return;
+        if (CurrentState == EBossState.Idle || CurrentState == EBossState.Groggy)
+        {
+            return;
+        }
 
         if (other.gameObject.CompareTag(nameof(ETags.Player)) && !_isReset)
         {
@@ -229,6 +238,7 @@ public class SilenceCityBoss : BossBase
             float duration = arcLength / BossData.JumpSpeed;
 
             float elapsed = 0f;
+
             while (elapsed < duration)
             {
                 elapsed += Time.fixedDeltaTime;
@@ -238,6 +248,11 @@ public class SilenceCityBoss : BossBase
                 _rigidbody.MovePosition(nextPos);
 
                 await UniTask.Yield(PlayerLoopTiming.FixedUpdate, linkedToken);
+            }
+
+            if (_rigidbody == null)
+            {
+                return;
             }
 
             _rigidbody.MovePosition(endPos);
