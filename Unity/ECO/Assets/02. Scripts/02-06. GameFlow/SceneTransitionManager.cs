@@ -6,8 +6,8 @@ using VInspector;
 public class SceneTransitionManager : MonoBehaviourSingleton<SceneTransitionManager>
 {
     private string _currentLoadedRegionScene;
-
     private bool _isTransitioning;
+    private GameObject _player;
 
     public string CurrentLoadedRegionScene => _currentLoadedRegionScene;
     public bool IsTransitioning => _isTransitioning;
@@ -16,6 +16,12 @@ public class SceneTransitionManager : MonoBehaviourSingleton<SceneTransitionMana
     protected override void Awake()
     {
         base.Awake();
+        
+        PlayerStateMachine playerStateMachine = FindAnyObjectByType<PlayerStateMachine>(FindObjectsInactive.Include);
+        if (playerStateMachine != null)
+        {
+            _player = playerStateMachine.gameObject;
+        }
     }
 
     private void Start()
@@ -48,6 +54,11 @@ public class SceneTransitionManager : MonoBehaviourSingleton<SceneTransitionMana
         Scene newlyLoadedScene = SceneManager.GetSceneByName(sceneName);
         SceneManager.SetActiveScene(newlyLoadedScene);
         _currentLoadedRegionScene = sceneName;
+
+        if (_player != null)
+        {
+            _player.SetActive(IsGameplayScene);
+        }
     }
 
     public async UniTask TransitionToNewRegionAsync(ESceneNames targetSceneName)

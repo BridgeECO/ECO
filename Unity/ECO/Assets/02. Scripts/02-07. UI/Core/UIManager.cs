@@ -25,10 +25,14 @@ public class UIManager : MonoBehaviourSingleton<UIManager>
     [SerializeField]
     private UI_Popup_ExitConfirm _popupExitConfirm;
 
+    [SerializeField]
+    private UI_Popup_NewGameConfirm _popupNewGameConfirm;
+
     public UI_PopupHandler PopupHandler { get; private set; }
     public UI_Popup_Settings_CloseConfirm SettingsCloseConfirmPopup => _popupSettingsCloseConfirm;
     public UI_Popup_Settings_ResetConfirm SettingsResetConfirmPopup => _popupSettingsResetConfirm;
     public UI_Popup_ExitConfirm ExitConfirmPopup => _popupExitConfirm;
+    public UI_Popup_NewGameConfirm NewGameConfirmPopup => _popupNewGameConfirm;
 
     protected override void Awake()
     {

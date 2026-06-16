@@ -1,14 +1,26 @@
 using Newtonsoft.Json;
+using UnityEngine;
 
 public class SaveDataDTO
 {
     public readonly ERegions Region;
     public readonly int RoomIndex;
 
+    // Vector3는 JSON 직렬화 시 순환 참조 문제가 생길 수 있어 float 3개로 분리 저장
+    public readonly float SavePointX;
+    public readonly float SavePointY;
+    public readonly float SavePointZ;
+
+    [JsonIgnore]
+    public Vector3 SavePointPosition => new Vector3(SavePointX, SavePointY, SavePointZ);
+
     [JsonConstructor]
-    public SaveDataDTO(ERegions region, int roomIndex)
+    public SaveDataDTO(ERegions region, int roomIndex, float savePointX, float savePointY, float savePointZ)
     {
         Region = region;
         RoomIndex = roomIndex;
+        SavePointX = savePointX;
+        SavePointY = savePointY;
+        SavePointZ = savePointZ;
     }
 }

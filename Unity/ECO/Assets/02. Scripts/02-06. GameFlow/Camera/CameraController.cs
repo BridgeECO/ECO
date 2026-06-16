@@ -47,7 +47,6 @@ public class CameraController : MonoBehaviour
         _halfCamHeight = camera.orthographicSize;
         _halfCamWidth = _halfCamHeight * camera.aspect;
         _playerTransform = Object.FindAnyObjectByType<PlayerStateMachine>(FindObjectsInactive.Include).transform;
-        _playerTransform.gameObject.SetActive(true);
     }
 
     private void FollowPlayer()

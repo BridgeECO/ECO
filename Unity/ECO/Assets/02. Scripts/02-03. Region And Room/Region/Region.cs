@@ -31,10 +31,58 @@ public class Region : MonoBehaviourSingleton<Region>
         {
             return;
         }
+
+        SaveData saveData = SaveManager.Instance.CurrentSaveData;
+
+        // 이어하기로 진입한 경우: 저장된 Region과 일치하고 유효한 RoomIndex가 있으면 해당 방/위치로 초기화
+        if (IsValidContinueSaveData(saveData))
+        {
+            InitFromSaveData(saveData);
+        }
+        else
+        {
+            InitFromDefaultSpawnPoint();
+        }
+    }
+
+    /// <summary>
+    /// 저장 데이터가 현재 씬의 Region과 일치하고 유효한 RoomIndex를 가지는지 검사한다.
+    /// </summary>
+    private bool IsValidContinueSaveData(SaveData saveData)
+    {
+        if (saveData is null)
+        {
+            return false;
+        }
+        if (saveData.Region != _regionType)
+        {
+            return false;
+        }
+        if (saveData.RoomIndex < 0 || saveData.RoomIndex >= _rooms.Count)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    private void InitFromSaveData(SaveData saveData)
+    {
+        _currentRoom = _rooms[saveData.RoomIndex];
+        _currentRoom.IsVisited = true;
+        InitCameraBounds();
+
+        // UpdateSavePoint는 세이브포인트 등록과 파일 저장을 담당하고,
+        // 이어하기 진입 시에는 플레이어를 해당 위치로 즉시 텔레포트한다.
+        RespawnManager.Instance.UpdateSavePoint(_currentRoom, saveData.SavePointPosition);
+        RespawnManager.Instance.TeleportPlayer(saveData.SavePointPosition);
+    }
+
+    private void InitFromDefaultSpawnPoint()
+    {
         _currentRoom = _rooms[0];
         _currentRoom.IsVisited = true;
         InitCameraBounds();
-        InitSavePoint();
+        InitDefaultSavePoint();
     }
 
     private void InitCameraBounds()
@@ -50,7 +98,7 @@ public class Region : MonoBehaviourSingleton<Region>
         }
     }
 
-    private void InitSavePoint()
+    private void InitDefaultSavePoint()
     {
         if (_initialSpawnPoint == null)
         {

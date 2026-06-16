@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,24 +12,30 @@ public class UI_Popup_Settings_ResetConfirm : UI_SystemPopup
         Cancel
     }
 
-    [Foldout("Hierarchy")]
-    [SerializeField]
+    [Foldout("Buttons")]
+    [SerializeField] 
     private Button _buttonResetAndClose;
-
-    [SerializeField]
+    
+    [SerializeField] 
     private Button _buttonClose;
+
+    protected override List<Button> GetButtons() => new List<Button> { _buttonResetAndClose, _buttonClose };
 
     private UniTaskCompletionSource<EResult> _tcs;
 
     public async UniTask<EResult> ShowPopupAsync(string title, string message)
     {
         SetPopupText(title, message);
+        ClearAllButtonListeners();
 
-        _buttonResetAndClose.onClick.RemoveAllListeners();
-        _buttonClose.onClick.RemoveAllListeners();
-
-        _buttonResetAndClose.onClick.AddListener(() => OnClick_Button(EResult.ResetAndClose));
-        _buttonClose.onClick.AddListener(() => OnClick_Button(EResult.Cancel));
+        if (_buttonResetAndClose != null)
+        {
+            _buttonResetAndClose.onClick.AddListener(() => OnClick_Button(EResult.ResetAndClose));
+        }
+        if (_buttonClose != null)
+        {
+            _buttonClose.onClick.AddListener(() => OnClick_Button(EResult.Cancel));
+        }
 
         UIManager.Instance.PopupHandler.OpenPopup(this);
 
@@ -40,7 +47,7 @@ public class UI_Popup_Settings_ResetConfirm : UI_SystemPopup
     {
         UIManager.Instance.PopupHandler.ClosePopup(this);
 
-        if (_tcs != null)
+        if (_tcs is not null)
         {
             _tcs.TrySetResult(result);
             _tcs = null;

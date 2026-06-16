@@ -29,10 +29,15 @@ public class PlayerInput : MonoBehaviour
 
     private void Update()
     {
-        if (InputHandler.IsInputBlocked)
+        if (InputHandler.IsInputBlocked || (SceneTransitionManager.HasInstance && !SceneTransitionManager.Instance.IsGameplayScene))
         {
             HorizontalInput = 0f;
             return;
+        }
+
+        if (_mainCamera == null)
+        {
+            _mainCamera = Camera.main;
         }
 
         UpdateHorizontalInput();
@@ -56,6 +61,11 @@ public class PlayerInput : MonoBehaviour
 
     private void UpdateMousePosition()
     {
+        if (_mainCamera == null)
+        {
+            return;
+        }
+
         Vector3 mouseScreenPos = Input.mousePosition;
         mouseScreenPos.z = Mathf.Abs(_mainCamera.transform.position.z - transform.position.z);
         MouseWorldPosition = _mainCamera.ScreenToWorldPoint(mouseScreenPos);

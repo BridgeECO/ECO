@@ -19,7 +19,7 @@ public class UI_TitleSceneButtons : MonoBehaviour
     private Button _exitButton;
 
     [SerializeField]
-    private UI_SaveSlotPanel _saveSlotPanel;
+    private UI_SaveSlotPopup _saveSlotPanel;
 
     private void Awake()
     {
@@ -39,7 +39,7 @@ public class UI_TitleSceneButtons : MonoBehaviour
 
     private void OnClickStartBtn()
     {
-        SceneTransitionManager.Instance.TransitionToNewRegionAsync(ESceneNames.CenterRoomScene).Forget();
+        UIManager.Instance.PopupHandler.OpenSaveSlotPopup(_saveSlotPanel, ESlotPanelMode.NewGame);
     }
 
     private void OnClickContinueBtn()
