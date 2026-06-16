@@ -15,7 +15,7 @@ public class SaveManager : MonoBehaviourSingleton<SaveManager>
         CurrentSaveData = new SaveData();
     }
 
-    public void Save(Room targetRoom)
+    public void Save(Room targetRoom, Vector3 savePointPosition)
     {
         Region region = Region.Instance;
         if (CurrentSaveData == null || region == null)
@@ -24,6 +24,7 @@ public class SaveManager : MonoBehaviourSingleton<SaveManager>
         }
         CurrentSaveData.Region = region.RegionType;
         CurrentSaveData.RoomIndex = region.GetRoomIndex(targetRoom);
+        CurrentSaveData.SavePointPosition = savePointPosition;
         Save(CurrentSlotIndex, CurrentSaveData.ToDTO());
     }
 
@@ -70,7 +71,7 @@ public class SaveManager : MonoBehaviourSingleton<SaveManager>
         {
             return null;
         }
-        SaveData saveData = new SaveData(dto.Region, dto.RoomIndex);
+        SaveData saveData = new SaveData(dto.Region, dto.RoomIndex, dto.SavePointPosition);
         CurrentSaveData = saveData;
         return saveData;
     }
