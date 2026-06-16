@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using UnityEngine;
 using Cysharp.Threading.Tasks;
+using UnityEngine;
 
 public class UI_PopupHandler
 {
@@ -32,6 +32,22 @@ public class UI_PopupHandler
 
         InputHandler.ChangeToUIInput();
         SetPopupFocusState(popup, true);
+    }
+
+    public void OpenSaveSlotPopup(UI_SaveSlotPopup panel, ESlotPanelMode mode)
+    {
+        if (panel.gameObject.activeSelf)
+        {
+            return;
+        }
+
+        SetTopPopupFocusState(false);
+
+        _popups.Push(panel);
+        panel.OpenAsync(mode).Forget();
+
+        InputHandler.ChangeToUIInput();
+        SetPopupFocusState(panel, true);
     }
 
     public void ClosePopup(UI_Popup popup)

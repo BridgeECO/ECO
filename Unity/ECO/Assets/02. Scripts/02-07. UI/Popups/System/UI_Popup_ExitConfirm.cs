@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,25 +12,24 @@ public class UI_Popup_ExitConfirm : UI_SystemPopup
         Cancel
     }
 
-    [Foldout("Hierarchy")]
-    [SerializeField]
+    [Foldout("Buttons")]
+    [SerializeField] 
     private Button _buttonExitGame;
-
-
-    [SerializeField]
+    
+    [SerializeField] 
     private Button _buttonCancel;
+
+    protected override List<Button> GetButtons() => new List<Button> { _buttonExitGame, _buttonCancel };
 
     private UniTaskCompletionSource<EResult> _tcs;
 
     public async UniTask<EResult> ShowPopupAsync(string title, string message)
     {
         SetPopupText(title, message);
+        ClearAllButtonListeners();
 
-        _buttonExitGame.onClick.RemoveAllListeners();
-        _buttonCancel.onClick.RemoveAllListeners();
-
-        _buttonExitGame.onClick.AddListener(() => OnClick_Button(EResult.ExitGame));
-        _buttonCancel.onClick.AddListener(() => OnClick_Button(EResult.Cancel));
+        if (_buttonExitGame != null) _buttonExitGame.onClick.AddListener(() => OnClick_Button(EResult.ExitGame));
+        if (_buttonCancel != null) _buttonCancel.onClick.AddListener(() => OnClick_Button(EResult.Cancel));
 
         UIManager.Instance.PopupHandler.OpenPopup(this);
 

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,30 +13,28 @@ public class UI_Popup_Settings_CloseConfirm : UI_SystemPopup
         Cancel
     }
 
-    [Foldout("Hierarchy")]
-    [SerializeField]
+    [Foldout("Buttons")]
+    [SerializeField] 
     private Button _buttonSaveAndClose;
-
-    [SerializeField]
+    
+    [SerializeField] 
     private Button _buttonDontSaveAndClose;
-
-    [SerializeField]
-
+    
+    [SerializeField] 
     private Button _buttonClose;
+
+    protected override List<Button> GetButtons() => new List<Button> { _buttonSaveAndClose, _buttonDontSaveAndClose, _buttonClose };
 
     private UniTaskCompletionSource<EResult> _tcs;
 
     public async UniTask<EResult> ShowPopupAsync(string title, string message)
     {
         SetPopupText(title, message);
+        ClearAllButtonListeners();
 
-        _buttonSaveAndClose.onClick.RemoveAllListeners();
-        _buttonDontSaveAndClose.onClick.RemoveAllListeners();
-        _buttonClose.onClick.RemoveAllListeners();
-
-        _buttonSaveAndClose.onClick.AddListener(() => OnClick_Button(EResult.SaveAndClose));
-        _buttonDontSaveAndClose.onClick.AddListener(() => OnClick_Button(EResult.DontSaveAndClose));
-        _buttonClose.onClick.AddListener(() => OnClick_Button(EResult.Cancel));
+        if (_buttonSaveAndClose != null) _buttonSaveAndClose.onClick.AddListener(() => OnClick_Button(EResult.SaveAndClose));
+        if (_buttonDontSaveAndClose != null) _buttonDontSaveAndClose.onClick.AddListener(() => OnClick_Button(EResult.DontSaveAndClose));
+        if (_buttonClose != null) _buttonClose.onClick.AddListener(() => OnClick_Button(EResult.Cancel));
 
         UIManager.Instance.PopupHandler.OpenPopup(this);
 
