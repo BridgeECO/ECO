@@ -6,7 +6,7 @@ public class UI_KeyboardSelector : MonoBehaviour
 {
     [Foldout("Hierarchy")]
     [SerializeField]
-    private List<ButtonSelectionItem> _items;
+    private List<UI_ButtonSelectionItem> _items;
 
     [SerializeField]
     private CanvasGroup _canvasGroup;
@@ -122,7 +122,7 @@ public class UI_KeyboardSelector : MonoBehaviour
             return;
         }
 
-        ButtonSelectionItem currentItem = _items[_currentIndex];
+        UI_ButtonSelectionItem currentItem = _items[_currentIndex];
         
         if (currentItem.TargetButton != null)
         {
