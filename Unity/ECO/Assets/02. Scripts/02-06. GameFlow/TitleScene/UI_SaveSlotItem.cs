@@ -258,9 +258,7 @@ public class UI_SaveSlotItem : MonoBehaviour
             return true;
         }
 
-        UI_Popup_NewGameConfirm.EPopupResult result = await popup.ShowPopupAsync(
-            "새 게임 시작",
-            "이미 저장된 데이터가 있습니다.\n기존 데이터를 삭제하고 새 게임을 시작하시겠습니까?");
+        UI_Popup_NewGameConfirm.EPopupResult result = await popup.ShowPopupAsync();
 
         return result == UI_Popup_NewGameConfirm.EPopupResult.Confirm;
     }

@@ -13,23 +13,29 @@ public class UI_Popup_NewGameConfirm : UI_SystemPopup
     }
 
     [Foldout("Buttons")]
-    [SerializeField] 
+    [SerializeField]
     private Button _buttonConfirm;
-    
-    [SerializeField] 
+
+    [SerializeField]
     private Button _buttonCancel;
 
     protected override List<Button> GetButtons() => new List<Button> { _buttonConfirm, _buttonCancel };
 
     private UniTaskCompletionSource<EPopupResult> _tcs;
 
-    public async UniTask<EPopupResult> ShowPopupAsync(string title, string message)
+    public async UniTask<EPopupResult> ShowPopupAsync()
     {
-        SetPopupText(title, message);
         ClearAllButtonListeners();
 
-        if (_buttonConfirm != null) _buttonConfirm.onClick.AddListener(() => OnClick_Button(EPopupResult.Confirm));
-        if (_buttonCancel != null) _buttonCancel.onClick.AddListener(() => OnClick_Button(EPopupResult.Cancel));
+        if (_buttonConfirm != null)
+        {
+            _buttonConfirm.onClick.AddListener(() => OnClick_Button(EPopupResult.Confirm));
+        }
+
+        if (_buttonCancel != null)
+        {
+            _buttonCancel.onClick.AddListener(() => OnClick_Button(EPopupResult.Cancel));
+        }
 
         UIManager.Instance.PopupHandler.OpenPopup(this);
 
