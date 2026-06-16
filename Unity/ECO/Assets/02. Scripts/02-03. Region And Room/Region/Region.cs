@@ -50,7 +50,7 @@ public class Region : MonoBehaviourSingleton<Region>
     /// </summary>
     private bool IsValidContinueSaveData(SaveData saveData)
     {
-        if (saveData == null)
+        if (saveData is null)
         {
             return false;
         }

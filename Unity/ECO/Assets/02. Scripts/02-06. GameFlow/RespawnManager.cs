@@ -22,6 +22,11 @@ public class RespawnManager : MonoBehaviourSingleton<RespawnManager>
 
     private void OnDisable()
     {
+        RemoveEventListeners();
+    }
+
+    private void RemoveEventListeners()
+    {
         if (MonoBehaviourSingleton<EventManager>.HasInstance)
         {
             EventManager.Instance.RemoveEventListener(EEventType.PlayerDied, Respawn);

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 /// </summary>
 public static class RegionSceneMapper
 {
-    private static readonly Dictionary<ERegions, ESceneNames> RegionToScene = new Dictionary<ERegions, ESceneNames>
+    private static readonly Dictionary<ERegions, ESceneNames> RegionToScenes = new Dictionary<ERegions, ESceneNames>
     {
         { ERegions.Center,                ESceneNames.CenterRoomScene },
         { ERegions.DumpSiteTutorial,      ESceneNames.Region1Scene },
@@ -17,6 +17,6 @@ public static class RegionSceneMapper
 
     public static bool TryGetSceneName(ERegions region, out ESceneNames sceneName)
     {
-        return RegionToScene.TryGetValue(region, out sceneName);
+        return RegionToScenes.TryGetValue(region, out sceneName);
     }
 }

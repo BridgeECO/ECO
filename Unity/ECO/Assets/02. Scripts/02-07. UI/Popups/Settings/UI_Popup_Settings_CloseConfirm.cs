@@ -32,9 +32,18 @@ public class UI_Popup_Settings_CloseConfirm : UI_SystemPopup
         SetPopupText(title, message);
         ClearAllButtonListeners();
 
-        if (_buttonSaveAndClose != null) _buttonSaveAndClose.onClick.AddListener(() => OnClick_Button(EResult.SaveAndClose));
-        if (_buttonDontSaveAndClose != null) _buttonDontSaveAndClose.onClick.AddListener(() => OnClick_Button(EResult.DontSaveAndClose));
-        if (_buttonClose != null) _buttonClose.onClick.AddListener(() => OnClick_Button(EResult.Cancel));
+        if (_buttonSaveAndClose != null)
+        {
+            _buttonSaveAndClose.onClick.AddListener(() => OnClick_Button(EResult.SaveAndClose));
+        }
+        if (_buttonDontSaveAndClose != null)
+        {
+            _buttonDontSaveAndClose.onClick.AddListener(() => OnClick_Button(EResult.DontSaveAndClose));
+        }
+        if (_buttonClose != null)
+        {
+            _buttonClose.onClick.AddListener(() => OnClick_Button(EResult.Cancel));
+        }
 
         UIManager.Instance.PopupHandler.OpenPopup(this);
 
@@ -46,7 +55,7 @@ public class UI_Popup_Settings_CloseConfirm : UI_SystemPopup
     {
         UIManager.Instance.PopupHandler.ClosePopup(this);
 
-        if (_tcs != null)
+        if (_tcs is not null)
         {
             _tcs.TrySetResult(result);
             _tcs = null;

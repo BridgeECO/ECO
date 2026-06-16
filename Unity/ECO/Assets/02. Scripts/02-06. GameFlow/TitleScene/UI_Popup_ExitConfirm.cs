@@ -28,8 +28,14 @@ public class UI_Popup_ExitConfirm : UI_SystemPopup
         SetPopupText(title, message);
         ClearAllButtonListeners();
 
-        if (_buttonExitGame != null) _buttonExitGame.onClick.AddListener(() => OnClick_Button(EResult.ExitGame));
-        if (_buttonCancel != null) _buttonCancel.onClick.AddListener(() => OnClick_Button(EResult.Cancel));
+        if (_buttonExitGame != null)
+        {
+            _buttonExitGame.onClick.AddListener(() => OnClick_Button(EResult.ExitGame));
+        }
+        if (_buttonCancel != null)
+        {
+            _buttonCancel.onClick.AddListener(() => OnClick_Button(EResult.Cancel));
+        }
 
         UIManager.Instance.PopupHandler.OpenPopup(this);
 
@@ -41,7 +47,7 @@ public class UI_Popup_ExitConfirm : UI_SystemPopup
     {
         UIManager.Instance.PopupHandler.ClosePopup(this);
 
-        if (_tcs != null)
+        if (_tcs is not null)
         {
             _tcs.TrySetResult(result);
             _tcs = null;

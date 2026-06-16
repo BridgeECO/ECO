@@ -208,7 +208,7 @@ public class UI_SaveSlotItem : MonoBehaviour
         }
 
         SaveData saveData = SaveManager.Instance.Load(_slotIndex);
-        if (saveData == null)
+        if (saveData is null)
         {
             return;
         }

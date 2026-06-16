@@ -22,14 +22,23 @@ public abstract class UI_SystemPopup : UI_Popup
 
     protected void SetPopupText(string title, string message)
     {
-        if (_uiTitleText != null) _uiTitleText.text = title;
-        if (_uiMessageText != null) _uiMessageText.text = message;
+        if (_uiTitleText != null)
+        {
+            _uiTitleText.text = title;
+        }
+        if (_uiMessageText != null)
+        {
+            _uiMessageText.text = message;
+        }
     }
 
     protected void ClearAllButtonListeners()
     {
         var buttons = GetButtons();
-        if (buttons == null) return;
+        if (buttons is null)
+        {
+            return;
+        }
         
         foreach (var btn in buttons)
         {
