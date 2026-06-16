@@ -5,10 +5,11 @@ using UnityEngine;
 using VInspector;
 
 /// <summary>
-/// 이어하기 버튼 클릭 시 표시되는 저장 슬롯 선택 패널.
+/// 이어하기/새 게임 버튼 클릭 시 표시되는 저장 슬롯 선택 패널.
 /// 좌/우 방향키로 슬롯을 순환하며, Escape 키로 패널을 닫는다.
+/// OpenAsync(ESlotPanelMode)로 모드를 지정해 동작을 분기한다.
 /// </summary>
-public class UI_SaveSlotPanel : UI_Popup
+public class UI_SaveSlotPopup : UI_Popup
 {
     [Foldout("Hierarchy")]
     [SerializeField]
@@ -36,15 +37,20 @@ public class UI_SaveSlotPanel : UI_Popup
         HandleKeyboardInput();
     }
 
-    public override async UniTask OpenAsync()
+    public async UniTask OpenAsync(ESlotPanelMode mode)
     {
         await base.OpenAsync();
         _isOpen = true;
         _selectedIndex = 0;
 
-        RefreshAllSlots();
+        RefreshAllSlots(mode);
         ApplySelection();
         await PlayOpenAnimation();
+    }
+
+    public override async UniTask OpenAsync()
+    {
+        await OpenAsync(ESlotPanelMode.Continue);
     }
 
     public override async UniTask CloseAsync()
@@ -113,18 +119,18 @@ public class UI_SaveSlotPanel : UI_Popup
 
         for (int i = 0; i < _slotItems.Count; i++)
         {
-            _slotItems[i].Init(i);
+            _slotItems[i].Init(i, ESlotPanelMode.Continue);
         }
     }
 
     /// <summary>
-    /// 패널이 열릴 때마다 각 슬롯의 저장 데이터를 새로 읽어 표시를 갱신한다.
+    /// 패널이 열릴 때마다 각 슬롯의 저장 데이터와 모드를 새로 읽어 표시를 갱신한다.
     /// </summary>
-    private void RefreshAllSlots()
+    private void RefreshAllSlots(ESlotPanelMode mode)
     {
         for (int i = 0; i < _slotItems.Count; i++)
         {
-            _slotItems[i].Init(i);
+            _slotItems[i].Init(i, mode);
         }
     }
 

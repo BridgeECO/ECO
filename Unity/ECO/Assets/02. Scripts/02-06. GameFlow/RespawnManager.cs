@@ -1,68 +1,63 @@
-using Cysharp.Threading.Tasks;
-using System;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using VInspector;
 
+/// <summary>
+/// 플레이어 사망 시 세이브포인트로 리스폰하는 책임을 담당한다.
+/// PersistentScene에 플레이어와 함께 상주하므로 PlayerMotor를 인스펙터에서 직접 바인딩한다.
+/// </summary>
 public class RespawnManager : MonoBehaviourSingleton<RespawnManager>
 {
+    [Foldout("Hierarchy")]
+    [SerializeField]
     private PlayerMotor _playerMotor;
+
     private Room _saveRoom;
     private Vector3 _respawnPosition;
     public Vector3 RespawnPosition => _respawnPosition;
 
-    private void OnEnable()
-    {
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
-
     private void Start()
     {
         EventManager.Instance.AddEventListener(EEventType.PlayerDied, Respawn);
-        BindPlayer();
     }
 
     private void OnDisable()
     {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
         if (MonoBehaviourSingleton<EventManager>.HasInstance)
         {
             EventManager.Instance.RemoveEventListener(EEventType.PlayerDied, Respawn);
         }
     }
 
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        BindPlayer();
-    }
-
-    private void BindPlayer()
-    {
-        _playerMotor = FindAnyObjectByType<PlayerMotor>();
-    }
-
     public void UpdateSavePoint(Room room, Vector3 position)
     {
         _saveRoom = room;
         _respawnPosition = position;
-        SaveManager.Instance.Save(room);
+        SaveManager.Instance.Save(room, position);
+    }
+
+    /// <summary>
+    /// 이어하기 진입 시 리스폰 이벤트 없이 플레이어를 세이브포인트 위치로 즉시 이동시킨다.
+    /// </summary>
+    public void TeleportPlayer(Vector3 position)
+    {
+        MovePlayer(position);
     }
 
     public void Respawn()
     {
-        MovePlayerToSavePoint();
+        MovePlayer(_respawnPosition);
         ResetCurrentRoom();
         EventManager.Instance.BroadcastEvent(EEventType.PlayerRespawned);
     }
 
-    private void MovePlayerToSavePoint()
+    private void MovePlayer(Vector3 position)
     {
         if (_playerMotor == null)
         {
-            Debug.LogWarning("세이브 포인트로 이동시킬 대상(플레이어가)을 찾을 수 없습니다.");
+            Debug.LogWarning("세이브 포인트로 이동시킬 대상(플레이어)을 찾을 수 없습니다.");
             return;
         }
-        _playerMotor.Teleport(_respawnPosition);
+        _playerMotor.Teleport(position);
     }
 
     private void ResetCurrentRoom()
@@ -74,5 +69,4 @@ public class RespawnManager : MonoBehaviourSingleton<RespawnManager>
         }
         _saveRoom.ResetRoom();
     }
-
 }
