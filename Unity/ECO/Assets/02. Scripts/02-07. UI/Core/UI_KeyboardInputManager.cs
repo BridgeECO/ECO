@@ -11,9 +11,24 @@ public class UI_KeyboardInputManager : MonoBehaviourSingleton<UI_KeyboardInputMa
     private readonly Stack<IKeyboardControllable> _handlers = new Stack<IKeyboardControllable>();
 
     #region Unity Lifecycle Methods
+    private void OnEnable()
+    {
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
     private void Update()
     {
         DispatchInput();
+    }
+
+    private void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode)
+    {
+        _handlers.Clear();
     }
     #endregion
 
