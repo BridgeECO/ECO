@@ -6,10 +6,11 @@ using VInspector;
 
 /// <summary>
 /// 이어하기/새 게임 버튼 클릭 시 표시되는 저장 슬롯 선택 패널.
-/// 좌/우 방향키로 슬롯을 순환하며, Escape 키로 패널을 닫는다.
-/// OpenAsync(ESlotPanelMode)로 모드를 지정해 동작을 분기한다.
+/// 좌/우 방향키로 슬롯을 순환하며, 상/하 방향키로 슬롯 내 버튼을 이동한다.
+/// Escape 키는 UIManager 전역 처리에 위임하며, OpenAsync/CloseAsync 시점에
+/// UI_KeyboardInputManager에 자동 등록/해제된다.
 /// </summary>
-public class UI_SaveSlotPopup : UI_Popup
+public class UI_SaveSlotPopup : UI_Popup, IKeyboardControllable
 {
     [Foldout("Hierarchy")]
     [SerializeField]
@@ -19,7 +20,6 @@ public class UI_SaveSlotPopup : UI_Popup
     private List<UI_SaveSlotItem> _slotItems;
 
     private int _selectedIndex = 0;
-    private bool _isOpen = false;
 
     protected override void Awake()
     {
@@ -27,24 +27,14 @@ public class UI_SaveSlotPopup : UI_Popup
         InitSlots();
     }
 
-    private void Update()
-    {
-        if (!_isOpen)
-        {
-            return;
-        }
-
-        HandleKeyboardInput();
-    }
-
     public async UniTask OpenAsync(ESlotPanelMode mode)
     {
         await base.OpenAsync();
-        _isOpen = true;
         _selectedIndex = 0;
 
         RefreshAllSlots(mode);
         ApplySelection();
+        UI_KeyboardInputManager.Instance.PushHandler(this);
         await PlayOpenAnimation();
     }
 
@@ -55,39 +45,43 @@ public class UI_SaveSlotPopup : UI_Popup
 
     public override async UniTask CloseAsync()
     {
-        _isOpen = false;
+        // 애니메이션 시작 전에 Pop하여 닫히는 도중 입력이 처리되지 않도록 함
+        UI_KeyboardInputManager.Instance.PopHandler();
         await PlayCloseAnimation();
         await base.CloseAsync();
     }
 
-    private void HandleKeyboardInput()
+    #region IKeyboardControllable
+    public void OnMoveLeft()
     {
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            ChangeSelection(-1);
-        }
-        else if (Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            ChangeSelection(1);
-        }
-        else if (Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            _slotItems[_selectedIndex].MoveButtonSelection(-1);
-        }
-        else if (Input.GetKeyDown(KeyCode.DownArrow))
-        {
-            _slotItems[_selectedIndex].MoveButtonSelection(1);
-        }
-        else if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space))
-        {
-            _slotItems[_selectedIndex].PressSelectedButton();
-        }
-        else if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            UIManager.Instance.PopupHandler.ClosePopup(this);
-        }
+        ChangeSelection(-1);
     }
 
+    public void OnMoveRight()
+    {
+        ChangeSelection(1);
+    }
+
+    public void OnMoveUp()
+    {
+        _slotItems[_selectedIndex].MoveButtonSelection(-1);
+    }
+
+    public void OnMoveDown()
+    {
+        _slotItems[_selectedIndex].MoveButtonSelection(1);
+    }
+
+    public void OnConfirm()
+    {
+        _slotItems[_selectedIndex].PressSelectedButton();
+    }
+
+    // ESC는 UIManager가 CloseLatestPopup으로 전역 처리하므로 여기서는 응답하지 않음
+    public void OnCancel() { }
+    #endregion
+
+    #region Slot Management
     private void ChangeSelection(int offset)
     {
         if (_slotItems == null || _slotItems.Count == 0)
@@ -98,6 +92,7 @@ public class UI_SaveSlotPopup : UI_Popup
         _slotItems[_selectedIndex].SetSelected(false);
 
         _selectedIndex += offset;
+
         if (_selectedIndex < 0)
         {
             _selectedIndex = _slotItems.Count - 1;
@@ -141,7 +136,9 @@ public class UI_SaveSlotPopup : UI_Popup
             _slotItems[i].SetSelected(i == _selectedIndex);
         }
     }
+    #endregion
 
+    #region Animations
     private async UniTask PlayOpenAnimation()
     {
         var ct = this.GetCancellationTokenOnDestroy();
@@ -154,4 +151,5 @@ public class UI_SaveSlotPopup : UI_Popup
         var ct = this.GetCancellationTokenOnDestroy();
         await _panelCanvasGroup.DOFade(0f, 0.2f).SetEase(Ease.InQuad).ToUniTask(cancellationToken: ct);
     }
+    #endregion
 }
