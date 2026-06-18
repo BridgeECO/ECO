@@ -198,17 +198,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &490128266 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1650770760303311925, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
-  m_PrefabInstance: {fileID: 6277913269822648675}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 168a35a394e16cc43843f35f1fbdb726, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &842623128
 GameObject:
   m_ObjectHideFlags: 0
@@ -344,6 +333,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _cameraYOffset: 2
   _trackingTimeAfterTransition: 0.2
+  _mainCamera: {fileID: 0}
 --- !u!114 &842623135
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -402,11 +392,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5776003008716666939, guid: c4859a728bb40ee4c94d7adee5ded22c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 46.54
+      value: -6
       objectReference: {fileID: 0}
     - target: {fileID: 5776003008716666939, guid: c4859a728bb40ee4c94d7adee5ded22c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 68.85
+      value: 125.4
       objectReference: {fileID: 0}
     - target: {fileID: 5776003008716666939, guid: c4859a728bb40ee4c94d7adee5ded22c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -731,29 +721,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2205360650159505602, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
-      propertyPath: _pathNodes.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2205360650159505602, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
-      propertyPath: _pathNodes.Array.data[0]._terrain
-      value: 
-      objectReference: {fileID: 490128266}
     - target: {fileID: 2845654473629755713, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
       propertyPath: m_Name
       value: Scrap Nest_Region
-      objectReference: {fileID: 0}
-    - target: {fileID: 7229674305254280573, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
-      propertyPath: _gimmickEntries.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7229674305254280573, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
-      propertyPath: _gimmickEntries.Array.data[0]._gimmickData
-      value: 
-      objectReference: {fileID: 11400000, guid: bbf1a6aad6e7bb747aa3010c1e7f5c87, type: 2}
-    - target: {fileID: 8153361748155934141, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
