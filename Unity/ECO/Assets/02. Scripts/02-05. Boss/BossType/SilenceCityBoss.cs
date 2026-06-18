@@ -18,7 +18,7 @@ public class SilenceCityBoss : BossBase
 {
     [Header("Target Settings")]
     [SerializeField]
-    private List<FloorData> _floorData;
+    private List<FloorData> _floorDatas;
 
     private Rigidbody2D _rigidbody;
     private Collider2D _collider;
@@ -30,7 +30,7 @@ public class SilenceCityBoss : BossBase
     private float _currentSpeed;
     private GameObject _player;
 
-    private List<Vector3> _currentComputedPath = new List<Vector3>();
+    private List<Vector3> _currentComputedPaths = new List<Vector3>();
     private int _targetPathIndex = 0;
 
     protected override void Awake()
@@ -96,26 +96,29 @@ public class SilenceCityBoss : BossBase
     }
     private void UpdateCurrentFloorPath()
     {
-        _currentComputedPath.Clear();
+        _currentComputedPaths.Clear();
         _targetPathIndex = 0;
 
-        if (_floorData == null || _currentFloorIndex >= _floorData.Count) return;
+        if (_floorDatas == null || _currentFloorIndex >= _floorDatas.Count)
+        {
+            return;
+        }
 
-        FloorData currentFloor = _floorData[_currentFloorIndex];
+        FloorData currentFloor = _floorDatas[_currentFloorIndex];
         if (currentFloor.ChasingLine != null && currentFloor.ChasingLine != null)
         {
-            _currentComputedPath = new List<Vector3>(currentFloor.ChasingLine.GetComputedPath());
+            _currentComputedPaths = new List<Vector3>(currentFloor.ChasingLine.GetComputedPath());
         }
     }
 
     private void ProcessChaseLogic()
     {
-        if (_currentComputedPath == null || _currentComputedPath.Count == 0)
+        if (_currentComputedPaths == null || _currentComputedPaths.Count == 0)
         {
             return;
         }
 
-        if (_targetPathIndex >= _currentComputedPath.Count)
+        if (_targetPathIndex >= _currentComputedPaths.Count)
         {
             _rigidbody.linearVelocity = Vector2.zero;
             return;
@@ -131,7 +134,7 @@ public class SilenceCityBoss : BossBase
             ? BossData.CatchUpSpeed
             : BossData.BaseSpeed;
 
-        Vector2 currentTargetPos = _currentComputedPath[_targetPathIndex];
+        Vector2 currentTargetPos = _currentComputedPaths[_targetPathIndex];
         Vector2 direction = (currentTargetPos - (Vector2)transform.position).normalized;
 
         _rigidbody.linearVelocity = direction * _currentSpeed;
@@ -186,7 +189,7 @@ public class SilenceCityBoss : BossBase
             await fadeOutUcs.Task;
 
             BossRoomManager.ResetRoom();
-            foreach (var data in _floorData)
+            foreach (var data in _floorDatas)
             {
                 if (data.Floor != null)
                 {
@@ -303,13 +306,13 @@ public class SilenceCityBoss : BossBase
 
         try
         {
-            float duration = _floorData[_currentFloorIndex].GroggyDuration;
+            float duration = _floorDatas[_currentFloorIndex].GroggyDuration;
 
             await UniTask.Delay(TimeSpan.FromSeconds(duration), cancellationToken: token);
 
-            if (_floorData[_currentFloorIndex].Floor != null)
+            if (_floorDatas[_currentFloorIndex].Floor != null)
             {
-                _floorData[_currentFloorIndex].Floor.GroggyEnd();
+                _floorDatas[_currentFloorIndex].Floor.GroggyEnd();
             }
         }
         catch (OperationCanceledException)
