@@ -1,6 +1,7 @@
 public enum EInteractionType
 {
-    Button,
-    AutoPlay,
-    PressurePlate
+    ButtonPressAndHold = 0,
+    AutoPlay = 1,
+    PressurePlate = 2,
+    ButtonOneShotTimer = 3
 }
