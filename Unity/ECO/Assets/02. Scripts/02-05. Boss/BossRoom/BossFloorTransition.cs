@@ -9,8 +9,8 @@ public class BossFloorTransition : MonoBehaviour
     private Transform _jumpStartPoint;
     [SerializeField] 
     private Transform _jumpEndPoint;
-    [SerializeField] 
-    private float _jumpHeight = 10f;
+    [SerializeField]
+    private float _jumpHeight;
 
     private BossBase _boss;
     private bool _hasTriggered = false;
@@ -21,7 +21,10 @@ public class BossFloorTransition : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (_hasTriggered || !other.CompareTag(nameof(ETags.Player))) return;
+        if (_hasTriggered || !other.CompareTag(nameof(ETags.Player)))
+        {
+            return;
+        }
 
         if (_boss is SilenceCityBoss silenceBoss)
         {
@@ -31,7 +34,10 @@ public class BossFloorTransition : MonoBehaviour
 
     public void GroggyEnd()
     {
-        if (_hasTriggered) return;
+        if (_hasTriggered)
+        {
+            return;
+        }
         if (_boss is SilenceCityBoss silenceBoss)
         {
             _hasTriggered = true;
@@ -46,7 +52,10 @@ public class BossFloorTransition : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if (_jumpStartPoint == null || _jumpEndPoint == null) return;
+        if (_jumpStartPoint == null || _jumpEndPoint == null)
+        {
+            return;
+        }
 
         Gizmos.color = Color.blue;
         Gizmos.DrawWireCube(_jumpStartPoint.position, Vector3.one);
