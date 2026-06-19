@@ -55,7 +55,10 @@ public class ButtonOneShotTimerInteraction : InteractionBase
         try
         {
             await UniTask.Delay(TimeSpan.FromSeconds(_activeDuration), cancellationToken: _cts.Token);
-            TargetObject.CallSetState(false);
+            if (TargetObject != null)
+            {
+                TargetObject.CallSetState(false);
+            }
         }
         catch (OperationCanceledException)
         {
@@ -69,7 +72,7 @@ public class ButtonOneShotTimerInteraction : InteractionBase
 
     private void CancelTimer()
     {
-        if (_cts != null)
+        if (_cts is not null)
         {
             _cts.Cancel();
             _cts.Dispose();
