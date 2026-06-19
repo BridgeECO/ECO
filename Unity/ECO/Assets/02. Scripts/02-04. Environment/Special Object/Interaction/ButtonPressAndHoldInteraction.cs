@@ -2,12 +2,12 @@ using System;
 using R3;
 using UnityEngine;
 
-public class ButtonInteraction : InteractionBase
+public class ButtonPressAndHoldInteraction : InteractionBase
 {
     private bool _isInteracting = false;
     private IDisposable _inputDisposable;
 
-    public ButtonInteraction(SpecialObjectBase target) : base(target) { }
+    public ButtonPressAndHoldInteraction(SpecialObjectBase target) : base(target) { }
 
     public override void OnTriggerEnter2D(Collider2D other)
     {

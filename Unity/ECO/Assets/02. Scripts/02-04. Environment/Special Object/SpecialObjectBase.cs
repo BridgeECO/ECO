@@ -11,6 +11,11 @@ public abstract class SpecialObjectBase : MonoBehaviour, IResettable
     [SerializeField]
     protected EInteractionType _interactionType;
 
+    [Foldout("Project")]
+    [ShowIf(nameof(_interactionType), EInteractionType.ButtonOneShotTimer)]
+    [SerializeField]
+    private float _buttonOneShotDuration = 3f;
+
     public EInteractionType InteractionType { get => _interactionType; private set => _interactionType = value; }
 
     public bool IsPlayerInRange { get; private set; }
@@ -21,8 +26,11 @@ public abstract class SpecialObjectBase : MonoBehaviour, IResettable
     {
         switch (_interactionType)
         {
-            case EInteractionType.Button:
-                _interaction = new ButtonInteraction(this);
+            case EInteractionType.ButtonPressAndHold:
+                _interaction = new ButtonPressAndHoldInteraction(this);
+                break;
+            case EInteractionType.ButtonOneShotTimer:
+                _interaction = new ButtonOneShotTimerInteraction(this, _buttonOneShotDuration);
                 break;
             case EInteractionType.AutoPlay:
                 _interaction = new AutoPlayInteraction(this);
