@@ -67,10 +67,6 @@ public class SilenceCityBoss : BossBase
         switch (newState)
         {
             case EBossState.Chasing:
-                _rigidbody.bodyType = RigidbodyType2D.Kinematic;
-                _collider.isTrigger = true;
-                break;
-
             case EBossState.ReadyToJump:
             case EBossState.Jumping:
                 _rigidbody.bodyType = RigidbodyType2D.Kinematic;
@@ -105,7 +101,7 @@ public class SilenceCityBoss : BossBase
         }
 
         FloorData currentFloor = _floorDatas[_currentFloorIndex];
-        if (currentFloor.ChasingLine != null && currentFloor.ChasingLine != null)
+        if (currentFloor != null && currentFloor.ChasingLine != null)
         {
             _currentComputedPaths = new List<Vector3>(currentFloor.ChasingLine.GetComputedPath());
         }
@@ -306,11 +302,21 @@ public class SilenceCityBoss : BossBase
 
         try
         {
+            if (_floorDatas == null || _currentFloorIndex < 0 || _currentFloorIndex >= _floorDatas.Count || _floorDatas[_currentFloorIndex] == null)
+            {
+                return;
+            }
+
             float duration = _floorDatas[_currentFloorIndex].GroggyDuration;
 
             await UniTask.Delay(TimeSpan.FromSeconds(duration), cancellationToken: token);
 
-            if (_floorDatas[_currentFloorIndex].Floor != null)
+            if (this == null || _floorDatas == null || _currentFloorIndex < 0 || _currentFloorIndex >= _floorDatas.Count)
+            {
+                return;
+            }
+
+            if (_floorDatas[_currentFloorIndex]!=null && _floorDatas[_currentFloorIndex].Floor != null)
             {
                 _floorDatas[_currentFloorIndex].Floor.GroggyEnd();
             }
