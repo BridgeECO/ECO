@@ -22,7 +22,7 @@ jobs:
         uses: actions/cache@v4
         with: 
           path: Library
-          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          key: Library-${{ hashFiles('Unity/ECO/Assets/**', 'Unity/ECO/Packages/**', 'Unity/ECO/ProjectSettings/**') }}
           restore-keys: |
             Library-
 
