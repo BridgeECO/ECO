@@ -106,6 +106,7 @@ public class Region : MonoBehaviourSingleton<Region>
             return;
         }
         RespawnManager.Instance.UpdateSavePoint(_currentRoom, _initialSpawnPoint.position);
+        RespawnManager.Instance.TeleportPlayer(_initialSpawnPoint.position);
     }
 
     public void SetCurrentRoom(Room newRoom, Vector3 spawnPosition)
