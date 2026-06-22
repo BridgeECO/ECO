@@ -21,7 +21,7 @@ jobs:
       - name: Cache Library
         uses: actions/cache@v4
         with: 
-          path: Library
+          path: Unity/ECO/Library
           key: Library-${{ hashFiles('Unity/ECO/Assets/**', 'Unity/ECO/Packages/**', 'Unity/ECO/ProjectSettings/**') }}
           restore-keys: |
             Library-
@@ -34,7 +34,8 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           targetPlatform: StandaloneWindows64
-      
+          projectPath: Unity/ECO
+          
       - name: Upload Build File
         uses: actions/upload-artifact@v4
         with:
