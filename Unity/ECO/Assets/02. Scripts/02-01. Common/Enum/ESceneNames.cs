@@ -8,5 +8,6 @@ public enum ESceneNames
     CenterRoomScene,
     TestScene_Gimmick,
     TestScene_PlayerControl,
-    SaveSystemTestScene,
+    TestScene_SaveSystem,
+    Scrap_Nest,
 }
