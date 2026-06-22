@@ -77,6 +77,7 @@ public class PlayerMotor : MonoBehaviour
 
     public void Teleport(Vector2 position)
     {
+        transform.position = position;
         _rigidbody.position = position;
         Velocity = Vector2.zero;
         _rigidbody.linearVelocity = Vector2.zero;
