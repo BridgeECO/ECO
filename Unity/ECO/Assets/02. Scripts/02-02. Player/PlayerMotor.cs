@@ -9,7 +9,8 @@ public class PlayerMotor : MonoBehaviour
 
     public Vector2 Velocity { get; private set; }
     public Vector2 ExternalVelocity { get; set; }
-    public bool IsForward { get; private set; }
+    // 스폰 시 플레이어는 오른쪽(Quaternion.identity)을 바라보므로 true로 초기화
+    public bool IsForward { get; private set; } = true;
     private PlayerStateMachine _stateMachine;
     private Rigidbody2D _rigidbody;
 
