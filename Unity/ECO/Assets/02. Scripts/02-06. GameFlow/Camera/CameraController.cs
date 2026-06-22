@@ -14,6 +14,8 @@ public class CameraController : MonoBehaviour
 
     private Vector2 _currentRoomMin;
     private Vector2 _currentRoomMax;
+
+    [SerializeField]
     private Transform _playerTransform;
 
     private float _halfCamHeight;
@@ -46,7 +48,6 @@ public class CameraController : MonoBehaviour
         Camera camera = Camera.main;
         _halfCamHeight = camera.orthographicSize;
         _halfCamWidth = _halfCamHeight * camera.aspect;
-        _playerTransform = Object.FindAnyObjectByType<PlayerStateMachine>(FindObjectsInactive.Include).transform;
     }
 
     private void FollowPlayer()

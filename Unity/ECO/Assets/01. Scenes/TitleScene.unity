@@ -258,7 +258,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &172924267
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -718,17 +718,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 502155217}
   m_CullTransparentMesh: 1
---- !u!114 &629477284 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2180529829666312129, guid: 6b09cf13903b0f44aa7cea1b9e47f89f, type: 3}
-  m_PrefabInstance: {fileID: 365656171}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &629477286 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2659096443966911582, guid: 6b09cf13903b0f44aa7cea1b9e47f89f, type: 3}
@@ -1176,17 +1165,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2659096443966911582, guid: 6b09cf13903b0f44aa7cea1b9e47f89f, type: 3}
   m_PrefabInstance: {fileID: 717941398}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &884390121 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2180529829666312129, guid: 6b09cf13903b0f44aa7cea1b9e47f89f, type: 3}
-  m_PrefabInstance: {fileID: 717941398}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &910625117 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8787491462914066628, guid: 829a7002359e1bb448ba8c1948d384d1, type: 3}
@@ -1204,34 +1182,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2a151115a41b7c4aa7cbcac6516314b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  glowEffectImage: {fileID: 2026556755}
-  duration: 0.2
-  motionCurve:
+  _glowEffectImage: {fileID: 0}
+  _duration: 0
+  _motionCurve:
     serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
+    m_Curve: []
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  hoverScale: {x: 1, y: 1}
-  normalScale: {x: 0.7, y: 0}
+  _hoverScale: {x: 0, y: 0}
+  _normalScale: {x: 0, y: 0}
 --- !u!1 &994375963
 GameObject:
   m_ObjectHideFlags: 0
@@ -1782,17 +1742,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 8888228170884614250, guid: 829a7002359e1bb448ba8c1948d384d1, type: 3}
   m_PrefabInstance: {fileID: 1379598675}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1402124723 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2180529829666312129, guid: 6b09cf13903b0f44aa7cea1b9e47f89f, type: 3}
-  m_PrefabInstance: {fileID: 864595262}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &1402124725 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2659096443966911582, guid: 6b09cf13903b0f44aa7cea1b9e47f89f, type: 3}
@@ -2362,34 +2311,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2a151115a41b7c4aa7cbcac6516314b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  glowEffectImage: {fileID: 1402124723}
-  duration: 0.2
-  motionCurve:
+  _glowEffectImage: {fileID: 0}
+  _duration: 0
+  _motionCurve:
     serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
+    m_Curve: []
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  hoverScale: {x: 1, y: 1}
-  normalScale: {x: 0.7, y: 0}
+  _hoverScale: {x: 0, y: 0}
+  _normalScale: {x: 0, y: 0}
 --- !u!1 &1893424653 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2228491382314629309, guid: 829a7002359e1bb448ba8c1948d384d1, type: 3}
@@ -2412,34 +2343,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2a151115a41b7c4aa7cbcac6516314b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  glowEffectImage: {fileID: 884390121}
-  duration: 0.2
-  motionCurve:
+  _glowEffectImage: {fileID: 0}
+  _duration: 0
+  _motionCurve:
     serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
+    m_Curve: []
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  hoverScale: {x: 1, y: 1}
-  normalScale: {x: 0.7, y: 0}
+  _hoverScale: {x: 0, y: 0}
+  _normalScale: {x: 0, y: 0}
 --- !u!1 &1987140656 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8787491462914066628, guid: 829a7002359e1bb448ba8c1948d384d1, type: 3}
@@ -2457,50 +2370,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2a151115a41b7c4aa7cbcac6516314b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  glowEffectImage: {fileID: 629477284}
-  duration: 0.2
-  motionCurve:
+  _glowEffectImage: {fileID: 0}
+  _duration: 0
+  _motionCurve:
     serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
+    m_Curve: []
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  hoverScale: {x: 1, y: 1}
-  normalScale: {x: 0.7, y: 0}
+  _hoverScale: {x: 0, y: 0}
+  _normalScale: {x: 0, y: 0}
 --- !u!1 &1999546503 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2228491382314629309, guid: 829a7002359e1bb448ba8c1948d384d1, type: 3}
   m_PrefabInstance: {fileID: 1740189259}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2026556755 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2180529829666312129, guid: 6b09cf13903b0f44aa7cea1b9e47f89f, type: 3}
-  m_PrefabInstance: {fileID: 795906145}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &2026556757 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2659096443966911582, guid: 6b09cf13903b0f44aa7cea1b9e47f89f, type: 3}
