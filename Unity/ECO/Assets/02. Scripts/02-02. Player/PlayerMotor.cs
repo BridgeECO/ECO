@@ -55,19 +55,25 @@ public class PlayerMotor : MonoBehaviour
         Velocity = new Vector2(Velocity.x, y);
     }
 
+    // IL2CPP 빌드 최적화에서 Quaternion.Euler()의 부동소수점 정밀도 차이로 인해
+    // 매 프레임 == 비교가 false가 되는 문제를 방지하기 위해 캐싱
+    private static readonly Quaternion ROTATION_LEFT = Quaternion.Euler(0f, 180f, 0f);
+
     public void SetFlip(float xInput)
     {
         if (xInput == 0f)
         {
             return;
         }
-        Quaternion targetRotation = (0f < xInput) ? Quaternion.identity : Quaternion.Euler(0f, 180f, 0f);
-        if (transform.rotation == targetRotation)
+
+        bool wantsForward = 0f < xInput;
+        if (IsForward == wantsForward)
         {
             return;
         }
-        transform.rotation = targetRotation;
-        IsForward = (0f < xInput);
+
+        transform.rotation = wantsForward ? Quaternion.identity : ROTATION_LEFT;
+        IsForward = wantsForward;
     }
 
     public void AddVelocity(Vector2 addedVelocity)
@@ -77,7 +83,6 @@ public class PlayerMotor : MonoBehaviour
 
     public void Teleport(Vector2 position)
     {
-        transform.position = position;
         _rigidbody.position = position;
         Velocity = Vector2.zero;
         _rigidbody.linearVelocity = Vector2.zero;
