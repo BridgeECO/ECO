@@ -266,6 +266,7 @@ public class UI_SaveSlotItem : MonoBehaviour
     private void StartNewGame()
     {
         SaveManager.Instance.CurrentSlotIndex = _slotIndex;
+        SaveManager.Instance.ResetCurrentSaveData();
         SceneTransitionManager.Instance.TransitionToNewRegionAsync(ESceneNames.Scrap_Nest).Forget();
     }
 
