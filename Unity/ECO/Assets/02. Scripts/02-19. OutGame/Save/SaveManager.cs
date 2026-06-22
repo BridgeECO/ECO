@@ -9,6 +9,11 @@ public class SaveManager : MonoBehaviourSingleton<SaveManager>
 
     private const string SaveFileNameFormat = "saveData_{0}.json";
 
+    public void ResetCurrentSaveData()
+    {
+        CurrentSaveData = null;
+    }
+
     protected override void Awake()
     {
         base.Awake();

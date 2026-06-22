@@ -7,6 +7,9 @@ public class SceneTransitionManager : MonoBehaviourSingleton<SceneTransitionMana
 {
     private string _currentLoadedRegionScene;
     private bool _isTransitioning;
+    
+    [Foldout("Hierarchy")]
+    [SerializeField]
     private GameObject _player;
 
     public string CurrentLoadedRegionScene => _currentLoadedRegionScene;
@@ -16,12 +19,6 @@ public class SceneTransitionManager : MonoBehaviourSingleton<SceneTransitionMana
     protected override void Awake()
     {
         base.Awake();
-        
-        PlayerStateMachine playerStateMachine = FindAnyObjectByType<PlayerStateMachine>(FindObjectsInactive.Include);
-        if (playerStateMachine != null)
-        {
-            _player = playerStateMachine.gameObject;
-        }
     }
 
     private void Start()
@@ -59,6 +56,8 @@ public class SceneTransitionManager : MonoBehaviourSingleton<SceneTransitionMana
         {
             _player.SetActive(IsGameplayScene);
         }
+
+        await UniTask.Yield();
     }
 
     public async UniTask TransitionToNewRegionAsync(ESceneNames targetSceneName)
