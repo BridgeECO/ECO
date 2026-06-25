@@ -16,6 +16,9 @@ public class RoomTransition : MonoBehaviour
     [SerializeField]
     private Transform _spawnPointB;
 
+    [SerializeField]
+    private bool _canSkipCameraTransition;
+
     private float _lastTriggerTime = -1f;
     private Collider2D _transitionCollider;
 
@@ -70,7 +73,7 @@ public class RoomTransition : MonoBehaviour
         }
 
         Vector3 spawnPosition = targetRoom == _roomA ? _spawnPointA.position : _spawnPointB.position;
-        Region.Instance.SetCurrentRoom(targetRoom, spawnPosition);
+        Region.Instance.SetCurrentRoom(targetRoom, spawnPosition, _canSkipCameraTransition);
     }
 
     private Room GetRoomByAxis(Collider2D playerCollider)

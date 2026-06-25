@@ -87,14 +87,11 @@ public class Region : MonoBehaviourSingleton<Region>
 
     private void InitCameraBounds()
     {
-        if (Camera.main != null)
+        var mainCamera = Camera.main;
+        if (mainCamera != null && mainCamera.TryGetComponent<CameraController>(out var cameraController))
         {
-            CameraController cameraController = Camera.main.GetComponent<CameraController>();
-            if (cameraController != null)
-            {
-                cameraController.SetRoomBounds(_currentRoom.MinBounds, _currentRoom.MaxBounds);
-                cameraController.transform.position = cameraController.GetClampedPosition();
-            }
+            cameraController.SetRoomBounds(_currentRoom.MinBounds, _currentRoom.MaxBounds);
+            cameraController.transform.position = cameraController.GetClampedPosition();
         }
     }
 
@@ -109,7 +106,7 @@ public class Region : MonoBehaviourSingleton<Region>
         RespawnManager.Instance.TeleportPlayer(_initialSpawnPoint.position);
     }
 
-    public void SetCurrentRoom(Room newRoom, Vector3 spawnPosition)
+    public void SetCurrentRoom(Room newRoom, Vector3 spawnPosition, bool isCameraTransitionSkipped = false)
     {
         if (_currentRoom == newRoom)
         {
@@ -120,7 +117,19 @@ public class Region : MonoBehaviourSingleton<Region>
         _currentRoom.IsVisited = true;
         RespawnManager.Instance.UpdateSavePoint(_currentRoom, spawnPosition);
         LifeManager.Instance.RecoverToRoomTransition();
-        EventManager.Instance.BroadcastEvent(EEventType.RoomChanged);
+        
+        if (isCameraTransitionSkipped)
+        {
+            var mainCamera = Camera.main;
+            if (mainCamera != null && mainCamera.TryGetComponent<CameraController>(out var cameraController))
+            {
+                cameraController.SetRoomBounds(_currentRoom.MinBounds, _currentRoom.MaxBounds);
+            }
+        }
+        else
+        {
+            EventManager.Instance.BroadcastEvent(EEventType.RoomChanged);
+        }
     }
 
     public int GetRoomIndex(Room room)
