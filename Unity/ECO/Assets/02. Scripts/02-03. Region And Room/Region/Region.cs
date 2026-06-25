@@ -15,6 +15,7 @@ public class Region : MonoBehaviourSingleton<Region>
     private Transform _initialSpawnPoint;
 
     private Room _currentRoom;
+    private CameraController _cameraController;
 
     public Room CurrentRoom => _currentRoom;
     public IReadOnlyList<Room> Rooms => _rooms;
@@ -22,7 +23,17 @@ public class Region : MonoBehaviourSingleton<Region>
 
     private void Start()
     {
+        InitCameraController();
         InitRegion();
+    }
+
+    private void InitCameraController()
+    {
+        var mainCamera = Camera.main;
+        if (mainCamera != null)
+        {
+            mainCamera.TryGetComponent<CameraController>(out _cameraController);
+        }
     }
 
     private void InitRegion()
@@ -38,31 +49,15 @@ public class Region : MonoBehaviourSingleton<Region>
         if (IsValidContinueSaveData(saveData))
         {
             InitFromSaveData(saveData);
+            return;
         }
-        else
-        {
-            InitFromDefaultSpawnPoint();
-        }
+        InitFromDefaultSpawnPoint();
     }
 
-    /// <summary>
-    /// 저장 데이터가 현재 씬의 Region과 일치하고 유효한 RoomIndex를 가지는지 검사한다.
-    /// </summary>
+    // 저장 데이터가 현재 씬의 Region과 일치하고 유효한 RoomIndex를 가지는지 검사한다.
     private bool IsValidContinueSaveData(SaveData saveData)
     {
-        if (saveData is null)
-        {
-            return false;
-        }
-        if (saveData.Region != _regionType)
-        {
-            return false;
-        }
-        if (saveData.RoomIndex < 0 || saveData.RoomIndex >= _rooms.Count)
-        {
-            return false;
-        }
-        return true;
+        return saveData is not null && saveData.Region == _regionType && saveData.RoomIndex >= 0 && saveData.RoomIndex < _rooms.Count;
     }
 
     private void InitFromSaveData(SaveData saveData)
@@ -87,29 +82,27 @@ public class Region : MonoBehaviourSingleton<Region>
 
     private void InitCameraBounds()
     {
-        if (Camera.main != null)
+        if (_cameraController == null)
         {
-            CameraController cameraController = Camera.main.GetComponent<CameraController>();
-            if (cameraController != null)
-            {
-                cameraController.SetRoomBounds(_currentRoom.MinBounds, _currentRoom.MaxBounds);
-                cameraController.transform.position = cameraController.GetClampedPosition();
-            }
+            Debug.Log($"카메라 컨트롤러가 null입니다.");
+            return;
         }
+        _cameraController.SetRoomBounds(_currentRoom.MinBounds, _currentRoom.MaxBounds);
+        _cameraController.transform.position = _cameraController.GetClampedPosition();
     }
 
     private void InitDefaultSavePoint()
     {
         if (_initialSpawnPoint == null)
         {
-            Debug.LogWarning("초기 스폰 포인트를 찾을 수 없습니다.");
+            Debug.LogWarning($"초기 스폰 포인트를 찾을 수 없습니다.");
             return;
         }
         RespawnManager.Instance.UpdateSavePoint(_currentRoom, _initialSpawnPoint.position);
         RespawnManager.Instance.TeleportPlayer(_initialSpawnPoint.position);
     }
 
-    public void SetCurrentRoom(Room newRoom, Vector3 spawnPosition)
+    public void SetCurrentRoom(Room newRoom, Vector3 spawnPosition, bool isCameraTransitionSkipped = false)
     {
         if (_currentRoom == newRoom)
         {
@@ -120,23 +113,17 @@ public class Region : MonoBehaviourSingleton<Region>
         _currentRoom.IsVisited = true;
         RespawnManager.Instance.UpdateSavePoint(_currentRoom, spawnPosition);
         LifeManager.Instance.RecoverToRoomTransition();
-        EventManager.Instance.BroadcastEvent(EEventType.RoomChanged);
+        
+        if (!isCameraTransitionSkipped)
+        {
+            EventManager.Instance.BroadcastEvent(EEventType.RoomChanged);
+            return;
+        }
+        _cameraController.SetRoomBounds(_currentRoom.MinBounds, _currentRoom.MaxBounds);
     }
 
     public int GetRoomIndex(Room room)
     {
-        if (_rooms == null)
-        {
-            return -1;
-        }
-
-        for (int i = 0; i < _rooms.Count; i++)
-        {
-            if (_rooms[i] == room)
-            {
-                return i;
-            }
-        }
-        return -1;
+        return _rooms?.IndexOf(room) ?? -1;
     }
 }
