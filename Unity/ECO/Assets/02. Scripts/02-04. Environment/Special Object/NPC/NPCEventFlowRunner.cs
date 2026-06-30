@@ -57,7 +57,7 @@ public class NPCEventFlowRunner
         {
             token.ThrowIfCancellationRequested();
 
-            if (nextEvent.DialogueLines is not null && nextEvent.DialogueLines.Length > 0)
+            if (nextEvent.DialogueLines is not null && 0< nextEvent.DialogueLines.Length )
             {
                 NPCEventSO chosenEvent = await ShowDialogueAndGetChoiceAsync(nextEvent, token);
 
@@ -161,7 +161,7 @@ public class NPCEventFlowRunner
             _uiNPCDialogue.OnDialogueCompleted = null;
             _uiNPCDialogue.OnDialogueCompleted = () =>
             {
-                if (eventData.HasChoices && eventData.Choices is not null && eventData.Choices.Count > 0)
+                if (eventData.HasChoices && eventData.Choices is not null && 0< eventData.Choices.Count )
                 {
                     _uiNPCDialogue.ShowChoices(eventData.Choices, (selectedEvent) =>
                     {

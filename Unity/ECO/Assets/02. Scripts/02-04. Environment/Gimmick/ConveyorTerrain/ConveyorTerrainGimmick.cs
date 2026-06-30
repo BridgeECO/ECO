@@ -202,7 +202,7 @@ public class ConveyorTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizab
         target.Rigidbody.MovePosition(targetPos);
         _currentIndex++;
 
-        if (_currentIndex >= _entry.Waypoints.Count)
+        if (_entry.Waypoints.Count<= _currentIndex )
         {
             TeleportToStart(target);
         }

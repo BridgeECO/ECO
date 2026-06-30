@@ -7,7 +7,7 @@ public class UI_PopupHandler
     private Stack<UI_Popup> _popups = new Stack<UI_Popup>();
     private bool _isClosing = false;
 
-    public bool HasPopups => _popups.Count > 0;
+    public bool HasPopups => 0< _popups.Count ;
 
     public void Init()
     {

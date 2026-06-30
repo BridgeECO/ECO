@@ -40,7 +40,7 @@ public class UI_KeyboardInputManager : MonoBehaviourSingleton<UI_KeyboardInputMa
 
     public void PopHandler()
     {
-        if (_handlers.Count > 0)
+        if (0< _handlers.Count )
         {
             _handlers.Pop();
         }

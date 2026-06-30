@@ -73,7 +73,7 @@ public class UI_TitleButtonsKeyboardHandler : MonoBehaviour, IKeyboardControllab
         {
             _currentIndex = _items.Count - 1;
         }
-        else if (_currentIndex >= _items.Count)
+        else if (_items.Count<= _currentIndex )
         {
             _currentIndex = 0;
         }
@@ -116,7 +116,7 @@ public class UI_TitleButtonsKeyboardHandler : MonoBehaviour, IKeyboardControllab
             return;
         }
 
-        if (_currentIndex < 0 || _currentIndex >= _items.Count)
+        if (_currentIndex < 0 || _items.Count<= _currentIndex )
         {
             return;
         }
