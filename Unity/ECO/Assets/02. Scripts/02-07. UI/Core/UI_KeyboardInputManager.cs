@@ -51,6 +51,17 @@ public class UI_KeyboardInputManager : MonoBehaviourSingleton<UI_KeyboardInputMa
     #region Input Dispatch
     private void DispatchInput()
     {
+        if (_handlers.Count == 0)
+        {
+            return;
+        }
+
+        // 키 입력이 없는 프레임에는 가짜 null 체크 오버헤드를 방지하기 위해 얼리 리턴 처리합니다. (컨벤션 1-d 준수)
+        if (!Input.anyKeyDown)
+        {
+            return;
+        }
+
         PruneDestroyedHandlers();
 
         if (_handlers.Count == 0)
