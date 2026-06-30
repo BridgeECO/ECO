@@ -20,13 +20,13 @@ public class EnergyLineRendererDrawer
             float segLen = Vector3.Distance(p1, p2);
             float nextDist = currentDist + segLen;
 
-            if (startDist <= nextDist && endDist >= currentDist)
+            if (startDist <= nextDist && currentDist<= endDist )
             {
                 float localStart = Mathf.Max(0, startDist - currentDist);
                 float localEnd = Mathf.Min(segLen, endDist - currentDist);
 
-                float tStart = segLen > 0f ? localStart / segLen : 0f;
-                float tEnd = segLen > 0f ? localEnd / segLen : 1f;
+                float tStart = 0f < segLen ? localStart / segLen : 0f;
+                float tEnd = 0f < segLen ? localEnd / segLen : 1f;
 
                 Vector3 pointStart = Vector3.Lerp(p1, p2, tStart);
                 Vector3 pointEnd = Vector3.Lerp(p1, p2, tEnd);

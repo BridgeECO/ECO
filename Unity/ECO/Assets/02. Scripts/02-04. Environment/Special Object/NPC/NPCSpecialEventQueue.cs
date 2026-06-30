@@ -6,7 +6,7 @@ public class NPCSpecialEventQueue
     private readonly HashSet<string> _firedEventIds = new HashSet<string>();
     private readonly HashSet<string> _savedFiredEventIds = new HashSet<string>();
 
-    public bool HasActiveEvent => _activeEvents.Count > 0;
+    public bool HasActiveEvent => 0< _activeEvents.Count ;
 
     public bool TryActivate(NPCEventSO eventData)
     {
@@ -69,7 +69,7 @@ public class NPCSpecialEventQueue
         int insertIndex = _activeEvents.Count;
         for (int i = 0; i < _activeEvents.Count; i++)
         {
-            if (eventData.Priority > _activeEvents[i].Priority)
+            if (_activeEvents[i].Priority< eventData.Priority )
             {
                 insertIndex = i;
                 break;

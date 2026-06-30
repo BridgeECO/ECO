@@ -74,7 +74,7 @@ public class UI_NPCDialogue : MonoBehaviour
             return;
         }
 
-        if (_currentPageIndex >= _lines.Length - 1)
+        if (_lines.Length - 1<= _currentPageIndex )
         {
             OnDialogueCompleted?.Invoke();
             return;

@@ -82,7 +82,7 @@ public class UI_NPCDialogueTextBox : MonoBehaviour
             return;
         }
 
-        bool isLastPage = currentIndex >= totalCount - 1;
+        bool isLastPage = totalCount - 1<= currentIndex ;
         _continueIndicator.SetActive(!isLastPage);
     }
 
@@ -120,7 +120,7 @@ public class UI_NPCDialogueTextBox : MonoBehaviour
         _dialogueText.ForceMeshUpdate();
         int totalVisibleCharacters = _dialogueText.textInfo.characterCount;
 
-        float duration = _textPrintSpeed > 0f ? totalVisibleCharacters / _textPrintSpeed : 0f;
+        float duration = 0f < _textPrintSpeed ? totalVisibleCharacters / _textPrintSpeed : 0f;
 
         if (duration <= 0f)
         {

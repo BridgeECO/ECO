@@ -57,7 +57,7 @@ public class Region : MonoBehaviourSingleton<Region>
     // 저장 데이터가 현재 씬의 Region과 일치하고 유효한 RoomIndex를 가지는지 검사한다.
     private bool IsValidContinueSaveData(SaveData saveData)
     {
-        return saveData is not null && saveData.Region == _regionType && saveData.RoomIndex >= 0 && saveData.RoomIndex < _rooms.Count;
+        return saveData is not null && saveData.Region == _regionType && 0 <= saveData.RoomIndex && saveData.RoomIndex < _rooms.Count;
     }
 
     private void InitFromSaveData(SaveData saveData)

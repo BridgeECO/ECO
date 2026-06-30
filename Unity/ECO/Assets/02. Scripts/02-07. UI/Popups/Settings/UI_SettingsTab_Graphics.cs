@@ -195,7 +195,7 @@ public class UI_SettingsTab_Graphics : UI_SettingsTabBase
 
     private void ApplyResolutionImmediately()
     {
-        if (_currentResolutionIndex >= 0 && _currentResolutionIndex < _resolutionOptions.Count)
+        if (0 <= _currentResolutionIndex && _currentResolutionIndex < _resolutionOptions.Count)
         {
             string resStr = _resolutionOptions[_currentResolutionIndex];
             string[] split = resStr.Replace(" ", "").Split('*');

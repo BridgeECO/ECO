@@ -31,7 +31,7 @@ public class UI_NPCChoice : MonoBehaviour
 
         for (int i = 0; i < _currentOptions.Count; i++)
         {
-            if (i >= 9)
+            if (9<= i )
             {
                 break;
             }
@@ -98,7 +98,7 @@ public class UI_NPCChoice : MonoBehaviour
 
     private void SelectChoice(int index)
     {
-        if (_currentOptions == null || index < 0 || index >= _currentOptions.Count)
+        if (_currentOptions == null || index < 0 || _currentOptions.Count<= index )
         {
             return;
         }

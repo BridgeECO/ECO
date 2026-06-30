@@ -126,7 +126,7 @@ public class UI_SpriteAnimator : MonoBehaviour
 
         try
         {
-            if (remainingDelay > 0f)
+            if (0f< remainingDelay )
             {
                 await UniTask.Delay(TimeSpan.FromSeconds(remainingDelay), cancellationToken: cancellationToken);
             }
@@ -157,7 +157,7 @@ public class UI_SpriteAnimator : MonoBehaviour
             _cts = null;
         }
 
-        for (int i = _sprites.Count - 1; i >= 0; i--)
+        for (int i = _sprites.Count - 1; 0<= i ; i--)
         {
             if (_targetImage == null)
             {
@@ -165,7 +165,7 @@ public class UI_SpriteAnimator : MonoBehaviour
             }
             _targetImage.sprite = _sprites[i];
 
-            if (i > 0)
+            if (0< i )
             {
                 try
                 {

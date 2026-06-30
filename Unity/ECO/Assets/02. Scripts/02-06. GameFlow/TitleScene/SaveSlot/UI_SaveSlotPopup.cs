@@ -97,7 +97,7 @@ public class UI_SaveSlotPopup : UI_Popup, IKeyboardControllable
         {
             _selectedIndex = _slotItems.Count - 1;
         }
-        else if (_selectedIndex >= _slotItems.Count)
+        else if (_slotItems.Count<= _selectedIndex )
         {
             _selectedIndex = 0;
         }

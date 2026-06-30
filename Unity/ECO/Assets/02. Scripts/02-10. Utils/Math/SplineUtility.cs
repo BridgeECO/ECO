@@ -8,7 +8,7 @@ public static class SplineUtility
         Vector3[] tangents = new Vector3[points.Count];
         for (int i = 0; i < points.Count; i++)
         {
-            Vector3 pPrev = i > 0 ? points[i - 1] : points[i];
+            Vector3 pPrev = 0 < i ? points[i - 1] : points[i];
             Vector3 pCurr = points[i];
             Vector3 pNext = i < points.Count - 1 ? points[i + 1] : points[i];
 
