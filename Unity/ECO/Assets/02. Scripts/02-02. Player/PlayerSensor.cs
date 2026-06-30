@@ -64,7 +64,13 @@ public class PlayerSensor : MonoBehaviour
 
     private void UpdateOnGroundSensor(bool touchingPlatform)
     {
-        bool touchingTerrain = CheckOverlap(_feetCollider.bounds.center, _feetCollider.bounds.size, _terrainLayer);
+        // 지형 모서리가 둥글어서 생기는 미세한 틈새(V자 홈)에서도 접지 판정이 유지되도록 검사 영역을 아래로 약간 확장합니다.
+        Vector2 checkSize = _feetCollider.bounds.size;
+        checkSize.y += 0.1f;
+        Vector3 checkCenter = _feetCollider.bounds.center;
+        checkCenter.y -= 0.05f;
+
+        bool touchingTerrain = CheckOverlap(checkCenter, checkSize, _terrainLayer);
         IsOnGround = touchingTerrain || touchingPlatform;
     }
 
