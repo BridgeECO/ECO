@@ -38,7 +38,7 @@ public class SoundManager : MonoBehaviourSingleton<SoundManager>
     public void PlayBgm(EBgmType type, float fadeDuration = 1f)
     {
         int index = (int)type;
-        if (index < 0 || index >= _bgmClips.Length || _bgmClips[index] == null)
+        if (_bgmClips == null || index < 0 || _bgmClips.Length <= index || _bgmClips[index] == null)
         {
             return;
         }

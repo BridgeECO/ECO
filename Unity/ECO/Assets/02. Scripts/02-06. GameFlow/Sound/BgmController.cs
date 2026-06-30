@@ -94,7 +94,7 @@ public class BgmController : MonoBehaviour
         while (elapsed < fadeDuration)
         {
             bool cancelled = await UniTask.Yield(PlayerLoopTiming.Update, token).SuppressCancellationThrow();
-            if (cancelled)
+            if (cancelled || this == null || _currentSource == null || _nextSource == null)
             {
                 return;
             }
@@ -122,7 +122,7 @@ public class BgmController : MonoBehaviour
         while (elapsed < fadeDuration)
         {
             bool cancelled = await UniTask.Yield(PlayerLoopTiming.Update, token).SuppressCancellationThrow();
-            if (cancelled)
+            if (cancelled || this == null || _currentSource == null)
             {
                 return;
             }

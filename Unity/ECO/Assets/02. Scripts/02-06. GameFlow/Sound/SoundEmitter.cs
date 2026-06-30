@@ -31,9 +31,13 @@ public class SoundEmitter : MonoBehaviour
     private AudioSource _audioSource;
     private Camera _cachedCamera;
 
-    private void OnEnable()
+    private void Awake()
     {
         _audioSource = GetComponent<AudioSource>();
+    }
+
+    private void OnEnable()
+    {
         _cachedCamera = Camera.main;
         UpdateVolume();
     }
@@ -62,7 +66,11 @@ public class SoundEmitter : MonoBehaviour
     {
         if (_cachedCamera == null)
         {
-            return 1f;
+            _cachedCamera = Camera.main;
+            if (_cachedCamera == null)
+            {
+                return 1f;
+            }
         }
 
         Vector3 vp = _cachedCamera.WorldToViewportPoint(transform.position);
