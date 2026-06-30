@@ -67,10 +67,11 @@ public class SoundEmitter : MonoBehaviour
         if (_cachedCamera == null)
         {
             _cachedCamera = Camera.main;
-            if (_cachedCamera == null)
-            {
-                return 1f;
-            }
+        }
+
+        if (_cachedCamera == null)
+        {
+            return 1f;
         }
 
         Vector3 vp = _cachedCamera.WorldToViewportPoint(transform.position);
