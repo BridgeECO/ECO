@@ -16,7 +16,6 @@ public class SoundManager : MonoBehaviourSingleton<SoundManager>
     private SfxController _sfxController;
 
     [Foldout("Project")]
-    [Header("BGM Clips")]
     [SerializeField]
     private AudioClip[] _bgmClips;
 
