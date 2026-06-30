@@ -134,7 +134,7 @@ public class UI_TitleButtonsKeyboardHandler : MonoBehaviour, IKeyboardControllab
     // OnDisable 내부에서 직접 싱글톤 접근을 지양하는 컨벤션 준수를 위해 별도 메서드로 분리
     private void SafePopHandler()
     {
-        UI_KeyboardInputManager.Instance.PopHandler();
+        UI_KeyboardInputManager.Instance.PopHandler(this);
     }
     #endregion
 }
