@@ -39,20 +39,14 @@ public abstract class UI_Popup : MonoBehaviour
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = true;
 
-        if (_spriteAnimators != null && 0< _spriteAnimators.Length )
+        if (_spriteAnimators != null && 0 < _spriteAnimators.Length)
         {
-            var tasks = new List<UniTask>();
             foreach (var spriteAnimator in _spriteAnimators)
             {
                 if (spriteAnimator != null && spriteAnimator.isActiveAndEnabled)
                 {
-                    tasks.Add(spriteAnimator.PlayReverseAsync(this.GetCancellationTokenOnDestroy()));
+                    spriteAnimator.PlayReverseAsync(this.GetCancellationTokenOnDestroy()).Forget();
                 }
-            }
-            
-            if (0< tasks.Count )
-            {
-                await UniTask.WhenAll(tasks);
             }
         }
 
