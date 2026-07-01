@@ -14,15 +14,24 @@ public class UI_TitleButtonsKeyboardHandler : MonoBehaviour, IKeyboardControllab
     [SerializeField]
     private List<UI_ButtonSelectionItem> _items;
 
+    private TitleScene _titleScene;
     private int _currentIndex;
 
     private List<UnityAction> _clickActions;
 
     #region Unity Lifecycle Methods
+    public void Init(TitleScene titleScene)
+    {
+        _titleScene = titleScene;
+        if (_titleScene != null)
+        {
+            _titleScene.OnMenuStarted += HandleMenuStarted;
+        }
+    }
+
     private void OnEnable()
     {
         InitSelection();
-        UI_KeyboardInputManager.Instance.PushHandler(this);
 
         _clickActions = new List<UnityAction>();
         for (int i = 0; i < _items.Count; i++)
@@ -59,7 +68,23 @@ public class UI_TitleButtonsKeyboardHandler : MonoBehaviour, IKeyboardControllab
             _clickActions = null;
         }
     }
+
+    private void OnDestroy()
+    {
+        if (_titleScene != null)
+        {
+            _titleScene.OnMenuStarted -= HandleMenuStarted;
+        }
+    }
     #endregion
+
+    private void HandleMenuStarted()
+    {
+        if (UI_KeyboardInputManager.HasInstance)
+        {
+            UI_KeyboardInputManager.Instance.PushHandler(this);
+        }
+    }
 
     #region IKeyboardControllable
     public void OnMoveUp()

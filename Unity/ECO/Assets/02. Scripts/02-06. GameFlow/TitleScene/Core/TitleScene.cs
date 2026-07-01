@@ -15,6 +15,12 @@ public class TitleScene : MonoBehaviour
 
     private void Start()
     {
+        var keyboardHandler = GetComponentInChildren<UI_TitleButtonsKeyboardHandler>(true);
+        if (keyboardHandler != null)
+        {
+            keyboardHandler.Init(this);
+        }
+
         PlayIntroSequence().Forget();
     }
 
