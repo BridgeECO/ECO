@@ -16,19 +16,11 @@ public class UI_TitleButtonsKeyboardHandler : MonoBehaviour, IKeyboardControllab
 
     private TitleScene _titleScene;
     private int _currentIndex;
+    private bool _isMenuStarted;
 
     private List<UnityAction> _clickActions;
 
     #region Unity Lifecycle Methods
-    public void Init(TitleScene titleScene)
-    {
-        _titleScene = titleScene;
-        if (_titleScene != null)
-        {
-            _titleScene.OnMenuStarted += HandleMenuStarted;
-        }
-    }
-
     private void OnEnable()
     {
         InitSelection();
@@ -48,6 +40,11 @@ public class UI_TitleButtonsKeyboardHandler : MonoBehaviour, IKeyboardControllab
             {
                 _items[i].TargetButton.onClick.AddListener(action);
             }
+        }
+
+        if (_isMenuStarted && UI_KeyboardInputManager.HasInstance)
+        {
+            UI_KeyboardInputManager.Instance.PushHandler(this);
         }
     }
 
@@ -78,8 +75,18 @@ public class UI_TitleButtonsKeyboardHandler : MonoBehaviour, IKeyboardControllab
     }
     #endregion
 
+    public void Init(TitleScene titleScene)
+    {
+        _titleScene = titleScene;
+        if (_titleScene != null)
+        {
+            _titleScene.OnMenuStarted += HandleMenuStarted;
+        }
+    }
+
     private void HandleMenuStarted()
     {
+        _isMenuStarted = true;
         if (UI_KeyboardInputManager.HasInstance)
         {
             UI_KeyboardInputManager.Instance.PushHandler(this);
