@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using VInspector;
 
 /// <summary>
@@ -15,16 +16,48 @@ public class UI_TitleButtonsKeyboardHandler : MonoBehaviour, IKeyboardControllab
 
     private int _currentIndex;
 
+    private List<UnityAction> _clickActions;
+
     #region Unity Lifecycle Methods
     private void OnEnable()
     {
         InitSelection();
         UI_KeyboardInputManager.Instance.PushHandler(this);
+
+        _clickActions = new List<UnityAction>();
+        for (int i = 0; i < _items.Count; i++)
+        {
+            int index = i;
+            UnityAction action = () =>
+            {
+                _currentIndex = index;
+                RefreshSelection();
+            };
+            _clickActions.Add(action);
+
+            if (_items[i].TargetButton != null)
+            {
+                _items[i].TargetButton.onClick.AddListener(action);
+            }
+        }
     }
 
     private void OnDisable()
     {
         SafePopHandler();
+
+        if (_clickActions != null)
+        {
+            for (int i = 0; i < _items.Count; i++)
+            {
+                if (i < _clickActions.Count && _items[i].TargetButton != null)
+                {
+                    _items[i].TargetButton.onClick.RemoveListener(_clickActions[i]);
+                }
+            }
+            _clickActions.Clear();
+            _clickActions = null;
+        }
     }
     #endregion
 
