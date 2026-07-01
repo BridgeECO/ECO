@@ -47,7 +47,7 @@ public class UI_SaveSlotPopup : UI_Popup, IKeyboardControllable
     {
         // 애니메이션 시작 전에 Pop하여 닫히는 도중 입력이 처리되지 않도록 함
         UI_KeyboardInputManager.Instance.PopHandler(this);
-        await PlayCloseAnimation();
+        PlayCloseAnimation().Forget();
         await base.CloseAsync();
     }
 
