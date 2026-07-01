@@ -35,7 +35,6 @@ public class UI_SaveSlotPopup : UI_Popup, IKeyboardControllable
         RefreshAllSlots(mode);
         ApplySelection();
         UI_KeyboardInputManager.Instance.PushHandler(this);
-        await PlayOpenAnimation();
     }
 
     public override async UniTask OpenAsync()
@@ -47,7 +46,6 @@ public class UI_SaveSlotPopup : UI_Popup, IKeyboardControllable
     {
         // 애니메이션 시작 전에 Pop하여 닫히는 도중 입력이 처리되지 않도록 함
         UI_KeyboardInputManager.Instance.PopHandler(this);
-        PlayCloseAnimation().Forget();
         await base.CloseAsync();
     }
 
@@ -135,21 +133,6 @@ public class UI_SaveSlotPopup : UI_Popup, IKeyboardControllable
         {
             _slotItems[i].SetSelected(i == _selectedIndex);
         }
-    }
-    #endregion
-
-    #region Animations
-    private async UniTask PlayOpenAnimation()
-    {
-        var ct = this.GetCancellationTokenOnDestroy();
-        _panelCanvasGroup.alpha = 0f;
-        await _panelCanvasGroup.DOFade(1f, 0.3f).SetEase(Ease.OutQuad).ToUniTask(cancellationToken: ct);
-    }
-
-    private async UniTask PlayCloseAnimation()
-    {
-        var ct = this.GetCancellationTokenOnDestroy();
-        await _panelCanvasGroup.DOFade(0f, 0.2f).SetEase(Ease.InQuad).ToUniTask(cancellationToken: ct);
     }
     #endregion
 }
