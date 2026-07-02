@@ -18,6 +18,20 @@ public class UI_PopupHandler
     {
     }
 
+    public void ClearAllPopups()
+    {
+        while (_popups.Count > 0)
+        {
+            var popup = _popups.Pop();
+            if (popup != null)
+            {
+                popup.gameObject.SetActive(false);
+            }
+        }
+        _isClosing = false;
+        InputHandler.ChangeToPlayerInput();
+    }
+
     public void OpenPopup(UI_Popup popup)
     {
         if (popup.gameObject.activeSelf)
