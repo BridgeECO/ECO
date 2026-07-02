@@ -48,7 +48,10 @@ public class UI_KeyboardInputBlocker : MonoBehaviour, IKeyboardControllable
     #region Cleanup
     private void SafePopHandler()
     {
-        UI_KeyboardInputManager.Instance.PopHandler(this);
+        if (UI_KeyboardInputManager.Instance != null)
+        {
+            UI_KeyboardInputManager.Instance.PopHandler(this);
+        }
     }
     #endregion
 }
