@@ -119,7 +119,7 @@ public class UI_SettingsPopup : UI_Popup
     {
         if (_backgroundOverlay != null)
         {
-            _backgroundOverlay.CrossFadeAlpha(0.0f, 0.2f, false);
+            _backgroundOverlay.CrossFadeAlpha(0.0f, 0.2f, true);
         }
 
         await base.CloseAsync();
@@ -131,7 +131,7 @@ public class UI_SettingsPopup : UI_Popup
         {
             _backgroundOverlay.gameObject.SetActive(true);
             _backgroundOverlay.canvasRenderer.SetAlpha(0.0f);
-            _backgroundOverlay.CrossFadeAlpha(1.0f, 0.4f, false);
+            _backgroundOverlay.CrossFadeAlpha(1.0f, 0.4f, true);
         }
     }
 
