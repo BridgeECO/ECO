@@ -94,12 +94,14 @@ public class UIManager : MonoBehaviourSingleton<UIManager>
     public void FadeInLoadingPanel(Action onComplete = null)
     {
         _loadingPanel.DOFade(1f, 1f).SetEase(Ease.InQuad)
+        .SetUpdate(true)
         .OnComplete(() => onComplete?.Invoke());
     }
 
     public void FadeOutLoadingPanel(Action onComplete = null)
     {
         _loadingPanel.DOFade(0f, 1f).SetEase(Ease.OutQuad)
+        .SetUpdate(true)
         .OnComplete(() => onComplete?.Invoke());
     }
 }

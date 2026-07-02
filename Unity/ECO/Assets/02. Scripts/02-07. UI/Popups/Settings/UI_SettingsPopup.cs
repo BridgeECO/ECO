@@ -52,7 +52,7 @@ public class UI_SettingsPopup : UI_Popup
 
     private void OnClick_Tab(int index)
     {
-        if (_activeTabIndex >= 0 && _activeTabIndex < _settingTabs.Count)
+        if (0 <= _activeTabIndex && _activeTabIndex < _settingTabs.Count)
         {
             _settingTabs[_activeTabIndex].gameObject.SetActive(false);
         }
@@ -60,7 +60,7 @@ public class UI_SettingsPopup : UI_Popup
         _activeTabIndex = index;
 
 
-        if (_activeTabIndex >= 0 && _activeTabIndex < _settingTabs.Count)
+        if (0 <= _activeTabIndex && _activeTabIndex < _settingTabs.Count)
         {
             _settingTabs[_activeTabIndex].gameObject.SetActive(true);
             _settingTabs[_activeTabIndex].RefreshTab();
@@ -82,7 +82,7 @@ public class UI_SettingsPopup : UI_Popup
         {
             return;
         }
-        if (_activeTabIndex >= 0 && _activeTabIndex < _settingTabs.Count)
+        if (0 <= _activeTabIndex && _activeTabIndex < _settingTabs.Count)
         {
             _settingTabs[_activeTabIndex].SaveTabSettings();
         }
@@ -108,7 +108,7 @@ public class UI_SettingsPopup : UI_Popup
             _settingTabs[i].gameObject.SetActive(false);
         }
 
-        if (_tabToggles.Count > 0)
+        if (0< _tabToggles.Count )
         {
             _tabToggles[0].isOn = true;
             OnClick_Tab(0);
@@ -119,7 +119,7 @@ public class UI_SettingsPopup : UI_Popup
     {
         if (_backgroundOverlay != null)
         {
-            _backgroundOverlay.CrossFadeAlpha(0.0f, 0.2f, false);
+            _backgroundOverlay.CrossFadeAlpha(0.0f, 0.2f, true);
         }
 
         await base.CloseAsync();
@@ -131,7 +131,7 @@ public class UI_SettingsPopup : UI_Popup
         {
             _backgroundOverlay.gameObject.SetActive(true);
             _backgroundOverlay.canvasRenderer.SetAlpha(0.0f);
-            _backgroundOverlay.CrossFadeAlpha(1.0f, 0.4f, false);
+            _backgroundOverlay.CrossFadeAlpha(1.0f, 0.4f, true);
         }
     }
 
@@ -149,7 +149,7 @@ public class UI_SettingsPopup : UI_Popup
 
         if (result == UI_Popup_Settings_ResetConfirm.EResult.ResetAndClose)
         {
-            if (_activeTabIndex >= 0 && _activeTabIndex < _settingTabs.Count)
+            if (0 <= _activeTabIndex && _activeTabIndex < _settingTabs.Count)
             {
                 _settingTabs[_activeTabIndex].ResetTabToDefault();
             }
@@ -159,7 +159,7 @@ public class UI_SettingsPopup : UI_Popup
     private async UniTaskVoid HandleBackAsync()
     {
         bool hasUnsaved = false;
-        if (_activeTabIndex >= 0 && _activeTabIndex < _settingTabs.Count)
+        if (0 <= _activeTabIndex && _activeTabIndex < _settingTabs.Count)
         {
             hasUnsaved = _settingTabs[_activeTabIndex].HasUnsavedChanges();
         }

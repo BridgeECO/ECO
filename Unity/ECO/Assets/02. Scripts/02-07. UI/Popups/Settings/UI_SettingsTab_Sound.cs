@@ -112,7 +112,15 @@ public class UI_SettingsTab_Sound : UI_SettingsTabBase
 
     private void ApplySettingsImmediately()
     {
-        // 실제 사운드 매니저와 연동하는 코드 작성 필요
+        if (!SoundManager.HasInstance)
+        {
+            return;
+        }
+
+        SoundManager.Instance.SetMasterVolume(_currentMasterVolume);
+        SoundManager.Instance.SetBgmVolume(_currentBgmVolume);
+        SoundManager.Instance.SetSfxVolume(_currentSfxVolume);
+        // _currentVoiceVolume: 보이스 채널 미구현이므로 연동 생략
     }
 
     public override void RefreshTab()

@@ -30,7 +30,7 @@ public class UI_Spinner : MonoBehaviour
     private int _currentIndex;
 
     public int CurrentIndex => _currentIndex;
-    public string CurrentOption => _options != null && _options.Count > 0 ? _options[_currentIndex] : string.Empty;
+    public string CurrentOption => _options != null && 0 < _options.Count ? _options[_currentIndex] : string.Empty;
 
     private void Awake()
     {
@@ -53,7 +53,7 @@ public class UI_Spinner : MonoBehaviour
     public void SetOptions(List<string> options)
     {
         _options = options;
-        if (_options != null && _options.Count > 0)
+        if (_options != null && 0< _options.Count )
         {
             _currentIndex = Mathf.Clamp(_currentIndex, 0, _options.Count - 1);
             RefreshText();
@@ -85,7 +85,7 @@ public class UI_Spinner : MonoBehaviour
 
     private void RefreshText()
     {
-        if (_optionText != null && _options != null && _options.Count > 0)
+        if (_optionText != null && _options != null && 0< _options.Count )
         {
             _optionText.text = _options[_currentIndex];
         }

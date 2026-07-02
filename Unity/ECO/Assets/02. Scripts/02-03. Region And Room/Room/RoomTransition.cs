@@ -95,14 +95,14 @@ public class RoomTransition : MonoBehaviour
     private Room GetRoomByVerticalPosition(float playerY, float transitionCenterY, float centerAY, float centerBY)
     {
         bool isAAboveB = centerBY < centerAY;
-        bool isPlayerAboveTransition = playerY > transitionCenterY;
+        bool isPlayerAboveTransition = transitionCenterY< playerY ;
         return (isPlayerAboveTransition == isAAboveB) ? _roomA : _roomB;
     }
 
     private Room GetRoomByHorizontalPosition(float playerX, float transitionCenterX, float centerAX, float centerBX)
     {
         bool isARightOfB = centerBX < centerAX;
-        bool isPlayerRightOfTransition = playerX > transitionCenterX;
+        bool isPlayerRightOfTransition = transitionCenterX< playerX ;
         return (isPlayerRightOfTransition == isARightOfB) ? _roomA : _roomB;
     }
 }

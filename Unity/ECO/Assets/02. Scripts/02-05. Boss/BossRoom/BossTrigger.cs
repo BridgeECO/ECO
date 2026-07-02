@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using ECO;
 using UnityEngine;
 using VInspector;
 
@@ -8,20 +7,20 @@ public class BossTrigger : MonoBehaviour, IResettable
     public enum ETriggerTarget { Player, Boss }
 
     [Foldout("Trigger Settings")]
-    [SerializeField, Tooltip("Æ®¸®°Å¸¦ ¹ßµ¿½ÃÅ³ ´ë»óÀ» ¼±ÅÃÇÏ¼¼¿ä.")]
+    [SerializeField, Tooltip("íŠ¸ë¦¬ê±°ë¥¼ ë°œë™ì‹œí‚¬ ëŒ€ìƒì„ ì„¤ì •í•˜ì„¸ìš”.")]
     private ETriggerTarget _targetType = ETriggerTarget.Player;
     [SerializeField]
     private EBoss _targetBossType;
     [SerializeField]
-    [Tooltip("ÀÌ Æ®¸®°Å¿¡ ´ê¾ÒÀ» ¶§ º¯°æÇÒ º¸½º »óÅÂ¸¦ ¼±ÅÃÇÏ¼¼¿ä.")]
+    [Tooltip("ì´ íŠ¸ë¦¬ê±°ì— ë°˜ì‘í•  ë³´ìŠ¤ì˜ í–‰ë™ ìƒíƒœë¥¼ ì„¤ì •í•˜ì„¸ìš”.")]
     private EBossState _triggerAction = EBossState.Chasing;
     [SerializeField]
-    [Tooltip("º¸½º¹æÀÌ ¸®¼ÂµÇ¾úÀ» ¶§ ÀÌ Æ®¸®°Å¸¦ ´Ù½Ã ÀÛµ¿ÇÏ°Ô ÇÒÁö ¼±ÅÃÇÏ¼¼¿ä.")]
+    [Tooltip("ë³´ìŠ¤ì „ì´ ë¦¬ì…‹ë˜ì—ˆì„ ë•Œ ì´ íŠ¸ë¦¬ê±°ë¥¼ ë‹¤ì‹œ ì‘ë™í•˜ê²Œ í• ì§€ ì„¤ì •í•˜ì„¸ìš”.")]
     private bool _isResettable = true;
 
     [Foldout("Cinematic")]
     [SerializeField]
-    [Tooltip("½ÇÇàÇÒ ¿¬Ãâ ¿ÀºêÁ§Æ®¸¦ ³ÖÀ¸¼¼¿ä.")]
+    [Tooltip("ì¬ìƒí•  ë³´ìŠ¤ ì‹œë„¤ë§ˆí‹± ì»´í¬ë„ŒíŠ¸.")]
     private BossCinematicBase _cinematicSequence;
 
     private bool _hasTriggered = false;

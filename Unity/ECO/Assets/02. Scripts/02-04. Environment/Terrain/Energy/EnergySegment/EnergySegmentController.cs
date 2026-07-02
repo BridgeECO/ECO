@@ -79,7 +79,7 @@ public class EnergySegmentController
 
     public void UpdateSegments(float deltaTime, float totalDistance, float energySpeed)
     {
-        for (int i = _activeSegments.Count - 1; i >= 0; i--)
+        for (int i = _activeSegments.Count - 1; 0<= i ; i--)
         {
             EnergySegment segment = _activeSegments[i];
 
@@ -95,7 +95,7 @@ public class EnergySegmentController
                 segment.TailDistance = Mathf.Min(segment.TailDistance, totalDistance);
             }
 
-            if (segment.TailDistance >= totalDistance)
+            if (totalDistance<= segment.TailDistance )
             {
                 if (segment.LineRendererInstance != null)
                 {

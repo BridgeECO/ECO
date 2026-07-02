@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8345430850642345740}
   - component: {fileID: 3516310784583665325}
   - component: {fileID: -1544595989083452524}
+  - component: {fileID: 1060430454577853790}
   m_Layer: 5
   m_Name: P_UI_Popup_PauseMenu
   m_TagString: Untagged
@@ -51,7 +52,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 656b628aaf57afc459d2a1db6b119802, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _destroyTime: 0.5
   _settingButton: {fileID: 1400443196750349169}
   _titleButton: {fileID: 2895575530573857307}
   _exitButton: {fileID: 8160354449274349086}
@@ -73,6 +73,18 @@ MonoBehaviour:
   _closeEase: 26
   _startScale: {x: 0.5, y: 0.5, z: 0.5}
   _targetScale: {x: 1, y: 1, z: 1}
+--- !u!114 &1060430454577853790
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 936064517839527119}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f9ab6a319d52074592ef893e912760a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2080409763423834152
 GameObject:
   m_ObjectHideFlags: 0
@@ -969,6 +981,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4816633232412048943}
+  - component: {fileID: 5624354085775357554}
+  - component: {fileID: 2709181091154168287}
   m_Layer: 5
   m_Name: Background
   m_TagString: Untagged
@@ -999,6 +1013,44 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &5624354085775357554
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7354182644689894476}
+  m_CullTransparentMesh: 1
+--- !u!114 &2709181091154168287
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7354182644689894476}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.78431374}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &7780916373399253459
 GameObject:
   m_ObjectHideFlags: 0

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3347734640518028996}
   - component: {fileID: 4737923051387847635}
   - component: {fileID: 2430650265325613956}
+  - component: {fileID: 2623595221004590267}
   m_Layer: 5
   m_Name: SelectArrow_Left
   m_TagString: Untagged
@@ -75,6 +76,35 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &2623595221004590267
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1346077922031796571}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0213216c11e3f0408f1488ec31c4382, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _targetImage: {fileID: 2430650265325613956}
+  _sprites:
+  - {fileID: 21300000, guid: edeee4055882f5f41a3236c546489866, type: 3}
+  - {fileID: 21300000, guid: f50adfc4d3cce2244bb1cc9aa36baaf0, type: 3}
+  - {fileID: 21300000, guid: b1d8084a9a44a6840976d2dfeaeb3166, type: 3}
+  - {fileID: 21300000, guid: 837e8edff22764a47ab8a00de929ab05, type: 3}
+  - {fileID: 21300000, guid: 39872a93b7714c74f985917e85631b90, type: 3}
+  - {fileID: 21300000, guid: 6c4c2ea2e18783b428969533d9fde825, type: 3}
+  - {fileID: 21300000, guid: ae837af6d3e35c945ba319e66f090858, type: 3}
+  - {fileID: 21300000, guid: 263a98220dc76f64283bd06a4d85dbd5, type: 3}
+  - {fileID: 21300000, guid: 154b86c2e39f5944f98c7d72a9b4600c, type: 3}
+  - {fileID: 21300000, guid: edfce93ef3a25d242aae9dd54959cf90, type: 3}
+  - {fileID: 21300000, guid: 4fc496f08981c264da208a025413edb1, type: 3}
+  - {fileID: 21300000, guid: 5c3eee7e45c6aea49bb90dafb6571275, type: 3}
+  _frameInterval: 0.0333
+  _isLoop: 0
+  _loopInterval: 2
 --- !u!1 &2228491382314629309
 GameObject:
   m_ObjectHideFlags: 0
@@ -86,6 +116,7 @@ GameObject:
   - component: {fileID: 3875571993253775412}
   - component: {fileID: 4632684646726547072}
   - component: {fileID: 6327662362253784066}
+  - component: {fileID: 2289970500493232032}
   m_Layer: 5
   m_Name: SelectArrow_Right
   m_TagString: Untagged
@@ -150,6 +181,35 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &2289970500493232032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2228491382314629309}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0213216c11e3f0408f1488ec31c4382, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _targetImage: {fileID: 6327662362253784066}
+  _sprites:
+  - {fileID: 21300000, guid: edeee4055882f5f41a3236c546489866, type: 3}
+  - {fileID: 21300000, guid: f50adfc4d3cce2244bb1cc9aa36baaf0, type: 3}
+  - {fileID: 21300000, guid: b1d8084a9a44a6840976d2dfeaeb3166, type: 3}
+  - {fileID: 21300000, guid: 837e8edff22764a47ab8a00de929ab05, type: 3}
+  - {fileID: 21300000, guid: 39872a93b7714c74f985917e85631b90, type: 3}
+  - {fileID: 21300000, guid: 6c4c2ea2e18783b428969533d9fde825, type: 3}
+  - {fileID: 21300000, guid: ae837af6d3e35c945ba319e66f090858, type: 3}
+  - {fileID: 21300000, guid: 263a98220dc76f64283bd06a4d85dbd5, type: 3}
+  - {fileID: 21300000, guid: 154b86c2e39f5944f98c7d72a9b4600c, type: 3}
+  - {fileID: 21300000, guid: edfce93ef3a25d242aae9dd54959cf90, type: 3}
+  - {fileID: 21300000, guid: 4fc496f08981c264da208a025413edb1, type: 3}
+  - {fileID: 21300000, guid: 5c3eee7e45c6aea49bb90dafb6571275, type: 3}
+  _frameInterval: 0.0333
+  _isLoop: 0
+  _loopInterval: 2
 --- !u!1 &6335117219240062762
 GameObject:
   m_ObjectHideFlags: 0

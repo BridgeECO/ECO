@@ -452,6 +452,7 @@ GameObject:
   - component: {fileID: 199339321598676305}
   - component: {fileID: 8982252968641725739}
   - component: {fileID: 5881257479341192056}
+  - component: {fileID: 8313005453816115113}
   m_Layer: 5
   m_Name: P_UI_Popup_ExitConfirm_Animator
   m_TagString: Untagged
@@ -526,11 +527,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b95d0d803b4d9104a90cfff79c9c97f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _destroyTime: 0.5
   _uiTitleText: {fileID: 2904627550778502197}
   _uiMessageText: {fileID: 6624348822315236428}
   _buttonExitGame: {fileID: 3195983903674974800}
   _buttonCancel: {fileID: 5639040086433098038}
+--- !u!114 &8313005453816115113
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6553306777639288930}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f9ab6a319d52074592ef893e912760a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7700704994393389251
 GameObject:
   m_ObjectHideFlags: 0

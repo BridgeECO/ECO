@@ -69,6 +69,12 @@ public class SceneTransitionManager : MonoBehaviourSingleton<SceneTransitionMana
         _isTransitioning = true;
         InputHandler.BlockInput();
 
+        Time.timeScale = 1f;
+        if (UIManager.Instance != null && UIManager.Instance.PopupHandler != null)
+        {
+            UIManager.Instance.PopupHandler.ClearAllPopups();
+        }
+
         try
         {
             var fadeOutUcs = new UniTaskCompletionSource();

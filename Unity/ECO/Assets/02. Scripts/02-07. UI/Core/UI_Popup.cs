@@ -39,7 +39,7 @@ public abstract class UI_Popup : MonoBehaviour
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = true;
 
-        if (_spriteAnimators != null && _spriteAnimators.Length > 0)
+        if (_spriteAnimators != null && 0< _spriteAnimators.Length )
         {
             var tasks = new List<UniTask>();
             foreach (var spriteAnimator in _spriteAnimators)
@@ -50,7 +50,7 @@ public abstract class UI_Popup : MonoBehaviour
                 }
             }
             
-            if (tasks.Count > 0)
+            if (0< tasks.Count )
             {
                 await UniTask.WhenAll(tasks);
             }
@@ -63,6 +63,11 @@ public abstract class UI_Popup : MonoBehaviour
 
         gameObject.SetActive(false);
         IsClosing = false;
+
+        if (UnityEngine.EventSystems.EventSystem.current != null)
+        {
+            UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
+        }
 
         canvasGroup.interactable = true;
         canvasGroup.blocksRaycasts = true;
