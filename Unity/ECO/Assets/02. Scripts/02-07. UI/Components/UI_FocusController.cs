@@ -94,6 +94,13 @@ public class UI_FocusController : MonoBehaviour
         {
             return;
         }
+
+        // 마우스 왼쪽 버튼을 누르는 동안(클릭/드래그 프로세스 진행 중)에는 포커스 해제를 차단하여 onClick 누락을 막습니다.
+        if (Input.GetMouseButton(0))
+        {
+            return;
+        }
+
         GameObject currentSelected = EventSystem.current.currentSelectedGameObject;
         if (currentSelected == null)
         {

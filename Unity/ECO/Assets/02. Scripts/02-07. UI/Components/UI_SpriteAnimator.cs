@@ -31,6 +31,7 @@ public class UI_SpriteAnimator : MonoBehaviour
     private float _loopInterval = 2f;
 
     private CancellationTokenSource _cts;
+    private CancellationTokenSource _reverseCts;
 
     #region Unity Lifecycle Methods
     private void OnEnable()
@@ -46,6 +47,12 @@ public class UI_SpriteAnimator : MonoBehaviour
             _cts.Cancel();
             _cts.Dispose();
             _cts = null;
+        }
+        if (_reverseCts != null)
+        {
+            _reverseCts.Cancel();
+            _reverseCts.Dispose();
+            _reverseCts = null;
         }
     }
     #endregion
@@ -157,7 +164,17 @@ public class UI_SpriteAnimator : MonoBehaviour
             _cts = null;
         }
 
-        for (int i = _sprites.Count - 1; 0<= i ; i--)
+        if (_reverseCts != null)
+        {
+            _reverseCts.Cancel();
+            _reverseCts.Dispose();
+        }
+        _reverseCts = new CancellationTokenSource();
+
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _reverseCts.Token);
+        CancellationToken activeToken = linkedCts.Token;
+
+        for (int i = _sprites.Count - 1; 0 <= i; i--)
         {
             if (_targetImage == null)
             {
@@ -165,11 +182,11 @@ public class UI_SpriteAnimator : MonoBehaviour
             }
             _targetImage.sprite = _sprites[i];
 
-            if (0< i )
+            if (0 < i)
             {
                 try
                 {
-                    await UniTask.Delay(TimeSpan.FromSeconds(_frameInterval), ignoreTimeScale: true, cancellationToken: cancellationToken);
+                    await UniTask.Delay(TimeSpan.FromSeconds(_frameInterval), ignoreTimeScale: true, cancellationToken: activeToken);
                 }
                 catch (OperationCanceledException)
                 {

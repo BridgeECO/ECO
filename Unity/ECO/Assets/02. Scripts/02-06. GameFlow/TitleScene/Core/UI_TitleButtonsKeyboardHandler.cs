@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using VInspector;
 
 /// <summary>
@@ -13,20 +14,84 @@ public class UI_TitleButtonsKeyboardHandler : MonoBehaviour, IKeyboardControllab
     [SerializeField]
     private List<UI_ButtonSelectionItem> _items;
 
+    private TitleScene _titleScene;
     private int _currentIndex;
+    private bool _isMenuStarted;
+
+    private List<UnityAction> _clickActions;
 
     #region Unity Lifecycle Methods
     private void OnEnable()
     {
         InitSelection();
-        UI_KeyboardInputManager.Instance.PushHandler(this);
+
+        _clickActions = new List<UnityAction>();
+        for (int i = 0; i < _items.Count; i++)
+        {
+            int index = i;
+            UnityAction action = () =>
+            {
+                _currentIndex = index;
+                RefreshSelection();
+            };
+            _clickActions.Add(action);
+
+            if (_items[i].TargetButton != null)
+            {
+                _items[i].TargetButton.onClick.AddListener(action);
+            }
+        }
+
+        if (_isMenuStarted && UI_KeyboardInputManager.HasInstance)
+        {
+            UI_KeyboardInputManager.Instance.PushHandler(this);
+        }
     }
 
     private void OnDisable()
     {
         SafePopHandler();
+
+        if (_clickActions != null)
+        {
+            for (int i = 0; i < _items.Count; i++)
+            {
+                if (i < _clickActions.Count && _items[i].TargetButton != null)
+                {
+                    _items[i].TargetButton.onClick.RemoveListener(_clickActions[i]);
+                }
+            }
+            _clickActions.Clear();
+            _clickActions = null;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (_titleScene != null)
+        {
+            _titleScene.OnMenuStarted -= HandleMenuStarted;
+        }
     }
     #endregion
+
+    public void Init(TitleScene titleScene)
+    {
+        _titleScene = titleScene;
+        if (_titleScene != null)
+        {
+            _titleScene.OnMenuStarted += HandleMenuStarted;
+        }
+    }
+
+    private void HandleMenuStarted()
+    {
+        _isMenuStarted = true;
+        if (UI_KeyboardInputManager.HasInstance)
+        {
+            UI_KeyboardInputManager.Instance.PushHandler(this);
+        }
+    }
 
     #region IKeyboardControllable
     public void OnMoveUp()
@@ -134,7 +199,10 @@ public class UI_TitleButtonsKeyboardHandler : MonoBehaviour, IKeyboardControllab
     // OnDisable 내부에서 직접 싱글톤 접근을 지양하는 컨벤션 준수를 위해 별도 메서드로 분리
     private void SafePopHandler()
     {
-        UI_KeyboardInputManager.Instance.PopHandler(this);
+        if (UI_KeyboardInputManager.HasInstance)
+        {
+            UI_KeyboardInputManager.Instance.PopHandler(this);
+        }
     }
     #endregion
 }

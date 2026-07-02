@@ -40,6 +40,7 @@ public class PlayerSensor : MonoBehaviour
     public bool IsLeftSlipColliderTouching { get; private set; }
     public bool IsRightSlipColliderTouching { get; private set; }
     public float WallDirection { get; private set; }
+    public bool IsActuallyTouching => _feetCollider.IsTouchingLayers(_terrainLayer) || _feetCollider.IsTouchingLayers(_platformLayer);
 
     private void Start()
     {

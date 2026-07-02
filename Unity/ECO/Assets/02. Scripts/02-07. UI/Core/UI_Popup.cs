@@ -64,6 +64,11 @@ public abstract class UI_Popup : MonoBehaviour
         gameObject.SetActive(false);
         IsClosing = false;
 
+        if (UnityEngine.EventSystems.EventSystem.current != null)
+        {
+            UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
+        }
+
         canvasGroup.interactable = true;
         canvasGroup.blocksRaycasts = true;
     }
