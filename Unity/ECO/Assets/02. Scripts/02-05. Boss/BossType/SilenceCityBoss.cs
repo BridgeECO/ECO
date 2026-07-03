@@ -151,15 +151,6 @@ public class SilenceCityBoss : BossBase
         {
             ResetEncounterAsync().Forget();
 
-            return;
-        }
-        else if (other.gameObject.CompareTag(nameof(ETags.Map)))
-        {
-            return;
-        }
-        else
-        {
-            other.gameObject.SetActive(false);
         }
     }
     private async UniTask ResetEncounterAsync()
