@@ -149,11 +149,11 @@ public class SilenceCityBoss : BossBase
 
         if (other.gameObject.CompareTag(nameof(ETags.Player)) && !_isReset)
         {
-            ResetEncounterAsync().Forget();
+            ResetEncounter();
 
         }
     }
-    private async UniTask ResetEncounterAsync()
+    private void ResetEncounter()
     {
         _isReset = true;
 
@@ -169,38 +169,22 @@ public class SilenceCityBoss : BossBase
 
         InputHandler.BlockInput();
 
-        try
+        foreach (var data in _floorDatas)
         {
-            /*var fadeInUcs = new UniTaskCompletionSource();
-            UIManager.Instance.FadeInLoadingPanel(() => fadeInUcs.TrySetResult());
-            await fadeInUcs.Task;*/
-
-            foreach (var data in _floorDatas)
+            if (data.Floor != null)
             {
-                if (data.Floor != null)
-                {
-                    data.Floor.ResetFloorTransition();
-                }
+                data.Floor.ResetFloorTransition();
             }
-            _currentFloorIndex = 0;
-            UpdateCurrentFloorPath();
-
-            transform.position = ResetPosition;
-            _rigidbody.linearVelocity = Vector2.zero;
-
-            RespawnManager.Instance.Respawn();
-
-            /*var fadeOutUcs = new UniTaskCompletionSource();
-            UIManager.Instance.FadeOutLoadingPanel(() => fadeOutUcs.TrySetResult());
-            await fadeOutUcs.Task;*/
-
-            StartChase();
         }
-        finally
-        {
-            _isReset = false;
-            InputHandler.UnblockInput();
-        }
+        _currentFloorIndex = 0;
+        UpdateCurrentFloorPath();
+
+        transform.position = ResetPosition;
+        _rigidbody.linearVelocity = Vector2.zero;
+
+        RespawnManager.Instance.Respawn();
+        _isReset = false;
+        InputHandler.UnblockInput();
     }
     public async UniTask FloorTransition(Transform startPoint, Transform endPoint, float jumpHeight)
     {
