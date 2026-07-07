@@ -10,6 +10,9 @@ public class EnergySwitch : SpecialObjectBase
 
     private bool _isOn = false;
 
+    // 트래킹 시스템은 최초 발동 시에만 1회 실행된다.
+    private bool _hasTriggeredTracking = false;
+
     protected override void Interact()
     {
         base.Interact();
@@ -36,18 +39,57 @@ public class EnergySwitch : SpecialObjectBase
 
         _isOn = isOn;
 
-        foreach (EnergyLine line in _connectedLines)
+        for (int i = 0; i < _connectedLines.Count; i++)
         {
+            EnergyLine line = _connectedLines[i];
             if (line != null)
             {
                 line.SetSwitchState(_isOn);
             }
         }
+
+        if (_isOn)
+        {
+            RequestTrackingIfNeeded();
+        }
+    }
+
+    // 최초 On 발동 시, UseTracking이 설정된 첫 번째 라인에 한해 트래킹을 요청한다.
+    // EnergyLineTracker의 정적 이벤트로 발행하므로 씬에 Tracker가 없어도 안전하다.
+    private void RequestTrackingIfNeeded()
+    {
+        if (_hasTriggeredTracking)
+        {
+            return;
+        }
+
+        EnergyLine trackingTarget = FindFirstTrackingLine();
+        if (trackingTarget == null)
+        {
+            return;
+        }
+
+        _hasTriggeredTracking = true;
+        EnergyLineTracker.OnTrackingRequested?.Invoke(trackingTarget);
+    }
+
+    private EnergyLine FindFirstTrackingLine()
+    {
+        for (int i = 0; i < _connectedLines.Count; i++)
+        {
+            EnergyLine line = _connectedLines[i];
+            if (line != null && line.UseTracking)
+            {
+                return line;
+            }
+        }
+        return null;
     }
 
     public override void ResetState()
     {
         base.ResetState();
+        _hasTriggeredTracking = false;
         SetSwitchState(false);
     }
 }

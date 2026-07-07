@@ -12,9 +12,38 @@ public class SceneTransitionManager : MonoBehaviourSingleton<SceneTransitionMana
     [SerializeField]
     private GameObject _player;
 
+    [Foldout("Project")]
+    [SerializeField]
+    private bool _canLoadTitleOnStart = true;
+
     public string CurrentLoadedRegionScene => _currentLoadedRegionScene;
     public bool IsTransitioning => _isTransitioning;
-    public bool IsGameplayScene => !string.IsNullOrEmpty(_currentLoadedRegionScene) && _currentLoadedRegionScene != ESceneNames.TitleScene.ToString();
+    public bool IsGameplayScene
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(_currentLoadedRegionScene))
+            {
+                return _currentLoadedRegionScene != ESceneNames.TitleScene.ToString();
+            }
+
+            // 에디터 멀티 씬 테스트 시 PersistentScene이 Active Scene으로 지정되어 있어도
+            // 로드된 씬 중 타이틀이나 PersistentScene이 아닌 인게임 씬이 존재하면 게임플레이 상태로 판정한다.
+            for (int i = 0; i < SceneManager.sceneCount; i++)
+            {
+                Scene scene = SceneManager.GetSceneAt(i);
+                if (scene.isLoaded)
+                {
+                    string name = scene.name;
+                    if (name != ESceneNames.TitleScene.ToString() && name != "PersistentScene")
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+    }
 
     protected override void Awake()
     {
@@ -23,7 +52,10 @@ public class SceneTransitionManager : MonoBehaviourSingleton<SceneTransitionMana
 
     private void Start()
     {
-        LoadSceneAsync(ESceneNames.TitleScene).Forget();
+        if (_canLoadTitleOnStart)
+        {
+            LoadSceneAsync(ESceneNames.TitleScene).Forget();
+        }
     }
 
     private async UniTask LoadSceneAsync(ESceneNames eSceneName)
