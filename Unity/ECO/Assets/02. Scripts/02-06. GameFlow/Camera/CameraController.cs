@@ -38,8 +38,12 @@ public class CameraController : MonoBehaviour
         }
 
         InitCameraController();
-        Vector3 clamped = GetClampedPosition();
-        transform.position = clamped;
+
+        if (_playerTransform != null)
+        {
+            Vector3 clamped = GetClampedPosition();
+            transform.position = clamped;
+        }
     }
 
     private void LateUpdate()
