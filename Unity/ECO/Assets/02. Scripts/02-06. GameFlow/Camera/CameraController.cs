@@ -10,25 +10,33 @@ public class CameraController : MonoBehaviour
 
     [Header("Smooth Tracking")]
     [SerializeField]
-    private float _trackingTimeAfterTransition = 0.2f;
+    private float _trackingTimeAfterTransition = 0.3f;
 
     private Vector2 _currentRoomMin;
     private Vector2 _currentRoomMax;
 
-    [SerializeField]
     private Transform _playerTransform;
 
     private float _halfCamHeight;
     private float _halfCamWidth;
     private Vector3 _velocity = Vector3.zero;
 
-    [SerializeField]
     private Camera _mainCamera;
 
     public bool IsFollowingPlayer { get; set; } = true;
 
     private void Awake()
     {
+        PlayerStateMachine playerStateMachine = FindFirstObjectByType<PlayerStateMachine>(FindObjectsInactive.Include);
+        if (playerStateMachine != null)
+        {
+            _playerTransform = playerStateMachine.transform;
+        }
+        else
+        {
+            Debug.LogError($"[CameraController] PlayerStateMachine을 씬에서 찾을 수 없습니다.");
+        }
+
         InitCameraController();
         Vector3 clamped = GetClampedPosition();
         transform.position = clamped;
@@ -45,9 +53,16 @@ public class CameraController : MonoBehaviour
 
     private void InitCameraController()
     {
-        Camera camera = Camera.main;
-        _halfCamHeight = camera.orthographicSize;
-        _halfCamWidth = _halfCamHeight * camera.aspect;
+        _mainCamera = Camera.main;
+        if (_mainCamera != null)
+        {
+            _halfCamHeight = _mainCamera.orthographicSize;
+            _halfCamWidth = _halfCamHeight * _mainCamera.aspect;
+        }
+        else
+        {
+            Debug.LogError($"[CameraController] Main Camera를 찾을 수 없습니다. MainCamera 태그를 확인해 주세요.");
+        }
     }
 
     private void FollowPlayer()
@@ -94,6 +109,7 @@ public class CameraController : MonoBehaviour
         float clampMax = roomMax - halfCamSize;
         return (clampMax < clampMin) ? (roomMin + roomMax) * 0.5f : Mathf.Clamp(target, clampMin, clampMax);
     }
+
     public async UniTask PlayPanToTargetAsync(Transform target, float moveDuration, float holdDuration, float returnDuration)
     {
         IsFollowingPlayer = false;
