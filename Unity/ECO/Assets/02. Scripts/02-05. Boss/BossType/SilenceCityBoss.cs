@@ -38,7 +38,6 @@ public class SilenceCityBoss : BossBase
         base.Awake();
         _rigidbody = GetComponent<Rigidbody2D>();
         _collider = GetComponent<Collider2D>();
-        _player = GameObject.FindWithTag(nameof(ETags.Player));
 
         UpdateCurrentFloorPath();
     }
@@ -120,6 +119,7 @@ public class SilenceCityBoss : BossBase
             return;
         }
 
+        _player = GameObject.FindWithTag(nameof(ETags.Player));
         if (_player == null)
         {
             return;
@@ -171,11 +171,10 @@ public class SilenceCityBoss : BossBase
 
         try
         {
-            var fadeOutUcs = new UniTaskCompletionSource();
-            UIManager.Instance.FadeInLoadingPanel(() => fadeOutUcs.TrySetResult());
-            await fadeOutUcs.Task;
+            /*var fadeInUcs = new UniTaskCompletionSource();
+            UIManager.Instance.FadeInLoadingPanel(() => fadeInUcs.TrySetResult());
+            await fadeInUcs.Task;*/
 
-            BossRoomManager.ResetRoom();
             foreach (var data in _floorDatas)
             {
                 if (data.Floor != null)
@@ -191,11 +190,9 @@ public class SilenceCityBoss : BossBase
 
             RespawnManager.Instance.Respawn();
 
-            await UniTask.Delay(System.TimeSpan.FromSeconds(0.3f));
-
-            var fadeInUcs = new UniTaskCompletionSource();
-            UIManager.Instance.FadeOutLoadingPanel(() => fadeInUcs.TrySetResult());
-            await fadeInUcs.Task;
+            /*var fadeOutUcs = new UniTaskCompletionSource();
+            UIManager.Instance.FadeOutLoadingPanel(() => fadeOutUcs.TrySetResult());
+            await fadeOutUcs.Task;*/
 
             StartChase();
         }
