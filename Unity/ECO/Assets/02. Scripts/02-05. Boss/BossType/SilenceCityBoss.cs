@@ -42,6 +42,14 @@ public class SilenceCityBoss : BossBase
         UpdateCurrentFloorPath();
     }
 
+    private void OnEnable()
+    {
+        if (EventManager.Instance != null)
+        {
+            EventManager.Instance.AddEventListener(EEventType.PlayerDied, OnPlayerDied);
+        }
+    }
+
     private void FixedUpdate()
     {
         if (CurrentState == EBossState.Chasing)
@@ -54,15 +62,12 @@ public class SilenceCityBoss : BossBase
         }
     }
 
-    private void OnEnable()
+    private void OnDisable()
     {
-        if (EventManager.Instance != null)
-        {
-            EventManager.Instance.AddEventListener(EEventType.PlayerDied, OnPlayerDied);
-        }
+        UnsubscribeEvents();
     }
 
-    private void OnDisable()
+    private void UnsubscribeEvents()
     {
         if (MonoBehaviourSingleton<EventManager>.HasInstance)
         {
@@ -143,10 +148,13 @@ public class SilenceCityBoss : BossBase
             return;
         }
 
-        _player = GameObject.FindWithTag(nameof(ETags.Player));
         if (_player == null)
         {
-            return;
+            _player = GameObject.FindWithTag(nameof(ETags.Player));
+            if (_player == null)
+            {
+                return;
+            }
         }
 
         float distanceToPlayer = Vector2.Distance(transform.position, _player.transform.position);
@@ -173,7 +181,6 @@ public class SilenceCityBoss : BossBase
 
         if (other.gameObject.CompareTag(nameof(ETags.Player)) && !_isReset)
         {
-            ResetBoss();
             RespawnManager.Instance.Respawn();
         }
     }
@@ -201,7 +208,7 @@ public class SilenceCityBoss : BossBase
         _currentFloorIndex = 0;
         UpdateCurrentFloorPath();
 
-        transform.position = ResetPosition;
+        _rigidbody.position = ResetPosition;
         _rigidbody.linearVelocity = Vector2.zero;
 
         _isReset = false;
