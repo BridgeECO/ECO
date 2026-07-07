@@ -19,10 +19,20 @@ public class EnergyLineTrackingFadeLogic
         _fadeOutDuration = fadeOutDuration;
         _fadeInDuration = fadeInDuration;
         SetAlpha(0f);
+        
+        if (_fadePanel != null && _fadePanel.gameObject != null)
+        {
+            _fadePanel.gameObject.SetActive(false);
+        }
     }
 
     public async UniTask FadeOutAsync(CancellationToken ct)
     {
+        if (_fadePanel != null && _fadePanel.gameObject != null)
+        {
+            _fadePanel.gameObject.SetActive(true);
+        }
+
         await _fadePanel
             .DOFade(1f, _fadeOutDuration)
             .SetEase(Ease.InQuad)
@@ -35,6 +45,11 @@ public class EnergyLineTrackingFadeLogic
             .DOFade(0f, _fadeInDuration)
             .SetEase(Ease.OutQuad)
             .ToUniTask(TweenCancelBehaviour.Kill, ct);
+
+        if (_fadePanel != null && _fadePanel.gameObject != null)
+        {
+            _fadePanel.gameObject.SetActive(false);
+        }
     }
 
     // 시퀀스 중단 등 비정상 종료 시 패널이 화면에 남지 않도록 즉시 초기화한다.
@@ -42,6 +57,11 @@ public class EnergyLineTrackingFadeLogic
     {
         _fadePanel.DOKill();
         SetAlpha(0f);
+
+        if (_fadePanel != null && _fadePanel.gameObject != null)
+        {
+            _fadePanel.gameObject.SetActive(false);
+        }
     }
 
     private void SetAlpha(float alpha)
