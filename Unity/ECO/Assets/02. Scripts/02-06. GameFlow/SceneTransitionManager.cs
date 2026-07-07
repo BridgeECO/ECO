@@ -12,6 +12,10 @@ public class SceneTransitionManager : MonoBehaviourSingleton<SceneTransitionMana
     [SerializeField]
     private GameObject _player;
 
+    [Foldout("Project")]
+    [SerializeField]
+    private bool _canLoadTitleOnStart = true;
+
     public string CurrentLoadedRegionScene => _currentLoadedRegionScene;
     public bool IsTransitioning => _isTransitioning;
     public bool IsGameplayScene
@@ -48,7 +52,10 @@ public class SceneTransitionManager : MonoBehaviourSingleton<SceneTransitionMana
 
     private void Start()
     {
-        LoadSceneAsync(ESceneNames.TitleScene).Forget();
+        if (_canLoadTitleOnStart)
+        {
+            LoadSceneAsync(ESceneNames.TitleScene).Forget();
+        }
     }
 
     private async UniTask LoadSceneAsync(ESceneNames eSceneName)
