@@ -122,6 +122,7 @@ public class ConveyorTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizab
     {
         _conveyorCts?.Cancel();
         _conveyorCts?.Dispose();
+        _conveyorCts = null;
     }
 
     private void RenewToken()

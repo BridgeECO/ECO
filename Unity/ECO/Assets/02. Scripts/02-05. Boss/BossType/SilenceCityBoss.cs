@@ -38,9 +38,16 @@ public class SilenceCityBoss : BossBase
         base.Awake();
         _rigidbody = GetComponent<Rigidbody2D>();
         _collider = GetComponent<Collider2D>();
-        _player = GameObject.FindWithTag(nameof(ETags.Player));
 
         UpdateCurrentFloorPath();
+    }
+
+    private void OnEnable()
+    {
+        if (EventManager.Instance != null)
+        {
+            EventManager.Instance.AddEventListener(EEventType.PlayerDied, OnPlayerDied);
+        }
     }
 
     private void FixedUpdate()
@@ -54,7 +61,28 @@ public class SilenceCityBoss : BossBase
             _rigidbody.linearVelocity = Vector2.zero;
         }
     }
-    
+
+    private void OnDisable()
+    {
+        UnsubscribeEvents();
+    }
+
+    private void UnsubscribeEvents()
+    {
+        if (MonoBehaviourSingleton<EventManager>.HasInstance)
+        {
+            EventManager.Instance.RemoveEventListener(EEventType.PlayerDied, OnPlayerDied);
+        }
+    }
+
+    private void OnPlayerDied()
+    {
+        if (!_isReset || CurrentState != EBossState.Idle)
+        {
+            ResetBoss();
+        }
+    }
+
     protected override void OnStateChanged(EBossState newState)
     {
         AnimationController.SetChangeState(newState);
@@ -122,7 +150,11 @@ public class SilenceCityBoss : BossBase
 
         if (_player == null)
         {
-            return;
+            _player = GameObject.FindWithTag(nameof(ETags.Player));
+            if (_player == null)
+            {
+                return;
+            }
         }
 
         float distanceToPlayer = Vector2.Distance(transform.position, _player.transform.position);
@@ -149,11 +181,10 @@ public class SilenceCityBoss : BossBase
 
         if (other.gameObject.CompareTag(nameof(ETags.Player)) && !_isReset)
         {
-            ResetEncounterAsync().Forget();
-
+            RespawnManager.Instance.Respawn();
         }
     }
-    private async UniTask ResetEncounterAsync()
+    private void ResetBoss()
     {
         _isReset = true;
 
@@ -167,43 +198,20 @@ public class SilenceCityBoss : BossBase
         CancelActionTasks();
         CancelGroggyTimer();
 
-        InputHandler.BlockInput();
-
-        try
+        foreach (var data in _floorDatas)
         {
-            var fadeOutUcs = new UniTaskCompletionSource();
-            UIManager.Instance.FadeInLoadingPanel(() => fadeOutUcs.TrySetResult());
-            await fadeOutUcs.Task;
-
-            BossRoomManager.ResetRoom();
-            foreach (var data in _floorDatas)
+            if (data.Floor != null)
             {
-                if (data.Floor != null)
-                {
-                    data.Floor.ResetFloorTransition();
-                }
+                data.Floor.ResetFloorTransition();
             }
-            _currentFloorIndex = 0;
-            UpdateCurrentFloorPath();
-
-            transform.position = ResetPosition;
-            _rigidbody.linearVelocity = Vector2.zero;
-
-            RespawnManager.Instance.Respawn();
-
-            await UniTask.Delay(System.TimeSpan.FromSeconds(0.3f));
-
-            var fadeInUcs = new UniTaskCompletionSource();
-            UIManager.Instance.FadeOutLoadingPanel(() => fadeInUcs.TrySetResult());
-            await fadeInUcs.Task;
-
-            StartChase();
         }
-        finally
-        {
-            _isReset = false;
-            InputHandler.UnblockInput();
-        }
+        _currentFloorIndex = 0;
+        UpdateCurrentFloorPath();
+
+        _rigidbody.position = ResetPosition;
+        _rigidbody.linearVelocity = Vector2.zero;
+
+        _isReset = false;
     }
     public async UniTask FloorTransition(Transform startPoint, Transform endPoint, float jumpHeight)
     {

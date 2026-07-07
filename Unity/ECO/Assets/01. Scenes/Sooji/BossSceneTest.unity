@@ -689,6 +689,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interactionType: 0
+  _buttonOneShotDuration: 3
   _connectedTargets:
   - {fileID: 419851685}
 --- !u!114 &252725544
@@ -2451,6 +2452,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _cameraYOffset: 3
   _trackingTimeAfterTransition: 0.2
+  _playerTransform: {fileID: 0}
   _mainCamera: {fileID: 667192213}
 --- !u!114 &667192220
 MonoBehaviour:
@@ -3733,18 +3735,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1192446030}
     - target: {fileID: 4365149821968243707, guid: ffef1b7946478ba46b431972cd80e105, type: 3}
-      propertyPath: _floorDatas.Array.size
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 4365149821968243707, guid: ffef1b7946478ba46b431972cd80e105, type: 3}
-      propertyPath: _floorData.Array.data[0].Floor
-      value: 
-      objectReference: {fileID: 174947182}
-    - target: {fileID: 4365149821968243707, guid: ffef1b7946478ba46b431972cd80e105, type: 3}
-      propertyPath: _floorData.Array.data[1].Floor
-      value: 
-      objectReference: {fileID: 359907805}
-    - target: {fileID: 4365149821968243707, guid: ffef1b7946478ba46b431972cd80e105, type: 3}
       propertyPath: _floorDatas.Array.data[0].Floor
       value: 
       objectReference: {fileID: 174947182}
@@ -3752,18 +3742,6 @@ PrefabInstance:
       propertyPath: _floorDatas.Array.data[1].Floor
       value: 
       objectReference: {fileID: 359907805}
-    - target: {fileID: 4365149821968243707, guid: ffef1b7946478ba46b431972cd80e105, type: 3}
-      propertyPath: _floorData.Array.data[0].ChasingLine
-      value: 
-      objectReference: {fileID: 1687107862}
-    - target: {fileID: 4365149821968243707, guid: ffef1b7946478ba46b431972cd80e105, type: 3}
-      propertyPath: _floorData.Array.data[1].ChasingLine
-      value: 
-      objectReference: {fileID: 1616905971}
-    - target: {fileID: 4365149821968243707, guid: ffef1b7946478ba46b431972cd80e105, type: 3}
-      propertyPath: _floorData.Array.data[2].ChasingLine
-      value: 
-      objectReference: {fileID: 933521971}
     - target: {fileID: 4365149821968243707, guid: ffef1b7946478ba46b431972cd80e105, type: 3}
       propertyPath: _floorDatas.Array.data[0].ChasingLine
       value: 
@@ -3776,14 +3754,6 @@ PrefabInstance:
       propertyPath: _floorDatas.Array.data[2].ChasingLine
       value: 
       objectReference: {fileID: 933521971}
-    - target: {fileID: 4365149821968243707, guid: ffef1b7946478ba46b431972cd80e105, type: 3}
-      propertyPath: _floorDatas.Array.data[0].GroggyDuration
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 4365149821968243707, guid: ffef1b7946478ba46b431972cd80e105, type: 3}
-      propertyPath: _floorDatas.Array.data[1].GroggyDuration
-      value: 3
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
