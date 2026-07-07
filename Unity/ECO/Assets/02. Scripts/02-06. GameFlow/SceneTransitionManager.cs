@@ -14,7 +14,19 @@ public class SceneTransitionManager : MonoBehaviourSingleton<SceneTransitionMana
 
     public string CurrentLoadedRegionScene => _currentLoadedRegionScene;
     public bool IsTransitioning => _isTransitioning;
-    public bool IsGameplayScene => !string.IsNullOrEmpty(_currentLoadedRegionScene) && _currentLoadedRegionScene != ESceneNames.TitleScene.ToString();
+    public bool IsGameplayScene
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(_currentLoadedRegionScene))
+            {
+                return _currentLoadedRegionScene != ESceneNames.TitleScene.ToString();
+            }
+
+            string activeSceneName = SceneManager.GetActiveScene().name;
+            return activeSceneName != ESceneNames.TitleScene.ToString() && activeSceneName != "PersistentScene";
+        }
+    }
 
     protected override void Awake()
     {
