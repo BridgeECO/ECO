@@ -18,6 +18,10 @@ public class EnergyLine : MonoBehaviour
     [SerializeField]
     private int _curveResolution;
 
+    [Tooltip("스위치 최초 발동 시 에너지 구를 카메라가 추적하는 기능 활성화 여부")]
+    [SerializeField]
+    private bool _useTracking = false;
+
     [Tooltip("에너지 조각의 이동 속도")]
     [SerializeField]
     private float _energySpeed;
@@ -34,6 +38,9 @@ public class EnergyLine : MonoBehaviour
 
     private EnergyPathCalculator _pathCalculator = new EnergyPathCalculator();
     private EnergySegmentController _segmentController = new EnergySegmentController();
+
+    public bool UseTracking => _useTracking;
+    public float TotalDistance => _totalDistance;
 
     private void Awake()
     {
@@ -155,5 +162,58 @@ public class EnergyLine : MonoBehaviour
             return;
         }
         _segmentController.StopCurrentSegmentImmediately();
+    }
+
+    // HeadDistance를 _computedWaypoints 상에서 선형 보간하여 현재 에너지 구의 월드 포지션을 반환한다.
+    public bool TryGetSegmentHeadWorldPosition(out Vector3 worldPos)
+    {
+        IReadOnlyList<EnergySegment> segments = _segmentController.ActiveSegments;
+        if (segments.Count == 0 || _computedWaypoints.Count < 2)
+        {
+            worldPos = Vector3.zero;
+            return false;
+        }
+
+        float headDistance = segments[segments.Count - 1].HeadDistance;
+        worldPos = SampleWorldPositionAtDistance(headDistance);
+        return true;
+    }
+
+    // 에너지 구가 라인 끝에 도달했는지 판별하기 위해 HeadDistance를 직접 반환한다.
+    public bool TryGetSegmentHeadDistance(out float headDistance)
+    {
+        IReadOnlyList<EnergySegment> segments = _segmentController.ActiveSegments;
+        if (segments.Count == 0)
+        {
+            headDistance = 0f;
+            return false;
+        }
+
+        headDistance = segments[segments.Count - 1].HeadDistance;
+        return true;
+    }
+
+
+    // 누적 거리 배열을 순회하여 목표 거리에 해당하는 월드 포지션을 선형 보간으로 계산한다.
+    private Vector3 SampleWorldPositionAtDistance(float targetDistance)
+    {
+        float accumulated = 0f;
+        for (int i = 0; i < _computedWaypoints.Count - 1; i++)
+        {
+            Vector3 p1 = _computedWaypoints[i];
+            Vector3 p2 = _computedWaypoints[i + 1];
+            float segmentLength = Vector3.Distance(p1, p2);
+            float next = accumulated + segmentLength;
+
+            if (targetDistance <= next)
+            {
+                float t = segmentLength > 0f ? (targetDistance - accumulated) / segmentLength : 0f;
+                return Vector3.Lerp(p1, p2, t);
+            }
+
+            accumulated = next;
+        }
+
+        return _computedWaypoints[_computedWaypoints.Count - 1];
     }
 }
