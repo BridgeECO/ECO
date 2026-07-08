@@ -181,7 +181,7 @@ public class SilenceCityBoss : BossBase
 
         if (other.gameObject.CompareTag(nameof(ETags.Player)) && !_isReset)
         {
-            RespawnManager.Instance.Respawn();
+            EventManager.Instance.BroadcastEvent(EEventType.PlayerDied);
         }
     }
     private void ResetBoss()

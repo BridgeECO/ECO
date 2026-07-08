@@ -17,8 +17,6 @@ public abstract class BossBase : MonoBehaviour
     [Foldout("Hierarchy")]
     [SerializeField]
     private BossAnimationController _animationController;
-    [SerializeField]
-    private BossRoomManager _bossRoomManager;
 
     [SerializeField] 
     private EBossState _currentState;
@@ -27,7 +25,6 @@ public abstract class BossBase : MonoBehaviour
     public BossDataSO BossData { get => _bossData; protected set => _bossData = value; }
     public EBoss BossType => _bossType;
     protected BossAnimationController AnimationController => _animationController;
-    protected BossRoomManager BossRoomManager => _bossRoomManager;
     protected EBossState CurrentState { get => _currentState; private set => _currentState = value; }
     protected Vector3 ResetPosition { get => _resetPosition; private set => _resetPosition = value; }
 
