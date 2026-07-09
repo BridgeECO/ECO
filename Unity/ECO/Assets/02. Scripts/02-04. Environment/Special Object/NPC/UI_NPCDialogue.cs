@@ -58,7 +58,7 @@ public class UI_NPCDialogue : MonoBehaviour
 
     public void Open(string[] lines)
     {
-        if (lines == null || lines.Length == 0)
+        if (lines is null || lines.Length == 0)
         {
             return;
         }

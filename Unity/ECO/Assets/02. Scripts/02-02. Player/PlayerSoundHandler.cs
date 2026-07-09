@@ -2,9 +2,6 @@ using UnityEngine;
 
 /// <summary>
 /// PC의 상태 전환과 지형 타입을 조합하여 올바른 SFX를 SoundManager로 전달하는 핸들러.
-///
-/// 설계 원칙:
-///   - MonoBehaviour를 상속하지 않는 순수 POCO 클래스이다.
 ///   - PlayerStateMachine이 생성자에서 인스턴스를 소유하며, OnStateChanged 이벤트를 통해 상태 변화를 수신한다.
 ///   - 지형 타입 판별은 PlayerSensor가 제공하는 IsOnPlatform 플래그와
 ///     별도로 주입된 ETerrainSoundType(씬 단위 기본 지형)으로 결정한다.
@@ -14,12 +11,9 @@ using UnityEngine;
 public class PlayerSoundHandler
 {
     private readonly PlayerSensor _sensor;
-
-    // 씬 기본 지형 타입 — PlayerStateMachine이 씬 진입 시 Set으로 주입한다.
+    // 씬 기본 지형 타입 — PlayerStateMachine이 씬 진입 시 Set으로 주입
     private ETerrainSoundType _defaultTerrainType = ETerrainSoundType.Scrap;
-
     private bool _isHoverLoopPlaying;
-
     // Walk SFX 쿨다운 (Loop 의미이지만 PlayerSFX 풀 방식이라 주기 재생)
     private float _walkSfxTimer;
     private const float WALK_SFX_INTERVAL = 0.38f;
@@ -175,12 +169,17 @@ public class PlayerSoundHandler
             return;
         }
         _isHoverLoopPlaying = true;
-        SoundManager.Instance.PlayPlayerSfx(ESfxClip.SE_PC_Hovering);
+        SoundManager.Instance.PlayPlayerLoopSfx(ESfxClip.SE_PC_Hovering);
     }
 
     private void StopHoverLoop()
     {
+        if (!SoundManager.HasInstance || !_isHoverLoopPlaying)
+        {
+            return;
+        }
         _isHoverLoopPlaying = false;
+        SoundManager.Instance.StopPlayerLoopSfx(ESfxClip.SE_PC_Hovering);
     }
 
     private void StopWalkLoop()

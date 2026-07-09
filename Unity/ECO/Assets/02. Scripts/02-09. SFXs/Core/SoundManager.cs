@@ -17,8 +17,9 @@ public class SoundManager : MonoBehaviourSingleton<SoundManager>
     [SerializeField]
     private SfxController _sfxController;
 
+    [Foldout("Project")]
     [SerializeField]
-    private SoundLibrary _soundLibrary = new();
+    private SoundLibrary _soundLibrary;
 
     private float _sfxVolume = 1f;
 
@@ -34,7 +35,7 @@ public class SoundManager : MonoBehaviourSingleton<SoundManager>
 
     public void PlayBgm(EBgmType type)
     {
-        if (_soundLibrary == null)
+        if (_soundLibrary is null)
         {
             return;
         }
@@ -59,6 +60,22 @@ public class SoundManager : MonoBehaviourSingleton<SoundManager>
         {
             _sfxController.PlayPlayerSfx(audioClip);
         }
+    }
+
+    // ESfxClip Enum으로 Player SFX를 루프 재생한다.
+    public void PlayPlayerLoopSfx(ESfxClip clip)
+    {
+        AudioClip audioClip = GetSfxClip(clip);
+        if (audioClip != null)
+        {
+            _sfxController.PlayLoopSfx(clip, audioClip);
+        }
+    }
+
+    // 재생 중인 루프 SFX를 정지한다.
+    public void StopPlayerLoopSfx(ESfxClip clip)
+    {
+        _sfxController.StopLoopSfx(clip);
     }
 
     // ESfxClip Enum으로 UI SFX를 재생한다.
@@ -106,7 +123,7 @@ public class SoundManager : MonoBehaviourSingleton<SoundManager>
     // ESfxClip 인덱스로 AudioClip을 조회한다.
     private AudioClip GetSfxClip(ESfxClip clip)
     {
-        if (_soundLibrary == null)
+        if (_soundLibrary is null)
         {
             return null;
         }

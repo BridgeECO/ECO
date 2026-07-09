@@ -12,27 +12,27 @@ using VInspector;
 public class SoundLibrary
 {
     [SerializeField]
-    private List<AudioClip> _bgmClips = new();
+    private List<AudioClip> _bgmClips;
 
     [Foldout("SFX Categories")]
     [SerializeField]
-    private List<AudioClip> _ambientSfxClips = new();
+    private List<AudioClip> _ambientSfxClips;
 
     [SerializeField]
-    private List<AudioClip> _playerSfxClips = new();
+    private List<AudioClip> _playerSfxClips;
 
     [SerializeField]
-    private List<AudioClip> _bossSfxClips = new();
+    private List<AudioClip> _bossSfxClips;
 
     [SerializeField]
-    private List<AudioClip> _objectSfxClips = new();
+    private List<AudioClip> _objectSfxClips;
 
     [SerializeField]
-    private List<AudioClip> _uiSfxClips = new();
+    private List<AudioClip> _uiSfxClips;
 
     // 런타임 고속 Lookup을 위해 Enum 인덱스로 정렬된 에셋 캐싱 리스트
-    private List<AudioClip> _bgmClipsRuntime;
-    private List<AudioClip> _sfxClipsRuntime;
+    private List<AudioClip> _runtimeBgmClips;
+    private List<AudioClip> _runtimeSfxClips;
 
     // SoundManager의 Awake 시점에 호출되어 캐시 리스트를 초기화하고 무결성을 확인한다.
     public void Initialize()
@@ -46,51 +46,35 @@ public class SoundLibrary
     public AudioClip GetBgmClip(EBgmType type)
     {
         int index = (int)type;
-        if (_bgmClipsRuntime == null || index < 0 || index >= _bgmClipsRuntime.Count)
+        if (_runtimeBgmClips is null || index < 0 || index >= _runtimeBgmClips.Count)
         {
             return null;
         }
 
-        return _bgmClipsRuntime[index];
+        return _runtimeBgmClips[index];
     }
 
     // ESfxClip enum 값에 해당하는 SFX AudioClip을 반환한다.
     public AudioClip GetSfxClip(ESfxClip clip)
     {
         int index = (int)clip;
-        if (_sfxClipsRuntime == null || index < 0 || index >= _sfxClipsRuntime.Count)
+        if (_runtimeSfxClips is null || index < 0 || index >= _runtimeSfxClips.Count)
         {
             return null;
         }
 
-        return _sfxClipsRuntime[index];
+        return _runtimeSfxClips[index];
     }
 
     // BGM 에셋 리스트를 스캔하여 EBgmType 인덱스에 맞게 런타임 캐시 리스트를 초기화한다.
     private void InitializeBgmClips()
     {
         int enumCount = Enum.GetValues(typeof(EBgmType)).Length;
-        _bgmClipsRuntime = new List<AudioClip>(new AudioClip[enumCount]);
+        _runtimeBgmClips = new List<AudioClip>(new AudioClip[enumCount]);
 
-        foreach (AudioClip clip in _bgmClips)
+        for (int i = 0; i < _bgmClips.Count && i < enumCount; i++)
         {
-            if (clip == null)
-            {
-                continue;
-            }
-
-            if (Enum.TryParse<EBgmType>(clip.name, out EBgmType bgmEnum))
-            {
-                int index = (int)bgmEnum;
-                if (index >= 0 && index < _bgmClipsRuntime.Count)
-                {
-                    _bgmClipsRuntime[index] = clip;
-                }
-            }
-            else
-            {
-                Debug.LogWarning($"[SoundLibrary] '{clip.name}' BGM 클립이 EBgmType enum 정의에 존재하지 않습니다.");
-            }
+            _runtimeBgmClips[i] = _bgmClips[i];
         }
     }
 
@@ -98,7 +82,7 @@ public class SoundLibrary
     private void InitializeSfxClips()
     {
         int enumCount = Enum.GetValues(typeof(ESfxClip)).Length;
-        _sfxClipsRuntime = new List<AudioClip>(new AudioClip[enumCount]);
+        _runtimeSfxClips = new List<AudioClip>(new AudioClip[enumCount]);
 
         AddClipsToSfxList(_ambientSfxClips);
         AddClipsToSfxList(_playerSfxClips);
@@ -110,7 +94,7 @@ public class SoundLibrary
     // 원본 카테고리 리스트에서 AudioClip의 이름과 일치하는 ESfxClip의 인덱스 슬롯에 클립을 매핑한다.
     private void AddClipsToSfxList(List<AudioClip> sourceClips)
     {
-        if (sourceClips == null)
+        if (sourceClips is null)
         {
             return;
         }
@@ -125,9 +109,9 @@ public class SoundLibrary
             if (Enum.TryParse<ESfxClip>(clip.name, out ESfxClip sfxClip))
             {
                 int index = (int)sfxClip;
-                if (index >= 0 && index < _sfxClipsRuntime.Count)
+                if (index >= 0 && index < _runtimeSfxClips.Count)
                 {
-                    _sfxClipsRuntime[index] = clip;
+                    _runtimeSfxClips[index] = clip;
                 }
             }
             else
@@ -143,7 +127,7 @@ public class SoundLibrary
         int bgmEnumCount = Enum.GetValues(typeof(EBgmType)).Length;
         for (int i = 0; i < bgmEnumCount; i++)
         {
-            if (_bgmClipsRuntime[i] == null)
+            if (_runtimeBgmClips[i] == null)
             {
                 EBgmType type = (EBgmType)i;
                 Debug.LogWarning($"[SoundLibrary] BGM '{type}' 클립이 할당되지 않았거나 파일명이 다릅니다.");
@@ -153,7 +137,7 @@ public class SoundLibrary
         int sfxEnumCount = Enum.GetValues(typeof(ESfxClip)).Length;
         for (int i = 0; i < sfxEnumCount; i++)
         {
-            if (_sfxClipsRuntime[i] == null)
+            if (_runtimeSfxClips[i] == null)
             {
                 ESfxClip clip = (ESfxClip)i;
                 Debug.LogWarning($"[SoundLibrary] SFX '{clip}' 클립이 카테고리 리스트에 할당되지 않았거나 파일명이 다릅니다.");

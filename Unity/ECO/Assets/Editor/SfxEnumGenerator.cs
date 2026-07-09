@@ -61,7 +61,7 @@ public static class SfxEnumGenerator
 
         sb.AppendLine("}");
 
-        string absolutePath = Path.Combine(Application.dataPath.Replace("/Assets", ""), OUTPUT_PATH);
+        string absolutePath = Path.GetFullPath(Path.Combine(Application.dataPath, "..", OUTPUT_PATH));
         File.WriteAllText(absolutePath, sb.ToString(), Encoding.UTF8);
     }
 
