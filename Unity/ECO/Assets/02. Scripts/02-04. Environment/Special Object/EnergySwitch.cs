@@ -10,7 +10,7 @@ public class EnergySwitch : SpecialObjectBase
 
     private bool _isOn = false;
 
-    // 트래킹 시스템은 최초 발동 시에만 1회 실행된다.
+    // 원래의 퀘스트 최초 발동 시에만 1회 수행한다.
     private bool _hasTriggeredTracking = false;
 
     protected override void Interact()
@@ -38,6 +38,11 @@ public class EnergySwitch : SpecialObjectBase
         }
 
         _isOn = isOn;
+
+        if (SoundManager.HasInstance)
+        {
+            SoundManager.Instance.PlayPlayerSfx(ESfxClip.SE_Energy_Switch);
+        }
 
         for (int i = 0; i < _connectedLines.Count; i++)
         {

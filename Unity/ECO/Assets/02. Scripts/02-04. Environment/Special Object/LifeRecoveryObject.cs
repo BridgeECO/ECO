@@ -3,6 +3,10 @@ public class LifeRecoveryObject : SpecialObjectBase
     protected override void Interact()
     {
         base.Interact();
+        if (SoundManager.HasInstance)
+        {
+            SoundManager.Instance.PlayPlayerSfx(ESfxClip.SE_SO_HealingObject);
+        }
         LifeManager.Instance.Recover();
         SetState(false);
     }
