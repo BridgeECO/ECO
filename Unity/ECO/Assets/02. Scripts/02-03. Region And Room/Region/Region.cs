@@ -128,7 +128,7 @@ public class Region : MonoBehaviourSingleton<Region>
     }
 
 #if UNITY_EDITOR
-    [ContextMenu("Auto Assign & Sort Rooms")]
+    [ContextMenu("Auto Assign Room List")]
     private void AutoAssignRooms()
     {
         var rooms = GetComponentsInChildren<Room>(true);
