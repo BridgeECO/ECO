@@ -52,7 +52,7 @@ public class UIManager : MonoBehaviourSingleton<UIManager>
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape) && !(SceneTransitionManager.Instance != null && SceneTransitionManager.Instance.IsTransitioning))
         {
             HandleEscapeInput();
         }
