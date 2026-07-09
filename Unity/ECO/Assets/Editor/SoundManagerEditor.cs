@@ -3,49 +3,88 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// SoundManager Inspector를 확장하여 _sfxClips 배열의 각 슬롯 옆에
-/// ESfxClip Enum 이름 레이블을 표시한다.
-/// 슬롯 수와 Enum 항목 수가 다를 때 경고 박스를 노출한다.
+/// SoundManager 컴포넌트의 Custom Inspector.
+/// SoundLibrary 내부의 _bgmClips는 기획 가독성을 위해 각 슬롯 옆에 EBgmType Enum 레이블을 표시하고,
+/// 나머지 필드와 SFX 카테고리 리스트들은 기본 및 VInspector 드로우로 출력되도록 구성한다.
 /// </summary>
 [CustomEditor(typeof(SoundManager))]
 public class SoundManagerEditor : Editor
 {
+    private SerializedProperty _soundLibraryProp;
     private SerializedProperty _bgmClipsProp;
-    private SerializedProperty _sfxClipsProp;
 
     private void OnEnable()
     {
-        _bgmClipsProp = serializedObject.FindProperty("_bgmClips");
-        _sfxClipsProp = serializedObject.FindProperty("_sfxClips");
+        _soundLibraryProp = serializedObject.FindProperty("_soundLibrary");
+        if (_soundLibraryProp != null)
+        {
+            _bgmClipsProp = _soundLibraryProp.FindPropertyRelative("_bgmClips");
+        }
     }
 
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
 
-        // VInspector Foldout 영역은 기본 드로어가 처리하도록 위임
-        DrawPropertiesExcluding(serializedObject, "_sfxClips", "_bgmClips");
+        // 1. SoundManager의 _soundLibrary 속성을 제외한 모든 필드를 먼저 기본 드로우합니다.
+        DrawPropertiesExcluding(serializedObject, "_soundLibrary");
 
-        EditorGUILayout.Space(4f);
-        DrawBgmClips();
+        // 2. SoundLibrary 필드 그리기
+        if (_soundLibraryProp != null)
+        {
+            EditorGUILayout.Space(8f);
+            EditorGUILayout.LabelField("Sound Library (Asset Categories)", EditorStyles.boldLabel);
 
-        EditorGUILayout.Space(4f);
-        DrawSfxClipsWithEnumLabels();
+            // SoundLibrary 내부의 모든 속성 중 _bgmClips만 건너뛰고 기본 드로우합니다.
+            SerializedProperty childProp = _soundLibraryProp.Copy();
+            SerializedProperty endProp = _soundLibraryProp.GetEndProperty();
+            
+            bool enterChildren = true;
+            while (childProp.NextVisible(enterChildren))
+            {
+                if (SerializedProperty.EqualContents(childProp, endProp))
+                {
+                    break;
+                }
+                
+                enterChildren = false; // 직계 자식 프로퍼티만 순회
+
+                // _bgmClips는 하단에 별도로 그리므로 제외
+                if (childProp.name == "_bgmClips")
+                {
+                    continue;
+                }
+
+                EditorGUILayout.PropertyField(childProp, true);
+            }
+
+            // 3. _bgmClips 속성을 Enum 레이블과 함께 드로우합니다.
+            if (_bgmClipsProp != null)
+            {
+                EditorGUILayout.Space(8f);
+                DrawBgmClipsWithEnumLabels();
+            }
+        }
 
         serializedObject.ApplyModifiedProperties();
     }
 
-    private void DrawBgmClips()
+    /// <summary>
+    /// BGM 에셋 슬롯 옆에 상응하는 EBgmType Enum 값을 레이블로 출력한다.
+    /// </summary>
+    private void DrawBgmClipsWithEnumLabels()
     {
-        EditorGUILayout.LabelField("BGM Clips", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("BGM Clips (Mapped to EBgmType)", EditorStyles.boldLabel);
 
         string[] bgmNames = Enum.GetNames(typeof(EBgmType));
         int bgmCount = bgmNames.Length;
 
+        // 크기가 Enum 항목 수와 불일치할 경우 수동 경고 출력 및 강제 고정
         if (_bgmClipsProp.arraySize != bgmCount)
         {
             EditorGUILayout.HelpBox(
-                $"_bgmClips 배열 크기({_bgmClipsProp.arraySize})가 EBgmType 항목 수({bgmCount})와 다릅니다.",
+                $"_bgmClips 리스트 크기({_bgmClipsProp.arraySize})가 EBgmType 항목 수({bgmCount})와 다릅니다. " +
+                "자동으로 항목 수에 맞춥니다.",
                 MessageType.Warning);
         }
 
@@ -55,40 +94,6 @@ public class SoundManagerEditor : Editor
         {
             SerializedProperty element = _bgmClipsProp.GetArrayElementAtIndex(i);
             string label = i < bgmNames.Length ? bgmNames[i] : $"Element {i}";
-            EditorGUILayout.ObjectField(element, typeof(AudioClip), new GUIContent($"  [{i}] {label}"));
-        }
-    }
-
-    private void DrawSfxClipsWithEnumLabels()
-    {
-        EditorGUILayout.LabelField("SFX Clips", EditorStyles.boldLabel);
-
-        string[] enumNames = Enum.GetNames(typeof(ESfxClip));
-        int enumCount = enumNames.Length;
-
-        if (enumCount == 0)
-        {
-            EditorGUILayout.HelpBox(
-                "ESfxClip에 항목이 없습니다. 음악 파일을 09. SFXs 폴더에 추가 후\n" +
-                "Tools > Sound > Generate ESfxClip Enum 을 실행하세요.",
-                MessageType.Info);
-            return;
-        }
-
-        if (_sfxClipsProp.arraySize != enumCount)
-        {
-            EditorGUILayout.HelpBox(
-                $"_sfxClips 배열 크기({_sfxClipsProp.arraySize})가 ESfxClip 항목 수({enumCount})와 다릅니다.\n" +
-                "Tools > Sound > Generate ESfxClip Enum 을 재실행 후 배열을 재확인하세요.",
-                MessageType.Warning);
-        }
-
-        _sfxClipsProp.arraySize = enumCount;
-
-        for (int i = 0; i < enumCount; i++)
-        {
-            SerializedProperty element = _sfxClipsProp.GetArrayElementAtIndex(i);
-            string label = i < enumNames.Length ? enumNames[i] : $"Element {i}";
             EditorGUILayout.ObjectField(element, typeof(AudioClip), new GUIContent($"  [{i}] {label}"));
         }
     }

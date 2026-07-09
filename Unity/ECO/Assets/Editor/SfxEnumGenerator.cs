@@ -66,18 +66,10 @@ public static class SfxEnumGenerator
     }
 
     /// <summary>
-    /// SoundManager의 _sfxClips 배열 크기와 새로 생성된 Enum 항목 수를 비교하여
-    /// 불일치 시 경고 메시지로 재할당 필요성을 안내한다.
+    /// 자동 생성된 Enum 개수 정보를 로그에 남긴다.
     /// </summary>
     private static void ValidateSoundManagerArray(int enumCount)
     {
-        string managerGuid = AssetDatabase.FindAssets("t:Prefab SoundManager").FirstOrDefault();
-        if (managerGuid == null)
-        {
-            Debug.Log("[SfxEnumGenerator] SoundManager 프리팹을 찾을 수 없습니다. 컴파일 완료 후 Inspector에서 _sfxClips 배열 크기를 확인하세요.");
-            return;
-        }
-
-        Debug.Log($"[SfxEnumGenerator] ESfxClip 항목 수: {enumCount}개 → SoundManager Inspector의 _sfxClips 배열도 {enumCount}개로 맞춰 주세요.");
+        Debug.Log($"[SfxEnumGenerator] ESfxClip 항목 수: {enumCount}개. SoundManager 인스펙터의 카테고리별 SFX Clips 리스트에 필요한 오디오 클립을 추가해 주세요.");
     }
 }

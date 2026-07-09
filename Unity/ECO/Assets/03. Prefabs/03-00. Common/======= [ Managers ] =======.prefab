@@ -49,7 +49,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6520768177306356353}
-  - component: {fileID: 3185221471651427544}
+  - component: {fileID: 9128437839441420119}
   m_Layer: 0
   m_Name: SoundManager
   m_TagString: Untagged
@@ -74,7 +74,7 @@ Transform:
   - {fileID: 1245386381501631122}
   m_Father: {fileID: 7579147376322705185}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3185221471651427544
+--- !u!114 &9128437839441420119
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -83,14 +83,70 @@ MonoBehaviour:
   m_GameObject: {fileID: 1683545825420668491}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9480bf0869e38fd4caecf0b74946f59c, type: 3}
+  m_Script: {fileID: 11500000, guid: ecad7f618c0ade04ab4c241677fc1fd7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _isDontDestroyOnLoad: 0
   _lazyInitialization: 0
-  _bgmController: {fileID: 385182393338263255}
-  _sfxController: {fileID: 2910776959861235320}
-  _bgmClips: []
+  _bgmController: {fileID: 0}
+  _sfxController: {fileID: 0}
+  _bgmClips:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  _sfxClips:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!1 &1762059504527633501
 GameObject:
   m_ObjectHideFlags: 0
@@ -286,7 +342,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5665325973333883827}
-  - component: {fileID: 385182393338263255}
+  - component: {fileID: 4184224043072017054}
   - component: {fileID: 2611282742263682374}
   - component: {fileID: 7073011208414867300}
   m_Layer: 0
@@ -311,7 +367,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6520768177306356353}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &385182393338263255
+--- !u!114 &4184224043072017054
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -320,7 +376,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6365704992782437335}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 654457fd91774f44e9eae11819939013, type: 3}
+  m_Script: {fileID: 11500000, guid: 98c6c2d5d59e6ec4a98e994e120bc032, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _primarySource: {fileID: 2611282742263682374}
@@ -528,7 +584,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1245386381501631122}
-  - component: {fileID: 2910776959861235320}
+  - component: {fileID: 2891248597853957243}
   - component: {fileID: 5581322461329359635}
   m_Layer: 0
   m_Name: SFX_Player
@@ -552,7 +608,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6520768177306356353}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2910776959861235320
+--- !u!114 &2891248597853957243
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -561,7 +617,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8395307990886915536}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 22785359c230c4543beb4bfc63f2dcdf, type: 3}
+  m_Script: {fileID: 11500000, guid: ac4c43fba15b7184d803bce64533e848, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _uiSource: {fileID: 5581322461329359635}

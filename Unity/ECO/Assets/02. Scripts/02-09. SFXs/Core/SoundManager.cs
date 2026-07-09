@@ -17,38 +17,29 @@ public class SoundManager : MonoBehaviourSingleton<SoundManager>
     [SerializeField]
     private SfxController _sfxController;
 
-    [Foldout("Project")]
     [SerializeField]
-    private AudioClip[] _bgmClips;
-
-    [SerializeField]
-    private AudioClip[] _sfxClips;
+    private SoundLibrary _soundLibrary = new();
 
     private float _sfxVolume = 1f;
 
-    /// <summary>SoundEmitter가 매 프레임 참조하는 SFX 전역 볼륨 배율.</summary>
+    // SoundEmitter가 매 프레임 참조하는 SFX 전역 볼륨 배율.
     public float SfxVolume => _sfxVolume;
 
     protected override void Awake()
     {
         base.Awake();
         LoadSavedVolumes();
-        ValidateSfxClipsArray();
+        _soundLibrary.Initialize();
     }
-
-    // ──────────────────────────────────────────
-    // BGM Control API
-    // ──────────────────────────────────────────
 
     public void PlayBgm(EBgmType type)
     {
-        int index = (int)type;
-        if (_bgmClips == null || index < 0 || index >= _bgmClips.Length)
+        if (_soundLibrary == null)
         {
             return;
         }
 
-        AudioClip clip = _bgmClips[index];
+        AudioClip clip = _soundLibrary.GetBgmClip(type);
         if (clip != null)
         {
             _bgmController.Play(clip, BGM_FADE_DURATION);
@@ -60,16 +51,7 @@ public class SoundManager : MonoBehaviourSingleton<SoundManager>
         _bgmController.Stop(BGM_FADE_DURATION);
     }
 
-    // ──────────────────────────────────────────
-    // SFX Control API (MonoBehaviour & 2D)
-    // ──────────────────────────────────────────
-
-    public void PlayPlayerSfx(AudioClip clip)
-    {
-        _sfxController.PlayPlayerSfx(clip);
-    }
-
-    /// <summary>ESfxClip Enum으로 Player SFX를 재생한다.</summary>
+    // ESfxClip Enum으로 Player SFX를 재생한다.
     public void PlayPlayerSfx(ESfxClip clip)
     {
         AudioClip audioClip = GetSfxClip(clip);
@@ -79,12 +61,7 @@ public class SoundManager : MonoBehaviourSingleton<SoundManager>
         }
     }
 
-    public void PlayUiSfx(AudioClip clip)
-    {
-        _sfxController.PlayUiSfx(clip);
-    }
-
-    /// <summary>ESfxClip Enum으로 UI SFX를 재생한다.</summary>
+    // ESfxClip Enum으로 UI SFX를 재생한다.
     public void PlayUiSfx(ESfxClip clip)
     {
         AudioClip audioClip = GetSfxClip(clip);
@@ -94,18 +71,12 @@ public class SoundManager : MonoBehaviourSingleton<SoundManager>
         }
     }
 
-    /// <summary>
-    /// 동시 재생 가능한 Player SFX 슬롯 수를 변경한다.
-    /// 인게임 상황(이동 중 점프, 공격 등 동시 액션 수)에 따라 실시간으로 호출한다.
-    /// </summary>
+    // 동시 재생 가능한 Player SFX 슬롯 수를 변경한다.
+    // 인게임 상황(이동 중 점프, 공격 등 동시 액션 수)에 따라 실시간으로 호출한다.
     public void ChangePlayerSfxPoolSize(int activeCount)
     {
         _sfxController.SetMaxPlayerSfxCount(activeCount);
     }
-
-    // ──────────────────────────────────────────
-    // Volume Control API
-    // ──────────────────────────────────────────
 
     public void SetMasterVolume(float volume)
     {
@@ -123,11 +94,7 @@ public class SoundManager : MonoBehaviourSingleton<SoundManager>
         _sfxController.SetVolume(_sfxVolume);
     }
 
-    // ──────────────────────────────────────────
-    // 내부 헬퍼 메서드
-    // ──────────────────────────────────────────
-
-    /// <summary>게임 시작 시 PlayerPrefs에 저장된 볼륨 설정을 즉시 적용한다.</summary>
+    // 게임 시작 시 PlayerPrefs에 저장된 볼륨 설정을 즉시 적용한다.
     private void LoadSavedVolumes()
     {
         SetMasterVolume(PlayerPrefs.GetFloat("Settings_Sound_Master", 1f));
@@ -135,36 +102,15 @@ public class SoundManager : MonoBehaviourSingleton<SoundManager>
         SetSfxVolume(PlayerPrefs.GetFloat("Settings_Sound_Sfx", 1f));
     }
 
-    /// <summary>
-    /// ESfxClip 인덱스로 AudioClip을 조회한다.
-    /// 배열 크기 미스매치 및 null 슬롯은 null을 반환하고 호출부에서 무시한다.
-    /// </summary>
+
+    // ESfxClip 인덱스로 AudioClip을 조회한다.
     private AudioClip GetSfxClip(ESfxClip clip)
     {
-        int index = (int)clip;
-        if (_sfxClips == null || index < 0 || index >= _sfxClips.Length)
+        if (_soundLibrary == null)
         {
             return null;
         }
 
-        return _sfxClips[index];
-    }
-
-    /// <summary>Awake 시점에 배열 크기와 Enum 항목 수의 불일치를 경고한다.</summary>
-    private void ValidateSfxClipsArray()
-    {
-        int enumCount = System.Enum.GetValues(typeof(ESfxClip)).Length;
-        if (enumCount == 0)
-        {
-            return;
-        }
-
-        if (_sfxClips == null || _sfxClips.Length != enumCount)
-        {
-            Debug.LogWarning(
-                $"[SoundManager] _sfxClips 배열 크기({_sfxClips?.Length ?? 0})가 " +
-                $"ESfxClip 항목 수({enumCount})와 다릅니다. " +
-                "Tools > Sound > Generate ESfxClip Enum 재실행 후 Inspector에서 재할당하세요.");
-        }
+        return _soundLibrary.GetSfxClip(clip);
     }
 }
