@@ -1,6 +1,8 @@
+using System;
 using Cysharp.Threading.Tasks;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using VInspector;
 
@@ -9,8 +11,10 @@ using VInspector;
 /// 선택 상태 변경 시 이어하기/선택 버튼과 지우기 버튼이 나타난다.
 /// Init(slotIndex, mode)로 패널 모드를 주입받아 버튼 동작을 분기한다.
 /// </summary>
-public class UI_SaveSlotItem : MonoBehaviour
+public class UI_SaveSlotItem : MonoBehaviour, IPointerClickHandler
 {
+    public Action<int> OnClicked;
+
     [Foldout("Hierarchy")]
     [SerializeField]
     private VerticalLayoutGroup _verticalLayoutGroup;
@@ -187,6 +191,11 @@ public class UI_SaveSlotItem : MonoBehaviour
             : "빈 슬롯";
     }
 
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        OnClicked?.Invoke(_slotIndex);
+    }
+
     // 이어하기 또는 새 게임 버튼 클릭
     private void OnClickActionBtn()
     {
@@ -213,14 +222,8 @@ public class UI_SaveSlotItem : MonoBehaviour
             return;
         }
 
-        if (!RegionSceneMapper.TryGetSceneName(saveData.Region, out ESceneNames sceneName))
-        {
-            Debug.LogError($"[UI_SaveSlotItem] {saveData.Region}에 대응하는 씬이 RegionSceneMapper에 없습니다.");
-            return;
-        }
-
         SaveManager.Instance.CurrentSlotIndex = _slotIndex;
-        SceneTransitionManager.Instance.TransitionToNewRegionAsync(sceneName).Forget();
+        SceneTransitionManager.Instance.TransitionToNewRegionAsync(saveData.SceneName).Forget();
     }
 
     private void OnClickNewGameBtn()
