@@ -203,6 +203,7 @@ public class UI_SettingsTab_Control : UI_SettingsTabBase
                         targetText.text = _allKeyCodes[i].ToString();
                         keyBound = true;
                         IsDirty = true;
+                        SoundManager.Instance.PlayUiSfx(ESfxClip.SUI_Setting_ChangeKey);
                         break;
                     }
                 }

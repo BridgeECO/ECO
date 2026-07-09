@@ -7,6 +7,7 @@ using VInspector;
 public class PlayerStateMachine : MonoBehaviour
 {
     public Action<EPlayerState> OnStateChanged;
+
     [Foldout("Project")]
     [Header("Data")]
     [SerializeField]
@@ -19,12 +20,12 @@ public class PlayerStateMachine : MonoBehaviour
     public PlayerSensor Sensor { get; private set; }
     public PlayerMotor Motor { get; private set; }
     public Animator Animator { get; private set; }
-
+    public PlayerSoundHandler SoundHandler { get; private set; }
+    public EPlayerState CurrentPlayerState { get; private set; }
     public float JumpBufferTimer { get; set; }
     public float CoyoteTimer { get; set; }
     public bool HasUsedHover { get; set; }
     public float DashCooldownTimer { get; set; }
-
     public float InputLockTimer { get; set; }
     public float LastWallJumpDir { get; set; }
 
@@ -34,6 +35,7 @@ public class PlayerStateMachine : MonoBehaviour
         Sensor = GetComponent<PlayerSensor>();
         Motor = GetComponent<PlayerMotor>();
         Animator = GetComponent<Animator>();
+        SoundHandler = new PlayerSoundHandler(Sensor);
 
         _states = new Dictionary<EPlayerState, IPlayerState>
         {
@@ -65,6 +67,12 @@ public class PlayerStateMachine : MonoBehaviour
         DashCooldownTimer = Mathf.Max(0f, DashCooldownTimer - Time.deltaTime);
         Motor.SetFlip(Input.HorizontalInput);
         _currentState?.Update();
+
+        if (CurrentPlayerState == EPlayerState.Grounded)
+        {
+            bool isMoving = Input.HorizontalInput != 0f;
+            SoundHandler.UpdateWalkSound(Time.deltaTime, isMoving);
+        }
     }
 
     private void OnDisable()
@@ -83,12 +91,36 @@ public class PlayerStateMachine : MonoBehaviour
         if (_states.TryGetValue(newState, out IPlayerState state))
         {
             _currentState = state;
+            CurrentPlayerState = newState;
             OnStateChanged?.Invoke(newState);
+            NotifySoundHandler(newState);
             _currentState?.Enter();
         }
         else
         {
             Debug.LogError($"Invalid state transition: {newState}");
+        }
+    }
+
+    private void NotifySoundHandler(EPlayerState newState)
+    {
+        switch (newState)
+        {
+            case EPlayerState.Grounded:
+                SoundHandler.OnEnterGrounded();
+                break;
+            case EPlayerState.Airborne:
+                SoundHandler.OnEnterAirborne();
+                break;
+            case EPlayerState.WallSlide:
+                SoundHandler.OnEnterWallSlide();
+                break;
+            case EPlayerState.Hover:
+                SoundHandler.OnEnterHover();
+                break;
+            case EPlayerState.Dash:
+                SoundHandler.OnEnterDash();
+                break;
         }
     }
 

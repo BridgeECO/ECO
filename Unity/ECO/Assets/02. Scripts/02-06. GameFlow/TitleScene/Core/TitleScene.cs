@@ -33,6 +33,7 @@ public class TitleScene : MonoBehaviour
 
         if (_currentState == ETitleState.WaitInput && Input.anyKeyDown)
         {
+            SoundManager.Instance.PlayUiSfx(ESfxClip.SUI_Title_Input);
             ChangeState(ETitleState.Menu);
         }
     }
@@ -59,6 +60,7 @@ public class TitleScene : MonoBehaviour
             case ETitleState.Menu:
                 {
                     OnMenuStarted?.Invoke();
+                    PlayTitleBgm();
                     break;
                 }
         }
@@ -71,5 +73,14 @@ public class TitleScene : MonoBehaviour
 #else
         Application.Quit();
 #endif
+    }
+
+    private void PlayTitleBgm()
+    {
+        if (!SoundManager.HasInstance)
+        {
+            return;
+        }
+        SoundManager.Instance.PlayBgm(EBgmType.Title);
     }
 }

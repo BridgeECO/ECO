@@ -19,6 +19,15 @@ public class UI_NPCDialogue : MonoBehaviour
     [SerializeField]
     private UI_NPCChoice _choiceUI;
 
+    [Foldout("Settings")]
+    [SerializeField]
+    [Tooltip("대화 텍스트가 시작될 때 재생할 SFX. 캐릭터별로 다른 클립을 지정한다.")]
+    private ESfxClip _dialogueClip;
+
+    [SerializeField]
+    [Tooltip("대화 SFX 발화를 활성화할지 여부.")]
+    private bool _hasDialogueSfx = false;
+
     private string[] _lines;
     private int _currentPageIndex;
     private bool _isShowingChoices;
@@ -49,7 +58,7 @@ public class UI_NPCDialogue : MonoBehaviour
 
     public void Open(string[] lines)
     {
-        if (lines == null || lines.Length == 0)
+        if (lines is null || lines.Length == 0)
         {
             return;
         }
@@ -74,7 +83,7 @@ public class UI_NPCDialogue : MonoBehaviour
             return;
         }
 
-        if (_lines.Length - 1<= _currentPageIndex )
+        if (_lines.Length - 1 <= _currentPageIndex)
         {
             OnDialogueCompleted?.Invoke();
             return;
@@ -139,6 +148,7 @@ public class UI_NPCDialogue : MonoBehaviour
             return;
         }
 
+        PlayDialogueSfx();
         _isPrintingText = true;
         _isTransitioning = false;
 
@@ -161,7 +171,8 @@ public class UI_NPCDialogue : MonoBehaviour
         }
 
         _currentPageIndex++;
-        
+
+        PlayDialogueSfx();
         _isPrintingText = true;
         _isTransitioning = false;
 
@@ -172,5 +183,14 @@ public class UI_NPCDialogue : MonoBehaviour
         }
 
         _isPrintingText = false;
+    }
+
+    private void PlayDialogueSfx()
+    {
+        if (!_hasDialogueSfx || !SoundManager.HasInstance)
+        {
+            return;
+        }
+        SoundManager.Instance.PlayUiSfx(_dialogueClip);
     }
 }

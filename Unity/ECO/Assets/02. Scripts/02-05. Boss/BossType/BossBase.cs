@@ -18,6 +18,9 @@ public abstract class BossBase : MonoBehaviour
     [SerializeField]
     private BossAnimationController _animationController;
 
+    [SerializeField]
+    private AudioSource _loopAudioSource;
+
     [SerializeField] 
     private EBossState _currentState;
     private Vector3 _resetPosition;
@@ -40,6 +43,7 @@ public abstract class BossBase : MonoBehaviour
             BossManager.Instance.RegisterBoss(_bossType, this);
         }
     }
+    
     protected virtual void Start()
     {
         InitBoss();
@@ -73,6 +77,26 @@ public abstract class BossBase : MonoBehaviour
         OnStateChanged(newState);
     }
     protected abstract void OnStateChanged(EBossState newState);
+
+    protected void PlayLoopSfx(AudioClip clip)
+    {
+        if (_loopAudioSource == null || clip == null || (_loopAudioSource.clip == clip && _loopAudioSource.isPlaying)) 
+        {
+            return;
+        }
+        _loopAudioSource.clip = clip;
+        _loopAudioSource.loop = true;
+        _loopAudioSource.Play();
+    }
+
+    protected void StopLoopSfx()
+    {
+        if (_loopAudioSource == null) 
+        {
+            return;
+        }
+        _loopAudioSource.Stop();
+    }
 
     public async UniTask WaitForStateAsync(EBossState targetState)
     {

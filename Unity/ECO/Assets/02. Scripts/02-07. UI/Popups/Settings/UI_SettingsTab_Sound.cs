@@ -65,18 +65,22 @@ public class UI_SettingsTab_Sound : UI_SettingsTabBase
         if (_masterVolumeSlider != null)
         {
             _masterVolumeSlider.OnValueChanged += val => { _currentMasterVolume = val; ApplySettingsImmediately(); IsDirty = true; };
+            _masterVolumeSlider.OnPointerUp += () => SoundManager.Instance.PlayUiSfx(ESfxClip.SUI_Setting_ChangeVolume);
         }
         if (_bgmVolumeSlider != null)
         {
             _bgmVolumeSlider.OnValueChanged += val => { _currentBgmVolume = val; ApplySettingsImmediately(); IsDirty = true; };
+            _bgmVolumeSlider.OnPointerUp += () => SoundManager.Instance.PlayUiSfx(ESfxClip.SUI_Setting_ChangeVolume);
         }
         if (_sfxVolumeSlider != null)
         {
             _sfxVolumeSlider.OnValueChanged += val => { _currentSfxVolume = val; ApplySettingsImmediately(); IsDirty = true; };
+            _sfxVolumeSlider.OnPointerUp += () => SoundManager.Instance.PlayUiSfx(ESfxClip.SUI_Setting_ChangeVolume);
         }
         if (_voiceVolumeSlider != null)
         {
             _voiceVolumeSlider.OnValueChanged += val => { _currentVoiceVolume = val; ApplySettingsImmediately(); IsDirty = true; };
+            _voiceVolumeSlider.OnPointerUp += () => SoundManager.Instance.PlayUiSfx(ESfxClip.SUI_Setting_ChangeVolume);
         }
 
         _isInitialized = true;

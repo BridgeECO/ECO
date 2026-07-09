@@ -5,6 +5,7 @@ using Cysharp.Threading.Tasks;
 public class PlayerLife : MonoBehaviour
 {
     private SpriteRenderer _spriteRenderer;
+    private PlayerSoundHandler _soundHandler;
     private readonly HashSet<Collider2D> _activeObstacles = new();
 
     private const float DURATION_INVINCIBILITY = 2f;
@@ -21,6 +22,13 @@ public class PlayerLife : MonoBehaviour
 
     private void Start()
     {
+        // PlayerStateMachine이 동일 GameObject에 있으므로 GetComponent로 주입
+        var stateMachine = GetComponent<PlayerStateMachine>();
+        if (stateMachine != null)
+        {
+            _soundHandler = stateMachine.SoundHandler;
+        }
+
         EventManager.Instance.AddEventListener(EEventType.PlayerRespawned, OnPlayerRespawned);
     }
 
@@ -67,6 +75,7 @@ public class PlayerLife : MonoBehaviour
 
         if (other.CompareTag(nameof(ETags.InstantKill)))
         {
+            _soundHandler?.PlayDeathSfx();
             LifeManager.Instance.InstantKill();
             return;
         }
@@ -96,6 +105,7 @@ public class PlayerLife : MonoBehaviour
 
     private void BeginInvincibility()
     {
+        _soundHandler?.PlayDamageSfx();
         _isInvincible = true;
         _invincibilityTimer = DURATION_INVINCIBILITY;
     }

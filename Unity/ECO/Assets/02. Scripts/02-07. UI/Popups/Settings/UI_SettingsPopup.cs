@@ -52,6 +52,8 @@ public class UI_SettingsPopup : UI_Popup
 
     private void OnClick_Tab(int index)
     {
+        SoundManager.Instance.PlayUiSfx(ESfxClip.SUI_Setting_ChangeTab);
+
         if (0 <= _activeTabIndex && _activeTabIndex < _settingTabs.Count)
         {
             _settingTabs[_activeTabIndex].gameObject.SetActive(false);
@@ -73,6 +75,7 @@ public class UI_SettingsPopup : UI_Popup
         {
             return;
         }
+        SoundManager.Instance.PlayUiSfx(ESfxClip.SUI_Common_Button);
         HandleResetAsync().Forget();
     }
 
@@ -82,6 +85,7 @@ public class UI_SettingsPopup : UI_Popup
         {
             return;
         }
+        SoundManager.Instance.PlayUiSfx(ESfxClip.SUI_Common_Button);
         if (0 <= _activeTabIndex && _activeTabIndex < _settingTabs.Count)
         {
             _settingTabs[_activeTabIndex].SaveTabSettings();
@@ -94,6 +98,7 @@ public class UI_SettingsPopup : UI_Popup
         {
             return;
         }
+        SoundManager.Instance.PlayUiSfx(ESfxClip.SUI_Common_Button);
         HandleBackAsync().Forget();
     }
 

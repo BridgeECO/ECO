@@ -39,6 +39,7 @@ public class PlayerHoverState : IPlayerState
 
     public void Exit()
     {
+        _sm.SoundHandler.OnExitHover();
         _input.OnDashReleased -= HandleDashReleased;
     }
 

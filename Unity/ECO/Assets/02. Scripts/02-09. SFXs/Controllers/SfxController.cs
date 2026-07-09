@@ -23,6 +23,7 @@ public class SfxController : MonoBehaviour
     private int _defaultMaxPlayerSfxCount = 4;
 
     private readonly List<AudioSource> _playerSources = new List<AudioSource>();
+    private readonly Dictionary<int, AudioSource> _loopingSources = new();
     private float _volume = 1f;
     private int _maxPlayerSfxCount;
 
@@ -54,6 +55,47 @@ public class SfxController : MonoBehaviour
         _uiSource.PlayOneShot(clip);
     }
 
+    /// <summary>플레이어 SFX를 루프 모드로 재생한다. 이미 재생 중인 경우 무시한다.</summary>
+    public void PlayLoopSfx(ESfxClip clip, AudioClip audioClip)
+    {
+        int key = (int)clip;
+        if (_loopingSources.TryGetValue(key, out var source))
+        {
+            if (source != null)
+            {
+                if (!source.isPlaying)
+                {
+                    source.clip = audioClip;
+                    source.Play();
+                }
+                return;
+            }
+        }
+
+        AudioSource newSource = gameObject.AddComponent<AudioSource>();
+        newSource.spatialBlend = 0f;
+        newSource.loop = true;
+        newSource.playOnAwake = false;
+        newSource.volume = _volume;
+        newSource.clip = audioClip;
+        newSource.Play();
+
+        _loopingSources[key] = newSource;
+    }
+
+    /// <summary>재생 중인 루프 SFX를 정지한다.</summary>
+    public void StopLoopSfx(ESfxClip clip)
+    {
+        int key = (int)clip;
+        if (_loopingSources.TryGetValue(key, out var source))
+        {
+            if (source != null)
+            {
+                source.Stop();
+            }
+        }
+    }
+
     public void SetVolume(float volume)
     {
         _volume = volume;
@@ -63,6 +105,19 @@ public class SfxController : MonoBehaviour
         {
             _playerSources[i].volume = _volume;
         }
+
+        foreach (var source in _loopingSources.Values)
+        {
+            if (source != null)
+            {
+                source.volume = _volume;
+            }
+        }
+    }
+
+    private void OnDestroy()
+    {
+        _loopingSources.Clear();
     }
 
     /// <summary>
