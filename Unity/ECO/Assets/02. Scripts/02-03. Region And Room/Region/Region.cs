@@ -126,4 +126,43 @@ public class Region : MonoBehaviourSingleton<Region>
     {
         return _rooms?.IndexOf(room) ?? -1;
     }
+
+#if UNITY_EDITOR
+    [ContextMenu("Auto Assign Room List")]
+    private void AutoAssignRooms()
+    {
+        var rooms = GetComponentsInChildren<Room>(true);
+        var sortedRooms = System.Linq.Enumerable.ToList(System.Linq.Enumerable.OrderBy(rooms, room => {
+            string name = room.name;
+            string numStr = "";
+            int startIndex = name.IndexOf("SN_");
+            if (startIndex != -1)
+            {
+                startIndex += 3;
+                while (startIndex < name.Length && char.IsDigit(name[startIndex]))
+                {
+                    numStr += name[startIndex];
+                    startIndex++;
+                }
+            }
+            int num;
+            return int.TryParse(numStr, out num) ? num : 999;
+        }));
+
+        var serializedObject = new UnityEditor.SerializedObject(this);
+        var roomsProp = serializedObject.FindProperty("_rooms");
+        if (roomsProp != null)
+        {
+            roomsProp.ClearArray();
+            for (int i = 0; i < sortedRooms.Count; i++)
+            {
+                roomsProp.InsertArrayElementAtIndex(i);
+                roomsProp.GetArrayElementAtIndex(i).objectReferenceValue = sortedRooms[i];
+            }
+            serializedObject.ApplyModifiedProperties();
+            UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(gameObject.scene);
+            Debug.Log($"[Region] 자식 Room {sortedRooms.Count}개를 숫자로 정렬하여 자동 할당했습니다.");
+        }
+    }
+#endif
 }

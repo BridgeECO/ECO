@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 
 public class PlayerLife : MonoBehaviour
 {
     private SpriteRenderer _spriteRenderer;
+    private readonly HashSet<Collider2D> _activeObstacles = new();
 
     private const float DURATION_INVINCIBILITY = 2f;
     private const float SPEED_FLICKER = 8f;
@@ -38,6 +40,11 @@ public class PlayerLife : MonoBehaviour
         UpdateSpriteAlpha();
     }
 
+    private void OnDisable()
+    {
+        _activeObstacles.Clear();
+    }
+
     private void OnDestroy()
     {
         if (MonoBehaviourSingleton<EventManager>.HasInstance)
@@ -48,6 +55,11 @@ public class PlayerLife : MonoBehaviour
 
     public void RelayTriggerEnter2D(Collider2D other)
     {
+        if (other.CompareTag(nameof(ETags.Obstacle)))
+        {
+            _activeObstacles.Add(other);
+        }
+
         if (_isInvincible)
         {
             return;
@@ -63,6 +75,14 @@ public class PlayerLife : MonoBehaviour
         {
             BeginInvincibility();
             LifeManager.Instance.TakeDamage();
+        }
+    }
+
+    public void RelayTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag(nameof(ETags.Obstacle)))
+        {
+            _activeObstacles.Remove(other);
         }
     }
 
@@ -82,6 +102,7 @@ public class PlayerLife : MonoBehaviour
 
     private void OnPlayerRespawned()
     {
+        _activeObstacles.Clear();
         StopInvincibilityAsync().Forget();
     }
 
@@ -98,5 +119,17 @@ public class PlayerLife : MonoBehaviour
         Color color = _spriteRenderer.color;
         color.a = 1f;
         _spriteRenderer.color = color;
+
+        CleanActiveObstacles();
+        if (_activeObstacles.Count > 0)
+        {
+            BeginInvincibility();
+            LifeManager.Instance.TakeDamage();
+        }
+    }
+
+    private void CleanActiveObstacles()
+    {
+        _activeObstacles.RemoveWhere(col => col == null || !col.gameObject.activeInHierarchy || !col.enabled);
     }
 }

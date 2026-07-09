@@ -23,10 +23,26 @@ public class SaveManager : MonoBehaviourSingleton<SaveManager>
     public void Save(Room targetRoom, Vector3 savePointPosition)
     {
         Region region = Region.Instance;
-        if (CurrentSaveData == null || region == null)
+        if (region == null)
         {
             return;
         }
+
+        if (CurrentSaveData is null)
+        {
+            CurrentSaveData = new SaveData();
+        }
+
+        string activeSceneName = SceneTransitionManager.Instance != null ? SceneTransitionManager.Instance.CurrentLoadedRegionScene : null;
+        if (!string.IsNullOrEmpty(activeSceneName) && System.Enum.TryParse(activeSceneName, out ESceneNames sceneName))
+        {
+            CurrentSaveData.SceneName = sceneName;
+        }
+        else
+        {
+            CurrentSaveData.SceneName = ESceneNames.TitleScene;
+        }
+
         CurrentSaveData.Region = region.RegionType;
         CurrentSaveData.RoomIndex = region.GetRoomIndex(targetRoom);
         CurrentSaveData.SavePointPosition = savePointPosition;
@@ -76,7 +92,7 @@ public class SaveManager : MonoBehaviourSingleton<SaveManager>
         {
             return null;
         }
-        SaveData saveData = new SaveData(dto.Region, dto.RoomIndex, dto.SavePointPosition);
+        SaveData saveData = new SaveData(dto.SceneName, dto.Region, dto.RoomIndex, dto.SavePointPosition);
         CurrentSaveData = saveData;
         return saveData;
     }

@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class SaveDataDTO
 {
+    public readonly ESceneNames SceneName;
     public readonly ERegions Region;
     public readonly int RoomIndex;
 
@@ -15,8 +16,9 @@ public class SaveDataDTO
     public Vector3 SavePointPosition => new Vector3(SavePointX, SavePointY, SavePointZ);
 
     [JsonConstructor]
-    public SaveDataDTO(ERegions region, int roomIndex, float savePointX, float savePointY, float savePointZ)
+    public SaveDataDTO(ESceneNames sceneName, ERegions region, int roomIndex, float savePointX, float savePointY, float savePointZ)
     {
+        SceneName = sceneName;
         Region = region;
         RoomIndex = roomIndex;
         SavePointX = savePointX;

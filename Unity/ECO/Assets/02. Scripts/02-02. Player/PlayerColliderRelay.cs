@@ -13,4 +13,9 @@ public class PlayerColliderRelay : MonoBehaviour
     {
         _playerLife.RelayTriggerEnter2D(collision.collider);
     }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        _playerLife.RelayTriggerExit2D(collision.collider);
+    }
 }
