@@ -12,23 +12,23 @@ using VInspector;
 public class SoundLibrary
 {
     [SerializeField]
-    private List<AudioClip> _bgmClips;
+    private List<AudioClip> _bgmClips = new();
 
     [Foldout("SFX Categories")]
     [SerializeField]
-    private List<AudioClip> _ambientSfxClips;
+    private List<AudioClip> _ambientSfxClips = new();
 
     [SerializeField]
-    private List<AudioClip> _playerSfxClips;
+    private List<AudioClip> _playerSfxClips = new();
 
     [SerializeField]
-    private List<AudioClip> _bossSfxClips;
+    private List<AudioClip> _bossSfxClips = new();
 
     [SerializeField]
-    private List<AudioClip> _objectSfxClips;
+    private List<AudioClip> _objectSfxClips = new();
 
     [SerializeField]
-    private List<AudioClip> _uiSfxClips;
+    private List<AudioClip> _uiSfxClips = new();
 
     // 런타임 고속 Lookup을 위해 Enum 인덱스로 정렬된 에셋 캐싱 리스트
     private List<AudioClip> _runtimeBgmClips;

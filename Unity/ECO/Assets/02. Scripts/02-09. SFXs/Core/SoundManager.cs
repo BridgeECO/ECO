@@ -19,7 +19,7 @@ public class SoundManager : MonoBehaviourSingleton<SoundManager>
 
     [Foldout("Project")]
     [SerializeField]
-    private SoundLibrary _soundLibrary;
+    private SoundLibrary _soundLibrary = new();
 
     private float _sfxVolume = 1f;
 
