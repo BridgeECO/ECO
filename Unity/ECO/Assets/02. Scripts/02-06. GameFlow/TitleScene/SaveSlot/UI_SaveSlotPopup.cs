@@ -49,6 +49,22 @@ public class UI_SaveSlotPopup : UI_Popup, IKeyboardControllable
         await base.CloseAsync();
     }
 
+    private void OnDestroy()
+    {
+        if (_slotItems == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < _slotItems.Count; i++)
+        {
+            if (_slotItems[i] != null)
+            {
+                _slotItems[i].OnClicked -= OnSlotClicked;
+            }
+        }
+    }
+
     #region IKeyboardControllable
     public void OnMoveLeft()
     {
@@ -113,7 +129,20 @@ public class UI_SaveSlotPopup : UI_Popup, IKeyboardControllable
         for (int i = 0; i < _slotItems.Count; i++)
         {
             _slotItems[i].Init(i, ESlotPanelMode.Continue);
+            _slotItems[i].OnClicked += OnSlotClicked;
         }
+    }
+
+    private void OnSlotClicked(int slotIndex)
+    {
+        if (_selectedIndex == slotIndex)
+        {
+            return;
+        }
+
+        _slotItems[_selectedIndex].SetSelected(false);
+        _selectedIndex = slotIndex;
+        _slotItems[_selectedIndex].SetSelected(true);
     }
 
     /// <summary>
