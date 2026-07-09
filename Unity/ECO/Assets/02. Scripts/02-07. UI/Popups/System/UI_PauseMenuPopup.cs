@@ -24,10 +24,12 @@ public class UI_PauseMenuPopup : UI_Popup
     {
         await base.OpenAsync();
         Time.timeScale = 0f;
+        SoundManager.Instance.PlayUiSfx(ESfxClip.SUI_Pause_StartPause);
     }
 
     public override async UniTask CloseAsync()
     {
+        SoundManager.Instance.PlayUiSfx(ESfxClip.SUI_Pause_EndPause);
         await base.CloseAsync();
         Time.timeScale = 1f;
     }
@@ -49,17 +51,20 @@ public class UI_PauseMenuPopup : UI_Popup
 
     private void OnClickSettingBtn()
     {
+        SoundManager.Instance.PlayUiSfx(ESfxClip.SUI_Common_Button);
         UIManager.Instance.OpenSettingsPopup();
     }
 
     private void OnClickTitleBtn()
     {
+        SoundManager.Instance.PlayUiSfx(ESfxClip.SUI_Common_Button);
         Time.timeScale = 1f;
         SceneTransitionManager.Instance.TransitionToNewRegionAsync(ESceneNames.TitleScene).Forget();
     }
 
     private void OnClickExitBtn()
     {
+        SoundManager.Instance.PlayUiSfx(ESfxClip.SUI_Common_Button);
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #else

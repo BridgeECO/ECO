@@ -5,13 +5,16 @@ using UnityEngine.UI;
 using VInspector;
 
 /// <summary>
-/// Handle 없이 클릭/드래그 지점의 위치 비율로 슬라이더 값을 제어하는 커스텀 슬라이더.
+/// 핸들 없이 클릭/드래그 지점의 위치 비율로 슬라이더 값을 제어하는 커스텀 슬라이더.
 /// Unity Slider 컴포넌트 대신 사용하며, Fill Image 하나와 클릭 가능한 배경 RectTransform만으로 동작한다.
 /// </summary>
-public class UI_ClickSlider : MonoBehaviour, IPointerDownHandler, IDragHandler
+public class UI_ClickSlider : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
 {
     public Action<float> OnValueChanged;
     public Action<float> OnVisualsUpdated;
+    
+    /// <summary>슬라이더 조작을 완료하고 마우스 버튼을 뗐을 때 1회 발생하는 이벤트.</summary>
+    public Action OnPointerUp;
 
     [Foldout("Hierarchy")]
     [SerializeField]
@@ -37,7 +40,7 @@ public class UI_ClickSlider : MonoBehaviour, IPointerDownHandler, IDragHandler
     private void Awake()
     {
         // Canvas가 Screen Space - Camera 모드일 경우 UI 카메라를 캐싱한다.
-        // Overlay 모드는 null이어도 정상 동작하므로 null 허용.
+        // Overlay 모드인 경우 null이 되므로 null 상태 작동을 허용한다.
         Canvas canvas = GetComponentInParent<Canvas>();
         _uiCamera = (canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay)
             ? canvas.worldCamera
@@ -66,8 +69,13 @@ public class UI_ClickSlider : MonoBehaviour, IPointerDownHandler, IDragHandler
         ApplyPointerPosition(eventData);
     }
 
+    void IPointerUpHandler.OnPointerUp(PointerEventData eventData)
+    {
+        OnPointerUp?.Invoke();
+    }
+
     /// <summary>
-    /// 외부에서 값을 코드로 설정할 때 사용. OnValueChanged는 호출되지 않는다.
+    /// 외부에서 값을 코드로 직접 설정할 때 사용한다. OnValueChanged는 발생하지 않는다.
     /// </summary>
     public void SetValueWithoutNotify(float value)
     {
@@ -76,7 +84,7 @@ public class UI_ClickSlider : MonoBehaviour, IPointerDownHandler, IDragHandler
         OnVisualsUpdated?.Invoke(_currentValue);
     }
 
-    // 포인터 위치를 슬라이더 배경 RectTransform 로컬 좌표로 변환 후 비율 계산
+    // 포인터 위치에 맞춰 슬라이더 값을 산출하고 반영한다.
     private void ApplyPointerPosition(PointerEventData eventData)
     {
         if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
@@ -87,7 +95,7 @@ public class UI_ClickSlider : MonoBehaviour, IPointerDownHandler, IDragHandler
 
         Rect rect = _sliderBackground.rect;
 
-        // 좌측 끝을 0, 우측 끝을 1로 하는 비율 계산
+        // 좌측 끝 0, 우측 끝 1 기준으로 비율 계산
         float ratio = Mathf.InverseLerp(rect.xMin, rect.xMax, localPoint.x);
         float newValue = Mathf.Lerp(_minValue, _maxValue, ratio);
 
