@@ -28,13 +28,13 @@ public class SaveManager : MonoBehaviourSingleton<SaveManager>
             return;
         }
 
-        if (CurrentSaveData == null)
+        if (CurrentSaveData is null)
         {
             CurrentSaveData = new SaveData();
         }
 
-        string activeSceneName = SceneTransitionManager.Instance.CurrentLoadedRegionScene;
-        if (System.Enum.TryParse(activeSceneName, out ESceneNames sceneName))
+        string activeSceneName = SceneTransitionManager.Instance != null ? SceneTransitionManager.Instance.CurrentLoadedRegionScene : null;
+        if (!string.IsNullOrEmpty(activeSceneName) && System.Enum.TryParse(activeSceneName, out ESceneNames sceneName))
         {
             CurrentSaveData.SceneName = sceneName;
         }

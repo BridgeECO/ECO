@@ -51,7 +51,7 @@ public class UI_SaveSlotPopup : UI_Popup, IKeyboardControllable
 
     private void OnDestroy()
     {
-        if (_slotItems == null)
+        if (_slotItems is null)
         {
             return;
         }
