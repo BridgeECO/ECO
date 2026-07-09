@@ -38,7 +38,15 @@ public class ConveyorTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizab
 
         if (_isInitialized)
         {
-            TeleportToStart(target);
+            //TeleportToStart(target);
+            if (target.Rigidbody != null)
+            {
+                target.Rigidbody.position = target.InitialPosition;
+            }
+            else
+            {
+                target.transform.position = target.InitialPosition;
+            }
         }
     }
 
