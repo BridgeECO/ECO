@@ -1,5 +1,6 @@
 using UnityEngine;
 using VInspector;
+using Cysharp.Threading.Tasks;
 
 /// <summary>
 /// 플레이어 사망 시 세이브포인트로 리스폰하는 책임을 담당한다.
@@ -50,9 +51,33 @@ public class RespawnManager : MonoBehaviourSingleton<RespawnManager>
 
     public void Respawn()
     {
-        MovePlayer(_respawnPosition);
-        ResetCurrentRoom();
-        EventManager.Instance.BroadcastEvent(EEventType.PlayerRespawned);
+        RespawnAsync(this.GetCancellationTokenOnDestroy()).Forget();
+    }
+
+    private async UniTaskVoid RespawnAsync(System.Threading.CancellationToken cancellationToken)
+    {
+        InputHandler.BlockInput();
+        try
+        {
+            if (UIManager.Instance != null)
+            {
+                await UIManager.Instance.FadeOutAsync(1f, cancellationToken);
+            }
+
+            MovePlayer(_respawnPosition);
+            ResetCurrentRoom();
+
+            if (UIManager.Instance != null)
+            {
+                await UIManager.Instance.FadeInAsync(1f, cancellationToken);
+            }
+
+            EventManager.Instance.BroadcastEvent(EEventType.PlayerRespawned);
+        }
+        finally
+        {
+            InputHandler.UnblockInput();
+        }
     }
 
     private void MovePlayer(Vector3 position)

@@ -1,4 +1,5 @@
 using System;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,7 +9,7 @@ public class UIManager : MonoBehaviourSingleton<UIManager>
 {
     [Foldout("Hierarchy")]
     [SerializeField]
-    private Image _loadingPanel;
+    private Image _fadeInOutPanel;
 
     [SerializeField]
     private UI_PauseMenuPopup _popupPauseMenu;
@@ -70,7 +71,6 @@ public class UIManager : MonoBehaviourSingleton<UIManager>
         {
             OpenPauseMenuPopup();
         }
-
         InputHandler.TriggerCancelEvent();
     }
 
@@ -91,18 +91,63 @@ public class UIManager : MonoBehaviourSingleton<UIManager>
         }
     }
 
-    public void FadeInLoadingPanel(Action onComplete = null)
+    public void FadeIn(float duration = 1f, Action onComplete = null)
     {
-        _loadingPanel.DOFade(1f, 1f).SetEase(Ease.InQuad)
-        .SetUpdate(true)
-        .OnComplete(() => onComplete?.Invoke());
+        if (_fadeInOutPanel == null)
+        {
+            onComplete?.Invoke();
+            return;
+        }
+        _fadeInOutPanel.DOFade(0f, duration).SetEase(Ease.OutQuad).SetUpdate(true)
+        .OnComplete(() => 
+        {
+            _fadeInOutPanel.gameObject.SetActive(false);
+            onComplete?.Invoke();
+        });
     }
 
-    public void FadeOutLoadingPanel(Action onComplete = null)
+    public void FadeOut(float duration = 1f, Action onComplete = null)
     {
-        _loadingPanel.DOFade(0f, 1f).SetEase(Ease.OutQuad)
-        .SetUpdate(true)
-        .OnComplete(() => onComplete?.Invoke());
+        if (_fadeInOutPanel == null)
+        {
+            onComplete?.Invoke();
+            return;
+        }
+        _fadeInOutPanel.gameObject.SetActive(true);
+        Color color = _fadeInOutPanel.color;
+        color.a = 0f;
+        _fadeInOutPanel.color = color;
+
+        _fadeInOutPanel.DOFade(1f, duration).SetEase(Ease.InQuad).SetUpdate(true)
+        .OnComplete(() => 
+        { 
+            onComplete?.Invoke(); 
+        });
+    }
+
+    public async UniTask FadeInAsync(float duration = 1f, System.Threading.CancellationToken cancellationToken = default)
+    {
+        if (_fadeInOutPanel == null)
+        {
+            return;
+        }
+        await _fadeInOutPanel.DOFade(0f, duration).SetEase(Ease.OutQuad).SetUpdate(true)
+            .ToUniTask(cancellationToken: cancellationToken);
+        _fadeInOutPanel.gameObject.SetActive(false);
+    }
+
+    public async UniTask FadeOutAsync(float duration = 1f, System.Threading.CancellationToken cancellationToken = default)
+    {
+        if (_fadeInOutPanel == null)
+        {
+            return;
+        }
+        _fadeInOutPanel.gameObject.SetActive(true);
+        Color color = _fadeInOutPanel.color;
+        color.a = 0f;
+        _fadeInOutPanel.color = color;
+
+        await _fadeInOutPanel.DOFade(1f, duration).SetEase(Ease.InQuad).SetUpdate(true)
+            .ToUniTask(cancellationToken: cancellationToken);
     }
 }
-

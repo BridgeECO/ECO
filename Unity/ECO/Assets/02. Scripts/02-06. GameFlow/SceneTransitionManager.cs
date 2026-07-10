@@ -109,15 +109,11 @@ public class SceneTransitionManager : MonoBehaviourSingleton<SceneTransitionMana
 
         try
         {
-            var fadeOutUcs = new UniTaskCompletionSource();
-            UIManager.Instance.FadeInLoadingPanel(() => fadeOutUcs.TrySetResult());
-            await fadeOutUcs.Task;
+            await UIManager.Instance.FadeOutAsync(1f, this.GetCancellationTokenOnDestroy());
 
             await LoadSceneAsync(targetSceneName);
 
-            var fadeInUcs = new UniTaskCompletionSource();
-            UIManager.Instance.FadeOutLoadingPanel(() => fadeInUcs.TrySetResult());
-            await fadeInUcs.Task;
+            await UIManager.Instance.FadeInAsync(1f, this.GetCancellationTokenOnDestroy());
         }
         finally
         {
