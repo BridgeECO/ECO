@@ -32,13 +32,21 @@ public class SoundManagerEditor : Editor
         // 2. SoundLibrary 필드 그리기
         if (_soundLibraryProp != null)
         {
+            // 2-1. _bgmClips 속성을 Enum 레이블과 함께 먼저 드로우합니다.
+            if (_bgmClipsProp != null)
+            {
+                EditorGUILayout.Space(8f);
+                DrawBgmClipsWithEnumLabels();
+            }
+
+            // 2-2. 사운드 종류별 리스트 (SFX) 드로우
             EditorGUILayout.Space(8f);
-            EditorGUILayout.LabelField("Sound Library (Asset Categories)", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Sound Library - SFX Categories", EditorStyles.boldLabel);
 
             // SoundLibrary 내부의 모든 속성 중 _bgmClips만 건너뛰고 기본 드로우합니다.
             SerializedProperty childProp = _soundLibraryProp.Copy();
             SerializedProperty endProp = _soundLibraryProp.GetEndProperty();
-            
+
             bool enterChildren = true;
             while (childProp.NextVisible(enterChildren))
             {
@@ -46,23 +54,16 @@ public class SoundManagerEditor : Editor
                 {
                     break;
                 }
-                
+
                 enterChildren = false; // 직계 자식 프로퍼티만 순회
 
-                // _bgmClips는 하단에 별도로 그리므로 제외
+                // _bgmClips는 상단에 이미 그렸으므로 제외
                 if (childProp.name == "_bgmClips")
                 {
                     continue;
                 }
 
                 EditorGUILayout.PropertyField(childProp, true);
-            }
-
-            // 3. _bgmClips 속성을 Enum 레이블과 함께 드로우합니다.
-            if (_bgmClipsProp != null)
-            {
-                EditorGUILayout.Space(8f);
-                DrawBgmClipsWithEnumLabels();
             }
         }
 
@@ -74,7 +75,7 @@ public class SoundManagerEditor : Editor
     /// </summary>
     private void DrawBgmClipsWithEnumLabels()
     {
-        EditorGUILayout.LabelField("BGM Clips (Mapped to EBgmType)", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("Sound Library - BGM", EditorStyles.boldLabel);
 
         string[] bgmNames = Enum.GetNames(typeof(EBgmType));
         int bgmCount = bgmNames.Length;
