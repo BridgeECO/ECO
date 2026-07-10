@@ -16,16 +16,16 @@ public class SoundLibrary
 
     [Foldout("SFX Categories")]
     [SerializeField]
-    private List<AudioClip> _ambientSfxClips = new();
-
-    [SerializeField]
     private List<AudioClip> _playerSfxClips = new();
 
     [SerializeField]
     private List<AudioClip> _bossSfxClips = new();
 
     [SerializeField]
-    private List<AudioClip> _objectSfxClips = new();
+    private List<AudioClip> _effectSfxClips = new();
+
+    [SerializeField]
+    private List<AudioClip> _ambientSfxClips = new();
 
     [SerializeField]
     private List<AudioClip> _uiSfxClips = new();
@@ -46,7 +46,7 @@ public class SoundLibrary
     public AudioClip GetBgmClip(EBgmType type)
     {
         int index = (int)type;
-        if (_runtimeBgmClips is null || index < 0 || index >= _runtimeBgmClips.Count)
+        if (_runtimeBgmClips is null || index < 0 || _runtimeBgmClips.Count <= index)
         {
             return null;
         }
@@ -58,7 +58,7 @@ public class SoundLibrary
     public AudioClip GetSfxClip(ESfxClip clip)
     {
         int index = (int)clip;
-        if (_runtimeSfxClips is null || index < 0 || index >= _runtimeSfxClips.Count)
+        if (_runtimeSfxClips is null || index < 0 || _runtimeSfxClips.Count <= index)
         {
             return null;
         }
@@ -84,10 +84,10 @@ public class SoundLibrary
         int enumCount = Enum.GetValues(typeof(ESfxClip)).Length;
         _runtimeSfxClips = new List<AudioClip>(new AudioClip[enumCount]);
 
-        AddClipsToSfxList(_ambientSfxClips);
         AddClipsToSfxList(_playerSfxClips);
         AddClipsToSfxList(_bossSfxClips);
-        AddClipsToSfxList(_objectSfxClips);
+        AddClipsToSfxList(_effectSfxClips);
+        AddClipsToSfxList(_ambientSfxClips);
         AddClipsToSfxList(_uiSfxClips);
     }
 
