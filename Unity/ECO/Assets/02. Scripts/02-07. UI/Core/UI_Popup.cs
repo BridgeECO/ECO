@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using UnityEngine;
 using Cysharp.Threading.Tasks;
+using UnityEngine;
 
 public abstract class UI_Popup : MonoBehaviour
 {
@@ -35,11 +35,11 @@ public abstract class UI_Popup : MonoBehaviour
         {
             canvasGroup = gameObject.AddComponent<CanvasGroup>();
         }
-        
+
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = true;
 
-        if (_spriteAnimators != null && 0< _spriteAnimators.Length )
+        if (_spriteAnimators != null && 0 < _spriteAnimators.Length)
         {
             var tasks = new List<UniTask>();
             foreach (var spriteAnimator in _spriteAnimators)
@@ -49,16 +49,26 @@ public abstract class UI_Popup : MonoBehaviour
                     tasks.Add(spriteAnimator.PlayReverseAsync(this.GetCancellationTokenOnDestroy()));
                 }
             }
-            
-            if (0< tasks.Count )
+
+            if (0 < tasks.Count)
             {
                 await UniTask.WhenAll(tasks);
             }
         }
 
+        if (this == null)
+        {
+            return;
+        }
+
         if (TryGetComponent<UI_ScaleAnimator>(out var animator))
         {
             await animator.PlayCloseAsync(this.GetCancellationTokenOnDestroy());
+        }
+
+        if (this == null)
+        {
+            return;
         }
 
         gameObject.SetActive(false);

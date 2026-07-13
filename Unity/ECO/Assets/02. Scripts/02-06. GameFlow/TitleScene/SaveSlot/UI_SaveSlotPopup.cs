@@ -30,6 +30,10 @@ public class UI_SaveSlotPopup : UI_Popup, IKeyboardControllable
     public async UniTask OpenAsync(ESlotPanelMode mode)
     {
         await base.OpenAsync();
+        if (this == null)
+        {
+            return;
+        }
         _selectedIndex = 0;
 
         RefreshAllSlots(mode);
