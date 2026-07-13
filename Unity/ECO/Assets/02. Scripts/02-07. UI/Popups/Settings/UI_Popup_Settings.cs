@@ -5,7 +5,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using VInspector;
 
-public class UI_SettingsPopup : UI_Popup
+// Force compilation trigger
+public class UI_Popup_Settings : UI_Popup
 {
     [Foldout("Hierarchy")]
     [SerializeField]
@@ -27,6 +28,9 @@ public class UI_SettingsPopup : UI_Popup
     private UI_TextFadeFeedback _settingsFeedback;
 
     private int _activeTabIndex = 0;
+
+    public UI_SettingsTabBase ActiveTab => (0 <= _activeTabIndex && _activeTabIndex < _settingTabs.Count) ? _settingTabs[_activeTabIndex] : null;
+    public UI_TextFadeFeedback SettingsFeedback => _settingsFeedback;
 
     protected override void Awake()
     {
@@ -125,21 +129,7 @@ public class UI_SettingsPopup : UI_Popup
         {
             return;
         }
-        UIManager.Instance.SettingsResetConfirmPopup.Show(
-            "설정 초기화",
-            "정말로 현재 탭의 설정을 초기화하시겠습니까?",
-            onConfirm: () =>
-            {
-                if (0 <= _activeTabIndex && _activeTabIndex < _settingTabs.Count)
-                {
-                    _settingTabs[_activeTabIndex].ResetTabToDefault();
-                    if (_settingsFeedback != null)
-                    {
-                        _settingsFeedback.Play("설정값이 초기화되었습니다.");
-                    }
-                }
-            }
-        );
+        UIManager.Instance.SettingsResetConfirmPopup.Show();
     }
 
     private void HandleBack()
@@ -151,22 +141,7 @@ public class UI_SettingsPopup : UI_Popup
         }
         if (hasUnsaved && UIManager.Instance.SettingsCloseConfirmPopup != null)
         {
-            UIManager.Instance.SettingsCloseConfirmPopup.Show(
-                "변경사항 미저장",
-                "저장하지 않고 나가시겠습니까?",
-                onAction1: () =>
-                {
-                    if (0 <= _activeTabIndex && _activeTabIndex < _settingTabs.Count)
-                    {
-                        _settingTabs[_activeTabIndex].SaveTabSettings();
-                    }
-                    UIManager.Instance.PopupHandler.ClosePopup(this);
-                },
-                onAction2: () =>
-                {
-                    UIManager.Instance.PopupHandler.ClosePopup(this);
-                }
-            );
+            UIManager.Instance.SettingsCloseConfirmPopup.Show();
         }
         else
         {
