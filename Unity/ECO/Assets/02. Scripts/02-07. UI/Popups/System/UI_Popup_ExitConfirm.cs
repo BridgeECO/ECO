@@ -14,7 +14,7 @@ public class UI_Popup_ExitConfirm : UI_Popup_Confirm2Buttons
     protected override Button ConfirmButton => _buttonExitGame;
     protected override Button CancelButton => _buttonCancel;
 
-    public override void OnConfirm()
+    protected override void OnConfirm()
     {
         base.OnConfirm();
         Application.Quit();

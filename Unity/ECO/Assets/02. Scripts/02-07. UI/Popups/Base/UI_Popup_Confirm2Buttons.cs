@@ -26,12 +26,12 @@ public abstract class UI_Popup_Confirm2Buttons : UI_SystemPopup, IUIConfirm2Butt
         UIManager.Instance.PopupHandler.OpenPopup(this);
     }
 
-    public virtual void OnConfirm()
+    protected virtual void OnConfirm()
     {
         _onConfirm?.Invoke();
     }
 
-    public virtual void OnCancel()
+    protected virtual void OnCancel()
     {
         _onCancel?.Invoke();
     }
@@ -40,7 +40,7 @@ public abstract class UI_Popup_Confirm2Buttons : UI_SystemPopup, IUIConfirm2Butt
     {
         var token = this.GetCancellationTokenOnDestroy();
         await UIManager.Instance.PopupHandler.ClosePopupAsync(this);
-        if (token.IsCancellationRequested)
+        if (this == null || token.IsCancellationRequested)
         {
             return;
         }
@@ -51,7 +51,7 @@ public abstract class UI_Popup_Confirm2Buttons : UI_SystemPopup, IUIConfirm2Butt
     {
         var token = this.GetCancellationTokenOnDestroy();
         await UIManager.Instance.PopupHandler.ClosePopupAsync(this);
-        if (token.IsCancellationRequested)
+        if (this == null || token.IsCancellationRequested)
         {
             return;
         }

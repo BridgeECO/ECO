@@ -51,18 +51,6 @@ public class UI_Popup_Settings : UI_Popup
         _backButton.onClick.AddListener(OnClick_Back);
     }
 
-    private void Start()
-    {
-        if (UIManager.Instance.SettingsResetConfirmPopup is UI_Popup_Settings_ResetConfirm resetConfirm)
-        {
-            resetConfirm.Init(this);
-        }
-        if (UIManager.Instance.SettingsCloseConfirmPopup is UI_Popup_Settings_CloseConfirm closeConfirm)
-        {
-            closeConfirm.Init(this);
-        }
-    }
-
     private void OnClick_Tab(int index)
     {
         SoundManager.Instance.PlayUiSfx(ESfxClip.SUI_Setting_ChangeTab);

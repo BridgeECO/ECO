@@ -40,17 +40,17 @@ public abstract class UI_Popup_Confirm3Buttons : UI_SystemPopup, IUIConfirm3Butt
         UIManager.Instance.PopupHandler.OpenPopup(this);
     }
 
-    public virtual void OnAction1()
+    protected virtual void OnAction1()
     {
         _onAction1?.Invoke();
     }
 
-    public virtual void OnAction2()
+    protected virtual void OnAction2()
     {
         _onAction2?.Invoke();
     }
 
-    public virtual void OnCancel()
+    protected virtual void OnCancel()
     {
         _onCancel?.Invoke();
     }
@@ -59,7 +59,10 @@ public abstract class UI_Popup_Confirm3Buttons : UI_SystemPopup, IUIConfirm3Butt
     {
         var token = this.GetCancellationTokenOnDestroy();
         await UIManager.Instance.PopupHandler.ClosePopupAsync(this);
-        if (token.IsCancellationRequested) return;
+        if (this == null || token.IsCancellationRequested)
+        {
+            return;
+        }
         OnAction1();
     }
 
@@ -67,7 +70,10 @@ public abstract class UI_Popup_Confirm3Buttons : UI_SystemPopup, IUIConfirm3Butt
     {
         var token = this.GetCancellationTokenOnDestroy();
         await UIManager.Instance.PopupHandler.ClosePopupAsync(this);
-        if (token.IsCancellationRequested) return;
+        if (this == null || token.IsCancellationRequested)
+        {
+            return;
+        }
         OnAction2();
     }
 
@@ -75,7 +81,10 @@ public abstract class UI_Popup_Confirm3Buttons : UI_SystemPopup, IUIConfirm3Butt
     {
         var token = this.GetCancellationTokenOnDestroy();
         await UIManager.Instance.PopupHandler.ClosePopupAsync(this);
-        if (token.IsCancellationRequested) return;
+        if (this == null || token.IsCancellationRequested)
+        {
+            return;
+        }
         OnCancel();
     }
 }
