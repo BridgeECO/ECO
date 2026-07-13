@@ -30,9 +30,9 @@ public class UIManager : MonoBehaviourSingleton<UIManager>
     private UI_Popup_NewGameConfirm _popupNewGameConfirm;
 
     public UI_PopupHandler PopupHandler { get; private set; }
-    public UI_Popup_Settings_CloseConfirm SettingsCloseConfirmPopup => _popupSettingsCloseConfirm;
-    public UI_Popup_Settings_ResetConfirm SettingsResetConfirmPopup => _popupSettingsResetConfirm;
-    public UI_Popup_ExitConfirm ExitConfirmPopup => _popupExitConfirm;
+    public IUIConfirm3Buttons SettingsCloseConfirmPopup => _popupSettingsCloseConfirm;
+    public IUIConfirm2Buttons SettingsResetConfirmPopup => _popupSettingsResetConfirm;
+    public IUIConfirm2Buttons ExitConfirmPopup => _popupExitConfirm;
     public UI_Popup_NewGameConfirm NewGameConfirmPopup => _popupNewGameConfirm;
 
     protected override void Awake()
@@ -150,4 +150,6 @@ public class UIManager : MonoBehaviourSingleton<UIManager>
         await _fadeInOutPanel.DOFade(1f, duration).SetEase(Ease.InQuad).SetUpdate(true)
             .ToUniTask(cancellationToken: cancellationToken);
     }
+
+
 }
