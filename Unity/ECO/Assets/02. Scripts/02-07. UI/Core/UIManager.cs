@@ -12,10 +12,10 @@ public class UIManager : MonoBehaviourSingleton<UIManager>
     private Image _fadeInOutPanel;
 
     [SerializeField]
-    private UI_PauseMenuPopup _popupPauseMenu;
+    private UI_Popup_PauseMenu _popupPauseMenu;
 
     [SerializeField]
-    private UI_SettingsPopup _popupSettings;
+    private UI_Popup_Settings _popupSettings;
 
     [SerializeField]
     private UI_Popup_Settings_CloseConfirm _popupSettingsCloseConfirm;
@@ -30,6 +30,7 @@ public class UIManager : MonoBehaviourSingleton<UIManager>
     private UI_Popup_NewGameConfirm _popupNewGameConfirm;
 
     public UI_PopupHandler PopupHandler { get; private set; }
+    public UI_Popup_Settings SettingsPopup => _popupSettings;
     public IUIConfirm3Buttons SettingsCloseConfirmPopup => _popupSettingsCloseConfirm;
     public IUIConfirm2Buttons SettingsResetConfirmPopup => _popupSettingsResetConfirm;
     public IUIConfirm2Buttons ExitConfirmPopup => _popupExitConfirm;

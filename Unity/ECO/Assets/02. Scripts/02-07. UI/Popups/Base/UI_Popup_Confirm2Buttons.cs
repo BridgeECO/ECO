@@ -14,9 +14,8 @@ public abstract class UI_Popup_Confirm2Buttons : UI_SystemPopup, IUIConfirm2Butt
     private Action _onConfirm;
     private Action _onCancel;
 
-    public void Show(string title, string message, Action onConfirm, Action onCancel = null)
+    public void Show(Action onConfirm = null, Action onCancel = null)
     {
-        SetPopupText(title, message);
         ClearAllButtonListeners();
 
         _onConfirm = onConfirm;
@@ -27,37 +26,35 @@ public abstract class UI_Popup_Confirm2Buttons : UI_SystemPopup, IUIConfirm2Butt
         UIManager.Instance.PopupHandler.OpenPopup(this);
     }
 
-    public void Show(Action onConfirm, Action onCancel = null)
+    protected virtual void OnConfirm()
     {
-        ClearAllButtonListeners();
+        _onConfirm?.Invoke();
+    }
 
-        _onConfirm = onConfirm;
-        _onCancel = onCancel;
-
-        ConfirmButton?.onClick.AddListener(OnClickConfirm);
-        CancelButton?.onClick.AddListener(OnClickCancel);
-        UIManager.Instance.PopupHandler.OpenPopup(this);
+    protected virtual void OnCancel()
+    {
+        _onCancel?.Invoke();
     }
 
     private async void OnClickConfirm()
     {
         var token = this.GetCancellationTokenOnDestroy();
         await UIManager.Instance.PopupHandler.ClosePopupAsync(this);
-        if (token.IsCancellationRequested)
+        if (this == null || token.IsCancellationRequested)
         {
             return;
         }
-        _onConfirm?.Invoke();
+        OnConfirm();
     }
 
     private async void OnClickCancel()
     {
         var token = this.GetCancellationTokenOnDestroy();
         await UIManager.Instance.PopupHandler.ClosePopupAsync(this);
-        if (token.IsCancellationRequested)
+        if (this == null || token.IsCancellationRequested)
         {
             return;
         }
-        _onCancel?.Invoke();
+        OnCancel();
     }
 }
