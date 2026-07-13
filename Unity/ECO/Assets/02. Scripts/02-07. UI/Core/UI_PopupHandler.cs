@@ -78,8 +78,10 @@ public class UI_PopupHandler
         CloseLatestPopupAsync().Forget();
     }
 
-    private async UniTaskVoid CloseLatestPopupAsync()
+    public async UniTask CloseLatestPopupAsync()
     {
+        if (_isClosing) return;
+
         if (_popups.TryPop(out UI_Popup latestPopup))
         {
             _isClosing = true;
@@ -87,7 +89,10 @@ public class UI_PopupHandler
 
             try
             {
-                await latestPopup.CloseAsync();
+                if (latestPopup != null)
+                {
+                    await latestPopup.CloseAsync();
+                }
             }
             finally
             {
@@ -101,6 +106,14 @@ public class UI_PopupHandler
             }
 
             SetTopPopupFocusState(true);
+        }
+    }
+
+    public async UniTask ClosePopupAsync(UI_Popup popup)
+    {
+        if (_popups.TryPeek(out UI_Popup latestPopup) && latestPopup == popup)
+        {
+            await CloseLatestPopupAsync();
         }
     }
 

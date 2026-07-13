@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -40,21 +41,27 @@ public abstract class UI_Popup_Confirm3Buttons : UI_SystemPopup, IUIConfirm3Butt
         UIManager.Instance.PopupHandler.OpenPopup(this);
     }
 
-    private void OnClickAction1()
+    private async void OnClickAction1()
     {
-        UIManager.Instance.PopupHandler.ClosePopup(this);
+        var token = this.GetCancellationTokenOnDestroy();
+        await UIManager.Instance.PopupHandler.ClosePopupAsync(this);
+        if (token.IsCancellationRequested) return;
         _onAction1?.Invoke();
     }
 
-    private void OnClickAction2()
+    private async void OnClickAction2()
     {
-        UIManager.Instance.PopupHandler.ClosePopup(this);
+        var token = this.GetCancellationTokenOnDestroy();
+        await UIManager.Instance.PopupHandler.ClosePopupAsync(this);
+        if (token.IsCancellationRequested) return;
         _onAction2?.Invoke();
     }
 
-    private void OnClickCancel()
+    private async void OnClickCancel()
     {
-        UIManager.Instance.PopupHandler.ClosePopup(this);
+        var token = this.GetCancellationTokenOnDestroy();
+        await UIManager.Instance.PopupHandler.ClosePopupAsync(this);
+        if (token.IsCancellationRequested) return;
         _onCancel?.Invoke();
     }
 }

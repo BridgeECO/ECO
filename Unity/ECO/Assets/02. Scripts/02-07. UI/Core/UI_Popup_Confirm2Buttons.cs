@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,27 +22,30 @@ public abstract class UI_Popup_Confirm2Buttons : UI_SystemPopup, IUIConfirm2Butt
         _onConfirm = onConfirm;
         _onCancel = onCancel;
 
-        if (ConfirmButton != null)
-        {
-            ConfirmButton.onClick.AddListener(OnClickConfirm);
-        }
-        if (CancelButton != null)
-        {
-            CancelButton.onClick.AddListener(OnClickCancel);
-        }
-
+        ConfirmButton?.onClick.AddListener(OnClickConfirm);
+        CancelButton?.onClick.AddListener(OnClickCancel);
         UIManager.Instance.PopupHandler.OpenPopup(this);
     }
 
-    private void OnClickConfirm()
+    private async void OnClickConfirm()
     {
-        UIManager.Instance.PopupHandler.ClosePopup(this);
+        var token = this.GetCancellationTokenOnDestroy();
+        await UIManager.Instance.PopupHandler.ClosePopupAsync(this);
+        if (token.IsCancellationRequested)
+        {
+            return;
+        }
         _onConfirm?.Invoke();
     }
 
-    private void OnClickCancel()
+    private async void OnClickCancel()
     {
-        UIManager.Instance.PopupHandler.ClosePopup(this);
+        var token = this.GetCancellationTokenOnDestroy();
+        await UIManager.Instance.PopupHandler.ClosePopupAsync(this);
+        if (token.IsCancellationRequested)
+        {
+            return;
+        }
         _onCancel?.Invoke();
     }
 }
