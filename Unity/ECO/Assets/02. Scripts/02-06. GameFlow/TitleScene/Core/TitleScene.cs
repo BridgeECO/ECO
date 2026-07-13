@@ -55,12 +55,12 @@ public class TitleScene : MonoBehaviour
             case ETitleState.WaitInput:
                 {
                     OnWaitInputStarted?.Invoke();
+                    PlayTitleBgm();
                     break;
                 }
             case ETitleState.Menu:
                 {
                     OnMenuStarted?.Invoke();
-                    PlayTitleBgm();
                     break;
                 }
         }
