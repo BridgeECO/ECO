@@ -22,6 +22,7 @@ public class SoundManager : MonoBehaviourSingleton<SoundManager>
     private SoundLibrary _soundLibrary = new();
 
     private float _sfxVolume = 1f;
+    private EBgmType? _currentBgmType;
 
     // SoundEmitter가 매 프레임 참조하는 SFX 전역 볼륨 배율.
     public float SfxVolume => _sfxVolume;
@@ -35,7 +36,7 @@ public class SoundManager : MonoBehaviourSingleton<SoundManager>
 
     public void PlayBgm(EBgmType type)
     {
-        if (_soundLibrary is null)
+        if (_bgmController is null)
         {
             return;
         }
@@ -43,12 +44,14 @@ public class SoundManager : MonoBehaviourSingleton<SoundManager>
         AudioClip clip = _soundLibrary.GetBgmClip(type);
         if (clip != null)
         {
+            _currentBgmType = type;
             _bgmController.Play(clip, BGM_FADE_DURATION);
         }
     }
 
     public void StopBgm()
     {
+        _currentBgmType = null;
         _bgmController.Stop(BGM_FADE_DURATION);
     }
 
