@@ -5,7 +5,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using VInspector;
 
-public class UI_SettingsPopup : UI_Popup
+// Force compilation trigger
+public class UI_Popup_Settings : UI_Popup
 {
     [Foldout("Hierarchy")]
     [SerializeField]

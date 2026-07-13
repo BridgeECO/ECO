@@ -18,9 +18,9 @@ public class UI_Popup_Settings_CloseConfirm : UI_Popup_Confirm3Buttons
     protected override Button Action2Button => _buttonDontSaveAndClose;
     protected override Button CancelButton => _buttonClose;
 
-    private UI_SettingsPopup _settingsPopup;
+    private UI_Popup_Settings _settingsPopup;
 
-    public void Init(UI_SettingsPopup settingsPopup)
+    public void Init(UI_Popup_Settings settingsPopup)
     {
         _settingsPopup = settingsPopup;
     }

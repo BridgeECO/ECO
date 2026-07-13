@@ -12,10 +12,10 @@ public class UIManager : MonoBehaviourSingleton<UIManager>
     private Image _fadeInOutPanel;
 
     [SerializeField]
-    private UI_PauseMenuPopup _popupPauseMenu;
+    private UI_Popup_PauseMenu _popupPauseMenu;
 
     [SerializeField]
-    private UI_SettingsPopup _popupSettings;
+    private UI_Popup_Settings _popupSettings;
 
     [SerializeField]
     private UI_Popup_Settings_CloseConfirm _popupSettingsCloseConfirm;

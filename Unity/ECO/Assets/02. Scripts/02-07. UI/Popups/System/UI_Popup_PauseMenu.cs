@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using VInspector;
 
-public class UI_PauseMenuPopup : UI_Popup
+public class UI_Popup_PauseMenu : UI_Popup
 {
     [Foldout("Hierarchy")]
     [SerializeField]
