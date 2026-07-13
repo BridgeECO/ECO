@@ -27,6 +27,18 @@ public abstract class UI_Popup_Confirm2Buttons : UI_SystemPopup, IUIConfirm2Butt
         UIManager.Instance.PopupHandler.OpenPopup(this);
     }
 
+    public void Show(Action onConfirm, Action onCancel = null)
+    {
+        ClearAllButtonListeners();
+
+        _onConfirm = onConfirm;
+        _onCancel = onCancel;
+
+        ConfirmButton?.onClick.AddListener(OnClickConfirm);
+        CancelButton?.onClick.AddListener(OnClickCancel);
+        UIManager.Instance.PopupHandler.OpenPopup(this);
+    }
+
     private async void OnClickConfirm()
     {
         var token = this.GetCancellationTokenOnDestroy();
