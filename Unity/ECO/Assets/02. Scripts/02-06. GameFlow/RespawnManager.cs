@@ -67,6 +67,11 @@ public class RespawnManager : MonoBehaviourSingleton<RespawnManager>
             MovePlayer(_respawnPosition);
             ResetCurrentRoom();
 
+            if (LifeManager.Instance != null)
+            {
+                LifeManager.Instance.SetLifeOnRespawn();
+            }
+
             if (UIManager.Instance != null)
             {
                 await UIManager.Instance.FadeInAsync(1f, cancellationToken);

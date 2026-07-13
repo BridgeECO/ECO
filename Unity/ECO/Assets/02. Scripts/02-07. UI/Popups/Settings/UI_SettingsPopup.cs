@@ -9,10 +9,10 @@ public class UI_SettingsPopup : UI_Popup
 {
     [Foldout("Hierarchy")]
     [SerializeField]
-    private List<Toggle> _tabToggles;
+    private List<Toggle> _tabToggles = new();
 
     [SerializeField]
-    private List<UI_SettingsTabBase> _settingTabs;
+    private List<UI_SettingsTabBase> _settingTabs = new();
 
     [SerializeField]
     private Button _resetButton;
@@ -24,8 +24,7 @@ public class UI_SettingsPopup : UI_Popup
     private Button _backButton;
 
     [SerializeField]
-    private Image _backgroundOverlay;
-
+    private UI_TextFadeFeedback _settingsFeedback;
 
     private int _activeTabIndex = 0;
 
@@ -43,25 +42,19 @@ public class UI_SettingsPopup : UI_Popup
                 }
             });
         }
-
         _resetButton.onClick.AddListener(OnClick_Reset);
         _applyButton.onClick.AddListener(OnClick_Apply);
         _backButton.onClick.AddListener(OnClick_Back);
     }
 
-
     private void OnClick_Tab(int index)
     {
         SoundManager.Instance.PlayUiSfx(ESfxClip.SUI_Setting_ChangeTab);
-
         if (0 <= _activeTabIndex && _activeTabIndex < _settingTabs.Count)
         {
             _settingTabs[_activeTabIndex].gameObject.SetActive(false);
         }
-
         _activeTabIndex = index;
-
-
         if (0 <= _activeTabIndex && _activeTabIndex < _settingTabs.Count)
         {
             _settingTabs[_activeTabIndex].gameObject.SetActive(true);
@@ -89,6 +82,10 @@ public class UI_SettingsPopup : UI_Popup
         if (0 <= _activeTabIndex && _activeTabIndex < _settingTabs.Count)
         {
             _settingTabs[_activeTabIndex].SaveTabSettings();
+            if (_settingsFeedback != null)
+            {
+                _settingsFeedback.Play("변경사항이 적용되었습니다.");
+            }
         }
     }
 
@@ -105,15 +102,12 @@ public class UI_SettingsPopup : UI_Popup
     public override async UniTask OpenAsync()
     {
         await base.OpenAsync();
-        CustomOpen();
-
         for (int i = 0; i < _settingTabs.Count; i++)
         {
             _settingTabs[i].InitTab();
             _settingTabs[i].gameObject.SetActive(false);
         }
-
-        if (0< _tabToggles.Count )
+        if (0 < _tabToggles.Count)
         {
             _tabToggles[0].isOn = true;
             OnClick_Tab(0);
@@ -122,22 +116,7 @@ public class UI_SettingsPopup : UI_Popup
 
     public override async UniTask CloseAsync()
     {
-        if (_backgroundOverlay != null)
-        {
-            _backgroundOverlay.CrossFadeAlpha(0.0f, 0.2f, true);
-        }
-
         await base.CloseAsync();
-    }
-
-    private void CustomOpen()
-    {
-        if (_backgroundOverlay != null)
-        {
-            _backgroundOverlay.gameObject.SetActive(true);
-            _backgroundOverlay.canvasRenderer.SetAlpha(0.0f);
-            _backgroundOverlay.CrossFadeAlpha(1.0f, 0.4f, true);
-        }
     }
 
     private void HandleReset()
@@ -146,15 +125,18 @@ public class UI_SettingsPopup : UI_Popup
         {
             return;
         }
-
         UIManager.Instance.SettingsResetConfirmPopup.Show(
             "설정 초기화",
-            "기본 설정값으로 초기화하시겠습니까?",
+            "정말로 현재 탭의 설정을 초기화하시겠습니까?",
             onConfirm: () =>
             {
                 if (0 <= _activeTabIndex && _activeTabIndex < _settingTabs.Count)
                 {
                     _settingTabs[_activeTabIndex].ResetTabToDefault();
+                    if (_settingsFeedback != null)
+                    {
+                        _settingsFeedback.Play("설정값이 초기화되었습니다.");
+                    }
                 }
             }
         );
@@ -167,7 +149,6 @@ public class UI_SettingsPopup : UI_Popup
         {
             hasUnsaved = _settingTabs[_activeTabIndex].HasUnsavedChanges();
         }
-
         if (hasUnsaved && UIManager.Instance.SettingsCloseConfirmPopup != null)
         {
             UIManager.Instance.SettingsCloseConfirmPopup.Show(
@@ -192,6 +173,4 @@ public class UI_SettingsPopup : UI_Popup
             UIManager.Instance.PopupHandler.ClosePopup(this);
         }
     }
-
-
 }

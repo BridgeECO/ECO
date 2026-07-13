@@ -33,17 +33,9 @@ public class LifeManager : MonoBehaviourSingleton<LifeManager>
         _currentLife = MAX_LIFE;
     }
 
-    private void Start()
+    public void SetLifeOnRespawn()
     {
-        EventManager.Instance.AddEventListener(EEventType.PlayerRespawned, SetLifeOnRespawn);
-    }
-
-    private void OnDestroy()
-    {
-        if (MonoBehaviourSingleton<EventManager>.HasInstance)
-        {
-            EventManager.Instance.RemoveEventListener(EEventType.PlayerRespawned, SetLifeOnRespawn);
-        }
+        CurrentLife = RESPAWN_LIFE;
     }
 
     public void TakeDamage()
@@ -74,8 +66,5 @@ public class LifeManager : MonoBehaviourSingleton<LifeManager>
         CurrentLife = RESPAWN_LIFE;
     }
 
-    private void SetLifeOnRespawn()
-    {
-        CurrentLife = RESPAWN_LIFE;
-    }
+
 }
