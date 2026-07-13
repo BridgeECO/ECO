@@ -9,13 +9,16 @@ public class UI_LifeDisplay : MonoBehaviour
     [SerializeField]
     private List<Image> _lifeIcons;
 
-    private void Start()
+    private void OnEnable()
     {
-        EventManager.Instance.AddEventListener(EEventType.LifeChanged, RefreshLifeDisplay);
+        if (EventManager.Instance != null)
+        {
+            EventManager.Instance.AddEventListener(EEventType.LifeChanged, RefreshLifeDisplay);
+        }
         RefreshLifeDisplay();
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         if (MonoBehaviourSingleton<EventManager>.HasInstance)
         {
