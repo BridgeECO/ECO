@@ -76,7 +76,7 @@ public class UI_SettingsPopup : UI_Popup
             return;
         }
         SoundManager.Instance.PlayUiSfx(ESfxClip.SUI_Common_Button);
-        HandleResetAsync().Forget();
+        HandleReset();
     }
 
     private void OnClick_Apply()
@@ -99,7 +99,7 @@ public class UI_SettingsPopup : UI_Popup
             return;
         }
         SoundManager.Instance.PlayUiSfx(ESfxClip.SUI_Common_Button);
-        HandleBackAsync().Forget();
+        HandleBack();
     }
 
     public override async UniTask OpenAsync()
@@ -140,28 +140,27 @@ public class UI_SettingsPopup : UI_Popup
         }
     }
 
-    private async UniTaskVoid HandleResetAsync()
+    private void HandleReset()
     {
         if (UIManager.Instance.SettingsResetConfirmPopup == null)
         {
             return;
         }
 
-        UI_Popup_Settings_ResetConfirm.EResult result = await UIManager.Instance.SettingsResetConfirmPopup.ShowPopupAsync(
+        UIManager.Instance.SettingsResetConfirmPopup.Show(
             "설정 초기화",
-            "기본 설정값으로 초기화하시겠습니까?"
-        );
-
-        if (result == UI_Popup_Settings_ResetConfirm.EResult.ResetAndClose)
-        {
-            if (0 <= _activeTabIndex && _activeTabIndex < _settingTabs.Count)
+            "기본 설정값으로 초기화하시겠습니까?",
+            onConfirm: () =>
             {
-                _settingTabs[_activeTabIndex].ResetTabToDefault();
+                if (0 <= _activeTabIndex && _activeTabIndex < _settingTabs.Count)
+                {
+                    _settingTabs[_activeTabIndex].ResetTabToDefault();
+                }
             }
-        }
+        );
     }
 
-    private async UniTaskVoid HandleBackAsync()
+    private void HandleBack()
     {
         bool hasUnsaved = false;
         if (0 <= _activeTabIndex && _activeTabIndex < _settingTabs.Count)
@@ -171,20 +170,22 @@ public class UI_SettingsPopup : UI_Popup
 
         if (hasUnsaved && UIManager.Instance.SettingsCloseConfirmPopup != null)
         {
-            UI_Popup_Settings_CloseConfirm.EResult result = await UIManager.Instance.SettingsCloseConfirmPopup.ShowPopupAsync(
+            UIManager.Instance.SettingsCloseConfirmPopup.Show(
                 "변경사항 미저장",
-                "저장하지 않고 나가시겠습니까?"
+                "저장하지 않고 나가시겠습니까?",
+                onAction1: () =>
+                {
+                    if (0 <= _activeTabIndex && _activeTabIndex < _settingTabs.Count)
+                    {
+                        _settingTabs[_activeTabIndex].SaveTabSettings();
+                    }
+                    UIManager.Instance.PopupHandler.ClosePopup(this);
+                },
+                onAction2: () =>
+                {
+                    UIManager.Instance.PopupHandler.ClosePopup(this);
+                }
             );
-
-            if (result == UI_Popup_Settings_CloseConfirm.EResult.SaveAndClose)
-            {
-                _settingTabs[_activeTabIndex].SaveTabSettings();
-                UIManager.Instance.PopupHandler.ClosePopup(this);
-            }
-            else if (result == UI_Popup_Settings_CloseConfirm.EResult.DontSaveAndClose)
-            {
-                UIManager.Instance.PopupHandler.ClosePopup(this);
-            }
         }
         else
         {
