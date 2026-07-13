@@ -9,6 +9,9 @@ public class Room : MonoBehaviour
     [SerializeField]
     private Transform _spawnPointForDebug;
 
+    [SerializeField]
+    private ERoomType _roomType = ERoomType.Normal;
+
     private BoxCollider2D _cameraBounds;
     private List<IResettable> _resettables;
 
@@ -16,6 +19,7 @@ public class Room : MonoBehaviour
     public Vector2 MaxBounds => _cameraBounds.bounds.max;
     public Vector2 Center => _cameraBounds.bounds.center;
     public bool IsVisited { get; set; }
+    public ERoomType RoomType => _roomType;
 
     private void Awake()
     {
