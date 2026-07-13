@@ -62,33 +62,60 @@ public class UI_TextFadeFeedback : MonoBehaviour
 
         Color originalColor = _textMesh.color;
 
-        // 1. Fade In (0.1s)
-        float elapsed = 0f;
-        float duration = 0.1f;
-        while (elapsed < duration)
+        try
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            float alpha = Mathf.Lerp(0f, 1f, elapsed / duration);
-            _textMesh.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
-            elapsed += Time.deltaTime;
-            await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
+            // 1. Fade In (0.1s)
+            float elapsed = 0f;
+            float duration = 0.1f;
+            while (elapsed < duration)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                float alpha = Mathf.Lerp(0f, 1f, elapsed / duration);
+                if (_textMesh == null)
+                {
+                    return;
+                }
+                _textMesh.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
+                elapsed += Time.unscaledDeltaTime;
+                await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
+            }
+            if (_textMesh == null)
+            {
+                return;
+            }
+            _textMesh.color = new Color(originalColor.r, originalColor.g, originalColor.b, 1f);
+
+            // 2. Keep Active (1.5s)
+            await UniTask.Delay(System.TimeSpan.FromSeconds(1.5f), cancellationToken: cancellationToken);
+            if (_textMesh == null)
+            {
+                return;
+            }
+
+            // 3. Fade Out (0.1s)
+            elapsed = 0f;
+            duration = 0.1f;
+            while (elapsed < duration)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                float alpha = Mathf.Lerp(1f, 0f, elapsed / duration);
+                if (_textMesh == null)
+                {
+                    return;
+                }
+                _textMesh.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
+                elapsed += Time.unscaledDeltaTime;
+                await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
+            }
+            if (_textMesh == null)
+            {
+                return;
+            }
+            _textMesh.color = new Color(originalColor.r, originalColor.g, originalColor.b, 0f);
         }
-        _textMesh.color = new Color(originalColor.r, originalColor.g, originalColor.b, 1f);
-
-        // 2. Keep Active (1.5s)
-        await UniTask.Delay(System.TimeSpan.FromSeconds(1.5f), cancellationToken: cancellationToken);
-
-        // 3. Fade Out (0.1s)
-        elapsed = 0f;
-        duration = 0.1f;
-        while (elapsed < duration)
+        catch (System.Exception ex) when (ex is System.OperationCanceledException || ex is System.ObjectDisposedException)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            float alpha = Mathf.Lerp(1f, 0f, elapsed / duration);
-            _textMesh.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
-            elapsed += Time.deltaTime;
-            await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
+            // 취소 또는 폐기 시 예외를 무시하고 안전하게 종료합니다.
         }
-        _textMesh.color = new Color(originalColor.r, originalColor.g, originalColor.b, 0f);
     }
 }

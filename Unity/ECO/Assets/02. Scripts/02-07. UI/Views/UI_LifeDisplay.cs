@@ -20,6 +20,11 @@ public class UI_LifeDisplay : MonoBehaviour
 
     private void OnDisable()
     {
+        RemoveEventListeners();
+    }
+
+    private void RemoveEventListeners()
+    {
         if (MonoBehaviourSingleton<EventManager>.HasInstance)
         {
             EventManager.Instance.RemoveEventListener(EEventType.LifeChanged, RefreshLifeDisplay);

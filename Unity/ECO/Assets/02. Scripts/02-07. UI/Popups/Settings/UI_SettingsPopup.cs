@@ -126,6 +126,8 @@ public class UI_SettingsPopup : UI_Popup
             return;
         }
         UIManager.Instance.SettingsResetConfirmPopup.Show(
+            "설정 초기화",
+            "정말로 현재 탭의 설정을 초기화하시겠습니까?",
             onConfirm: () =>
             {
                 if (0 <= _activeTabIndex && _activeTabIndex < _settingTabs.Count)
