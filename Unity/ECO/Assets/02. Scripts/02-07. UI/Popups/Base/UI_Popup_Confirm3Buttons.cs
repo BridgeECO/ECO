@@ -16,9 +16,8 @@ public abstract class UI_Popup_Confirm3Buttons : UI_SystemPopup, IUIConfirm3Butt
     private Action _onAction2;
     private Action _onCancel;
 
-    public void Show(string title, string message, Action onAction1, Action onAction2, Action onCancel = null)
+    public void Show(Action onAction1 = null, Action onAction2 = null, Action onCancel = null)
     {
-        SetPopupText(title, message);
         ClearAllButtonListeners();
 
         _onAction1 = onAction1;
@@ -41,12 +40,27 @@ public abstract class UI_Popup_Confirm3Buttons : UI_SystemPopup, IUIConfirm3Butt
         UIManager.Instance.PopupHandler.OpenPopup(this);
     }
 
+    public virtual void OnAction1()
+    {
+        _onAction1?.Invoke();
+    }
+
+    public virtual void OnAction2()
+    {
+        _onAction2?.Invoke();
+    }
+
+    public virtual void OnCancel()
+    {
+        _onCancel?.Invoke();
+    }
+
     private async void OnClickAction1()
     {
         var token = this.GetCancellationTokenOnDestroy();
         await UIManager.Instance.PopupHandler.ClosePopupAsync(this);
         if (token.IsCancellationRequested) return;
-        _onAction1?.Invoke();
+        OnAction1();
     }
 
     private async void OnClickAction2()
@@ -54,7 +68,7 @@ public abstract class UI_Popup_Confirm3Buttons : UI_SystemPopup, IUIConfirm3Butt
         var token = this.GetCancellationTokenOnDestroy();
         await UIManager.Instance.PopupHandler.ClosePopupAsync(this);
         if (token.IsCancellationRequested) return;
-        _onAction2?.Invoke();
+        OnAction2();
     }
 
     private async void OnClickCancel()
@@ -62,6 +76,6 @@ public abstract class UI_Popup_Confirm3Buttons : UI_SystemPopup, IUIConfirm3Butt
         var token = this.GetCancellationTokenOnDestroy();
         await UIManager.Instance.PopupHandler.ClosePopupAsync(this);
         if (token.IsCancellationRequested) return;
-        _onCancel?.Invoke();
+        OnCancel();
     }
 }

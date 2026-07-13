@@ -13,4 +13,13 @@ public class UI_Popup_ExitConfirm : UI_Popup_Confirm2Buttons
 
     protected override Button ConfirmButton => _buttonExitGame;
     protected override Button CancelButton => _buttonCancel;
+
+    public override void OnConfirm()
+    {
+        base.OnConfirm();
+        Application.Quit();
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
+    }
 }

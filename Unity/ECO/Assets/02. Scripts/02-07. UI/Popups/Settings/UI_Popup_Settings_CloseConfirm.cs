@@ -17,4 +17,34 @@ public class UI_Popup_Settings_CloseConfirm : UI_Popup_Confirm3Buttons
     protected override Button Action1Button => _buttonSaveAndClose;
     protected override Button Action2Button => _buttonDontSaveAndClose;
     protected override Button CancelButton => _buttonClose;
+
+    private UI_SettingsPopup _settingsPopup;
+
+    public void Init(UI_SettingsPopup settingsPopup)
+    {
+        _settingsPopup = settingsPopup;
+    }
+
+    public override void OnAction1()
+    {
+        base.OnAction1();
+        if (_settingsPopup != null)
+        {
+            var targetTab = _settingsPopup.ActiveTab;
+            if (targetTab != null)
+            {
+                targetTab.SaveTabSettings();
+            }
+            UIManager.Instance.PopupHandler.ClosePopup(_settingsPopup);
+        }
+    }
+
+    public override void OnAction2()
+    {
+        base.OnAction2();
+        if (_settingsPopup != null)
+        {
+            UIManager.Instance.PopupHandler.ClosePopup(_settingsPopup);
+        }
+    }
 }

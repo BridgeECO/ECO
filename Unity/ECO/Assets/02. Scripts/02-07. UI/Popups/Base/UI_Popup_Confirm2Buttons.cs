@@ -14,9 +14,8 @@ public abstract class UI_Popup_Confirm2Buttons : UI_SystemPopup, IUIConfirm2Butt
     private Action _onConfirm;
     private Action _onCancel;
 
-    public void Show(string title, string message, Action onConfirm, Action onCancel = null)
+    public void Show(Action onConfirm = null, Action onCancel = null)
     {
-        SetPopupText(title, message);
         ClearAllButtonListeners();
 
         _onConfirm = onConfirm;
@@ -27,16 +26,14 @@ public abstract class UI_Popup_Confirm2Buttons : UI_SystemPopup, IUIConfirm2Butt
         UIManager.Instance.PopupHandler.OpenPopup(this);
     }
 
-    public void Show(Action onConfirm, Action onCancel = null)
+    public virtual void OnConfirm()
     {
-        ClearAllButtonListeners();
+        _onConfirm?.Invoke();
+    }
 
-        _onConfirm = onConfirm;
-        _onCancel = onCancel;
-
-        ConfirmButton?.onClick.AddListener(OnClickConfirm);
-        CancelButton?.onClick.AddListener(OnClickCancel);
-        UIManager.Instance.PopupHandler.OpenPopup(this);
+    public virtual void OnCancel()
+    {
+        _onCancel?.Invoke();
     }
 
     private async void OnClickConfirm()
@@ -47,7 +44,7 @@ public abstract class UI_Popup_Confirm2Buttons : UI_SystemPopup, IUIConfirm2Butt
         {
             return;
         }
-        _onConfirm?.Invoke();
+        OnConfirm();
     }
 
     private async void OnClickCancel()
@@ -58,6 +55,6 @@ public abstract class UI_Popup_Confirm2Buttons : UI_SystemPopup, IUIConfirm2Butt
         {
             return;
         }
-        _onCancel?.Invoke();
+        OnCancel();
     }
 }

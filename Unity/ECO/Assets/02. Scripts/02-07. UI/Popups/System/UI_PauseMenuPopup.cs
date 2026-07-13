@@ -67,13 +67,7 @@ public class UI_PauseMenuPopup : UI_Popup
         SoundManager.Instance.PlayUiSfx(ESfxClip.SUI_Common_Button);
         if (UIManager.Instance.ExitConfirmPopup != null)
         {
-            UIManager.Instance.ExitConfirmPopup.Show("게임 종료", "정말 게임을 종료하시겠습니까?", () =>
-            {
-                Application.Quit();
-#if UNITY_EDITOR
-                UnityEditor.EditorApplication.isPlaying = false;
-#endif
-            });
+            UIManager.Instance.ExitConfirmPopup.Show();
         }
     }
 }

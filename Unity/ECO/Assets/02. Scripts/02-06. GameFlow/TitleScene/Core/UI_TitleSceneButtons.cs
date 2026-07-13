@@ -60,13 +60,7 @@ public class UI_TitleSceneButtons : MonoBehaviour
         SoundManager.Instance.PlayUiSfx(ESfxClip.SUI_Title_EndProgram);
         if (UIManager.Instance.ExitConfirmPopup != null)
         {
-            UIManager.Instance.ExitConfirmPopup.Show("게임 종료", "정말 게임을 종료하시겠습니까?", () =>
-            {
-                Application.Quit();
-#if UNITY_EDITOR
-                UnityEditor.EditorApplication.isPlaying = false;
-#endif
-            });
+            UIManager.Instance.ExitConfirmPopup.Show();
         }
     }
 }
