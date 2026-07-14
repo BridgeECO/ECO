@@ -6,7 +6,7 @@ public abstract class BossCinematicBase : MonoBehaviour
     protected CameraController _camController;
     protected CameraEffect _camEffect;
 
-    private void Awake()
+    private void Start()
     {
         var mainCamera = Camera.main;
         if (mainCamera != null)
