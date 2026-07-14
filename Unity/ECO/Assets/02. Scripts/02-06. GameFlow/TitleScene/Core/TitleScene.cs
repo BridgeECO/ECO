@@ -22,6 +22,7 @@ public class TitleScene : MonoBehaviour
         }
 
         PlayIntroSequence().Forget();
+        PlayTitleBgm();
     }
 
     private void Update()
@@ -60,7 +61,6 @@ public class TitleScene : MonoBehaviour
             case ETitleState.Menu:
                 {
                     OnMenuStarted?.Invoke();
-                    PlayTitleBgm();
                     break;
                 }
         }

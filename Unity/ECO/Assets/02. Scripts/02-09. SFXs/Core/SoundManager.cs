@@ -22,6 +22,7 @@ public class SoundManager : MonoBehaviourSingleton<SoundManager>
     private SoundLibrary _soundLibrary = new();
 
     private float _sfxVolume = 1f;
+    private EBgmType? _currentBgmType;
 
     // SoundEmitter가 매 프레임 참조하는 SFX 전역 볼륨 배율.
     public float SfxVolume => _sfxVolume;
@@ -35,7 +36,7 @@ public class SoundManager : MonoBehaviourSingleton<SoundManager>
 
     public void PlayBgm(EBgmType type)
     {
-        if (_soundLibrary is null)
+        if (_bgmController == null)
         {
             return;
         }
@@ -43,12 +44,14 @@ public class SoundManager : MonoBehaviourSingleton<SoundManager>
         AudioClip clip = _soundLibrary.GetBgmClip(type);
         if (clip != null)
         {
+            _currentBgmType = type;
             _bgmController.Play(clip, BGM_FADE_DURATION);
         }
     }
 
     public void StopBgm()
     {
+        _currentBgmType = null;
         _bgmController.Stop(BGM_FADE_DURATION);
     }
 
@@ -56,20 +59,22 @@ public class SoundManager : MonoBehaviourSingleton<SoundManager>
     public void PlayPlayerSfx(ESfxClip clip)
     {
         AudioClip audioClip = GetSfxClip(clip);
-        if (audioClip != null)
+        if (audioClip == null)
         {
-            _sfxController.PlayPlayerSfx(audioClip);
+            return;
         }
+        _sfxController.PlayPlayerSfx(audioClip);
     }
 
     // ESfxClip Enum으로 Player SFX를 루프 재생한다.
     public void PlayPlayerLoopSfx(ESfxClip clip)
     {
         AudioClip audioClip = GetSfxClip(clip);
-        if (audioClip != null)
+        if (audioClip == null)
         {
-            _sfxController.PlayLoopSfx(clip, audioClip);
+            return;
         }
+        _sfxController.PlayLoopSfx(clip, audioClip);
     }
 
     // 재생 중인 루프 SFX를 정지한다.
@@ -82,10 +87,11 @@ public class SoundManager : MonoBehaviourSingleton<SoundManager>
     public void PlayUiSfx(ESfxClip clip)
     {
         AudioClip audioClip = GetSfxClip(clip);
-        if (audioClip != null)
+        if (audioClip == null)
         {
-            _sfxController.PlayUiSfx(audioClip);
+            return;
         }
+        _sfxController.PlayUiSfx(audioClip);
     }
 
     // 동시 재생 가능한 Player SFX 슬롯 수를 변경한다.

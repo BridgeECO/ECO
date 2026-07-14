@@ -92,13 +92,13 @@ MonoBehaviour:
   _sfxController: {fileID: 2891248597853957243}
   _soundLibrary:
     _bgmClips:
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    _ambientSfxClips: []
+    - {fileID: 8300000, guid: e34d000432a33d548890e92f7e1da913, type: 3}
+    - {fileID: 8300000, guid: bcfa4130e47e8cf489f26e9a70c2433d, type: 3}
+    - {fileID: 8300000, guid: ecce982a3b99e8b419e2a3b2e16c587e, type: 3}
     _playerSfxClips: []
     _bossSfxClips: []
-    _objectSfxClips: []
+    _effectSfxClips: []
+    _ambientSfxClips: []
     _uiSfxClips: []
 --- !u!1 &1762059504527633501
 GameObject:
@@ -858,7 +858,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _isDontDestroyOnLoad: 1
   _lazyInitialization: 0
-  _loadingPanel: {fileID: 0}
+  _fadeInOutPanel: {fileID: 0}
   _popupPauseMenu: {fileID: 0}
   _popupSettings: {fileID: 0}
   _popupSettingsCloseConfirm: {fileID: 0}
