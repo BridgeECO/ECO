@@ -36,7 +36,7 @@ public class SoundManager : MonoBehaviourSingleton<SoundManager>
 
     public void PlayBgm(EBgmType type)
     {
-        if (_bgmController is null)
+        if (_bgmController == null)
         {
             return;
         }
@@ -59,20 +59,22 @@ public class SoundManager : MonoBehaviourSingleton<SoundManager>
     public void PlayPlayerSfx(ESfxClip clip)
     {
         AudioClip audioClip = GetSfxClip(clip);
-        if (audioClip != null)
+        if (audioClip == null)
         {
-            _sfxController.PlayPlayerSfx(audioClip);
+            return;
         }
+        _sfxController.PlayPlayerSfx(audioClip);
     }
 
     // ESfxClip Enum으로 Player SFX를 루프 재생한다.
     public void PlayPlayerLoopSfx(ESfxClip clip)
     {
         AudioClip audioClip = GetSfxClip(clip);
-        if (audioClip != null)
+        if (audioClip == null)
         {
-            _sfxController.PlayLoopSfx(clip, audioClip);
+            return;
         }
+        _sfxController.PlayLoopSfx(clip, audioClip);
     }
 
     // 재생 중인 루프 SFX를 정지한다.
@@ -85,10 +87,11 @@ public class SoundManager : MonoBehaviourSingleton<SoundManager>
     public void PlayUiSfx(ESfxClip clip)
     {
         AudioClip audioClip = GetSfxClip(clip);
-        if (audioClip != null)
+        if (audioClip == null)
         {
-            _sfxController.PlayUiSfx(audioClip);
+            return;
         }
+        _sfxController.PlayUiSfx(audioClip);
     }
 
     // 동시 재생 가능한 Player SFX 슬롯 수를 변경한다.
