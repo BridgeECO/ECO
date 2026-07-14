@@ -109,6 +109,8 @@ public class SceneTransitionManager : MonoBehaviourSingleton<SceneTransitionMana
 
         try
         {
+            PlayTransitionBgm(targetSceneName);
+
             await UIManager.Instance.FadeOutAsync(1f, this.GetCancellationTokenOnDestroy());
 
             await LoadSceneAsync(targetSceneName);
@@ -125,5 +127,23 @@ public class SceneTransitionManager : MonoBehaviourSingleton<SceneTransitionMana
     public async UniTask TransitionToTitleAsync()
     {
         await TransitionToNewRegionAsync(ESceneNames.TitleScene);
+    }
+
+    // 전환 대상 씬에 따라 적절한 BGM으로 크로스페이드한다.
+    // Title 씬으로 복귀할 때는 Title BGM, 인게임 씬 진입 시 SyrNormal BGM으로 전환한다.
+    private void PlayTransitionBgm(ESceneNames targetSceneName)
+    {
+        if (!SoundManager.HasInstance)
+        {
+            return;
+        }
+
+        if (targetSceneName == ESceneNames.TitleScene)
+        {
+            SoundManager.Instance.PlayBgm(EBgmType.Title);
+            return;
+        }
+
+        SoundManager.Instance.PlayBgm(EBgmType.SyrNormal);
     }
 }
