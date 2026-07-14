@@ -61,7 +61,7 @@ public class CameraRoomTransition : MonoBehaviour
             return;
         }
 
-        if(currentRoom.RoomType == ERoomType.Boss)
+        if (currentRoom.RoomType == ERoomType.Boss)
         {
             _targetZ = _bossRoomZValue;
         }

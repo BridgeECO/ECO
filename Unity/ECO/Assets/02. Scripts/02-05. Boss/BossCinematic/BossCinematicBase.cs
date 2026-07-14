@@ -8,8 +8,12 @@ public abstract class BossCinematicBase : MonoBehaviour
 
     private void Awake()
     {
-        _camController = Camera.main.GetComponentInParent<CameraController>();
-        _camEffect = Camera.main.GetComponent<CameraEffect>();
+        var mainCamera = Camera.main;
+        if (mainCamera != null)
+        {
+            _camController = mainCamera.GetComponentInParent<CameraController>();
+            _camEffect = mainCamera.GetComponent<CameraEffect>();
+        }
     }
     public abstract UniTask PlayCinematicAsync(BossBase boss);
 }

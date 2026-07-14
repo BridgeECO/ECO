@@ -54,7 +54,7 @@ public abstract class BossBase : MonoBehaviour
 
     private void OnEnable()
     {
-        if (EventManager.Instance != null)
+        if (MonoBehaviourSingleton<EventManager>.HasInstance)
         {
             EventManager.Instance.AddEventListener(EEventType.PlayerDied, OnPlayerDied);
         }
