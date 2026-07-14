@@ -15,23 +15,33 @@ public class CameraEffect : MonoBehaviour
             _mainCamera = Camera.main;
         }
     }
+    private void Update()
+    {
+        if (InputHandler.IsInputBlocked)
+        {
+            return;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha0))
+        {
+            PlayShake();
+        }
+    }
 
     public void PlayShake(float duration = 0.5f, float strength = 1f, int vibrato = 10, float randomness = 90f)
     {
         ShakeCameraAsync(duration, strength, vibrato, randomness).Forget();
     }
 
-    public async UniTask ShakeCameraAsync(float duration, float strength, int vibrato = 10, float randomness = 90f)
+    public async UniTask ShakeCameraAsync(float duration = 0.5f, float strength = 1f, int vibrato = 10, float randomness = 90f)
     {
         transform.DOComplete();
         await transform.DOShakePosition(duration, strength, vibrato, randomness, fadeOut: true)
             .SetLink(gameObject)
             .ToUniTask(cancellationToken: this.GetCancellationTokenOnDestroy());
-
-        transform.localPosition = Vector3.zero;
     }
 
-    public void PlayZoom(float targetSize = 5f, float duration = 5f)
+    public void PlayerZoom(float targetSize = 5f, float duration = 5f)
     {
         PlayZoomAsync(targetSize, duration).Forget();
     }
@@ -45,7 +55,5 @@ public class CameraEffect : MonoBehaviour
             .SetLink(gameObject);
 
         await _zoomTween.ToUniTask(cancellationToken: this.GetCancellationTokenOnDestroy());
-
-        transform.localPosition = Vector3.zero;
     }
 }

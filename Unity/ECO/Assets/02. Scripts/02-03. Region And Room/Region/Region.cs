@@ -32,7 +32,7 @@ public class Region : MonoBehaviourSingleton<Region>
         var mainCamera = Camera.main;
         if (mainCamera != null)
         {
-            _cameraController = mainCamera.GetComponentInParent<CameraController>();
+            mainCamera.TryGetComponent<CameraController>(out _cameraController);
         }
     }
 

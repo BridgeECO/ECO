@@ -114,19 +114,23 @@ public class CameraController : MonoBehaviour
         return (clampMax < clampMin) ? (roomMin + roomMax) * 0.5f : Mathf.Clamp(target, clampMin, clampMax);
     }
 
-    public async UniTask PanToPositionAsync(Vector3 targetPosition, float duration, Ease ease = Ease.InOutCubic)
+    public async UniTask PlayPanToTargetAsync(Transform target, float moveDuration, float holdDuration, float returnDuration)
     {
         IsFollowingPlayer = false;
 
-        await transform.DOMove(targetPosition, duration)
-            .SetEase(ease)
+        Vector3 targetPos = new Vector3(target.position.x, target.position.y + _cameraYOffset, transform.position.z);
+
+        await transform.DOMove(targetPos, moveDuration)
+            .SetEase(Ease.OutCubic)
             .ToUniTask(cancellationToken: this.GetCancellationTokenOnDestroy());
-    }
 
-    public void MoveTowardsPosition(Vector3 targetPosition, float speed)
-    {
-        IsFollowingPlayer = false;
+        await UniTask.Delay(System.TimeSpan.FromSeconds(holdDuration));
 
-        transform.position = Vector3.MoveTowards(transform.position, targetPosition, speed * Time.deltaTime);
+        Vector3 returnPos = GetClampedPosition();
+        await transform.DOMove(returnPos, returnDuration)
+            .SetEase(Ease.InOutCubic)
+            .ToUniTask(cancellationToken: this.GetCancellationTokenOnDestroy());
+
+        IsFollowingPlayer = true;
     }
 }

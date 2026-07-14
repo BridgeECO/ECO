@@ -23,6 +23,7 @@ public class SilenceCityBoss : BossBase
     private Rigidbody2D _rigidbody;
     private Collider2D _collider;
 
+    private bool _isReset = false;
     private int _currentFloorIndex = 0;
     private CancellationTokenSource _groggyCts;
     private CancellationTokenSource _actionCts;
@@ -41,6 +42,14 @@ public class SilenceCityBoss : BossBase
         UpdateCurrentFloorPath();
     }
 
+    private void OnEnable()
+    {
+        if (EventManager.Instance != null)
+        {
+            EventManager.Instance.AddEventListener(EEventType.PlayerDied, OnPlayerDied);
+        }
+    }
+
     private void FixedUpdate()
     {
         if (CurrentState == EBossState.Chasing)
@@ -50,6 +59,27 @@ public class SilenceCityBoss : BossBase
         else if (CurrentState == EBossState.Idle || CurrentState == EBossState.Groggy)
         {
             _rigidbody.linearVelocity = Vector2.zero;
+        }
+    }
+
+    private void OnDisable()
+    {
+        UnsubscribeEvents();
+    }
+
+    private void UnsubscribeEvents()
+    {
+        if (MonoBehaviourSingleton<EventManager>.HasInstance)
+        {
+            EventManager.Instance.RemoveEventListener(EEventType.PlayerDied, OnPlayerDied);
+        }
+    }
+
+    private void OnPlayerDied()
+    {
+        if (!_isReset || CurrentState != EBossState.Idle)
+        {
+            ResetBoss();
         }
     }
 
@@ -154,9 +184,15 @@ public class SilenceCityBoss : BossBase
             EventManager.Instance.BroadcastEvent(EEventType.PlayerDied);
         }
     }
-    protected override void ResetBoss()
+    private void ResetBoss()
     {
-        base.ResetBoss();
+        _isReset = true;
+
+        if (UIManager.Instance == null)
+        {
+            _isReset = false;
+            return;
+        }
 
         StopChase();
         CancelActionTasks();

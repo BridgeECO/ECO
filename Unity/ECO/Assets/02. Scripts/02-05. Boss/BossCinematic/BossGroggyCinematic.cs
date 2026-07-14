@@ -14,12 +14,13 @@ public class BossGroggyCinematic : BossCinematicBase
     {
         boss.StartGroggy();
 
+        CameraEffect _camEffect = Camera.main.GetComponent<CameraEffect>();
+
         if (_camEffect == null)
         {
             return;
         }
 
         await _camEffect.ShakeCameraAsync(_shakeDuration, _shakeStrength);
-
     }
 }
