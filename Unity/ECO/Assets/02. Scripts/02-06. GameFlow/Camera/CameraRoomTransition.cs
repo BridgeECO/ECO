@@ -15,16 +15,24 @@ public class CameraRoomTransition : MonoBehaviour
     [SerializeField]
     private float _roomTransitionDuration;
 
+    [Header("BossRoom")]
+    [SerializeField, Tooltip("보스방일 때 카메라의 Z값")]
+    private float _bossRoomZValue;
+    [SerializeField, Tooltip("일반방일 때 카메라의 Z값")]
+    private float _defaultZValue;
+
     private CameraController _cameraController;
     private bool _isTransitioning;
     private CancellationTokenSource _transitionCts;
     private Tweener _transitionTween;
+    private float _targetZ;
 
     public bool IsTransitioning => _isTransitioning;
 
     private void Awake()
     {
         _cameraController = GetComponent<CameraController>();
+        _targetZ = _defaultZValue;
     }
 
     private void OnEnable()
@@ -48,10 +56,20 @@ public class CameraRoomTransition : MonoBehaviour
     private void OnRoomChanged()
     {
         Room currentRoom = Region.Instance.CurrentRoom;
-        if (currentRoom != null)
+        if (currentRoom == null)
         {
-            StartRoomTransitionAsync(currentRoom.MinBounds, currentRoom.MaxBounds, this.GetCancellationTokenOnDestroy()).Forget();
+            return;
         }
+
+        if(currentRoom.RoomType == ERoomType.Boss)
+        {
+            _targetZ = _bossRoomZValue;
+        }
+        else
+        {
+            _targetZ = _defaultZValue;
+        }
+        StartRoomTransitionAsync(currentRoom.MinBounds, currentRoom.MaxBounds, this.GetCancellationTokenOnDestroy()).Forget();
     }
 
 
@@ -84,7 +102,6 @@ public class CameraRoomTransition : MonoBehaviour
     private async UniTask UpdateTransitionAsync(CancellationToken cancellationToken)
     {
         Vector3 targetPosition = GetTargetPosition();
-        float distance = Vector3.Distance(transform.position, targetPosition);
         _transitionTween = transform.DOMove(targetPosition, _roomTransitionDuration).SetEase(Ease.InOutSine);
         await _transitionTween.ToUniTask(TweenCancelBehaviour.Kill, cancellationToken);
     }
@@ -106,7 +123,7 @@ public class CameraRoomTransition : MonoBehaviour
     private Vector3 GetTargetPosition()
     {
         Vector3 targetPosition = _cameraController.GetClampedPosition();
-        targetPosition.z = transform.position.z;
+        targetPosition.z = _targetZ;
         return targetPosition;
     }
 }
