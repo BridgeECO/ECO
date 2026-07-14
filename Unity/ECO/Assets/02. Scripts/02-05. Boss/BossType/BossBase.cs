@@ -25,6 +25,8 @@ public abstract class BossBase : MonoBehaviour
     private EBossState _currentState;
     private Vector3 _resetPosition;
 
+    protected bool _isReset = false;
+
     public BossDataSO BossData { get => _bossData; protected set => _bossData = value; }
     public EBoss BossType => _bossType;
     protected BossAnimationController AnimationController => _animationController;
@@ -48,6 +50,22 @@ public abstract class BossBase : MonoBehaviour
     {
         InitBoss();
         ResetPosition = transform.position;
+    }
+
+    private void OnEnable()
+    {
+        if (EventManager.Instance != null)
+        {
+            EventManager.Instance.AddEventListener(EEventType.PlayerDied, OnPlayerDied);
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (MonoBehaviourSingleton<EventManager>.HasInstance)
+        {
+            EventManager.Instance.RemoveEventListener(EEventType.PlayerDied, OnPlayerDied);
+        }
     }
 
     protected virtual void OnDestroy()
@@ -77,6 +95,25 @@ public abstract class BossBase : MonoBehaviour
         OnStateChanged(newState);
     }
     protected abstract void OnStateChanged(EBossState newState);
+
+    private void OnPlayerDied()
+    {
+        if (!_isReset || CurrentState != EBossState.Idle)
+        {
+            ResetBoss();
+        }
+    }
+
+    protected virtual void ResetBoss()
+    {
+        _isReset = true;
+
+        if (UIManager.Instance == null)
+        {
+            _isReset = false;
+            return;
+        }
+    }
 
     protected void PlayLoopSfx(AudioClip clip)
     {
