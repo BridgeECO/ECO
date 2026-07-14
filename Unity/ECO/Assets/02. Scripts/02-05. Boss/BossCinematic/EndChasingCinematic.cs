@@ -16,8 +16,6 @@ public class EndChasingCinematic : BossCinematicBase
 
     public override async UniTask PlayCinematicAsync(BossBase boss)
     {
-        CameraController _camController = Camera.main.GetComponent<CameraController>();
-        CameraEffect _camEffect = Camera.main.GetComponent<CameraEffect>();
         var cts = this.GetCancellationTokenOnDestroy();
 
         if (_camController == null || _camEffect == null)
@@ -40,16 +38,12 @@ public class EndChasingCinematic : BossCinematicBase
 
             Vector3 targetPos = _camController.GetClampedPosition(boss.transform.position);
 
-            Camera.main.transform.position = Vector3.MoveTowards(
-                Camera.main.transform.position,
-                targetPos,
-                20f * Time.deltaTime
-            );
+            _camController.MoveTowardsPosition(targetPos, 20f);
 
             await UniTask.Yield(PlayerLoopTiming.Update, cts);
         }
 
-        await _camEffect.ShakeCameraAsync(_shakeDuration, _shakeStrength);
+        _camEffect.PlayShake(_shakeDuration, _shakeStrength);
 
         _camController.IsFollowingPlayer = true;
 
