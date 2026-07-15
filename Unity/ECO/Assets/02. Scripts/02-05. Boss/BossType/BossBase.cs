@@ -1,6 +1,5 @@
 using Cysharp.Threading.Tasks;
 using System;
-using System.Threading;
 using UnityEngine;
 using VInspector;
 
@@ -26,12 +25,13 @@ public abstract class BossBase : MonoBehaviour
     private Vector3 _resetPosition;
 
     protected bool _isReset = false;
+    protected Transform _playerTransform;
 
-    public BossDataSO BossData { get => _bossData; protected set => _bossData = value; }
-    public EBoss BossType => _bossType;
+    protected BossDataSO BossData => _bossData;
     protected BossAnimationController AnimationController => _animationController;
     protected EBossState CurrentState { get => _currentState; private set => _currentState = value; }
     protected Vector3 ResetPosition { get => _resetPosition; private set => _resetPosition = value; }
+    protected float CurrentSpeed { get; private set; }
 
     protected virtual void Awake()
     {
@@ -50,6 +50,12 @@ public abstract class BossBase : MonoBehaviour
     {
         InitBoss();
         ResetPosition = transform.position;
+
+        GameObject playerObj = GameObject.FindWithTag(nameof(ETags.Player));
+        if (playerObj != null)
+        {
+            _playerTransform = playerObj.transform;
+        }
     }
 
     private void OnEnable()
@@ -57,6 +63,14 @@ public abstract class BossBase : MonoBehaviour
         if (EventManager.Instance != null)
         {
             EventManager.Instance.AddEventListener(EEventType.PlayerDied, OnPlayerDied);
+        }
+    }
+
+    protected virtual void FixedUpdate()
+    {
+        if (CurrentState == EBossState.Chasing)
+        {
+            UpdateCurrentSpeed();
         }
     }
 
@@ -95,6 +109,34 @@ public abstract class BossBase : MonoBehaviour
         OnStateChanged(newState);
     }
     protected abstract void OnStateChanged(EBossState newState);
+
+    private void UpdateCurrentSpeed()
+    {
+        if (_playerTransform == null)
+        {
+            GameObject playerObj = GameObject.FindWithTag(nameof(ETags.Player));
+            if (playerObj != null)
+            {
+                _playerTransform = playerObj.transform;
+            }
+            else
+            {
+                CurrentSpeed = BossData.BaseSpeed;
+                return;
+            }
+        }
+
+        float distance = Vector2.Distance(transform.position, _playerTransform.position);
+
+        if (distance >= BossData.CatchUpStartDistance)
+        {
+            CurrentSpeed = BossData.CatchUpSpeed;
+        }
+        else if (distance <= BossData.CatchUpEndDistance)
+        {
+            CurrentSpeed = BossData.BaseSpeed;
+        }
+    }
 
     private void OnPlayerDied()
     {

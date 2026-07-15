@@ -26,8 +26,6 @@ public class SilenceCityBoss : BossBase
     private int _currentFloorIndex = 0;
     private CancellationTokenSource _groggyCts;
     private CancellationTokenSource _actionCts;
-    private float _currentSpeed;
-    private GameObject _player;
 
     private List<Vector3> _currentComputedPaths = new List<Vector3>();
     private int _targetPathIndex = 0;
@@ -41,8 +39,10 @@ public class SilenceCityBoss : BossBase
         UpdateCurrentFloorPath();
     }
 
-    private void FixedUpdate()
+    protected override void FixedUpdate()
     {
+        base.FixedUpdate();
+
         if (CurrentState == EBossState.Chasing)
         {
             ProcessChaseLogic();
@@ -118,24 +118,10 @@ public class SilenceCityBoss : BossBase
             return;
         }
 
-        if (_player == null)
-        {
-            _player = GameObject.FindWithTag(nameof(ETags.Player));
-            if (_player == null)
-            {
-                return;
-            }
-        }
-
-        float distanceToPlayer = Vector2.Distance(transform.position, _player.transform.position);
-        _currentSpeed = (distanceToPlayer >= BossData.CatchUpDistanceThreshold)
-            ? BossData.CatchUpSpeed
-            : BossData.BaseSpeed;
-
         Vector2 currentTargetPos = _currentComputedPaths[_targetPathIndex];
         Vector2 direction = (currentTargetPos - (Vector2)transform.position).normalized;
 
-        _rigidbody.linearVelocity = direction * _currentSpeed;
+        _rigidbody.linearVelocity = direction * CurrentSpeed;
 
         if (Vector2.Distance(transform.position, currentTargetPos) <= 0.25f)
         {
