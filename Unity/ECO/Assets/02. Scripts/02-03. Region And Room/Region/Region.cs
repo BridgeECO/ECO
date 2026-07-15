@@ -114,8 +114,14 @@ public class Region : MonoBehaviourSingleton<Region>
         RespawnManager.Instance.UpdateSavePoint(_currentRoom, spawnPosition);
         LifeManager.Instance.RecoverToRoomTransition();
 
-        EBgmType targetBgm = newRoom.RoomType == ERoomType.Boss ? EBgmType.SyrBossRoom : EBgmType.SyrNormal;
-        SoundManager.Instance.PlayBgm(targetBgm);
+        if (newRoom.RoomType == ERoomType.Boss)
+        {
+            SoundManager.Instance.StopBgm();
+        }
+        else
+        {
+            SoundManager.Instance.PlayBgm(EBgmType.SyrNormal);
+        }
 
         if (!isCameraTransitionSkipped)
         {

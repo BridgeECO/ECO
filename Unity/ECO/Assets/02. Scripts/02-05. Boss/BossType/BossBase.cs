@@ -93,7 +93,12 @@ public abstract class BossBase : MonoBehaviour
         }
         CurrentState = newState;
         OnStateChanged(newState);
+        if (newState == EBossState.Chasing)
+        {
+            SoundManager.Instance.PlayBgm(EBgmType.SyrBossRoom);
+        }
     }
+
     protected abstract void OnStateChanged(EBossState newState);
 
     private void OnPlayerDied()
@@ -101,6 +106,7 @@ public abstract class BossBase : MonoBehaviour
         if (!_isReset || CurrentState != EBossState.Idle)
         {
             ResetBoss();
+            SoundManager.Instance.StopBgm();
         }
     }
 
