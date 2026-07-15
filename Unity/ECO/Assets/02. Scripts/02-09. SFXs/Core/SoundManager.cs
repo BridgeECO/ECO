@@ -36,7 +36,7 @@ public class SoundManager : MonoBehaviourSingleton<SoundManager>
 
     public void PlayBgm(EBgmType type)
     {
-        if (_bgmController == null)
+        if (_bgmController == null || _currentBgmType == type)
         {
             return;
         }
