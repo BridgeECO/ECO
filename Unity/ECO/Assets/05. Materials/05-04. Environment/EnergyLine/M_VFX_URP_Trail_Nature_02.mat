@@ -7,14 +7,14 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: M_VFX_URP_Trail_Nature_01
+  m_Name: M_VFX_URP_Trail_Nature_02
   m_Shader: {fileID: 4800000, guid: f94f00b9ec6b04346a617d373aa6281c, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 0
-  m_EnableInstancingVariants: 1
+  m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
@@ -113,7 +113,7 @@ Material:
     - _Distortion_Amount: 0
     - _Dst: 10
     - _DstBlend: 0
-    - _EmissiveIntensity: 3
+    - _EmissiveIntensity: 1
     - _ErosionMultiply: 1
     - _ErosionPower: 1
     - _ErosionSmoothstep: 0
@@ -133,7 +133,7 @@ Material:
     - _MaskMultiply: 1
     - _MaskPower: 1
     - _MaskSmoothstep: 0
-    - _MaskSmoothstepSmoothness: 0.69
+    - _MaskSmoothstepSmoothness: 0.3
     - _Mask_Multiply: 1
     - _Mask_Power: 1
     - _Metallic: 0
@@ -156,8 +156,8 @@ Material:
     - __dirty: 0
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _Color01: {r: 0.70992804, g: 1, b: 0.10196078, a: 0}
-    - _Color02: {r: 0.10196079, g: 1, b: 0.2509804, a: 0}
+    - _Color01: {r: 0.24056602, g: 1, b: 0.6406229, a: 0}
+    - _Color02: {r: 0, g: 0.8113208, b: 0.13730039, a: 0}
     - _ColorPanSpeed: {r: -0.733, g: 0.113, b: 0, a: 0}
     - _ColorUVScale: {r: 0.5, g: 1, b: 0, a: 0}
     - _Color_01: {r: 0.5323144, g: 0.3, b: 1, a: 0}
@@ -174,8 +174,9 @@ Material:
     - _ErosionUVScale: {r: 0.1, g: 0.3, b: 0, a: 0}
     - _Erosion_Scale: {r: 0.5, g: 0.5, b: 0, a: 0}
     - _Erosion_Speed: {r: 0.25, g: 0, b: 0, a: 0}
-    - _MaskPanSpeed: {r: -2.2, g: 0, b: 0, a: 0}
-    - _MaskUVScale: {r: 0.25, g: 1, b: 0, a: 0}
+    - _MaskPanSpeed: {r: -1, g: 0, b: 0, a: 0}
+    - _MaskUVScale: {r: 0.15, g: 1, b: 0, a: 0}
     - _Mask_Scale: {r: 0.5, g: 1, b: 0, a: 0}
     - _Mask_Speed: {r: 0.5, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
+  m_AllowLocking: 1
