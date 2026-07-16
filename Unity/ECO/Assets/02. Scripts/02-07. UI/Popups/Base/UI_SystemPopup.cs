@@ -4,7 +4,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using VInspector;
-using Ricimi;
 
 public abstract class UI_SystemPopup : UI_Popup
 {
