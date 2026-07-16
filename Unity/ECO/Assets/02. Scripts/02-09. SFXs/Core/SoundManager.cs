@@ -55,37 +55,32 @@ public class SoundManager : MonoBehaviourSingleton<SoundManager>
         _bgmController.Stop(BGM_FADE_DURATION);
     }
 
+    // ESfxClip을 로드한 뒤 널 체크를 거쳐 특정 액션을 실행하는 공통 헬퍼 메서드
+    private void ExecuteWithClip(ESfxClip clip, System.Action<AudioClip> action)
+    {
+        AudioClip audioClip = GetSfxClip(clip);
+        if (audioClip != null)
+        {
+            action?.Invoke(audioClip);
+        }
+    }
+
     // ESfxClip Enum으로 Player SFX를 재생한다.
     public void PlayPlayerSfx(ESfxClip clip)
     {
-        AudioClip audioClip = GetSfxClip(clip);
-        if (audioClip == null)
-        {
-            return;
-        }
-        _sfxController.PlayPlayerSfx(audioClip);
+        ExecuteWithClip(clip, _sfxController.PlayPlayerSfx);
     }
 
     // 재생 중인 Player SFX를 강제 정지한다.
     public void StopPlayerSfx(ESfxClip clip)
     {
-        AudioClip audioClip = GetSfxClip(clip);
-        if (audioClip == null)
-        {
-            return;
-        }
-        _sfxController.StopPlayerSfx(audioClip);
+        ExecuteWithClip(clip, _sfxController.StopPlayerSfx);
     }
 
     // ESfxClip Enum으로 Player SFX를 루프 재생한다.
     public void PlayPlayerLoopSfx(ESfxClip clip)
     {
-        AudioClip audioClip = GetSfxClip(clip);
-        if (audioClip == null)
-        {
-            return;
-        }
-        _sfxController.PlayLoopSfx(clip, audioClip);
+        ExecuteWithClip(clip, audioClip => _sfxController.PlayLoopSfx(clip, audioClip));
     }
 
     // 재생 중인 루프 SFX를 정지한다.
@@ -97,42 +92,60 @@ public class SoundManager : MonoBehaviourSingleton<SoundManager>
     // ESfxClip Enum으로 UI SFX를 재생한다.
     public void PlayUiSfx(ESfxClip clip)
     {
-        AudioClip audioClip = GetSfxClip(clip);
-        if (audioClip == null)
-        {
-            return;
-        }
-        _sfxController.PlayUiSfx(audioClip);
+        ExecuteWithClip(clip, _sfxController.PlayUiSfx);
     }
 
     // 월드 공간에 위치한 오브젝트의 SFX를 재생한다.
     // 화면 밖 거리에 따라 볼륨이 자동 감쇠되어 공간감을 부여한다.
     public void PlayWorldSfx(ESfxClip clip, Transform source)
     {
-        AudioClip audioClip = GetSfxClip(clip);
-        if (audioClip == null)
-        {
-            return;
-        }
-        _sfxController.PlayWorldSfx(audioClip, source.position);
+        ExecuteWithClip(clip, audioClip => _sfxController.PlayWorldSfx(audioClip, source.position));
     }
 
     // 오브젝트가 직접 소유한 AudioSource에 ESfxClip을 1회 재생한다.
     // 보스·에너지코어처럼 씬에 고정된 오브젝트에서 WorldSfxPool 없이 위치 기반 재생이 필요할 때 사용한다.
     public void PlaySfxOnSource(ESfxClip clip, AudioSource source)
     {
+        ExecuteWithClip(clip, audioClip => {
+            if (source != null)
+            {
+                source.PlayOneShot(audioClip, _sfxVolume);
+            }
+        });
+    }
+
+    // 오브젝트가 직접 소유한 AudioSource에 ESfxClip을 루프 재생한다.
+    public void PlayLoopSfxOnSource(ESfxClip clip, AudioSource source)
+    {
+        ExecuteWithClip(clip, audioClip => {
+            if (source == null)
+            {
+                return;
+            }
+
+            // 이미 동일한 클립이 루프 재생 중이면 중복 재생 방지
+            if (source.clip == audioClip && source.isPlaying && source.loop)
+            {
+                return;
+            }
+
+            source.clip = audioClip;
+            source.loop = true;
+            source.volume = _sfxVolume;
+            source.Play();
+        });
+    }
+
+    // 오브젝트가 직접 소유한 AudioSource의 루프 재생을 정지한다.
+    public void StopLoopSfxOnSource(AudioSource source)
+    {
         if (source == null)
         {
             return;
         }
 
-        AudioClip audioClip = GetSfxClip(clip);
-        if (audioClip == null)
-        {
-            return;
-        }
-
-        source.PlayOneShot(audioClip, _sfxVolume);
+        source.Stop();
+        source.clip = null;
     }
 
     // 동시 재생 가능한 Player SFX 슬롯 수를 변경한다.
