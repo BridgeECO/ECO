@@ -268,6 +268,10 @@ public class UI_SaveSlotItem : MonoBehaviour, IPointerClickHandler
 
     private void StartNewGame()
     {
+        if (SoundManager.HasInstance)
+        {
+            SoundManager.Instance.PlayUiSfx(ESfxClip.SUI_Title_StartGame);
+        }
         SaveManager.Instance.CurrentSlotIndex = _slotIndex;
         SaveManager.Instance.ResetCurrentSaveData();
         SceneTransitionManager.Instance.TransitionToNewRegionAsync(ESceneNames.Scrap_Nest).Forget();

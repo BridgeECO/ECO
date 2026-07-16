@@ -82,7 +82,7 @@ public class PlayerSoundHandler
     {
         if (!isMoving)
         {
-            _walkSfxTimer = 0f;
+            StopWalkLoop();
             return;
         }
 
@@ -128,7 +128,7 @@ public class PlayerSoundHandler
         {
             return;
         }
-        ESfxClip clip = ResolveWalkClip();
+        ESfxClip clip = PlayerTerrainSfxResolver.ResolveWalkClip(_sensor, _defaultTerrainType);
         SoundManager.Instance.PlayPlayerSfx(clip);
     }
 
@@ -138,7 +138,7 @@ public class PlayerSoundHandler
         {
             return;
         }
-        ESfxClip clip = ResolveLandClip();
+        ESfxClip clip = PlayerTerrainSfxResolver.ResolveLandClip(_sensor, _defaultTerrainType);
         SoundManager.Instance.PlayPlayerSfx(clip);
     }
 
@@ -148,7 +148,7 @@ public class PlayerSoundHandler
         {
             return;
         }
-        ESfxClip clip = ResolveHitWallClip();
+        ESfxClip clip = PlayerTerrainSfxResolver.ResolveHitWallClip(_sensor, _defaultTerrainType);
         SoundManager.Instance.PlayPlayerSfx(clip);
     }
 
@@ -158,7 +158,7 @@ public class PlayerSoundHandler
         {
             return;
         }
-        ESfxClip clip = ResolveDashClip();
+        ESfxClip clip = PlayerTerrainSfxResolver.ResolveDashClip(_sensor, _defaultTerrainType);
         SoundManager.Instance.PlayPlayerSfx(clip);
     }
 
@@ -185,68 +185,11 @@ public class PlayerSoundHandler
     private void StopWalkLoop()
     {
         _walkSfxTimer = 0f;
-    }
-
-    // ──────────────────────────────────────────
-    // 지형 타입 → 클립 매핑
-    // ──────────────────────────────────────────
-
-    private ETerrainSoundType ResolveCurrentTerrainType()
-    {
-        if (_sensor.IsOnPlatform)
+        if (SoundManager.HasInstance)
         {
-            return ETerrainSoundType.Platform;
+            SoundManager.Instance.StopPlayerSfx(ESfxClip.SE_PC_WalkingScrap);
+            SoundManager.Instance.StopPlayerSfx(ESfxClip.SE_PC_WalkingMold);
+            SoundManager.Instance.StopPlayerSfx(ESfxClip.SE_PC_WalkingPlatform);
         }
-        return _defaultTerrainType;
-    }
-
-    private ESfxClip ResolveWalkClip()
-    {
-        return ResolveCurrentTerrainType() switch
-        {
-            ETerrainSoundType.Scrap    => ESfxClip.SE_PC_WalkingScrap,
-            ETerrainSoundType.Mold     => ESfxClip.SE_PC_WalkingMold,
-            ETerrainSoundType.Platform => ESfxClip.SE_PC_WalkingPlatform,
-            _                          => ESfxClip.SE_PC_WalkingScrap,
-        };
-    }
-
-    private ESfxClip ResolveLandClip()
-    {
-        return ResolveCurrentTerrainType() switch
-        {
-            ETerrainSoundType.Scrap    => ESfxClip.SE_PC_LandScrap,
-            ETerrainSoundType.Mold     => ESfxClip.SE_PC_LandMold,
-            ETerrainSoundType.Platform => ESfxClip.SE_PC_LandPlatform,
-            _                          => ESfxClip.SE_PC_LandScrap,
-        };
-    }
-
-    private ESfxClip ResolveDashClip()
-    {
-        // 공중 대시는 별도 클립, 지상 대시는 지형별 클립 사용
-        if (!_sensor.IsOnGround)
-        {
-            return ESfxClip.SE_PC_DashAir;
-        }
-
-        return ResolveCurrentTerrainType() switch
-        {
-            ETerrainSoundType.Scrap    => ESfxClip.SE_PC_DashScrap,
-            ETerrainSoundType.Mold     => ESfxClip.SE_PC_DashMold,
-            ETerrainSoundType.Platform => ESfxClip.SE_PC_DashPlatform,
-            _                          => ESfxClip.SE_PC_DashScrap,
-        };
-    }
-
-    private ESfxClip ResolveHitWallClip()
-    {
-        return ResolveCurrentTerrainType() switch
-        {
-            ETerrainSoundType.Scrap    => ESfxClip.SE_PC_HitWallScrap,
-            ETerrainSoundType.Mold     => ESfxClip.SE_PC_HitWallMold,
-            ETerrainSoundType.Platform => ESfxClip.SE_PC_HitWallPlatform,
-            _                          => ESfxClip.SE_PC_HitWallScrap,
-        };
     }
 }

@@ -5,7 +5,7 @@ public class LifeRecoveryObject : SpecialObjectBase
         base.Interact();
         if (SoundManager.HasInstance)
         {
-            SoundManager.Instance.PlayPlayerSfx(ESfxClip.SE_SO_HealingObject);
+            SoundManager.Instance.PlayWorldSfx(ESfxClip.SE_SO_HealingObject, transform);
         }
         LifeManager.Instance.Recover();
         SetState(false);
