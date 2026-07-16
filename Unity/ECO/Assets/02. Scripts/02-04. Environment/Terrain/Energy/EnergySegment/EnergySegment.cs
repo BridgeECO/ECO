@@ -8,5 +8,5 @@ public class EnergySegment
     public bool IsCuttingOff { get; set; }
     public bool IsWaitingToCutOff { get; set; }
     public GameObject GameObjectInstance { get; set; }
-    public List<LineRenderer> ChildLineRenderers { get; set; } = new List<LineRenderer>();
+    public List<LineRenderer> ChildLineRenderers { get; } = new List<LineRenderer>();
 }

@@ -32,7 +32,7 @@ public class EnergySegmentController
             GameObject instance = Object.Instantiate(prefab, parent);
             instance.SetActive(true);
             newSegment.GameObjectInstance = instance;
-            newSegment.ChildLineRenderers = new List<LineRenderer>(instance.GetComponentsInChildren<LineRenderer>(true));
+            instance.GetComponentsInChildren<LineRenderer>(true, newSegment.ChildLineRenderers);
         }
 
         _activeSegments.Add(newSegment);
@@ -113,7 +113,7 @@ public class EnergySegmentController
     {
         foreach (EnergySegment segment in _activeSegments)
         {
-            if (segment.ChildLineRenderers != null)
+            if (segment.ChildLineRenderers is not null)
             {
                 foreach (var lr in segment.ChildLineRenderers)
                 {
