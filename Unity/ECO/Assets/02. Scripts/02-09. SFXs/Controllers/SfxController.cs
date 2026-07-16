@@ -50,6 +50,23 @@ public class SfxController : MonoBehaviour
         }
     }
 
+    /// <summary>재생 중인 특정 플레이어 SFX를 강제 정지한다.</summary>
+    public void StopPlayerSfx(AudioClip clip)
+    {
+        if (clip == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < _playerSources.Count; i++)
+        {
+            if (_playerSources[i].isPlaying && _playerSources[i].clip == clip)
+            {
+                _playerSources[i].Stop();
+            }
+        }
+    }
+
     public void PlayUiSfx(AudioClip clip)
     {
         _uiSource.PlayOneShot(clip);

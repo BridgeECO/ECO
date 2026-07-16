@@ -66,6 +66,17 @@ public class SoundManager : MonoBehaviourSingleton<SoundManager>
         _sfxController.PlayPlayerSfx(audioClip);
     }
 
+    // 재생 중인 Player SFX를 강제 정지한다.
+    public void StopPlayerSfx(ESfxClip clip)
+    {
+        AudioClip audioClip = GetSfxClip(clip);
+        if (audioClip == null)
+        {
+            return;
+        }
+        _sfxController.StopPlayerSfx(audioClip);
+    }
+
     // ESfxClip Enum으로 Player SFX를 루프 재생한다.
     public void PlayPlayerLoopSfx(ESfxClip clip)
     {
