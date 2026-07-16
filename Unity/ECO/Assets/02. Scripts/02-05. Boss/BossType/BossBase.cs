@@ -1,6 +1,5 @@
 using Cysharp.Threading.Tasks;
 using System;
-using System.Threading;
 using UnityEngine;
 using VInspector;
 
@@ -18,21 +17,28 @@ public abstract class BossBase : MonoBehaviour
     [SerializeField]
     private BossAnimationController _animationController;
 
+    [Header("Sound")]
     [SerializeField]
-    private AudioSource _loopAudioSource;
+    private AudioSource _sfxAudioSource;
+    [SerializeField]
+    private AudioSource _sfxLoopAudioSource;
 
     [SerializeField] 
     private EBossState _currentState;
     private Vector3 _resetPosition;
 
-    protected bool _isReset = false;
+    private bool _isReset = false;
+    private Transform _playerTransform;
 
-    public BossDataSO BossData { get => _bossData; protected set => _bossData = value; }
-    public EBoss BossType => _bossType;
+    protected BossDataSO BossData => _bossData;
     protected BossAnimationController AnimationController => _animationController;
     protected EBossState CurrentState { get => _currentState; private set => _currentState = value; }
     protected Vector3 ResetPosition { get => _resetPosition; private set => _resetPosition = value; }
-
+    protected float CurrentSpeed { get; private set; }
+    protected AudioSource SfxAudioSource => _sfxAudioSource;
+    protected AudioSource SfxLoopAudioSource => _sfxLoopAudioSource;
+    protected bool IsReset { get; set; }
+    protected Transform PlayerTransform => _playerTransform;
     protected virtual void Awake()
     {
         if (_animationController == null)
@@ -50,6 +56,13 @@ public abstract class BossBase : MonoBehaviour
     {
         InitBoss();
         ResetPosition = transform.position;
+        CurrentSpeed = BossData.BaseSpeed;
+
+        GameObject playerObj = GameObject.FindWithTag(nameof(ETags.Player));
+        if (playerObj != null)
+        {
+            _playerTransform = playerObj.transform;
+        }
     }
 
     private void OnEnable()
@@ -57,6 +70,14 @@ public abstract class BossBase : MonoBehaviour
         if (EventManager.Instance != null)
         {
             EventManager.Instance.AddEventListener(EEventType.PlayerDied, OnPlayerDied);
+        }
+    }
+
+    protected virtual void FixedUpdate()
+    {
+        if (CurrentState == EBossState.Chasing)
+        {
+            UpdateCurrentSpeed();
         }
     }
 
@@ -101,6 +122,34 @@ public abstract class BossBase : MonoBehaviour
 
     protected abstract void OnStateChanged(EBossState newState);
 
+    private void UpdateCurrentSpeed()
+    {
+        if (_playerTransform == null)
+        {
+            GameObject playerObj = GameObject.FindWithTag(nameof(ETags.Player));
+            if (playerObj != null)
+            {
+                _playerTransform = playerObj.transform;
+            }
+            else
+            {
+                CurrentSpeed = BossData.BaseSpeed;
+                return;
+            }
+        }
+
+        float distance = Vector2.Distance(transform.position, _playerTransform.position);
+
+        if (distance >= BossData.CatchUpStartDistance)
+        {
+            CurrentSpeed = BossData.CatchUpSpeed;
+        }
+        else if (distance <= BossData.CatchUpEndDistance)
+        {
+            CurrentSpeed = BossData.BaseSpeed;
+        }
+    }
+
     private void OnPlayerDied()
     {
         if (!_isReset || CurrentState != EBossState.Idle)
@@ -119,26 +168,6 @@ public abstract class BossBase : MonoBehaviour
             _isReset = false;
             return;
         }
-    }
-
-    protected void PlayLoopSfx(AudioClip clip)
-    {
-        if (_loopAudioSource == null || clip == null || (_loopAudioSource.clip == clip && _loopAudioSource.isPlaying)) 
-        {
-            return;
-        }
-        _loopAudioSource.clip = clip;
-        _loopAudioSource.loop = true;
-        _loopAudioSource.Play();
-    }
-
-    protected void StopLoopSfx()
-    {
-        if (_loopAudioSource == null) 
-        {
-            return;
-        }
-        _loopAudioSource.Stop();
     }
 
     public async UniTask WaitForStateAsync(EBossState targetState)

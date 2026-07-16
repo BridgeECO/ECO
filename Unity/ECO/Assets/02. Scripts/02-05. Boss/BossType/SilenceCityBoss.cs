@@ -26,11 +26,10 @@ public class SilenceCityBoss : BossBase
     private int _currentFloorIndex = 0;
     private CancellationTokenSource _groggyCts;
     private CancellationTokenSource _actionCts;
-    private float _currentSpeed;
-    private GameObject _player;
 
     private List<Vector3> _currentComputedPaths = new List<Vector3>();
     private int _targetPathIndex = 0;
+    private ESfxClip? _currentChaseSound = null;
 
     protected override void Awake()
     {
@@ -41,8 +40,10 @@ public class SilenceCityBoss : BossBase
         UpdateCurrentFloorPath();
     }
 
-    private void FixedUpdate()
+    protected override void FixedUpdate()
     {
+        base.FixedUpdate();
+
         if (CurrentState == EBossState.Chasing)
         {
             ProcessChaseLogic();
@@ -55,16 +56,22 @@ public class SilenceCityBoss : BossBase
 
     protected override void OnStateChanged(EBossState newState)
     {
-        AnimationController.SetChangeState(newState);
+        AnimationController.SetState(newState);
 
         if (newState != EBossState.Groggy)
         {
             CancelGroggyTimer();
         }
+        if(newState != EBossState.Chasing)
+        {
+            SoundManager.Instance.StopLoopSfxOnSource(SfxLoopAudioSource);
+            _currentChaseSound = null;
+        }
 
         switch (newState)
         {
             case EBossState.Chasing:
+                break;
             case EBossState.ReadyToJump:
             case EBossState.Jumping:
                 _rigidbody.bodyType = RigidbodyType2D.Kinematic;
@@ -118,24 +125,17 @@ public class SilenceCityBoss : BossBase
             return;
         }
 
-        if (_player == null)
+        ESfxClip sound = CurrentSpeed == BossData.BaseSpeed ? ESfxClip.SE_TB_Walking : ESfxClip.SE_TB_Rushing;
+        if (_currentChaseSound != sound)
         {
-            _player = GameObject.FindWithTag(nameof(ETags.Player));
-            if (_player == null)
-            {
-                return;
-            }
+            _currentChaseSound = sound;
+            SoundManager.Instance.PlayLoopSfxOnSource(sound, SfxLoopAudioSource);
         }
-
-        float distanceToPlayer = Vector2.Distance(transform.position, _player.transform.position);
-        _currentSpeed = (distanceToPlayer >= BossData.CatchUpDistanceThreshold)
-            ? BossData.CatchUpSpeed
-            : BossData.BaseSpeed;
 
         Vector2 currentTargetPos = _currentComputedPaths[_targetPathIndex];
         Vector2 direction = (currentTargetPos - (Vector2)transform.position).normalized;
 
-        _rigidbody.linearVelocity = direction * _currentSpeed;
+        _rigidbody.linearVelocity = direction * CurrentSpeed;
 
         if (Vector2.Distance(transform.position, currentTargetPos) <= 0.25f)
         {
@@ -149,7 +149,7 @@ public class SilenceCityBoss : BossBase
             return;
         }
 
-        if (other.gameObject.CompareTag(nameof(ETags.Player)) && !_isReset)
+        if (other.gameObject.CompareTag(nameof(ETags.Player)) && !IsReset)
         {
             EventManager.Instance.BroadcastEvent(EEventType.PlayerDied);
         }
@@ -175,7 +175,7 @@ public class SilenceCityBoss : BossBase
         _rigidbody.position = ResetPosition;
         _rigidbody.linearVelocity = Vector2.zero;
 
-        _isReset = false;
+        IsReset = false;
     }
     public async UniTask FloorTransition(Transform startPoint, Transform endPoint, float jumpHeight)
     {
@@ -192,6 +192,7 @@ public class SilenceCityBoss : BossBase
             await MoveToPoint(startPoint.position, BossData.CatchUpSpeed, linkedToken);
 
             ChangeState(EBossState.Jumping);
+            SoundManager.Instance.PlaySfxOnSource(ESfxClip.SE_TB_Jump, SfxAudioSource);
 
             Vector2 startPos = startPoint.position;
             Vector2 endPos = endPoint.position;
@@ -211,11 +212,7 @@ public class SilenceCityBoss : BossBase
 
                 await UniTask.Yield(PlayerLoopTiming.FixedUpdate, linkedToken);
             }
-
-            if (_rigidbody == null)
-            {
-                return;
-            }
+            SoundManager.Instance.PlaySfxOnSource(ESfxClip.SE_TB_Land, SfxAudioSource);
 
             _rigidbody.MovePosition(endPos);
             _rigidbody.linearVelocity = Vector2.zero;
@@ -258,6 +255,8 @@ public class SilenceCityBoss : BossBase
     }
     private async UniTask StartGroggyTimer()
     {
+        SoundManager.Instance.PlaySfxOnSource(ESfxClip.SE_TB_Crash, SfxAudioSource);
+
         CancelGroggyTimer();
 
         _groggyCts = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());

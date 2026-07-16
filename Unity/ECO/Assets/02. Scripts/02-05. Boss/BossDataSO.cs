@@ -13,9 +13,13 @@ public class BossDataSO : ScriptableObject
     [Min(0f)]
     private float _catchUpSpeed;
 
-    [Tooltip("이 거리 이상 플레이어와 멀어지면 catchUpSpeed로 가속합니다.")]
+    [Tooltip("_catchUpSpeed로 변경이 시작되는 거리")]
     [SerializeField]
-    private float _catchUpDistanceThreshold;
+    private float _catchUpStartDistance;
+
+    [Tooltip("_catchUpSpeed이 끝나는 거리")]
+    [SerializeField]
+    private float _catchUpEndDistance;
 
     [SerializeField]
     [Min(0f)]
@@ -23,6 +27,7 @@ public class BossDataSO : ScriptableObject
 
     public float BaseSpeed => _baseSpeed;
     public float CatchUpSpeed => _catchUpSpeed;
-    public float CatchUpDistanceThreshold => _catchUpDistanceThreshold;
+    public float CatchUpStartDistance => _catchUpStartDistance;
+    public float CatchUpEndDistance => _catchUpEndDistance;
     public float JumpSpeed => _jumpSpeed;
 }
