@@ -3,8 +3,9 @@ using UnityEngine;
 using VInspector;
 
 /// <summary>
-/// Player SFX 풀과 UI SFX 재생을 담당한다.
+/// Player SFX 풀, World SFX 풀, UI SFX 재생을 담당한다.
 /// Player SFX는 슬롯 기반 풀로 최대 동시 재생 수를 제어하며,
+/// World SFX는 WorldSfxPool이 위치 기반 볼륨 감쇠를 적용하고,
 /// UI SFX는 단일 AudioSource에서 PlayOneShot으로 재생한다.
 /// SoundManager의 자식 오브젝트에 배치되는 내부 컴포넌트이며, 외부에서 직접 참조하지 않는다.
 /// </summary>
@@ -22,8 +23,20 @@ public class SfxController : MonoBehaviour
     [SerializeField]
     private int _defaultMaxPlayerSfxCount = 4;
 
+    [Header("World SFX Pool")]
+    [SerializeField]
+    private int _worldPoolSize = 4;
+
+    // 화면 가장자리를 기준으로 이 배율만큼 벗어났을 때 볼륨이 0이 된다. (뷰포트 비율 기준)
+    [SerializeField]
+    private float _worldFalloffRange = 1f;
+
+    [SerializeField]
+    private AnimationCurve _worldFalloffCurve = AnimationCurve.EaseInOut(0f, 1f, 1f, 0f);
+
     private readonly List<AudioSource> _playerSources = new List<AudioSource>();
     private readonly Dictionary<int, AudioSource> _loopingSources = new();
+    private WorldSfxPool _worldSfxPool;
     private float _volume = 1f;
     private int _maxPlayerSfxCount;
 
@@ -31,6 +44,7 @@ public class SfxController : MonoBehaviour
     {
         _maxPlayerSfxCount = _defaultMaxPlayerSfxCount;
         InitPlayerPool();
+        InitWorldPool();
         InitUiSource();
     }
 
@@ -70,6 +84,12 @@ public class SfxController : MonoBehaviour
     public void PlayUiSfx(AudioClip clip)
     {
         _uiSource.PlayOneShot(clip);
+    }
+
+    /// <summary>worldPos 위치에서 월드 SFX를 재생한다. 화면 밖 거리에 따라 볼륨이 자동 감쇠된다.</summary>
+    public void PlayWorldSfx(AudioClip clip, Vector3 worldPos)
+    {
+        _worldSfxPool.Play(clip, worldPos);
     }
 
     /// <summary>플레이어 SFX를 루프 모드로 재생한다. 이미 재생 중인 경우 무시한다.</summary>
@@ -130,6 +150,8 @@ public class SfxController : MonoBehaviour
                 source.volume = _volume;
             }
         }
+
+        _worldSfxPool.SetVolume(_volume);
     }
 
     private void OnDestroy()
@@ -146,7 +168,7 @@ public class SfxController : MonoBehaviour
         _maxPlayerSfxCount = Mathf.Clamp(count, 1, _playerPoolSize);
     }
 
-    // Awake에서만 호출되므로 AddComponent는 초기화 시 1회성 처리
+    // Awake에서만 호출되므로 AddComponent/컴포넌트 생성은 초기화 시 1회성 처리
     private void InitPlayerPool()
     {
         for (int i = 0; i < _playerPoolSize; i++)
@@ -158,6 +180,12 @@ public class SfxController : MonoBehaviour
             source.volume = _volume;
             _playerSources.Add(source);
         }
+    }
+
+    private void InitWorldPool()
+    {
+        _worldSfxPool = gameObject.AddComponent<WorldSfxPool>();
+        _worldSfxPool.Init(_worldPoolSize, _worldFalloffRange, _worldFalloffCurve);
     }
 
     private void InitUiSource()

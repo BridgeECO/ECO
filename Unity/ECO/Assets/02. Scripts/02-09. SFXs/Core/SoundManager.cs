@@ -105,6 +105,18 @@ public class SoundManager : MonoBehaviourSingleton<SoundManager>
         _sfxController.PlayUiSfx(audioClip);
     }
 
+    // 월드 공간에 위치한 오브젝트의 SFX를 재생한다.
+    // 화면 밖 거리에 따라 볼륨이 자동 감쇠되어 공간감을 부여한다.
+    public void PlayWorldSfx(ESfxClip clip, Transform source)
+    {
+        AudioClip audioClip = GetSfxClip(clip);
+        if (audioClip == null)
+        {
+            return;
+        }
+        _sfxController.PlayWorldSfx(audioClip, source.position);
+    }
+
     // 동시 재생 가능한 Player SFX 슬롯 수를 변경한다.
     // 인게임 상황(이동 중 점프, 공격 등 동시 액션 수)에 따라 실시간으로 호출한다.
     public void ChangePlayerSfxPoolSize(int activeCount)

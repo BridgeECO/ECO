@@ -69,25 +69,7 @@ public class SoundEmitter : MonoBehaviour
             _cachedCamera = Camera.main;
         }
 
-        if (_cachedCamera == null)
-        {
-            return 1f;
-        }
-
-        Vector3 vp = _cachedCamera.WorldToViewportPoint(transform.position);
-
-        // 카메라 뒤쪽은 최대 거리로 처리
-        if (vp.z < 0f)
-        {
-            return _falloffCurve.Evaluate(1f);
-        }
-
-        float dx = Mathf.Max(0f, -vp.x, vp.x - 1f);
-        float dy = Mathf.Max(0f, -vp.y, vp.y - 1f);
-        float outOfViewDist = Mathf.Max(dx, dy);
-
-        float normalizedDist = Mathf.Clamp01(outOfViewDist / _falloffRange);
-        return _falloffCurve.Evaluate(normalizedDist);
+        return ViewportAttenuator.Calculate(transform.position, _cachedCamera, _falloffRange, _falloffCurve);
     }
 
     private float GetSfxVolume()
