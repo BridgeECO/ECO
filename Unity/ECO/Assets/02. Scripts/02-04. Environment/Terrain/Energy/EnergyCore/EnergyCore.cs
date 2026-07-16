@@ -59,7 +59,7 @@ public class EnergyCore : MonoBehaviour, IEnergyReceiver
 
         if (isActive)
         {
-            SoundManager.Instance.PlayPlayerSfx(ESfxClip.SE_Energy_CoreOn);
+            SoundManager.Instance.PlayWorldSfx(ESfxClip.SE_Energy_CoreOn, transform);
             if (_feedingAudioSource != null)
             {
                 _feedingAudioSource.Play();
@@ -67,7 +67,7 @@ public class EnergyCore : MonoBehaviour, IEnergyReceiver
         }
         else
         {
-            SoundManager.Instance.PlayPlayerSfx(ESfxClip.SE_Energy_CoreOff);
+            SoundManager.Instance.PlayWorldSfx(ESfxClip.SE_Energy_CoreOff, transform);
             if (_feedingAudioSource != null)
             {
                 _feedingAudioSource.Stop();

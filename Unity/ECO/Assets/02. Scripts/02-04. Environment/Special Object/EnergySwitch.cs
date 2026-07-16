@@ -41,7 +41,7 @@ public class EnergySwitch : SpecialObjectBase
 
         if (SoundManager.HasInstance)
         {
-            SoundManager.Instance.PlayPlayerSfx(ESfxClip.SE_Energy_Switch);
+            SoundManager.Instance.PlayWorldSfx(ESfxClip.SE_Energy_Switch, transform);
         }
 
         for (int i = 0; i < _connectedLines.Count; i++)
