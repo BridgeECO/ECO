@@ -17,8 +17,11 @@ public abstract class BossBase : MonoBehaviour
     [SerializeField]
     private BossAnimationController _animationController;
 
+    [Header("Sound")]
     [SerializeField]
-    private AudioSource _loopAudioSource;
+    private AudioSource _sfxAudioSource;
+    [SerializeField]
+    private AudioSource _sfxLoopAudioSource;
 
     [SerializeField] 
     private EBossState _currentState;
@@ -32,7 +35,8 @@ public abstract class BossBase : MonoBehaviour
     protected EBossState CurrentState { get => _currentState; private set => _currentState = value; }
     protected Vector3 ResetPosition { get => _resetPosition; private set => _resetPosition = value; }
     protected float CurrentSpeed { get; private set; }
-
+    protected AudioSource SfxAudioSource => _sfxAudioSource;
+    protected AudioSource SfxLoopAudioSource => _sfxLoopAudioSource;
     protected virtual void Awake()
     {
         if (_animationController == null)
@@ -163,28 +167,16 @@ public abstract class BossBase : MonoBehaviour
         }
     }
 
-    protected void PlayLoopSfx(AudioClip clip)
-    {
-        if (_loopAudioSource == null || clip == null || (_loopAudioSource.clip == clip && _loopAudioSource.isPlaying)) 
-        {
-            return;
-        }
-        _loopAudioSource.clip = clip;
-        _loopAudioSource.loop = true;
-        _loopAudioSource.Play();
-    }
-
-    protected void StopLoopSfx()
-    {
-        if (_loopAudioSource == null) 
-        {
-            return;
-        }
-        _loopAudioSource.Stop();
-    }
-
     public async UniTask WaitForStateAsync(EBossState targetState)
     {
         await UniTask.WaitUntil(() => this.CurrentState == targetState);
+    }
+
+    protected void StopSfxLoopSound()
+    {
+        if(SfxLoopAudioSource != null&& SfxLoopAudioSource.isPlaying)
+        {
+            SfxLoopAudioSource.Stop();
+        }
     }
 }
