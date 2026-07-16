@@ -13,7 +13,7 @@ public class BossAnimationController : MonoBehaviour
         }
     }
 
-    public void SetChangeState(EBossState newState)
+    public void SetState(EBossState newState)
     {
         switch (newState)
         {

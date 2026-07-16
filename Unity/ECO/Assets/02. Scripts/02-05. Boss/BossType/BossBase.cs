@@ -27,8 +27,8 @@ public abstract class BossBase : MonoBehaviour
     private EBossState _currentState;
     private Vector3 _resetPosition;
 
-    protected bool _isReset = false;
-    protected Transform _playerTransform;
+    private bool _isReset = false;
+    private Transform _playerTransform;
 
     protected BossDataSO BossData => _bossData;
     protected BossAnimationController AnimationController => _animationController;
@@ -37,6 +37,8 @@ public abstract class BossBase : MonoBehaviour
     protected float CurrentSpeed { get; private set; }
     protected AudioSource SfxAudioSource => _sfxAudioSource;
     protected AudioSource SfxLoopAudioSource => _sfxLoopAudioSource;
+    protected bool IsReset { get; set; }
+    protected Transform PlayerTransform => _playerTransform;
     protected virtual void Awake()
     {
         if (_animationController == null)
@@ -54,6 +56,7 @@ public abstract class BossBase : MonoBehaviour
     {
         InitBoss();
         ResetPosition = transform.position;
+        CurrentSpeed = BossData.BaseSpeed;
 
         GameObject playerObj = GameObject.FindWithTag(nameof(ETags.Player));
         if (playerObj != null)
@@ -170,13 +173,5 @@ public abstract class BossBase : MonoBehaviour
     public async UniTask WaitForStateAsync(EBossState targetState)
     {
         await UniTask.WaitUntil(() => this.CurrentState == targetState);
-    }
-
-    protected void StopSfxLoopSound()
-    {
-        if(SfxLoopAudioSource != null&& SfxLoopAudioSource.isPlaying)
-        {
-            SfxLoopAudioSource.Stop();
-        }
     }
 }

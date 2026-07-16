@@ -56,7 +56,7 @@ public class SilenceCityBoss : BossBase
 
     protected override void OnStateChanged(EBossState newState)
     {
-        AnimationController.SetChangeState(newState);
+        AnimationController.SetState(newState);
 
         if (newState != EBossState.Groggy)
         {
@@ -64,7 +64,7 @@ public class SilenceCityBoss : BossBase
         }
         if(newState != EBossState.Chasing)
         {
-            StopSfxLoopSound();
+            SoundManager.Instance.StopLoopSfxOnSource(SfxLoopAudioSource);
             _currentChaseSound = null;
         }
 
@@ -149,7 +149,7 @@ public class SilenceCityBoss : BossBase
             return;
         }
 
-        if (other.gameObject.CompareTag(nameof(ETags.Player)) && !_isReset)
+        if (other.gameObject.CompareTag(nameof(ETags.Player)) && !IsReset)
         {
             EventManager.Instance.BroadcastEvent(EEventType.PlayerDied);
         }
@@ -175,7 +175,7 @@ public class SilenceCityBoss : BossBase
         _rigidbody.position = ResetPosition;
         _rigidbody.linearVelocity = Vector2.zero;
 
-        _isReset = false;
+        IsReset = false;
     }
     public async UniTask FloorTransition(Transform startPoint, Transform endPoint, float jumpHeight)
     {
