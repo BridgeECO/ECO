@@ -117,6 +117,24 @@ public class SoundManager : MonoBehaviourSingleton<SoundManager>
         _sfxController.PlayWorldSfx(audioClip, source.position);
     }
 
+    // 오브젝트가 직접 소유한 AudioSource에 ESfxClip을 1회 재생한다.
+    // 보스·에너지코어처럼 씬에 고정된 오브젝트에서 WorldSfxPool 없이 위치 기반 재생이 필요할 때 사용한다.
+    public void PlaySfxOnSource(ESfxClip clip, AudioSource source)
+    {
+        if (source == null)
+        {
+            return;
+        }
+
+        AudioClip audioClip = GetSfxClip(clip);
+        if (audioClip == null)
+        {
+            return;
+        }
+
+        source.PlayOneShot(audioClip, _sfxVolume);
+    }
+
     // 동시 재생 가능한 Player SFX 슬롯 수를 변경한다.
     // 인게임 상황(이동 중 점프, 공격 등 동시 액션 수)에 따라 실시간으로 호출한다.
     public void ChangePlayerSfxPoolSize(int activeCount)
