@@ -129,7 +129,7 @@ public class SilenceCityBoss : BossBase
         if (_currentChaseSound != sound)
         {
             _currentChaseSound = sound;
-            //SoundManager.Instance.PlayLoopSfxOnSource(sound, SfxLoopAudioSource);
+            SoundManager.Instance.PlayLoopSfxOnSource(sound, SfxLoopAudioSource);
         }
 
         Vector2 currentTargetPos = _currentComputedPaths[_targetPathIndex];
