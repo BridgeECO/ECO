@@ -9,11 +9,11 @@ public class EnergyCore : MonoBehaviour, IEnergyReceiver
     private List<TerrainObject> _registeredTerrains = new List<TerrainObject>();
 
     /// <summary>
-    /// 에너지 공급 중 Loop SFX를 재생할 전용 AudioSource.
-    /// 코어가 활성화된 동안 계속 재생되며, 비활성화 시 자동 정지된다.
+    /// CoreOn / CoreOff 일회성 SFX 전용 AudioSource.
+    /// 이 오브젝트 위에서 직접 재생하여 위치 기반 방향·감쇠를 자연스럽게 처리한다.
     /// </summary>
     [SerializeField]
-    private AudioSource _feedingAudioSource;
+    private AudioSource _sfxAudioSource;
 
     [Foldout("Energy")]
     [SerializeField]
@@ -57,22 +57,8 @@ public class EnergyCore : MonoBehaviour, IEnergyReceiver
             return;
         }
 
-        if (isActive)
-        {
-            SoundManager.Instance.PlayPlayerSfx(ESfxClip.SE_Energy_CoreOn);
-            if (_feedingAudioSource != null)
-            {
-                _feedingAudioSource.Play();
-            }
-        }
-        else
-        {
-            SoundManager.Instance.PlayPlayerSfx(ESfxClip.SE_Energy_CoreOff);
-            if (_feedingAudioSource != null)
-            {
-                _feedingAudioSource.Stop();
-            }
-        }
+        ESfxClip clip = isActive ? ESfxClip.SE_Energy_CoreOn : ESfxClip.SE_Energy_CoreOff;
+        SoundManager.Instance.PlaySfxOnSource(clip, _sfxAudioSource);
     }
 
     private void OnDrawGizmosSelected()

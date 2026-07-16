@@ -8,7 +8,7 @@ public class EnergySegmentController
     private EnergyLineRendererDrawer _lineDrawer = new EnergyLineRendererDrawer();
     public IReadOnlyList<EnergySegment> ActiveSegments => _activeSegments;
 
-    public void StartNewSegment(LineRenderer prefab, Transform parent)
+    public void StartNewSegment(GameObject prefab, Transform parent)
     {
         if (0 < _activeSegments.Count)
         {
@@ -29,8 +29,10 @@ public class EnergySegmentController
 
         if (prefab != null)
         {
-            newSegment.LineRendererInstance = Object.Instantiate(prefab, parent);
-            newSegment.LineRendererInstance.gameObject.SetActive(true);
+            GameObject instance = Object.Instantiate(prefab, parent);
+            instance.SetActive(true);
+            newSegment.GameObjectInstance = instance;
+            instance.GetComponentsInChildren<LineRenderer>(true, newSegment.ChildLineRenderers);
         }
 
         _activeSegments.Add(newSegment);
@@ -97,9 +99,9 @@ public class EnergySegmentController
 
             if (totalDistance<= segment.TailDistance )
             {
-                if (segment.LineRendererInstance != null)
+                if (segment.GameObjectInstance != null)
                 {
-                    Object.Destroy(segment.LineRendererInstance.gameObject);
+                    Object.Destroy(segment.GameObjectInstance);
                 }
                 
                 _activeSegments.RemoveAt(i);
@@ -111,9 +113,15 @@ public class EnergySegmentController
     {
         foreach (EnergySegment segment in _activeSegments)
         {
-            if (segment.LineRendererInstance != null)
+            if (segment.ChildLineRenderers is not null)
             {
-                _lineDrawer.UpdateSegmentRenderer(segment.LineRendererInstance, computedWaypoints, segment.TailDistance, segment.HeadDistance);
+                foreach (var lr in segment.ChildLineRenderers)
+                {
+                    if (lr != null)
+                    {
+                        _lineDrawer.UpdateSegmentRenderer(lr, computedWaypoints, segment.TailDistance, segment.HeadDistance);
+                    }
+                }
             }
         }
     }

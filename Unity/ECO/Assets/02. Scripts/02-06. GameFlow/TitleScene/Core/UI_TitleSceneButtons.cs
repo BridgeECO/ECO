@@ -39,7 +39,7 @@ public class UI_TitleSceneButtons : MonoBehaviour
 
     private void OnClickStartBtn()
     {
-        SoundManager.Instance.PlayUiSfx(ESfxClip.SUI_Title_StartGame);
+        SoundManager.Instance.PlayUiSfx(ESfxClip.SUI_Common_Button);
         UIManager.Instance.PopupHandler.OpenSaveSlotPopup(_saveSlotPanel, ESlotPanelMode.NewGame);
     }
 

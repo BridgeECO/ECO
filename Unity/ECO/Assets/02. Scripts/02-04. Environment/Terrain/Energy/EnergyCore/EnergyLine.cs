@@ -6,7 +6,7 @@ public class EnergyLine : MonoBehaviour
 {
     [Foldout("Project")]
     [SerializeField]
-    private LineRenderer _lineRendererPrefab;
+    private GameObject _lineRendererPrefab;
 
     [SerializeField]
     private Transform _startPoint;

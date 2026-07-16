@@ -2,12 +2,16 @@ using UnityEngine;
 using VInspector;
 
 /// <summary>
-/// 월드 공간에 존재하는 오브젝트의 SFX 볼륨을 뷰포트 기준으로 실시간 제어한다.
+/// 월드 공간에 존재하는 오브젝트의 SFX 볼륨을 뷰포트 기준으로 실시간 제어하고,
+/// 플레이어와의 X축 거리를 기반으로 스테레오 패닝을 적용하여 방향감을 부여한다.
 ///
 /// 볼륨 결정 규칙:
 ///   - 화면(뷰포트 0~1) 안: 위치 무관하게 baseVolume × sfxVolume 100% 유지
 ///   - 화면 밖: 가장자리로부터의 거리에 따라 falloffCurve로 감쇠, falloffRange 거리에서 볼륨 0
 ///   - isAlwaysAudible 체크 시: 화면 밖 감쇠 없이 항상 baseVolume × sfxVolume 유지
+///
+/// 패닝 결정 규칙:
+///   - 소스가 플레이어 기준 panRange만큼 오른쪽이면 +1, 왼쪽이면 -1
 /// </summary>
 [RequireComponent(typeof(AudioSource))]
 public class SoundEmitter : MonoBehaviour
@@ -28,8 +32,14 @@ public class SoundEmitter : MonoBehaviour
     [SerializeField]
     private AnimationCurve _falloffCurve = AnimationCurve.EaseInOut(0f, 1f, 1f, 0f);
 
+    [Header("Pan")]
+    // 플레이어로부터 이 거리(월드 유닛)만큼 X축으로 벗어나면 panStereo가 ±1에 도달한다.
+    [SerializeField]
+    private float _panRange = 15f;
+
     private AudioSource _audioSource;
     private Camera _cachedCamera;
+    private Transform _playerTransform;
 
     private void Awake()
     {
@@ -39,6 +49,7 @@ public class SoundEmitter : MonoBehaviour
     private void OnEnable()
     {
         _cachedCamera = Camera.main;
+        TryFindPlayer();
         UpdateVolume();
     }
 
@@ -49,6 +60,7 @@ public class SoundEmitter : MonoBehaviour
             return;
         }
 
+        TryFindPlayer();
         UpdateVolume();
     }
 
@@ -56,6 +68,22 @@ public class SoundEmitter : MonoBehaviour
     {
         float attenuation = _isAlwaysAudible ? 1f : CalculateViewportAttenuation();
         _audioSource.volume = _baseVolume * GetSfxVolume() * attenuation;
+        _audioSource.panStereo = CalculatePan();
+    }
+
+    // 플레이어를 아직 못 찾은 경우에만 탐색하여 캐싱한다.
+    private void TryFindPlayer()
+    {
+        if (_playerTransform != null)
+        {
+            return;
+        }
+
+        var player = FindFirstObjectByType<PlayerStateMachine>();
+        if (player != null)
+        {
+            _playerTransform = player.transform;
+        }
     }
 
     /// <summary>
@@ -69,25 +97,19 @@ public class SoundEmitter : MonoBehaviour
             _cachedCamera = Camera.main;
         }
 
-        if (_cachedCamera == null)
+        return ViewportAttenuator.Calculate(transform.position, _cachedCamera, _falloffRange, _falloffCurve);
+    }
+
+    // 이 오브젝트의 X 위치와 플레이어 X 위치의 차이를 panRange로 정규화하여 -1(좌)~1(우)를 반환한다.
+    private float CalculatePan()
+    {
+        if (_playerTransform == null)
         {
-            return 1f;
+            return 0f;
         }
 
-        Vector3 vp = _cachedCamera.WorldToViewportPoint(transform.position);
-
-        // 카메라 뒤쪽은 최대 거리로 처리
-        if (vp.z < 0f)
-        {
-            return _falloffCurve.Evaluate(1f);
-        }
-
-        float dx = Mathf.Max(0f, -vp.x, vp.x - 1f);
-        float dy = Mathf.Max(0f, -vp.y, vp.y - 1f);
-        float outOfViewDist = Mathf.Max(dx, dy);
-
-        float normalizedDist = Mathf.Clamp01(outOfViewDist / _falloffRange);
-        return _falloffCurve.Evaluate(normalizedDist);
+        float dx = transform.position.x - _playerTransform.position.x;
+        return Mathf.Clamp(dx / _panRange, -1f, 1f);
     }
 
     private float GetSfxVolume()
