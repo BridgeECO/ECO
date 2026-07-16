@@ -5,7 +5,7 @@ using VInspector;
 /// <summary>
 /// Player SFX 풀, World SFX 풀, UI SFX 재생을 담당한다.
 /// Player SFX는 슬롯 기반 풀로 최대 동시 재생 수를 제어하며,
-/// World SFX는 WorldSfxPool이 위치 기반 볼륨 감쇠를 적용하고,
+/// World SFX는 WorldSfxPool이 위치 기반 볼륨 감쇠·방향 패닝을 적용하고,
 /// UI SFX는 단일 AudioSource에서 PlayOneShot으로 재생한다.
 /// SoundManager의 자식 오브젝트에 배치되는 내부 컴포넌트이며, 외부에서 직접 참조하지 않는다.
 /// </summary>
@@ -31,12 +31,16 @@ public class SfxController : MonoBehaviour
     [SerializeField]
     private float _worldFalloffRange = 1f;
 
+    // 플레이어로부터 이 거리(월드 유닛)만큼 X축으로 벗어나면 패닝이 최대(-1 또는 1)가 된다.
+    [SerializeField]
+    private float _worldPanRange = 15f;
+
     [SerializeField]
     private AnimationCurve _worldFalloffCurve = AnimationCurve.EaseInOut(0f, 1f, 1f, 0f);
 
     private readonly List<AudioSource> _playerSources = new List<AudioSource>();
-    private readonly Dictionary<int, AudioSource> _loopingSources = new();
     private WorldSfxPool _worldSfxPool;
+    private LoopSfxPool _loopSfxPool;
     private float _volume = 1f;
     private int _maxPlayerSfxCount;
 
@@ -45,6 +49,7 @@ public class SfxController : MonoBehaviour
         _maxPlayerSfxCount = _defaultMaxPlayerSfxCount;
         InitPlayerPool();
         InitWorldPool();
+        InitLoopPool();
         InitUiSource();
     }
 
@@ -86,7 +91,7 @@ public class SfxController : MonoBehaviour
         _uiSource.PlayOneShot(clip);
     }
 
-    /// <summary>worldPos 위치에서 월드 SFX를 재생한다. 화면 밖 거리에 따라 볼륨이 자동 감쇠된다.</summary>
+    /// <summary>worldPos 위치에서 월드 SFX를 재생한다. 화면 밖 거리에 따라 볼륨이 자동 감쇠되고 방향 패닝이 적용된다.</summary>
     public void PlayWorldSfx(AudioClip clip, Vector3 worldPos)
     {
         _worldSfxPool.Play(clip, worldPos);
@@ -95,42 +100,13 @@ public class SfxController : MonoBehaviour
     /// <summary>플레이어 SFX를 루프 모드로 재생한다. 이미 재생 중인 경우 무시한다.</summary>
     public void PlayLoopSfx(ESfxClip clip, AudioClip audioClip)
     {
-        int key = (int)clip;
-        if (_loopingSources.TryGetValue(key, out var source))
-        {
-            if (source != null)
-            {
-                if (!source.isPlaying)
-                {
-                    source.clip = audioClip;
-                    source.Play();
-                }
-                return;
-            }
-        }
-
-        AudioSource newSource = gameObject.AddComponent<AudioSource>();
-        newSource.spatialBlend = 0f;
-        newSource.loop = true;
-        newSource.playOnAwake = false;
-        newSource.volume = _volume;
-        newSource.clip = audioClip;
-        newSource.Play();
-
-        _loopingSources[key] = newSource;
+        _loopSfxPool.Play(clip, audioClip);
     }
 
     /// <summary>재생 중인 루프 SFX를 정지한다.</summary>
     public void StopLoopSfx(ESfxClip clip)
     {
-        int key = (int)clip;
-        if (_loopingSources.TryGetValue(key, out var source))
-        {
-            if (source != null)
-            {
-                source.Stop();
-            }
-        }
+        _loopSfxPool.Stop(clip);
     }
 
     public void SetVolume(float volume)
@@ -143,20 +119,8 @@ public class SfxController : MonoBehaviour
             _playerSources[i].volume = _volume;
         }
 
-        foreach (var source in _loopingSources.Values)
-        {
-            if (source != null)
-            {
-                source.volume = _volume;
-            }
-        }
-
+        _loopSfxPool.SetVolume(_volume);
         _worldSfxPool.SetVolume(_volume);
-    }
-
-    private void OnDestroy()
-    {
-        _loopingSources.Clear();
     }
 
     /// <summary>
@@ -185,7 +149,12 @@ public class SfxController : MonoBehaviour
     private void InitWorldPool()
     {
         _worldSfxPool = gameObject.AddComponent<WorldSfxPool>();
-        _worldSfxPool.Init(_worldPoolSize, _worldFalloffRange, _worldFalloffCurve);
+        _worldSfxPool.Init(_worldPoolSize, _worldFalloffRange, _worldFalloffCurve, _worldPanRange);
+    }
+
+    private void InitLoopPool()
+    {
+        _loopSfxPool = gameObject.AddComponent<LoopSfxPool>();
     }
 
     private void InitUiSource()
