@@ -6,6 +6,9 @@ public class EnergySwitch : SpecialObjectBase
 {
     [Foldout("Hierarchy")]
     [SerializeField]
+    private SwitchSpriteView _spriteView;
+
+    [SerializeField]
     private List<EnergyLine> _connectedLines = new List<EnergyLine>();
 
     private bool _isOn = false;
@@ -38,6 +41,7 @@ public class EnergySwitch : SpecialObjectBase
         }
 
         _isOn = isOn;
+        _spriteView?.Refresh(_isOn);
 
         if (SoundManager.HasInstance)
         {

@@ -6,6 +6,9 @@ public class BossEnergySwitch : SpecialObjectBase
 {
     [Foldout("Hierarchy")]
     [SerializeField]
+    private SwitchSpriteView _spriteView;
+
+    [SerializeField]
     private List<TerrainObject> _connectedTargets = new List<TerrainObject>();
 
     private bool _isOn = false;
@@ -44,6 +47,7 @@ public class BossEnergySwitch : SpecialObjectBase
         }
 
         _isOn = isOn;
+        _spriteView?.Refresh(_isOn);
 
         foreach (TerrainObject target in _connectedTargets)
         {
