@@ -27,20 +27,23 @@ public class StartChasingCinematic : BossCinematicBase
 
         InputHandler.BlockInput();
 
-        _camEffect.PlayShake(_shakeDuration, _shakeStrength);
-
         _camController.IsFollowingPlayer = false;
 
         Vector3 bossTargetPos = _camController.GetClampedPosition(boss.transform.position);
-
         await _camController.PanToPositionAsync(bossTargetPos, _panToBossDuration, Ease.InOutCubic);
 
+        if (boss.TryGetComponent<SilenceCityBoss>(out SilenceCityBoss silenceCityBoss))
+        {
+            silenceCityBoss.PlayShoutSfx();
+        }
+
         ActivateEnergyLines();
+
+        await _camEffect.ShakeCameraAsync(_shakeDuration, _shakeStrength);
         boss.StartChase();
         await boss.WaitForStateAsync(EBossState.Chasing);
 
         InputHandler.UnblockInput();
-        
         _camController.IsFollowingPlayer = true;
     }
     private void ActivateEnergyLines()
