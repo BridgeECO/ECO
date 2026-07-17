@@ -29,6 +29,7 @@ public abstract class BossBase : MonoBehaviour
 
     private bool _isReset = false;
     private Transform _playerTransform;
+    private SpriteRenderer _spriteRenderer;
 
     protected BossDataSO BossData => _bossData;
     protected BossAnimationController AnimationController => _animationController;
@@ -44,6 +45,11 @@ public abstract class BossBase : MonoBehaviour
         if (_animationController == null)
         {
             _animationController = GetComponentInChildren<BossAnimationController>();
+        }
+
+        if(_spriteRenderer == null)
+        {
+            _spriteRenderer = GetComponent<SpriteRenderer>();
         }
 
         if (BossManager.Instance != null)
@@ -75,7 +81,7 @@ public abstract class BossBase : MonoBehaviour
 
     protected virtual void FixedUpdate()
     {
-        if (CurrentState == EBossState.Chasing)
+        if (CurrentState == EBossState.Chasing || CurrentState == EBossState.Berserk)
         {
             UpdateCurrentSpeed();
         }
@@ -124,6 +130,12 @@ public abstract class BossBase : MonoBehaviour
 
     private void UpdateCurrentSpeed()
     {
+        if(CurrentState == EBossState.Berserk)
+        {
+            CurrentSpeed = BossData.CatchUpSpeed;
+            return;
+        }
+
         if (_playerTransform == null)
         {
             GameObject playerObj = GameObject.FindWithTag(nameof(ETags.Player));
@@ -156,6 +168,14 @@ public abstract class BossBase : MonoBehaviour
         {
             ResetBoss();
             SoundManager.Instance.StopBgm();
+        }
+    }
+
+    protected void SetFlip(bool isLeft)
+    {
+        if (_spriteRenderer != null)
+        {
+            _spriteRenderer.flipX = isLeft;
         }
     }
 

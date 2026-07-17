@@ -19,6 +19,9 @@ public class SilenceCityBoss : BossBase
     [Header("Target Settings")]
     [SerializeField]
     private List<FloorData> _floorDatas;
+    [Header("StartBerserkDistance")]
+    [SerializeField]
+    private float _starBerserkAnimation;
 
     private Rigidbody2D _rigidbody;
     private Collider2D _collider;
@@ -30,6 +33,8 @@ public class SilenceCityBoss : BossBase
     private List<Vector3> _currentComputedPaths = new List<Vector3>();
     private int _targetPathIndex = 0;
     private ESfxClip? _currentChaseSound = null;
+    private bool _hasPlayedIntroShout = false;
+    private bool _isLeft = false;
 
     protected override void Awake()
     {
@@ -44,7 +49,7 @@ public class SilenceCityBoss : BossBase
     {
         base.FixedUpdate();
 
-        if (CurrentState == EBossState.Chasing)
+        if (CurrentState == EBossState.Chasing || CurrentState == EBossState.Berserk)
         {
             ProcessChaseLogic();
         }
@@ -62,7 +67,7 @@ public class SilenceCityBoss : BossBase
         {
             CancelGroggyTimer();
         }
-        if(newState != EBossState.Chasing)
+        if(newState != EBossState.Chasing && newState != EBossState.Berserk)
         {
             SoundManager.Instance.StopLoopSfxOnSource(SfxLoopAudioSource);
             _currentChaseSound = null;
@@ -71,9 +76,19 @@ public class SilenceCityBoss : BossBase
         switch (newState)
         {
             case EBossState.Chasing:
+                if (!_hasPlayedIntroShout)
+                {
+                    _hasPlayedIntroShout = true;
+                    SoundManager.Instance.PlaySfxOnSource(ESfxClip.SE_TB_Shout, SfxAudioSource);
+                }
+                SetFlip(_isLeft);
+                _isLeft = !_isLeft;
+                _rigidbody.bodyType = RigidbodyType2D.Kinematic;
+                _collider.isTrigger = true;
                 break;
             case EBossState.ReadyToJump:
             case EBossState.Jumping:
+            case EBossState.Berserk:
                 _rigidbody.bodyType = RigidbodyType2D.Kinematic;
                 _collider.isTrigger = true;
                 break;
@@ -88,10 +103,6 @@ public class SilenceCityBoss : BossBase
                 _rigidbody.bodyType = RigidbodyType2D.Kinematic;
                 _collider.isTrigger = true;
                 StartGroggyTimer().Forget();
-                break;
-
-            case EBossState.Berserk:
-                //±¤ºÐ»óÅÂ
                 break;
         }
     }
@@ -117,6 +128,12 @@ public class SilenceCityBoss : BossBase
         if (_currentComputedPaths == null || _currentComputedPaths.Count == 0)
         {
             return;
+        }
+
+        Vector3 endPoint = _currentComputedPaths[_currentComputedPaths.Count - 1];
+        if (CurrentState == EBossState.Chasing && Vector3.Distance(transform.position, endPoint) <= _starBerserkAnimation)
+        {
+            ChangeState(EBossState.Berserk);
         }
 
         if (_targetPathIndex >= _currentComputedPaths.Count)
@@ -174,6 +191,9 @@ public class SilenceCityBoss : BossBase
 
         _rigidbody.position = ResetPosition;
         _rigidbody.linearVelocity = Vector2.zero;
+        _hasPlayedIntroShout = false;
+        _isLeft = false;
+        SetFlip(_isLeft);
 
         IsReset = false;
     }
@@ -196,6 +216,8 @@ public class SilenceCityBoss : BossBase
 
             Vector2 startPos = startPoint.position;
             Vector2 endPos = endPoint.position;
+
+            SetFlip(endPos.x - startPos.x < 0);
 
             float arcLength = BossPhysicsUtility.ApproximateParabolaLength(startPos, endPos, jumpHeight);
             float duration = arcLength / BossData.JumpSpeed;
@@ -234,6 +256,8 @@ public class SilenceCityBoss : BossBase
     {
         float targetX = targetPos.x;
         float initialDirectionX = Mathf.Sign(targetX - transform.position.x);
+
+        SetFlip(initialDirectionX < 0);
 
         while (this != null)
         {
