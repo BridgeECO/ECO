@@ -21,7 +21,8 @@ public class SilenceCityBoss : BossBase
     private List<FloorData> _floorDatas;
     [Header("StartBerserkDistance")]
     [SerializeField]
-    private float _starBerserkAnimation;
+    [UnityEngine.Serialization.FormerlySerializedAs("_starBerserkAnimation")]
+    private float _startBerserkDistance;
 
     private Rigidbody2D _rigidbody;
     private Collider2D _collider;
@@ -67,7 +68,7 @@ public class SilenceCityBoss : BossBase
         {
             CancelGroggyTimer();
         }
-        if(newState != EBossState.Chasing && newState != EBossState.Berserk)
+        if (newState != EBossState.Chasing && newState != EBossState.Berserk)
         {
             SoundManager.Instance.StopLoopSfxOnSource(SfxLoopAudioSource);
             _currentChaseSound = null;
@@ -131,7 +132,7 @@ public class SilenceCityBoss : BossBase
         }
 
         Vector3 endPoint = _currentComputedPaths[_currentComputedPaths.Count - 1];
-        if (CurrentState == EBossState.Chasing && Vector3.Distance(transform.position, endPoint) <= _starBerserkAnimation)
+        if (CurrentState == EBossState.Chasing && Vector3.Distance(transform.position, endPoint) <= _startBerserkDistance)
         {
             ChangeState(EBossState.Berserk);
         }
@@ -217,7 +218,7 @@ public class SilenceCityBoss : BossBase
             Vector2 startPos = startPoint.position;
             Vector2 endPos = endPoint.position;
 
-            SetFlip(endPos.x - startPos.x < 0);
+            SetFlip(endPos.x - startPos.x < 0.1f);
 
             float arcLength = BossPhysicsUtility.ApproximateParabolaLength(startPos, endPos, jumpHeight);
             float duration = arcLength / BossData.JumpSpeed;
@@ -256,8 +257,6 @@ public class SilenceCityBoss : BossBase
     {
         float targetX = targetPos.x;
         float initialDirectionX = Mathf.Sign(targetX - transform.position.x);
-
-        SetFlip(initialDirectionX < 0);
 
         while (this != null)
         {

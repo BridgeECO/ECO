@@ -47,7 +47,7 @@ public abstract class BossBase : MonoBehaviour
             _animationController = GetComponentInChildren<BossAnimationController>();
         }
 
-        if(_spriteRenderer == null)
+        if (_spriteRenderer == null)
         {
             _spriteRenderer = GetComponent<SpriteRenderer>();
         }
