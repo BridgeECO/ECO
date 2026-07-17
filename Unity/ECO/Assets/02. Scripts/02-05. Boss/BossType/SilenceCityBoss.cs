@@ -328,8 +328,4 @@ public class SilenceCityBoss : BossBase
             _actionCts = null;
         }
     }
-    public void PlayShoutSfx()
-    {
-        SoundManager.Instance.PlaySfxOnSource(ESfxClip.SE_TB_Shout, SfxAudioSource);
-    }
 }
