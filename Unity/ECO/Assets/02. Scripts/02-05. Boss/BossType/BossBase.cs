@@ -194,4 +194,9 @@ public abstract class BossBase : MonoBehaviour
     {
         await UniTask.WaitUntil(() => this.CurrentState == targetState);
     }
+
+    public virtual void PlayShoutSfx()
+    {
+        SoundManager.Instance.PlaySfxOnSource(BossData.ShoutSfx, SfxAudioSource);
+    }
 }

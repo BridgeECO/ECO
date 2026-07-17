@@ -34,7 +34,6 @@ public class SilenceCityBoss : BossBase
     private List<Vector3> _currentComputedPaths = new List<Vector3>();
     private int _targetPathIndex = 0;
     private ESfxClip? _currentChaseSound = null;
-    private bool _hasPlayedIntroShout = false;
     private bool _isLeft = false;
 
     protected override void Awake()
@@ -77,11 +76,6 @@ public class SilenceCityBoss : BossBase
         switch (newState)
         {
             case EBossState.Chasing:
-                if (!_hasPlayedIntroShout)
-                {
-                    _hasPlayedIntroShout = true;
-                    SoundManager.Instance.PlaySfxOnSource(ESfxClip.SE_TB_Shout, SfxAudioSource);
-                }
                 SetFlip(_isLeft);
                 _isLeft = !_isLeft;
                 _rigidbody.bodyType = RigidbodyType2D.Kinematic;
@@ -192,7 +186,6 @@ public class SilenceCityBoss : BossBase
 
         _rigidbody.position = ResetPosition;
         _rigidbody.linearVelocity = Vector2.zero;
-        _hasPlayedIntroShout = false;
         _isLeft = false;
         SetFlip(_isLeft);
 
