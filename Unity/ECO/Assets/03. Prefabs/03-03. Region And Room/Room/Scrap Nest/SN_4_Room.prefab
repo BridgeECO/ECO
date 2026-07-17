@@ -1376,6 +1376,93 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &2577345132116507118
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6742105212942305056}
+  - component: {fileID: 5220347106259065697}
+  m_Layer: 0
+  m_Name: Image_R1_obj_plant7 (3)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6742105212942305056
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2577345132116507118}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: 0.02275108, w: -0.9997412}
+  m_LocalPosition: {x: 11.94, y: -18.51, z: 0}
+  m_LocalScale: {x: 0.6818, y: 0.6818, z: 0.6818}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2316070756906367129}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 357.393}
+--- !u!212 &5220347106259065697
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2577345132116507118}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: -17
+  m_Sprite: {fileID: 21300000, guid: f931977d878e9a14e827edf969303fd5, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 8.2, y: 6.05}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_MaskInteraction: 0
+  m_SpriteSortPoint: 0
 --- !u!1 &2706557426827518938
 GameObject:
   m_ObjectHideFlags: 0
@@ -1848,7 +1935,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: -23
+  m_SortingOrder: -16
   m_Sprite: {fileID: 21300000, guid: 519fe57ffb29fc24982b791f932530e4, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -2944,7 +3031,7 @@ Transform:
   m_GameObject: {fileID: 7200656573394762350}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0.7631481, w: 0.64622366}
-  m_LocalPosition: {x: -12.01, y: 4.25, z: 0}
+  m_LocalPosition: {x: -12.01, y: 4.25, z: 1}
   m_LocalScale: {x: 0.92928994, y: 0.92928994, z: 0.92929}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3054,6 +3141,7 @@ Transform:
   - {fileID: 5840996504585373891}
   - {fileID: 8412971147239326227}
   - {fileID: 6372249833420707861}
+  - {fileID: 6742105212942305056}
   - {fileID: 1900696977917353658}
   m_Father: {fileID: 4851357291462257065}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3116,7 +3204,7 @@ Transform:
   m_GameObject: {fileID: 8660376711577607277}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0.90172905, w: 0.43230167}
-  m_LocalPosition: {x: -10.029999, y: 13.02, z: 0}
+  m_LocalPosition: {x: -10.029999, y: 13.02, z: 1}
   m_LocalScale: {x: 1.6810924, y: 1.6810924, z: 1.6810923}
   m_ConstrainProportionsScale: 0
   m_Children: []
