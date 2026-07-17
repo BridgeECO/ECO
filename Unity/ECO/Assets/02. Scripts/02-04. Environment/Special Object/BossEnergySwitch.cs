@@ -49,7 +49,6 @@ public class BossEnergySwitch : SpecialObjectBase
         {
             if (target != null)
             {
-                Debug.Log($"±â¹Í È°¼ºÈ­");
                 target.SetEnergyActive(_isOn);
             }
         }
