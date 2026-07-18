@@ -133,7 +133,7 @@ public class UI_SpriteAnimator : MonoBehaviour
 
         try
         {
-            if (0f< remainingDelay )
+            if (0f < remainingDelay)
             {
                 await UniTask.Delay(TimeSpan.FromSeconds(remainingDelay), cancellationToken: cancellationToken);
             }

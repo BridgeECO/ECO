@@ -8,7 +8,15 @@ public class BossEnergySwitch : SpecialObjectBase
     [SerializeField]
     private List<TerrainObject> _connectedTargets = new List<TerrainObject>();
 
+    private SwitchSpriteView _spriteView;
     private bool _isOn = false;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        _spriteView = GetComponent<SwitchSpriteView>();
+        _spriteView?.Refresh(_isOn);
+    }
 
     protected override void OnTriggerEnter2D(Collider2D other)
     {
@@ -44,6 +52,7 @@ public class BossEnergySwitch : SpecialObjectBase
         }
 
         _isOn = isOn;
+        _spriteView?.Refresh(_isOn);
 
         foreach (TerrainObject target in _connectedTargets)
         {
