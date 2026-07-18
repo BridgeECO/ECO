@@ -6,11 +6,9 @@ public class EnergySwitch : SpecialObjectBase
 {
     [Foldout("Hierarchy")]
     [SerializeField]
-    private SwitchSpriteView _spriteView;
-
-    [SerializeField]
     private List<EnergyLine> _connectedLines = new List<EnergyLine>();
 
+    private SwitchSpriteView _spriteView;
     private bool _isOn = false;
 
     // 원래의 퀘스트 최초 발동 시에만 1회 수행한다.
@@ -19,6 +17,7 @@ public class EnergySwitch : SpecialObjectBase
     protected override void Awake()
     {
         base.Awake();
+        _spriteView = GetComponent<SwitchSpriteView>();
         _spriteView?.Refresh(_isOn);
     }
 

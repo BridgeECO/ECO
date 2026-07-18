@@ -6,16 +6,15 @@ public class BossEnergySwitch : SpecialObjectBase
 {
     [Foldout("Hierarchy")]
     [SerializeField]
-    private SwitchSpriteView _spriteView;
-
-    [SerializeField]
     private List<TerrainObject> _connectedTargets = new List<TerrainObject>();
 
+    private SwitchSpriteView _spriteView;
     private bool _isOn = false;
 
     protected override void Awake()
     {
         base.Awake();
+        _spriteView = GetComponent<SwitchSpriteView>();
         _spriteView?.Refresh(_isOn);
     }
 
