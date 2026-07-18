@@ -13,6 +13,12 @@ public class BossEnergySwitch : SpecialObjectBase
 
     private bool _isOn = false;
 
+    protected override void Awake()
+    {
+        base.Awake();
+        _spriteView?.Refresh(_isOn);
+    }
+
     protected override void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag(nameof(ETags.Boss)))
