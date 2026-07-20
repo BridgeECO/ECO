@@ -24,6 +24,8 @@ public class UI_ToggleTextColor : MonoBehaviour
     [SerializeField]
     private Color _inactiveColor = new Color(1f, 1f, 1f, 1f);
 
+    private bool _lastIsOn;
+
     private void Awake()
     {
         if (_toggle == null)
@@ -42,11 +44,21 @@ public class UI_ToggleTextColor : MonoBehaviour
         if (_toggle != null)
         {
             _toggle.onValueChanged.AddListener(OnToggleValueChanged);
-            RefreshColor(_toggle.isOn);
+            _lastIsOn = _toggle.isOn;
+            RefreshColor(_lastIsOn);
         }
         else
         {
             RefreshColor(false);
+        }
+    }
+
+    private void LateUpdate()
+    {
+        if (_toggle != null && _toggle.isOn != _lastIsOn)
+        {
+            _lastIsOn = _toggle.isOn;
+            RefreshColor(_lastIsOn);
         }
     }
 
@@ -60,6 +72,7 @@ public class UI_ToggleTextColor : MonoBehaviour
 
     private void OnToggleValueChanged(bool isOn)
     {
+        _lastIsOn = isOn;
         RefreshColor(isOn);
     }
 
