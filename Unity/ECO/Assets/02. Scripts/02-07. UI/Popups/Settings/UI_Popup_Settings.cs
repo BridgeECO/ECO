@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using VInspector;
 
-// Force compilation trigger
 public class UI_Popup_Settings : UI_Popup
 {
     [Foldout("Hierarchy")]
@@ -41,26 +40,61 @@ public class UI_Popup_Settings : UI_Popup
             {
                 if (isOn)
                 {
-                    OnClick_Tab(index);
+                    SelectTab(index, playSound: true);
                 }
             });
         }
+
         _resetButton.onClick.AddListener(OnClick_Reset);
         _applyButton.onClick.AddListener(OnClick_Apply);
         _backButton.onClick.AddListener(OnClick_Back);
     }
 
-    private void OnClick_Tab(int index)
+    public override async UniTask OpenAsync()
     {
-        SoundManager.Instance.PlayUiSfx(ESfxClip.SUI_Setting_ChangeTab);
-        if (0 <= _activeTabIndex && _activeTabIndex < _settingTabs.Count)
+        int targetIndex = (0 <= _activeTabIndex && _activeTabIndex < _settingTabs.Count) ? _activeTabIndex : 0;
+
+        for (int i = 0; i < _settingTabs.Count; i++)
         {
-            _settingTabs[_activeTabIndex].gameObject.SetActive(false);
+            _settingTabs[i].InitTab();
         }
+
+        SelectTab(targetIndex, playSound: false);
+
+        await base.OpenAsync();
+    }
+
+    public override async UniTask CloseAsync()
+    {
+        await base.CloseAsync();
+    }
+
+    private void SelectTab(int index, bool playSound = true)
+    {
+        if (index < 0 || index >= _settingTabs.Count)
+        {
+            return;
+        }
+
+        if (playSound)
+        {
+            SoundManager.Instance.PlayUiSfx(ESfxClip.SUI_Setting_ChangeTab);
+        }
+
         _activeTabIndex = index;
+
+        for (int i = 0; i < _settingTabs.Count; i++)
+        {
+            bool isActive = (i == _activeTabIndex);
+            _settingTabs[i].gameObject.SetActive(isActive);
+            if (i < _tabToggles.Count && _tabToggles[i] != null)
+            {
+                _tabToggles[i].SetIsOnWithoutNotify(isActive);
+            }
+        }
+
         if (0 <= _activeTabIndex && _activeTabIndex < _settingTabs.Count)
         {
-            _settingTabs[_activeTabIndex].gameObject.SetActive(true);
             _settingTabs[_activeTabIndex].RefreshTab();
         }
     }
@@ -71,6 +105,7 @@ public class UI_Popup_Settings : UI_Popup
         {
             return;
         }
+
         SoundManager.Instance.PlayUiSfx(ESfxClip.SUI_Common_Button);
         HandleReset();
     }
@@ -81,6 +116,7 @@ public class UI_Popup_Settings : UI_Popup
         {
             return;
         }
+
         SoundManager.Instance.PlayUiSfx(ESfxClip.SUI_Common_Button);
         if (0 <= _activeTabIndex && _activeTabIndex < _settingTabs.Count)
         {
@@ -98,28 +134,9 @@ public class UI_Popup_Settings : UI_Popup
         {
             return;
         }
+
         SoundManager.Instance.PlayUiSfx(ESfxClip.SUI_Common_Button);
         HandleBack();
-    }
-
-    public override async UniTask OpenAsync()
-    {
-        await base.OpenAsync();
-        for (int i = 0; i < _settingTabs.Count; i++)
-        {
-            _settingTabs[i].InitTab();
-            _settingTabs[i].gameObject.SetActive(false);
-        }
-        if (0 < _tabToggles.Count)
-        {
-            _tabToggles[0].isOn = true;
-            OnClick_Tab(0);
-        }
-    }
-
-    public override async UniTask CloseAsync()
-    {
-        await base.CloseAsync();
     }
 
     private void HandleReset()
@@ -128,6 +145,7 @@ public class UI_Popup_Settings : UI_Popup
         {
             return;
         }
+
         UIManager.Instance.SettingsResetConfirmPopup.Show();
     }
 
@@ -138,6 +156,7 @@ public class UI_Popup_Settings : UI_Popup
         {
             hasUnsaved = _settingTabs[_activeTabIndex].HasUnsavedChanges();
         }
+
         if (hasUnsaved && UIManager.Instance.SettingsCloseConfirmPopup != null)
         {
             UIManager.Instance.SettingsCloseConfirmPopup.Show();
