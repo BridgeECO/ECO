@@ -2,6 +2,9 @@ Shader "FX/CustomBlend_Hardware_URP"
 {
     Properties
     {
+        [HideInInspector] _MainTex ("Sprite Texture", 2D) = "white" {}
+        [HideInInspector] _BaseMap ("Base Map", 2D) = "white" {}
+
         [Header(Basic Settings)]
         [HDR] _Color ("Main Color", Color) = (1, 1, 1, 1)
         _Radius ("Radius (원 크기)", Range(0.0, 0.5)) = 0.45
