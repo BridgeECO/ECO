@@ -1,0 +1,24 @@
+name: Acquire Activation File
+
+on:
+  workflow_dispatch:
+
+jobs:
+  acquire_alf:
+    name: Acquire .alf file 🔑
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Request manual activation file
+        uses: game-ci/unity-request-activation-file@v4
+        id: getAlf
+        with:
+          unityVersion: 6000.0.71f1
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Unity_v6000.0.71f1.alf
+          path: ${{ steps.getAlf.outputs.filePath }}
