@@ -12,7 +12,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Request manual activation file
-        uses: game-ci/unity-request-activation-file@v4
+        uses: game-ci/unity-request-activation-file@v2
         id: getAlf
         with:
           unityVersion: 6000.0.71f1
