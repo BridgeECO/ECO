@@ -1,29 +1,37 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using System;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using VInspector;
 
 public class StartChasingCinematic : BossCinematicBase
 {
     [Foldout("Cinematic Settings")]
-    [SerializeField, Tooltip("º¸½º¿¡°Ô Ä«¸Ş¶ó°¡ ÀÌµ¿ÇÏ´Â ½Ã°£")]
-    private float _panToBossDuration = 1.2f;
-    [SerializeField, Tooltip("Ä«¸Ş¶ó¸¦ Èçµå´Â ½Ã°£")]
-    private float _shakeDuration = 1.5f;
-    [SerializeField, Tooltip("Æ÷È¿ ½Ã Ä«¸Ş¶ó Èçµé¸² °­µµ")]
-    private float _shakeStrength = 1f;
+    [SerializeField]
+    [Tooltip("ë³´ìŠ¤ì—ê²Œ ì¹´ë©”ë¼ê°€ ì´ë™í•˜ëŠ” ì‹œê°„")]
+    private float _panToBossDuration;
+    [SerializeField]
+    [Tooltip("ì¹´ë©”ë¼ë¥¼ í”ë“œëŠ” ì‹œê°„")]
+    private float _shakeDuration;
+    [SerializeField]
+    [Tooltip("í¬íš¨ ì‹œ ì¹´ë©”ë¼ í”ë“¤ë¦¼ ê°•ë„")]
+    private float _shakeStrength;
 
     [Foldout("Energy Settings")]
-    [SerializeField, Tooltip("ÄÆ½Å µµÁß È°¼ºÈ­ÇÒ ¿¡³ÊÁö ¶óÀÎµé")]
-    private List<EnergyLine> _connectedLines = new List<EnergyLine>();
+    [SerializeField]
+    [Tooltip("ì»·ì‹  ë„ì¤‘ í™œì„±í™”í•  ì—ë„ˆì§€ ë¼ì¸ë“¤")]
+    private List<EnergyLine> _connectedLines;
 
     public override async UniTask PlayCinematicAsync(BossBase boss)
     {
-        if (_camController == null || _camEffect == null)
+        if (boss == null || _camController == null || _camEffect == null)
         {
             return;
         }
+
+        CancellationToken cancellationToken = this.GetCancellationTokenOnDestroy();
 
         try
         {
@@ -34,18 +42,35 @@ public class StartChasingCinematic : BossCinematicBase
             Vector3 bossTargetPos = _camController.GetClampedPosition(boss.transform.position);
             await _camController.PanToPositionAsync(bossTargetPos, _panToBossDuration, Ease.InOutCubic);
 
+            if (boss == null)
+            {
+                return;
+            }
+
             boss.PlayShoutSfx();
 
             ActivateEnergyLines();
 
             await _camEffect.ShakeCameraAsync(_shakeDuration, _shakeStrength);
+
+            if (boss == null)
+            {
+                return;
+            }
+
             boss.StartChase();
-            await boss.WaitForStateAsync(EBossState.Chasing);
+            await boss.WaitForStateAsync(EBossState.Chasing, cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
         }
         finally
         {
             InputHandler.UnblockInput();
-            _camController.IsFollowingPlayer = true;
+            if (_camController != null)
+            {
+                _camController.IsFollowingPlayer = true;
+            }
         }
     }
     private void ActivateEnergyLines()

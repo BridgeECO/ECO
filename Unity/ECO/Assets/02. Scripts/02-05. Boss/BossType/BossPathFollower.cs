@@ -3,8 +3,6 @@ using UnityEngine;
 
 public sealed class BossPathFollower
 {
-    private const float WAYPOINT_REACHED_DISTANCE = 0.25f;
-
     private readonly Rigidbody2D _rigidbody;
     private IReadOnlyList<Vector3> _paths;
     private int _targetIndex;
@@ -39,12 +37,18 @@ public sealed class BossPathFollower
         }
 
         Vector2 targetPosition = _paths[_targetIndex];
+        float remainingDistance = Vector2.Distance(currentPosition, targetPosition);
+        float movementDistance = speed * Time.fixedDeltaTime;
+
+        if (remainingDistance <= movementDistance)
+        {
+            _rigidbody.linearVelocity = Vector2.zero;
+            _rigidbody.MovePosition(targetPosition);
+            _targetIndex++;
+            return;
+        }
+
         Vector2 direction = (targetPosition - currentPosition).normalized;
         _rigidbody.linearVelocity = direction * speed;
-
-        if (Vector2.Distance(currentPosition, targetPosition) <= WAYPOINT_REACHED_DISTANCE)
-        {
-            _targetIndex++;
-        }
     }
 }

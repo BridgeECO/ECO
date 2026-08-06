@@ -1,6 +1,7 @@
 ﻿using Cysharp.Threading.Tasks;
 using UnityEngine;
 using System;
+using System.Threading;
 using VInspector;
 
 public class EndChasingCinematic : BossCinematicBase
@@ -21,26 +22,31 @@ public class EndChasingCinematic : BossCinematicBase
 
     public override async UniTask PlayCinematicAsync(BossBase boss)
     {
-        var cts = this.GetCancellationTokenOnDestroy();
-
-        if (_camController == null || _camEffect == null)
+        if (boss == null || _camController == null || _camEffect == null)
         {
             return;
         }
+
+        CancellationToken cinematicToken = this.GetCancellationTokenOnDestroy();
+        CancellationToken bossToken = boss.GetCancellationTokenOnDestroy();
+        using CancellationTokenSource linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
+            cinematicToken,
+            bossToken);
+        CancellationToken cancellationToken = linkedCts.Token;
 
         InputHandler.BlockInput();
         _camController.IsFollowingPlayer = false;
 
         try
         {
-            UniTask waitForGroggy = boss.WaitForStateAsync(EBossState.Groggy, cts);
-            while (!ReferenceEquals(boss, null) && waitForGroggy.Status == UniTaskStatus.Pending)
+            UniTask waitForGroggy = boss.WaitForStateAsync(EBossState.Groggy, cancellationToken);
+            while (boss != null && waitForGroggy.Status == UniTaskStatus.Pending)
             {
                 Vector3 targetPos = _camController.GetClampedPosition(boss.transform.position);
 
                 _camController.MoveTowardsPosition(targetPos, 20f);
 
-                await UniTask.Yield(PlayerLoopTiming.Update, cts);
+                await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
             }
 
             await waitForGroggy;
@@ -51,7 +57,11 @@ public class EndChasingCinematic : BossCinematicBase
         }
         finally
         {
-            _camController.IsFollowingPlayer = true;
+            if (_camController != null)
+            {
+                _camController.IsFollowingPlayer = true;
+            }
+
             InputHandler.UnblockInput();
         }
     }

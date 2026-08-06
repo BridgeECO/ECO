@@ -187,11 +187,15 @@ public abstract class BossBase : MonoBehaviour
     protected abstract void OnBossFrozen();
     protected abstract void OnResetBoss();
 
-    public async UniTask WaitForStateAsync(EBossState targetState, CancellationToken cancellationToken = default)
+    public async UniTask WaitForStateAsync(EBossState targetState, CancellationToken cancellationToken)
     {
+        using CancellationTokenSource linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
+            cancellationToken,
+            this.GetCancellationTokenOnDestroy());
+
         await UniTask.WaitUntil(
             () => CurrentState == targetState,
-            cancellationToken: cancellationToken);
+            cancellationToken: linkedCts.Token);
     }
 
     public virtual void PlayShoutSfx()
