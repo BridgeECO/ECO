@@ -64,6 +64,8 @@ public class RespawnManager : MonoBehaviourSingleton<RespawnManager>
                 await UIManager.Instance.FadeOutAsync(1f, cancellationToken);
             }
 
+            EventManager.Instance.BroadcastEvent(EEventType.RespawnReset);
+
             MovePlayer(_respawnPosition);
             ResetCurrentRoom();
 

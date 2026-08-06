@@ -4,14 +4,6 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
-[System.Serializable]
-public class FloorData
-{
-    public BossFloorTransition Floor;
-    public BossChasingLine ChasingLine;
-    public float GroggyDuration;
-}
-
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Collider2D))]
 public class SilenceCityBoss : BossBase
@@ -31,8 +23,7 @@ public class SilenceCityBoss : BossBase
     private CancellationTokenSource _groggyCts;
     private CancellationTokenSource _actionCts;
 
-    private List<Vector3> _currentComputedPaths = new List<Vector3>();
-    private int _targetPathIndex = 0;
+    private BossPathFollower _pathFollower;
     private ESfxClip? _currentChaseSound = null;
     private bool _isLeft = false;
 
@@ -41,6 +32,7 @@ public class SilenceCityBoss : BossBase
         base.Awake();
         _rigidbody = GetComponent<Rigidbody2D>();
         _collider = GetComponent<Collider2D>();
+        _pathFollower = new BossPathFollower(_rigidbody);
 
         UpdateCurrentFloorPath();
     }
@@ -48,6 +40,11 @@ public class SilenceCityBoss : BossBase
     protected override void FixedUpdate()
     {
         base.FixedUpdate();
+
+        if (IsFrozen)
+        {
+            return;
+        }
 
         if (CurrentState == EBossState.Chasing || CurrentState == EBossState.Berserk)
         {
@@ -103,38 +100,33 @@ public class SilenceCityBoss : BossBase
     }
     private void UpdateCurrentFloorPath()
     {
-        _currentComputedPaths.Clear();
-        _targetPathIndex = 0;
-
         if (_floorDatas == null || _currentFloorIndex >= _floorDatas.Count)
         {
+            _pathFollower.Clear();
             return;
         }
 
         FloorData currentFloor = _floorDatas[_currentFloorIndex];
         if (currentFloor != null && currentFloor.ChasingLine != null)
         {
-            _currentComputedPaths = new List<Vector3>(currentFloor.ChasingLine.GetComputedPath());
+            _pathFollower.SetPath(currentFloor.ChasingLine.GetComputedPath());
+            return;
         }
+
+        _pathFollower.Clear();
     }
 
     private void ProcessChaseLogic()
     {
-        if (_currentComputedPaths == null || _currentComputedPaths.Count == 0)
+        if (!_pathFollower.HasPath)
         {
             return;
         }
 
-        Vector3 endPoint = _currentComputedPaths[_currentComputedPaths.Count - 1];
-        if (CurrentState == EBossState.Chasing && Vector3.Distance(transform.position, endPoint) <= _startBerserkDistance)
+        if (CurrentState == EBossState.Chasing &&
+            Vector3.Distance(transform.position, _pathFollower.EndPoint) <= _startBerserkDistance)
         {
             ChangeState(EBossState.Berserk);
-        }
-
-        if (_targetPathIndex >= _currentComputedPaths.Count)
-        {
-            _rigidbody.linearVelocity = Vector2.zero;
-            return;
         }
 
         ESfxClip sound = CurrentSpeed == BossData.BaseSpeed ? ESfxClip.SE_TB_Walking : ESfxClip.SE_TB_Rushing;
@@ -144,15 +136,7 @@ public class SilenceCityBoss : BossBase
             SoundManager.Instance.PlayLoopSfxOnSource(sound, SfxLoopAudioSource);
         }
 
-        Vector2 currentTargetPos = _currentComputedPaths[_targetPathIndex];
-        Vector2 direction = (currentTargetPos - (Vector2)transform.position).normalized;
-
-        _rigidbody.linearVelocity = direction * CurrentSpeed;
-
-        if (Vector2.Distance(transform.position, currentTargetPos) <= 0.25f)
-        {
-            _targetPathIndex++;
-        }
+        _pathFollower.Tick(transform.position, CurrentSpeed);
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -161,15 +145,21 @@ public class SilenceCityBoss : BossBase
             return;
         }
 
-        if (other.gameObject.CompareTag(nameof(ETags.Player)) && !IsReset)
+        if (other.gameObject.CompareTag(nameof(ETags.Player)) && !IsResetting)
         {
             EventManager.Instance.BroadcastEvent(EEventType.PlayerDied);
         }
     }
-    protected override void ResetBoss()
+    protected override void OnBossFrozen()
     {
-        base.ResetBoss();
-
+        _rigidbody.linearVelocity = Vector2.zero;
+        CancelActionTasks();
+        CancelGroggyTimer();
+        SoundManager.Instance.StopLoopSfxOnSource(SfxLoopAudioSource);
+        _currentChaseSound = null;
+    }
+    protected override void OnResetBoss()
+    {
         StopChase();
         CancelActionTasks();
         CancelGroggyTimer();
@@ -189,7 +179,6 @@ public class SilenceCityBoss : BossBase
         _isLeft = false;
         SetFlip(_isLeft);
 
-        IsReset = false;
     }
     public async UniTask FloorTransition(Transform startPoint, Transform endPoint, float jumpHeight)
     {

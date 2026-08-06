@@ -1,52 +1,68 @@
-using Cysharp.Threading.Tasks;
+ï»¿using Cysharp.Threading.Tasks;
 using UnityEngine;
+using System;
+using System.Threading;
 using VInspector;
 
 public class EndChasingCinematic : BossCinematicBase
 {
     [Foldout("Cinematic Settings")]
-    [SerializeField, Tooltip("º¸½º¿¡°Ô Ä«¸Þ¶ó°¡ ÀÌµ¿ÇÏ´Â ½Ã°£")]
-    private float _panToBossDuration = 0.8f;
-    [SerializeField, Tooltip("Ä«¸Þ¶ó¸¦ Èçµå´Â ½Ã°£")]
-    private float _shakeDuration = 1.5f;
-    [SerializeField, Tooltip("Æ÷È¿ ½Ã Ä«¸Þ¶ó Èçµé¸² °­µµ")]
-    private float _shakeStrength = 1f;
-    [SerializeField, Tooltip("ÇÃ·¹ÀÌ¾î¿¡°Ô ´Ù½Ã µ¹¾Æ¿À´Â ½Ã°£")]
-    private float _returnDuration = 1.0f;
+    [SerializeField]
+    [Tooltip("ë³´ìŠ¤ì—ê²Œ ì¹´ë©”ë¼ê°€ ì´ë™í•˜ëŠ” ì‹œê°„")]
+    private float _panToBossDuration;
+    [SerializeField]
+    [Tooltip("ì¹´ë©”ë¼ë¥¼ í”ë“œëŠ” ì‹œê°„")]
+    private float _shakeDuration;
+    [SerializeField]
+    [Tooltip("í¬íš¨ ì‹œ ì¹´ë©”ë¼ í”ë“¤ë¦¼ ê°•ë„")]
+    private float _shakeStrength;
+    [SerializeField]
+    [Tooltip("í”Œë ˆì´ì–´ì—ê²Œ ë‹¤ì‹œ ëŒì•„ì˜¤ëŠ” ì‹œê°„")]
+    private float _returnDuration;
 
     public override async UniTask PlayCinematicAsync(BossBase boss)
     {
-        var cts = this.GetCancellationTokenOnDestroy();
-
-        if (_camController == null || _camEffect == null)
+        if (boss == null || _camController == null || _camEffect == null)
         {
             return;
         }
 
+        CancellationToken cinematicToken = this.GetCancellationTokenOnDestroy();
+        CancellationToken bossToken = boss.GetCancellationTokenOnDestroy();
+        using CancellationTokenSource linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
+            cinematicToken,
+            bossToken);
+        CancellationToken cancellationToken = linkedCts.Token;
+
         InputHandler.BlockInput();
         _camController.IsFollowingPlayer = false;
 
-        bool isGroggy = false;
-        boss.WaitForStateAsync(EBossState.Groggy).ContinueWith(() => isGroggy = true).Forget();
-
-        while (!isGroggy)
+        try
         {
-            if (boss == null)
+            UniTask waitForGroggy = boss.WaitForStateAsync(EBossState.Groggy, cancellationToken);
+            while (boss != null && waitForGroggy.Status == UniTaskStatus.Pending)
             {
-                break;
+                Vector3 targetPos = _camController.GetClampedPosition(boss.transform.position);
+
+                _camController.MoveTowardsPosition(targetPos, 20f);
+
+                await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
             }
 
-            Vector3 targetPos = _camController.GetClampedPosition(boss.transform.position);
-
-            _camController.MoveTowardsPosition(targetPos, 20f);
-
-            await UniTask.Yield(PlayerLoopTiming.Update, cts);
+            await waitForGroggy;
+            _camEffect.PlayShake(_shakeDuration, _shakeStrength);
         }
+        catch (OperationCanceledException)
+        {
+        }
+        finally
+        {
+            if (_camController != null)
+            {
+                _camController.IsFollowingPlayer = true;
+            }
 
-        _camEffect.PlayShake(_shakeDuration, _shakeStrength);
-
-        _camController.IsFollowingPlayer = true;
-
-        InputHandler.UnblockInput();
+            InputHandler.UnblockInput();
+        }
     }
 }

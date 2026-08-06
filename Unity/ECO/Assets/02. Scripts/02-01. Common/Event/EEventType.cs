@@ -5,5 +5,6 @@ public enum EEventType
     PlayerDied,
     LifeChanged,
     PlayerRespawned,
+    RespawnReset,
     MaxCount
 }

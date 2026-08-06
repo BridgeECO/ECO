@@ -36,4 +36,14 @@ public class BossAnimationController : MonoBehaviour
 
     }
 
+    public void Pause()
+    {
+        _animator.speed = 0f;
+    }
+
+    public void Resume()
+    {
+        _animator.speed = 1f;
+    }
+
 }
