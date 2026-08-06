@@ -1,18 +1,23 @@
-using Cysharp.Threading.Tasks;
+ï»¿using Cysharp.Threading.Tasks;
 using UnityEngine;
+using System;
 using VInspector;
 
 public class EndChasingCinematic : BossCinematicBase
 {
     [Foldout("Cinematic Settings")]
-    [SerializeField, Tooltip("º¸½º¿¡°Ô Ä«¸Þ¶ó°¡ ÀÌµ¿ÇÏ´Â ½Ã°£")]
-    private float _panToBossDuration = 0.8f;
-    [SerializeField, Tooltip("Ä«¸Þ¶ó¸¦ Èçµå´Â ½Ã°£")]
-    private float _shakeDuration = 1.5f;
-    [SerializeField, Tooltip("Æ÷È¿ ½Ã Ä«¸Þ¶ó Èçµé¸² °­µµ")]
-    private float _shakeStrength = 1f;
-    [SerializeField, Tooltip("ÇÃ·¹ÀÌ¾î¿¡°Ô ´Ù½Ã µ¹¾Æ¿À´Â ½Ã°£")]
-    private float _returnDuration = 1.0f;
+    [SerializeField]
+    [Tooltip("ë³´ìŠ¤ì—ê²Œ ì¹´ë©”ë¼ê°€ ì´ë™í•˜ëŠ” ì‹œê°„")]
+    private float _panToBossDuration;
+    [SerializeField]
+    [Tooltip("ì¹´ë©”ë¼ë¥¼ í”ë“œëŠ” ì‹œê°„")]
+    private float _shakeDuration;
+    [SerializeField]
+    [Tooltip("í¬íš¨ ì‹œ ì¹´ë©”ë¼ í”ë“¤ë¦¼ ê°•ë„")]
+    private float _shakeStrength;
+    [SerializeField]
+    [Tooltip("í”Œë ˆì´ì–´ì—ê²Œ ë‹¤ì‹œ ëŒì•„ì˜¤ëŠ” ì‹œê°„")]
+    private float _returnDuration;
 
     public override async UniTask PlayCinematicAsync(BossBase boss)
     {
@@ -26,27 +31,28 @@ public class EndChasingCinematic : BossCinematicBase
         InputHandler.BlockInput();
         _camController.IsFollowingPlayer = false;
 
-        bool isGroggy = false;
-        boss.WaitForStateAsync(EBossState.Groggy).ContinueWith(() => isGroggy = true).Forget();
-
-        while (!isGroggy)
+        try
         {
-            if (boss == null)
+            UniTask waitForGroggy = boss.WaitForStateAsync(EBossState.Groggy, cts);
+            while (!ReferenceEquals(boss, null) && waitForGroggy.Status == UniTaskStatus.Pending)
             {
-                break;
+                Vector3 targetPos = _camController.GetClampedPosition(boss.transform.position);
+
+                _camController.MoveTowardsPosition(targetPos, 20f);
+
+                await UniTask.Yield(PlayerLoopTiming.Update, cts);
             }
 
-            Vector3 targetPos = _camController.GetClampedPosition(boss.transform.position);
-
-            _camController.MoveTowardsPosition(targetPos, 20f);
-
-            await UniTask.Yield(PlayerLoopTiming.Update, cts);
+            await waitForGroggy;
+            _camEffect.PlayShake(_shakeDuration, _shakeStrength);
         }
-
-        _camEffect.PlayShake(_shakeDuration, _shakeStrength);
-
-        _camController.IsFollowingPlayer = true;
-
-        InputHandler.UnblockInput();
+        catch (OperationCanceledException)
+        {
+        }
+        finally
+        {
+            _camController.IsFollowingPlayer = true;
+            InputHandler.UnblockInput();
+        }
     }
 }

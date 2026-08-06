@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using System;
+using System.Threading;
 using UnityEngine;
 using VInspector;
 
@@ -27,9 +28,10 @@ public abstract class BossBase : MonoBehaviour
     private EBossState _currentState;
     private Vector3 _resetPosition;
 
-    private bool _isReset = false;
-    private Transform _playerTransform;
+    private bool _isResetting;
+    private bool _isFrozen;
     private SpriteRenderer _spriteRenderer;
+    private BossChaseSpeedResolver _speedResolver;
 
     protected BossDataSO BossData => _bossData;
     protected BossAnimationController AnimationController => _animationController;
@@ -38,8 +40,8 @@ public abstract class BossBase : MonoBehaviour
     protected float CurrentSpeed { get; private set; }
     protected AudioSource SfxAudioSource => _sfxAudioSource;
     protected AudioSource SfxLoopAudioSource => _sfxLoopAudioSource;
-    protected bool IsReset { get; set; }
-    protected Transform PlayerTransform => _playerTransform;
+    protected bool IsResetting => _isResetting;
+    protected bool IsFrozen => _isFrozen;
     protected virtual void Awake()
     {
         if (_animationController == null)
@@ -56,6 +58,8 @@ public abstract class BossBase : MonoBehaviour
         {
             BossManager.Instance.RegisterBoss(_bossType, this);
         }
+
+        _speedResolver = new BossChaseSpeedResolver(BossData);
     }
     
     protected virtual void Start()
@@ -64,11 +68,6 @@ public abstract class BossBase : MonoBehaviour
         ResetPosition = transform.position;
         CurrentSpeed = BossData.BaseSpeed;
 
-        GameObject playerObj = GameObject.FindWithTag(nameof(ETags.Player));
-        if (playerObj != null)
-        {
-            _playerTransform = playerObj.transform;
-        }
     }
 
     private void OnEnable()
@@ -76,14 +75,23 @@ public abstract class BossBase : MonoBehaviour
         if (EventManager.Instance != null)
         {
             EventManager.Instance.AddEventListener(EEventType.PlayerDied, OnPlayerDied);
+            EventManager.Instance.AddEventListener(EEventType.RespawnReset, OnRespawnReset);
         }
     }
 
     protected virtual void FixedUpdate()
     {
+        if (IsFrozen)
+        {
+            return;
+        }
+
         if (CurrentState == EBossState.Chasing || CurrentState == EBossState.Berserk)
         {
-            UpdateCurrentSpeed();
+            CurrentSpeed = _speedResolver.Resolve(
+                transform.position,
+                CurrentState,
+                CurrentSpeed);
         }
     }
 
@@ -92,6 +100,7 @@ public abstract class BossBase : MonoBehaviour
         if (MonoBehaviourSingleton<EventManager>.HasInstance)
         {
             EventManager.Instance.RemoveEventListener(EEventType.PlayerDied, OnPlayerDied);
+            EventManager.Instance.RemoveEventListener(EEventType.RespawnReset, OnRespawnReset);
         }
     }
 
@@ -128,47 +137,27 @@ public abstract class BossBase : MonoBehaviour
 
     protected abstract void OnStateChanged(EBossState newState);
 
-    private void UpdateCurrentSpeed()
+    private void OnPlayerDied()
     {
-        if(CurrentState == EBossState.Berserk)
+        if (_isFrozen)
         {
-            CurrentSpeed = BossData.CatchUpSpeed;
             return;
         }
 
-        if (_playerTransform == null)
-        {
-            GameObject playerObj = GameObject.FindWithTag(nameof(ETags.Player));
-            if (playerObj != null)
-            {
-                _playerTransform = playerObj.transform;
-            }
-            else
-            {
-                CurrentSpeed = BossData.BaseSpeed;
-                return;
-            }
-        }
-
-        float distance = Vector2.Distance(transform.position, _playerTransform.position);
-
-        if (distance >= BossData.CatchUpStartDistance)
-        {
-            CurrentSpeed = BossData.CatchUpSpeed;
-        }
-        else if (distance <= BossData.CatchUpEndDistance)
-        {
-            CurrentSpeed = BossData.BaseSpeed;
-        }
+        _isFrozen = true;
+        AnimationController.Pause();
+        OnBossFrozen();
     }
 
-    private void OnPlayerDied()
+    private void OnRespawnReset()
     {
-        if (!_isReset || CurrentState != EBossState.Idle)
+        if (_isResetting)
         {
-            ResetBoss();
-            SoundManager.Instance.StopBgm();
+            return;
         }
+
+        ResetBoss();
+        SoundManager.Instance.StopBgm();
     }
 
     protected void SetFlip(bool isLeft)
@@ -179,20 +168,30 @@ public abstract class BossBase : MonoBehaviour
         }
     }
 
-    protected virtual void ResetBoss()
+    private void ResetBoss()
     {
-        _isReset = true;
+        _isResetting = true;
 
-        if (UIManager.Instance == null)
+        try
         {
-            _isReset = false;
-            return;
+            OnResetBoss();
+        }
+        finally
+        {
+            AnimationController.Resume();
+            _isFrozen = false;
+            _isResetting = false;
         }
     }
 
-    public async UniTask WaitForStateAsync(EBossState targetState)
+    protected abstract void OnBossFrozen();
+    protected abstract void OnResetBoss();
+
+    public async UniTask WaitForStateAsync(EBossState targetState, CancellationToken cancellationToken = default)
     {
-        await UniTask.WaitUntil(() => this.CurrentState == targetState);
+        await UniTask.WaitUntil(
+            () => CurrentState == targetState,
+            cancellationToken: cancellationToken);
     }
 
     public virtual void PlayShoutSfx()
