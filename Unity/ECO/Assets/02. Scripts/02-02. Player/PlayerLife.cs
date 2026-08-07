@@ -20,6 +20,11 @@ public class PlayerLife : MonoBehaviour
         _isInvincible = false;
     }
 
+    private void OnEnable()
+    {
+        EventManager.Instance.AddEventListener(EEventType.PlayerRespawned, OnPlayerRespawned);
+    }
+
     private void Start()
     {
         // PlayerStateMachine이 동일 GameObject에 있으므로 GetComponent로 주입
@@ -28,8 +33,6 @@ public class PlayerLife : MonoBehaviour
         {
             _soundHandler = stateMachine.SoundHandler;
         }
-
-        EventManager.Instance.AddEventListener(EEventType.PlayerRespawned, OnPlayerRespawned);
     }
 
     private void Update()
@@ -51,11 +54,12 @@ public class PlayerLife : MonoBehaviour
     private void OnDisable()
     {
         _activeObstacles.Clear();
+        RemoveEventListeners();
     }
 
-    private void OnDestroy()
+    private void RemoveEventListeners()
     {
-        if (MonoBehaviourSingleton<EventManager>.HasInstance)
+        if (EventManager.HasInstance)
         {
             EventManager.Instance.RemoveEventListener(EEventType.PlayerRespawned, OnPlayerRespawned);
         }

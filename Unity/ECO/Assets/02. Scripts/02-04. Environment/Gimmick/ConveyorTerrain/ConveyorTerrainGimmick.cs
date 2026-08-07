@@ -135,7 +135,7 @@ public class ConveyorTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizab
     private void RenewToken()
     {
         CancelToken();
-        _conveyorCts = new CancellationTokenSource();
+        _conveyorCts = CancellationTokenSource.CreateLinkedTokenSource(OwnerDestroyToken);
     }
 
     private void StartConveyor(TerrainObject target)

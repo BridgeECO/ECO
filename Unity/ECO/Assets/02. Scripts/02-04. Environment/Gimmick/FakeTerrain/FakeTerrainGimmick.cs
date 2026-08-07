@@ -95,7 +95,7 @@ public class FakeTerrainGimmick : TerrainGimmickBase
     {
         _fadeCts?.Cancel();
         _fadeCts?.Dispose();
-        _fadeCts = new CancellationTokenSource();
+        _fadeCts = CancellationTokenSource.CreateLinkedTokenSource(OwnerDestroyToken);
         FadeAsync(spriteRenderer, targetAlpha, _fadeCts.Token).Forget();
     }
 

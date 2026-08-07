@@ -32,8 +32,8 @@ public class TerrainObject : MonoBehaviour, IEnergyReceiver, IResettable
         {
             for (int i = 0; i < _gimmickEntries.Count; i++)
             {
-                if (_gimmickEntries[i].GimmickData is MoveTerrainGimmickSO ||
-                    _gimmickEntries[i].GimmickData is PatrolTerrainGimmickSO)
+                if (_gimmickEntries[i].GimmickData != null &&
+                    _gimmickEntries[i].GimmickData.IsMovementGimmick)
                 {
                     return true;
                 }

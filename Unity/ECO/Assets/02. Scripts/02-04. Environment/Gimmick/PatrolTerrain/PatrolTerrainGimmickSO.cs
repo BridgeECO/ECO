@@ -6,6 +6,8 @@ public class PatrolTerrainGimmickSO : TerrainGimmickBaseSO
     [SerializeField]
     private LineRenderer _pathLinePrefab;
 
+    public override bool IsMovementGimmick => true;
+
     public override TerrainGimmickBase CreateGimmick(TerrainGimmickEntry entry)
     {
         return new PatrolTerrainGimmick(ActivationType, IsInverted, entry, _pathLinePrefab);

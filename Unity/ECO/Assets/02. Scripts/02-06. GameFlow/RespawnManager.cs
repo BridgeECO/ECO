@@ -23,7 +23,7 @@ public class RespawnManager : MonoBehaviourSingleton<RespawnManager>
     // 페이드 도중 OnTriggerEnter2D가 재발동한다. SavePoint가 이 플래그로 자신을 억제한다.
     public bool IsRespawning { get; private set; }
 
-    private void Start()
+    private void OnEnable()
     {
         EventManager.Instance.AddEventListener(EEventType.PlayerDied, Respawn);
     }
@@ -35,7 +35,7 @@ public class RespawnManager : MonoBehaviourSingleton<RespawnManager>
 
     private void RemoveEventListeners()
     {
-        if (MonoBehaviourSingleton<EventManager>.HasInstance)
+        if (EventManager.HasInstance)
         {
             EventManager.Instance.RemoveEventListener(EEventType.PlayerDied, Respawn);
         }
