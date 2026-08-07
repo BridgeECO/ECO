@@ -2,22 +2,30 @@ using System.IO;
 using Newtonsoft.Json;
 using UnityEngine;
 
-public class SaveManager : MonoBehaviourSingleton<SaveManager>
+// 파일 입출력과 현재 세이브 데이터 보관만 담당하는 순수 C# 클래스.
+// Unity 생명주기와 씬 오브젝트에 의존하지 않으므로 MonoBehaviour가 아닌 POCO 싱글턴으로 관리한다.
+public class SaveManager : POCOSingleton<SaveManager>
 {
     public int CurrentSlotIndex { get; set; }
     public SaveData CurrentSaveData { get; private set; }
 
     private const string SaveFileNameFormat = "saveData_{0}.json";
 
+    public SaveManager()
+    {
+        CurrentSaveData = new SaveData();
+    }
+
     public void ResetCurrentSaveData()
     {
         CurrentSaveData = null;
     }
 
-    protected override void Awake()
+    // 도메인 리로드 비활성화 환경에서 플레이 세션 간 상태 잔류 방지
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void InitStaticState()
     {
-        base.Awake();
-        CurrentSaveData = new SaveData();
+        ResetInstance();
     }
 
     /// <summary>
