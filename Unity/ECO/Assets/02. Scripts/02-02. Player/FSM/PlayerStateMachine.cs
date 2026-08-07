@@ -97,6 +97,9 @@ public class PlayerStateMachine : MonoBehaviour, IPlayerFSMContext
         Input.OnJumpPressed -= HandleJumpPressed;
         Motor.OnTeleported -= InitState;
         OnStateChanged -= SoundHandler.HandleStateChanged;
+
+        // 비활성화는 상태 전이를 거치지 않으므로 루프 SFX를 여기서 직접 끊는다.
+        SoundHandler.StopAllLoops();
     }
 
     private void HandleJumpPressed()

@@ -57,6 +57,10 @@ public class EnergyLineTracker : MonoBehaviour
 
     private void OnEnable()
     {
+        if (EventManager.Instance == null)
+        {
+            return;
+        }
         EventManager.Instance.AddEventListener<EnergyLine>(EEventType.EnergyLineTrackingRequested, StartTracking);
     }
 

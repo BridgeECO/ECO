@@ -33,13 +33,18 @@ public class PlayerInput : MonoBehaviour
 
     private void OnEnable()
     {
+        // EventManager가 없는 테스트 씬에서도 플레이어가 동작해야 하므로 가드한다.
+        if (EventManager.Instance == null)
+        {
+            return;
+        }
         EventManager.Instance.AddEventListener<bool>(EEventType.GameplaySceneChanged, SetGameplayScene);
     }
 
     private void Start()
     {
         // 구독(OnEnable) 이전에 확정된 상태(에디터 멀티 씬 채택 등)를 한 번 동기화한다.
-        if (SceneTransitionManager.HasInstance)
+        if (SceneTransitionManager.Instance != null)
         {
             _isGameplayScene = SceneTransitionManager.Instance.IsGameplayScene;
         }

@@ -25,6 +25,10 @@ public class RespawnManager : MonoBehaviourSingleton<RespawnManager>
 
     private void OnEnable()
     {
+        if (EventManager.Instance == null)
+        {
+            return;
+        }
         EventManager.Instance.AddEventListener(EEventType.PlayerDied, Respawn);
         EventManager.Instance.AddEventListener<RegionSpawnInfo>(EEventType.RegionInitialized, OnRegionInitialized);
         EventManager.Instance.AddEventListener<SavePoint>(EEventType.SavePointReached, OnSavePointReached);

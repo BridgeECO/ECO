@@ -21,19 +21,9 @@ public class MonoBehaviourSingleton<T> : MonoBehaviour where T : MonoBehaviour
         }
     }
 
-    // Instance getter의 Find 폴백과 판정 기준을 일치시키기 위해 동일한 폴백을 수행한다.
-    // (Awake 이전이나 lazyInitialization 상태에서도 씬에 존재하면 true)
-    public static bool HasInstance
-    {
-        get
-        {
-            if (_instance == null)
-            {
-                _instance = FindAnyObjectByType<T>();
-            }
-            return _instance != null;
-        }
-    }
+    // 매 프레임 호출되는 가드(오디오 감쇠 등)에서도 쓰이므로 씬 탐색 없이 캐시만 확인한다.
+    // 해제부 가드가 주 용도라, 이 시점에는 Instance 접근으로 이미 캐시가 채워져 있다.
+    public static bool HasInstance => _instance != null;
 
     protected virtual void Awake()
     {

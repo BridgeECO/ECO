@@ -35,6 +35,16 @@ public class PlayerSoundHandler
         _defaultTerrainType = type;
     }
 
+    /// <summary>
+    /// 플레이어 비활성화처럼 상태 전이 없이 사운드를 끊어야 할 때 재생 중인 루프를 모두 정지한다.
+    /// 호출하지 않으면 Hover 상태로 비활성화됐을 때 루프 SFX가 계속 재생된다.
+    /// </summary>
+    public void StopAllLoops()
+    {
+        StopHoverLoop();
+        StopWalkLoop();
+    }
+
     // ──────────────────────────────────────────
     // 상태별 진입/종료 SFX (PlayerStateMachine.OnStateChanged 구독)
     // ──────────────────────────────────────────

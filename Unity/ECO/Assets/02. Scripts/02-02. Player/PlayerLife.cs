@@ -22,6 +22,10 @@ public class PlayerLife : MonoBehaviour
 
     private void OnEnable()
     {
+        if (EventManager.Instance == null)
+        {
+            return;
+        }
         EventManager.Instance.AddEventListener(EEventType.PlayerRespawned, OnPlayerRespawned);
     }
 

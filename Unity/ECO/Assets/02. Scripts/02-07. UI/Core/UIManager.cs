@@ -32,6 +32,7 @@ public class UIManager : MonoBehaviourSingleton<UIManager>
     // 씬 전환 상태를 매 프레임 싱글턴 조회하는 대신 이벤트로 통지받아 캐싱한다.
     private bool _isTransitioning;
     private bool _isGameplayScene;
+    private bool _isListenerAdded;
 
     public UI_PopupHandler PopupHandler { get; private set; }
 
@@ -62,16 +63,18 @@ public class UIManager : MonoBehaviourSingleton<UIManager>
 
     private void OnEnable()
     {
-        EventManager.Instance.AddEventListener<bool>(EEventType.TransitionStateChanged, SetTransitioning);
-        EventManager.Instance.AddEventListener<bool>(EEventType.GameplaySceneChanged, SetGameplayScene);
+        AddEventListeners();
     }
 
     private void Start()
     {
         PopupHandler.Init();
 
-        // 구독(OnEnable) 이전에 확정된 상태(에디터 멀티 씬 채택 등)를 한 번 동기화한다.
-        if (SceneTransitionManager.HasInstance)
+        // OnEnable 시점에는 EventManager의 Awake가 아직 안 돌았을 수 있어 한 번 더 시도한다.
+        AddEventListeners();
+
+        // 구독 이전에 확정된 상태(에디터 멀티 씬 채택 등)를 한 번 동기화한다.
+        if (SceneTransitionManager.Instance != null)
         {
             _isTransitioning = SceneTransitionManager.Instance.IsTransitioning;
             _isGameplayScene = SceneTransitionManager.Instance.IsGameplayScene;
@@ -92,14 +95,32 @@ public class UIManager : MonoBehaviourSingleton<UIManager>
         RemoveEventListeners();
     }
 
-    private void RemoveEventListeners()
+    // OnEnable과 Start 양쪽에서 호출되므로 중복 등록을 플래그로 막는다.
+    private void AddEventListeners()
     {
-        if (!EventManager.HasInstance)
+        if (_isListenerAdded || EventManager.Instance == null)
         {
             return;
         }
-        EventManager.Instance.RemoveEventListener<bool>(EEventType.TransitionStateChanged, SetTransitioning);
-        EventManager.Instance.RemoveEventListener<bool>(EEventType.GameplaySceneChanged, SetGameplayScene);
+
+        EventManager.Instance.AddEventListener<bool>(EEventType.TransitionStateChanged, SetTransitioning);
+        EventManager.Instance.AddEventListener<bool>(EEventType.GameplaySceneChanged, SetGameplayScene);
+        _isListenerAdded = true;
+    }
+
+    private void RemoveEventListeners()
+    {
+        if (!_isListenerAdded)
+        {
+            return;
+        }
+
+        _isListenerAdded = false;
+        if (EventManager.HasInstance)
+        {
+            EventManager.Instance.RemoveEventListener<bool>(EEventType.TransitionStateChanged, SetTransitioning);
+            EventManager.Instance.RemoveEventListener<bool>(EEventType.GameplaySceneChanged, SetGameplayScene);
+        }
     }
 
     private void SetTransitioning(bool isTransitioning)
@@ -153,13 +174,13 @@ public class UIManager : MonoBehaviourSingleton<UIManager>
     }
 
     /// <summary>새 게임 확인 팝업을 띄우고 플레이어가 확인을 눌렀는지 반환한다.</summary>
-    public async UniTask<bool> ShowNewGameConfirmAsync()
+    public async UniTask<bool> ShowNewGameConfirmAsync(System.Threading.CancellationToken cancellationToken)
     {
         if (_popupNewGameConfirm == null)
         {
             return true;
         }
-        UI_Popup_NewGameConfirm.EPopupResult result = await _popupNewGameConfirm.ShowPopupAsync();
+        UI_Popup_NewGameConfirm.EPopupResult result = await _popupNewGameConfirm.ShowPopupAsync(cancellationToken);
         return result == UI_Popup_NewGameConfirm.EPopupResult.Confirm;
     }
 

@@ -10,6 +10,10 @@ public class BgmDirector : MonoBehaviour
 {
     private void OnEnable()
     {
+        if (EventManager.Instance == null)
+        {
+            return;
+        }
         EventManager.Instance.AddEventListener<Room>(EEventType.RoomChanged, OnRoomChanged);
         EventManager.Instance.AddEventListener<Room>(EEventType.RespawnStateRestored, OnRespawnStateRestored);
         EventManager.Instance.AddEventListener<ESceneNames>(EEventType.SceneTransitionStarted, OnSceneTransitionStarted);

@@ -233,7 +233,14 @@ public class UI_SaveSlotItem : MonoBehaviour, IPointerClickHandler
     // 진행 여부 판단과 매니저 오케스트레이션은 프레젠터가 담당한다.
     private async UniTaskVoid NewGameAsync()
     {
-        await _presenter.TryStartNewGameAsync(_hasSaveData);
+        try
+        {
+            await _presenter.TryStartNewGameAsync(_hasSaveData, this.GetCancellationTokenOnDestroy());
+        }
+        catch (System.OperationCanceledException)
+        {
+            // 확인 팝업 대기 중 슬롯이 파괴된 경우다. 새 게임을 시작하지 않는다.
+        }
     }
 
     private void OnClickDeleteBtn()

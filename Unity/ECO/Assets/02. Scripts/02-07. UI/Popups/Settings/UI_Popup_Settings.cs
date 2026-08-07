@@ -164,13 +164,16 @@ public class UI_Popup_Settings : UI_Popup
             hasUnsaved = _settingTabs[_activeTabIndex].HasUnsavedChanges();
         }
 
-        if (hasUnsaved && _closeConfirmPopup != null)
+        if (hasUnsaved)
         {
-            _closeConfirmPopup.Show();
+            if (_closeConfirmPopup != null)
+            {
+                _closeConfirmPopup.Show();
+                return;
+            }
+            // 참조 누락은 인스펙터 설정 실수다. 팝업을 못 닫게 막으면 갇히므로 닫되 경고를 남긴다.
+            Debug.LogWarning($"[{nameof(UI_Popup_Settings)}] 닫기 확인 팝업이 할당되지 않아 저장하지 않은 변경사항이 사라집니다.");
         }
-        else
-        {
-            Handler?.ClosePopup(this);
-        }
+        Handler?.ClosePopup(this);
     }
 }

@@ -28,6 +28,12 @@ public class Region : MonoBehaviourSingleton<Region>
 
     private void Start()
     {
+        if (_rooms == null || _rooms.Count == 0)
+        {
+            Debug.LogError($"[Region] {name}에 Room이 하나도 등록되지 않아 초기화를 중단합니다.");
+            return;
+        }
+
         _saveResolver = new RegionSaveResolver(_rooms, _regionType);
         InitCameraController();
         InitRoomIndices();
@@ -57,11 +63,6 @@ public class Region : MonoBehaviourSingleton<Region>
 
     private void InitRegion()
     {
-        if (_rooms == null || _rooms.Count == 0)
-        {
-            return;
-        }
-
         SaveData saveData = SaveManager.Instance.CurrentSaveData;
 
         // 이어하기로 진입한 경우: 저장된 좌표에 해당하는 세이브 포인트를 찾아 그 방으로 초기화한다.
@@ -91,7 +92,13 @@ public class Region : MonoBehaviourSingleton<Region>
     // 새 게임 진입 지점. 저장은 하지 않는다 — 첫 세이브는 세이브 포인트를 통과할 때 기록된다.
     private void InitFromDefaultSpawnPoint()
     {
-        _currentRoom = _rooms[0];
+        // 목록 앞쪽에 빈 슬롯이 남아 있어도 초기화가 깨지지 않도록 첫 유효 방을 찾는다.
+        _currentRoom = FindFirstValidRoom();
+        if (_currentRoom == null)
+        {
+            Debug.LogError($"[Region] {name}의 Room 목록에 유효한 Room이 없어 초기화를 중단합니다.");
+            return;
+        }
         InitCameraBounds();
 
         if (_initialSpawnPoint == null)
@@ -100,6 +107,18 @@ public class Region : MonoBehaviourSingleton<Region>
             return;
         }
         BroadcastRegionInitialized(new RegionSpawnInfo(null, _currentRoom, _initialSpawnPoint.position));
+    }
+
+    private Room FindFirstValidRoom()
+    {
+        for (int i = 0; i < _rooms.Count; i++)
+        {
+            if (_rooms[i] != null)
+            {
+                return _rooms[i];
+            }
+        }
+        return null;
     }
 
     // 초기 배치 결과를 이벤트로 발행한다. 실제 리스폰 지점 갱신과 플레이어 이동은

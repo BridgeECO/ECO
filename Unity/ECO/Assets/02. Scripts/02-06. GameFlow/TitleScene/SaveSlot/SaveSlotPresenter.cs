@@ -1,3 +1,4 @@
+using System.Threading;
 using Cysharp.Threading.Tasks;
 
 /// <summary>
@@ -45,11 +46,11 @@ public class SaveSlotPresenter
     /// 새 게임을 시작한다. 기존 데이터가 있는 슬롯이면 덮어쓰기 확인 팝업을 거치며,
     /// 플레이어가 거절하면 false를 반환하고 아무것도 하지 않는다.
     /// </summary>
-    public async UniTask<bool> TryStartNewGameAsync(bool hasSaveData)
+    public async UniTask<bool> TryStartNewGameAsync(bool hasSaveData, CancellationToken cancellationToken)
     {
         if (hasSaveData)
         {
-            bool isConfirmed = await UIManager.Instance.ShowNewGameConfirmAsync();
+            bool isConfirmed = await UIManager.Instance.ShowNewGameConfirmAsync(cancellationToken);
             if (!isConfirmed)
             {
                 return false;

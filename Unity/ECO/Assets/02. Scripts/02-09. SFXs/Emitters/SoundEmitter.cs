@@ -42,6 +42,7 @@ public class SoundEmitter : MonoBehaviour
     private Transform _playerTransform;
     // 매 프레임 SoundManager를 폴링하지 않도록 캐싱하고, 변경 통지를 구독해 갱신한다.
     private float _sfxVolume = 1f;
+    private bool _isVolumeBound;
 
     private void Awake()
     {
@@ -51,27 +52,39 @@ public class SoundEmitter : MonoBehaviour
     private void OnEnable()
     {
         _cachedCamera = Camera.main;
-        if (SoundManager.HasInstance)
-        {
-            _sfxVolume = SoundManager.Instance.SfxVolume;
-            SoundManager.Instance.OnSfxVolumeChanged += SetSfxVolume;
-        }
+        TryBindVolumeSource();
         TryFindPlayer();
         UpdateVolume();
     }
 
     private void LateUpdate()
     {
+        TryBindVolumeSource();
         TryFindPlayer();
         UpdateVolume();
     }
 
     private void OnDisable()
     {
-        if (SoundManager.HasInstance)
+        if (_isVolumeBound && SoundManager.HasInstance)
         {
             SoundManager.Instance.OnSfxVolumeChanged -= SetSfxVolume;
         }
+        _isVolumeBound = false;
+    }
+
+    // 이 오브젝트가 속한 씬이 SoundManager보다 먼저 로드되면 OnEnable 시점에 구독할 수 없다.
+    // 볼륨 변경을 영영 놓치지 않도록 바인딩에 성공할 때까지 재시도한다.
+    private void TryBindVolumeSource()
+    {
+        if (_isVolumeBound || !SoundManager.HasInstance)
+        {
+            return;
+        }
+
+        _isVolumeBound = true;
+        _sfxVolume = SoundManager.Instance.SfxVolume;
+        SoundManager.Instance.OnSfxVolumeChanged += SetSfxVolume;
     }
 
     private void SetSfxVolume(float volume)

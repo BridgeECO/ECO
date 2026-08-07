@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -28,19 +29,19 @@ public class UI_NPCDialogueTextBox
 
     private Tween _typewriterTween;
 
-    public async UniTask ShowPageAsync(string text, int currentIndex, int totalCount)
+    public async UniTask ShowPageAsync(string text, int currentIndex, int totalCount, CancellationToken cancellationToken)
     {
         SetText(text);
         RefreshPageIndicator(currentIndex, totalCount);
         RefreshContinueIndicator(currentIndex, totalCount);
         SetTextAlpha(1f);
-        await PlayTypewriterAsync();
+        await PlayTypewriterAsync(cancellationToken);
     }
 
-    public async UniTask HideAsync()
+    public async UniTask HideAsync(CancellationToken cancellationToken)
     {
         KillTypewriter();
-        await PlayTextFadeOutAsync();
+        await PlayTextFadeOutAsync(cancellationToken);
     }
 
     public void SkipPrinting()
@@ -110,7 +111,7 @@ public class UI_NPCDialogueTextBox
         _typewriterTween = null;
     }
 
-    private async UniTask PlayTypewriterAsync()
+    private async UniTask PlayTypewriterAsync(CancellationToken cancellationToken)
     {
         if (_dialogueText == null)
         {
@@ -140,7 +141,7 @@ public class UI_NPCDialogueTextBox
         .SetEase(Ease.Linear)
         .SetUpdate(UpdateType.Normal, true);
 
-        await _typewriterTween.ToUniTask();
+        await _typewriterTween.ToUniTask(cancellationToken: cancellationToken);
         if (_dialogueText == null)
         {
             return;
@@ -149,7 +150,7 @@ public class UI_NPCDialogueTextBox
         _dialogueText.maxVisibleCharacters = totalVisibleCharacters;
     }
 
-    private async UniTask PlayTextFadeOutAsync()
+    private async UniTask PlayTextFadeOutAsync(CancellationToken cancellationToken)
     {
         if (_dialogueText == null)
         {
@@ -157,6 +158,7 @@ public class UI_NPCDialogueTextBox
         }
 
         _dialogueText.DOKill();
-        await _dialogueText.DOFade(0f, _fadeDuration).SetEase(Ease.InQuad).ToUniTask();
+        await _dialogueText.DOFade(0f, _fadeDuration).SetEase(Ease.InQuad)
+            .ToUniTask(cancellationToken: cancellationToken);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,7 +24,7 @@ public class UI_Popup_NewGameConfirm : UI_SystemPopup
 
     private UniTaskCompletionSource<EPopupResult> _tcs;
 
-    public async UniTask<EPopupResult> ShowPopupAsync()
+    public async UniTask<EPopupResult> ShowPopupAsync(CancellationToken cancellationToken)
     {
         ClearAllButtonListeners();
 
@@ -41,18 +42,34 @@ public class UI_Popup_NewGameConfirm : UI_SystemPopup
 
         _tcs = new UniTaskCompletionSource<EPopupResult>();
 
-        return await _tcs.Task;
+        return await _tcs.Task.AttachExternalCancellation(cancellationToken);
+    }
+
+    // ESC나 ClearAllPopups로 닫히는 경로에서는 버튼 콜백이 돌지 않는다.
+    // 대기 중인 호출자가 영영 멈추지 않도록 취소로 간주해 완료시킨다.
+    public override async UniTask CloseAsync()
+    {
+        CompleteWaiting(EPopupResult.Cancel);
+        await base.CloseAsync();
     }
 
     private void OnClick_Button(EPopupResult result)
     {
+        // 닫기보다 먼저 결과를 확정해야 CloseAsync의 취소 처리가 결과를 덮어쓰지 않는다.
+        CompleteWaiting(result);
         Handler.ClosePopup(this);
+    }
 
-        if (_tcs != null)
+    private void CompleteWaiting(EPopupResult result)
+    {
+        if (_tcs == null)
         {
-            _tcs.TrySetResult(result);
-            _tcs = null;
+            return;
         }
+
+        UniTaskCompletionSource<EPopupResult> completionSource = _tcs;
+        _tcs = null;
+        completionSource.TrySetResult(result);
     }
 }
 

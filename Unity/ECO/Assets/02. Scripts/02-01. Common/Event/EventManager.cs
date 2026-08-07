@@ -71,6 +71,13 @@ public class EventManager : MonoBehaviourSingleton<EventManager>
             return;
         }
 
+        // 타입이 다르면 Delegate.Remove가 조용히 무시해 해제 실패를 알아채지 못한다.
+        if (existing is not Action<T>)
+        {
+            Debug.LogError($"Event type '{type}' payload mismatch. Expected {existing.GetType()}, got Action<{typeof(T)}>");
+            return;
+        }
+
         Delegate remaining = Delegate.Remove(existing, action);
         if (remaining == null)
         {

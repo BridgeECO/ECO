@@ -37,6 +37,10 @@ public class CameraRoomTransition : MonoBehaviour
 
     private void OnEnable()
     {
+        if (EventManager.Instance == null)
+        {
+            return;
+        }
         EventManager.Instance.AddEventListener(EEventType.RoomChanged, OnRoomChanged);
     }
 
