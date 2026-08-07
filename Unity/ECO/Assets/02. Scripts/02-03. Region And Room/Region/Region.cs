@@ -7,7 +7,6 @@ public class Region : MonoBehaviourSingleton<Region>
     // 저장된 좌표로 세이브 포인트를 되찾을 때 허용하는 반경.
     // 기획자가 세이브 포인트를 조금 옮겨도 기존 세이브가 깨지지 않도록 여유를 둔다.
     public const float SAVE_POINT_MATCH_DISTANCE = 2f;
-    public const int INVALID_ROOM_INDEX = -1;
 
     [Foldout("Hierarchy")]
     [SerializeField]
@@ -21,6 +20,7 @@ public class Region : MonoBehaviourSingleton<Region>
 
     private Room _currentRoom;
     private CameraController _cameraController;
+    private RegionSaveResolver _saveResolver;
 
     public Room CurrentRoom => _currentRoom;
     public IReadOnlyList<Room> Rooms => _rooms;
@@ -28,7 +28,9 @@ public class Region : MonoBehaviourSingleton<Region>
 
     private void Start()
     {
+        _saveResolver = new RegionSaveResolver(_rooms, _regionType);
         InitCameraController();
+        InitRoomIndices();
         InitRegion();
     }
 
@@ -38,6 +40,18 @@ public class Region : MonoBehaviourSingleton<Region>
         if (mainCamera != null)
         {
             _cameraController = mainCamera.GetComponentInParent<CameraController>();
+        }
+    }
+
+    // 세이브 포인트가 진행 순서를 스스로 판정할 수 있도록 각 방에 목록 순서를 주입한다.
+    private void InitRoomIndices()
+    {
+        for (int i = 0; i < _rooms.Count; i++)
+        {
+            if (_rooms[i] != null)
+            {
+                _rooms[i].InitIndex(i);
+            }
         }
     }
 
@@ -51,9 +65,9 @@ public class Region : MonoBehaviourSingleton<Region>
         SaveData saveData = SaveManager.Instance.CurrentSaveData;
 
         // 이어하기로 진입한 경우: 저장된 좌표에 해당하는 세이브 포인트를 찾아 그 방으로 초기화한다.
-        if (IsValidContinueSaveData(saveData))
+        if (_saveResolver.IsValidContinueSaveData(saveData))
         {
-            SavePoint savePoint = GetSavePointAt(saveData.SavePointPosition);
+            SavePoint savePoint = _saveResolver.FindSavePointAt(saveData.SavePointPosition);
             if (savePoint != null && savePoint.OwnerRoom != null)
             {
                 InitFromSavePoint(savePoint);
@@ -64,12 +78,6 @@ public class Region : MonoBehaviourSingleton<Region>
         InitFromDefaultSpawnPoint();
     }
 
-    // 저장 데이터가 현재 씬의 Region과 일치하는지 검사한다.
-    private bool IsValidContinueSaveData(SaveData saveData)
-    {
-        return saveData is not null && saveData.Region == _regionType;
-    }
-
     private void InitFromSavePoint(SavePoint savePoint)
     {
         _currentRoom = savePoint.OwnerRoom;
@@ -77,15 +85,28 @@ public class Region : MonoBehaviourSingleton<Region>
 
         // 저장된 좌표가 아니라 현재 세이브 포인트의 좌표를 쓴다.
         // 기획자가 세이브 포인트를 옮겼을 때 플레이어가 허공에 놓이는 것을 막는다.
-        RespawnManager.Instance.SetRespawnPoint(savePoint);
-        RespawnManager.Instance.TeleportPlayer(savePoint.RespawnPosition);
+        BroadcastRegionInitialized(new RegionSpawnInfo(savePoint, _currentRoom, savePoint.RespawnPosition));
     }
 
+    // 새 게임 진입 지점. 저장은 하지 않는다 — 첫 세이브는 세이브 포인트를 통과할 때 기록된다.
     private void InitFromDefaultSpawnPoint()
     {
         _currentRoom = _rooms[0];
         InitCameraBounds();
-        InitDefaultRespawnPoint();
+
+        if (_initialSpawnPoint == null)
+        {
+            Debug.LogWarning($"초기 스폰 포인트를 찾을 수 없습니다.");
+            return;
+        }
+        BroadcastRegionInitialized(new RegionSpawnInfo(null, _currentRoom, _initialSpawnPoint.position));
+    }
+
+    // 초기 배치 결과를 이벤트로 발행한다. 실제 리스폰 지점 갱신과 플레이어 이동은
+    // RespawnManager가 구독해 수행한다. (Region→RespawnManager 역방향 호출 제거)
+    private void BroadcastRegionInitialized(RegionSpawnInfo info)
+    {
+        EventManager.Instance.BroadcastEvent(EEventType.RegionInitialized, info);
     }
 
     private void InitCameraBounds()
@@ -99,18 +120,6 @@ public class Region : MonoBehaviourSingleton<Region>
         _cameraController.transform.position = _cameraController.GetClampedPosition();
     }
 
-    // 새 게임 진입 지점. 저장은 하지 않는다 — 첫 세이브는 세이브 포인트를 통과할 때 기록된다.
-    private void InitDefaultRespawnPoint()
-    {
-        if (_initialSpawnPoint == null)
-        {
-            Debug.LogWarning($"초기 스폰 포인트를 찾을 수 없습니다.");
-            return;
-        }
-        RespawnManager.Instance.SetRespawnPoint(_currentRoom, _initialSpawnPoint.position);
-        RespawnManager.Instance.TeleportPlayer(_initialSpawnPoint.position);
-    }
-
     public void SetCurrentRoom(Room newRoom, bool isCameraTransitionSkipped = false)
     {
         if (_currentRoom == newRoom)
@@ -120,17 +129,12 @@ public class Region : MonoBehaviourSingleton<Region>
 
         _currentRoom = newRoom;
 
-        if (newRoom.RoomType == ERoomType.Boss)
-        {
-            SoundManager.Instance.StopBgm();
-        }
-        else
-        {
-            SoundManager.Instance.PlayBgm(EBgmType.SyrNormal);
-        }
+        // 페이로드 채널: 방 상태 변화 통지 (BGM 정책 등) — 카메라 전환 여부와 무관하게 항상 발행
+        EventManager.Instance.BroadcastEvent(EEventType.RoomChanged, newRoom);
 
         if (!isCameraTransitionSkipped)
         {
+            // 파라미터리스 채널: 카메라 전환 연출 트리거
             EventManager.Instance.BroadcastEvent(EEventType.RoomChanged);
             return;
         }
@@ -149,52 +153,5 @@ public class Region : MonoBehaviourSingleton<Region>
         }
         _currentRoom = saveRoom;
         InitCameraBounds();
-    }
-
-    // 세이브 포인트의 진행 순서를 판정하는 1차 기준. 목록에 없으면 INVALID_ROOM_INDEX.
-    public int GetRoomIndex(Room room)
-    {
-        if (room == null)
-        {
-            return INVALID_ROOM_INDEX;
-        }
-        return _rooms.IndexOf(room);
-    }
-
-    /// <summary>
-    /// 저장된 좌표에 해당하는 세이브 포인트를 찾는다.
-    /// 허용 반경 안에서 가장 가까운 것을 반환하며, 없으면 null.
-    /// </summary>
-    public SavePoint GetSavePointAt(Vector3 position)
-    {
-        SavePoint nearestSavePoint = null;
-        float nearestSqrDistance = SAVE_POINT_MATCH_DISTANCE * SAVE_POINT_MATCH_DISTANCE;
-
-        for (int i = 0; i < _rooms.Count; i++)
-        {
-            if (_rooms[i] == null)
-            {
-                continue;
-            }
-
-            // 비활성 Room은 Awake가 실행되지 않아 목록이 null일 수 있다.
-            IReadOnlyList<SavePoint> savePoints = _rooms[i].SavePoints;
-            if (savePoints == null)
-            {
-                continue;
-            }
-
-            for (int j = 0; j < savePoints.Count; j++)
-            {
-                float sqrDistance = ((Vector2)(savePoints[j].RespawnPosition - position)).sqrMagnitude;
-                if (nearestSqrDistance <= sqrDistance)
-                {
-                    continue;
-                }
-                nearestSqrDistance = sqrDistance;
-                nearestSavePoint = savePoints[j];
-            }
-        }
-        return nearestSavePoint;
     }
 }

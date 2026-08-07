@@ -8,6 +8,8 @@ public enum EEventType
     SavePointUpdated,
     RegionInitialized,
     SavePointReached,
+    RespawnStateRestored,
+    SceneTransitionStarted,
     TransitionStateChanged,
     GameplaySceneChanged,
     MaxCount
