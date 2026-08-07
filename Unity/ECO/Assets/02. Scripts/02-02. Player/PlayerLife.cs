@@ -25,14 +25,10 @@ public class PlayerLife : MonoBehaviour
         EventManager.Instance.AddEventListener(EEventType.PlayerRespawned, OnPlayerRespawned);
     }
 
-    private void Start()
+    // 플레이어 루트의 조립자(PlayerStateMachine.Awake)가 주입한다.
+    public void InitSoundHandler(PlayerSoundHandler soundHandler)
     {
-        // PlayerStateMachine이 동일 GameObject에 있으므로 GetComponent로 주입
-        var stateMachine = GetComponent<PlayerStateMachine>();
-        if (stateMachine != null)
-        {
-            _soundHandler = stateMachine.SoundHandler;
-        }
+        _soundHandler = soundHandler;
     }
 
     private void Update()

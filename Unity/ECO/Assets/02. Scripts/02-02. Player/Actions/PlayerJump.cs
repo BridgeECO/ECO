@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class PlayerJump
 {
-    private PlayerStateMachine _sm;
+    private IPlayerFsmContext _sm;
     private PlayerMotor _motor;
     private PlayerDataSO _data;
 
@@ -13,7 +13,7 @@ public class PlayerJump
 
     public bool IsEarlyReleased => _isEarlyReleased;
 
-    public PlayerJump(PlayerStateMachine stateMachine, PlayerMotor motor, PlayerDataSO data)
+    public PlayerJump(IPlayerFsmContext stateMachine, PlayerMotor motor, PlayerDataSO data)
     {
         _sm = stateMachine;
         _motor = motor;
@@ -50,7 +50,7 @@ public class PlayerJump
         {
             return;
         }
-        if (Mathf.Abs(_sm.transform.position.x - _fallOffPosX) <= _data.CoyoteDistance)
+        if (Mathf.Abs(_sm.Transform.position.x - _fallOffPosX) <= _data.CoyoteDistance)
         {
             Execute();
         }

@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class PlayerHoverState : IPlayerState
 {
-    private PlayerStateMachine _sm;
+    private IPlayerFsmContext _sm;
     private PlayerInput _input;
     private PlayerSensor _sensor;
     private PlayerMotor _motor;
@@ -10,7 +10,7 @@ public class PlayerHoverState : IPlayerState
 
     private float _hoverTimer;
 
-    public PlayerHoverState(PlayerStateMachine stateMachine, PlayerDataSO data)
+    public PlayerHoverState(IPlayerFsmContext stateMachine, PlayerDataSO data)
     {
         _sm = stateMachine;
         _input = stateMachine.Input;
@@ -39,7 +39,7 @@ public class PlayerHoverState : IPlayerState
 
     public void Exit()
     {
-        _sm.SoundHandler.OnExitHover();
+        // Hover 이탈 사운드는 PlayerSoundHandler.HandleStateChanged가 상태 전이를 보고 처리한다.
         _input.OnDashReleased -= HandleDashReleased;
     }
 

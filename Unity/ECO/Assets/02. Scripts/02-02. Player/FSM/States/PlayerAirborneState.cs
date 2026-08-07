@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class PlayerAirborneState : IPlayerState
 {
-    private PlayerStateMachine _sm;
+    private IPlayerFsmContext _sm;
     private PlayerInput _input;
     private PlayerSensor _sensor;
     private PlayerMotor _motor;
@@ -10,7 +10,7 @@ public class PlayerAirborneState : IPlayerState
     private PlayerJump _jump;
     private PlayerSlip _slip;
 
-    public PlayerAirborneState(PlayerStateMachine stateMachine, PlayerDataSO data)
+    public PlayerAirborneState(IPlayerFsmContext stateMachine, PlayerDataSO data)
     {
         _sm = stateMachine;
         _input = stateMachine.Input;
@@ -25,7 +25,7 @@ public class PlayerAirborneState : IPlayerState
     {
         _sm.Animator.SetBool(AnimatorHash.IsRunning, false);
         _sm.Animator.SetTrigger(AnimatorHash.Jump1);
-        _jump.Init(_sm.transform.position.x);
+        _jump.Init(_sm.Transform.position.x);
         _input.OnJumpReleased += _jump.HandleOnReleased;
         _input.OnDashPressed += HandleDashPressed;
     }

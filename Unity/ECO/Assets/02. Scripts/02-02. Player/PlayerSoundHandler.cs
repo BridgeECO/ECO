@@ -14,6 +14,8 @@ public class PlayerSoundHandler
     // 씬 기본 지형 타입 — PlayerStateMachine이 씬 진입 시 Set으로 주입
     private ETerrainSoundType _defaultTerrainType = ETerrainSoundType.Scrap;
     private bool _isHoverLoopPlaying;
+    // Hover 이탈(루프 정지) 감지를 위해 직전 상태를 기억한다.
+    private EPlayerState _lastState = EPlayerState.Grounded;
     // Walk SFX 쿨다운 (Loop 의미이지만 PlayerSFX 풀 방식이라 주기 재생)
     private float _walkSfxTimer;
     private const float WALK_SFX_INTERVAL = 0.38f;
@@ -34,40 +36,42 @@ public class PlayerSoundHandler
     }
 
     // ──────────────────────────────────────────
-    // 상태별 진입/종료 SFX (PlayerStateMachine.OnStateChanged에서 호출)
+    // 상태별 진입/종료 SFX (PlayerStateMachine.OnStateChanged 구독)
     // ──────────────────────────────────────────
 
-    public void OnEnterAirborne()
+    /// <summary>
+    /// 상태 전이 시 사운드 매핑을 이 클래스가 소유한다.
+    /// (FSM이 상태별 사운드 메서드를 switch로 직접 매핑하지 않도록 분리)
+    /// </summary>
+    public void HandleStateChanged(EPlayerState newState)
     {
-        StopWalkLoop();
-    }
+        if (_lastState == EPlayerState.Hover && newState != EPlayerState.Hover)
+        {
+            StopHoverLoop();
+        }
+        _lastState = newState;
 
-    public void OnEnterGrounded()
-    {
-        PlayLandSfx();
-    }
-
-    public void OnEnterWallSlide()
-    {
-        StopWalkLoop();
-        PlayHitWallSfx();
-    }
-
-    public void OnEnterHover()
-    {
-        StopWalkLoop();
-        PlayHoverLoop();
-    }
-
-    public void OnExitHover()
-    {
-        StopHoverLoop();
-    }
-
-    public void OnEnterDash()
-    {
-        StopWalkLoop();
-        PlayDashSfx();
+        switch (newState)
+        {
+            case EPlayerState.Grounded:
+                PlayLandSfx();
+                break;
+            case EPlayerState.Airborne:
+                StopWalkLoop();
+                break;
+            case EPlayerState.WallSlide:
+                StopWalkLoop();
+                PlayHitWallSfx();
+                break;
+            case EPlayerState.Hover:
+                StopWalkLoop();
+                PlayHoverLoop();
+                break;
+            case EPlayerState.Dash:
+                StopWalkLoop();
+                PlayDashSfx();
+                break;
+        }
     }
 
     // ──────────────────────────────────────────
