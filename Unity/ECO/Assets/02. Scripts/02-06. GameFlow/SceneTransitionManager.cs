@@ -98,10 +98,16 @@ public class SceneTransitionManager : MonoBehaviourSingleton<SceneTransitionMana
         return default;
     }
 
+    // 배제 목록이 아니라 ESceneNames에 있는 이름만 인게임 씬으로 인정한다.
+    // 저장은 이 이름을 ESceneNames로 변환해 기록하므로, 변환되지 않는 씬을 채택하면
+    // 세이브 포인트를 밟아도 저장이 중단된다. 로딩 화면 같은 보조 씬도 여기서 걸러진다.
     private static bool IsRegionSceneName(string sceneName)
     {
-        return sceneName != ESceneNames.PersistentScene.ToString()
-            && sceneName != ESceneNames.TitleScene.ToString();
+        if (!System.Enum.TryParse(sceneName, out ESceneNames scene))
+        {
+            return false;
+        }
+        return scene != ESceneNames.PersistentScene && scene != ESceneNames.TitleScene;
     }
 
     private async UniTask LoadSceneAsync(ESceneNames eSceneName)
