@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 public class EnergySegmentController
@@ -38,30 +37,7 @@ public class EnergySegmentController
         _activeSegments.Add(newSegment);
     }
 
-    public async UniTaskVoid StopCurrentSegmentAsync(float cutOffDelay)
-    {
-        if (_activeSegments.Count == 0)
-        {
-            return;
-        }
-
-        EnergySegment targetSegment = _activeSegments[_activeSegments.Count - 1];
-        if (targetSegment.IsCuttingOff || targetSegment.IsWaitingToCutOff)
-        {
-            return;
-        }
-
-        targetSegment.IsWaitingToCutOff = true;
-        await UniTask.Delay(System.TimeSpan.FromSeconds(cutOffDelay));
-
-        if (_activeSegments.Contains(targetSegment))
-        {
-            targetSegment.IsWaitingToCutOff = false;
-            targetSegment.IsCuttingOff = true;
-        }
-    }
-
-    // cutOffDelay 없이 즉시 꼬리 추적을 시작한다. 홀드 방식 스위치처럼 즉각적인 차단이 필요할 때 사용한다.
+    // 즉시 꼬리 추적을 시작한다. 홀드 방식 스위치처럼 즉각적인 차단이 필요할 때 사용한다.
     public void StopCurrentSegmentImmediately()
     {
         if (_activeSegments.Count == 0)
