@@ -20,6 +20,9 @@ public class UI_SaveSlotPopup : UI_Popup, IKeyboardControllable
     private List<UI_SaveSlotItem> _slotItems;
 
     private int _selectedIndex = 0;
+    // 열기 전에 SetMode로 지정한다. 팝업 핸들러가 모드 인자를 몰라도 되도록
+    // (전용 오버로드 제거) 팝업이 자기 상태로 보관한다.
+    private ESlotPanelMode _mode = ESlotPanelMode.Continue;
 
     protected override void Awake()
     {
@@ -27,7 +30,12 @@ public class UI_SaveSlotPopup : UI_Popup, IKeyboardControllable
         InitSlots();
     }
 
-    public async UniTask OpenAsync(ESlotPanelMode mode)
+    public void SetMode(ESlotPanelMode mode)
+    {
+        _mode = mode;
+    }
+
+    public override async UniTask OpenAsync()
     {
         await base.OpenAsync();
         if (this == null)
@@ -36,14 +44,9 @@ public class UI_SaveSlotPopup : UI_Popup, IKeyboardControllable
         }
         _selectedIndex = 0;
 
-        RefreshAllSlots(mode);
+        RefreshAllSlots(_mode);
         ApplySelection();
         UI_KeyboardInputManager.Instance.PushHandler(this);
-    }
-
-    public override async UniTask OpenAsync()
-    {
-        await OpenAsync(ESlotPanelMode.Continue);
     }
 
     public override async UniTask CloseAsync()

@@ -25,6 +25,13 @@ public class UI_Popup_Settings : UI_Popup
     [SerializeField]
     private UI_TextFadeFeedback _settingsFeedback;
 
+    // 같은 캔버스의 형제 팝업. UIManager 프로퍼티 경유 대신 직접 바인딩한다.
+    [SerializeField]
+    private UI_Popup_Settings_ResetConfirm _resetConfirmPopup;
+
+    [SerializeField]
+    private UI_Popup_Settings_CloseConfirm _closeConfirmPopup;
+
     private int _activeTabIndex = 0;
 
     public UI_SettingsTabBase ActiveTab => (0 <= _activeTabIndex && _activeTabIndex < _settingTabs.Count) ? _settingTabs[_activeTabIndex] : null;
@@ -141,12 +148,12 @@ public class UI_Popup_Settings : UI_Popup
 
     private void HandleReset()
     {
-        if (UIManager.Instance.SettingsResetConfirmPopup == null)
+        if (_resetConfirmPopup == null)
         {
             return;
         }
 
-        UIManager.Instance.SettingsResetConfirmPopup.Show();
+        _resetConfirmPopup.Show();
     }
 
     private void HandleBack()
@@ -157,13 +164,13 @@ public class UI_Popup_Settings : UI_Popup
             hasUnsaved = _settingTabs[_activeTabIndex].HasUnsavedChanges();
         }
 
-        if (hasUnsaved && UIManager.Instance.SettingsCloseConfirmPopup != null)
+        if (hasUnsaved && _closeConfirmPopup != null)
         {
-            UIManager.Instance.SettingsCloseConfirmPopup.Show();
+            _closeConfirmPopup.Show();
         }
         else
         {
-            UIManager.Instance.PopupHandler.ClosePopup(this);
+            Handler?.ClosePopup(this);
         }
     }
 }

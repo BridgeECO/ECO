@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -37,7 +37,7 @@ public abstract class UI_Popup_Confirm3Buttons : UI_SystemPopup, IUIConfirm3Butt
             CancelButton.onClick.AddListener(OnClickCancel);
         }
 
-        UIManager.Instance.PopupHandler.OpenPopup(this);
+        Handler.OpenPopup(this);
     }
 
     protected virtual void OnAction1()
@@ -58,7 +58,7 @@ public abstract class UI_Popup_Confirm3Buttons : UI_SystemPopup, IUIConfirm3Butt
     private async void OnClickAction1()
     {
         var token = this.GetCancellationTokenOnDestroy();
-        await UIManager.Instance.PopupHandler.ClosePopupAsync(this);
+        await Handler.ClosePopupAsync(this);
         if (this == null || token.IsCancellationRequested)
         {
             return;
@@ -69,7 +69,7 @@ public abstract class UI_Popup_Confirm3Buttons : UI_SystemPopup, IUIConfirm3Butt
     private async void OnClickAction2()
     {
         var token = this.GetCancellationTokenOnDestroy();
-        await UIManager.Instance.PopupHandler.ClosePopupAsync(this);
+        await Handler.ClosePopupAsync(this);
         if (this == null || token.IsCancellationRequested)
         {
             return;
@@ -80,7 +80,7 @@ public abstract class UI_Popup_Confirm3Buttons : UI_SystemPopup, IUIConfirm3Butt
     private async void OnClickCancel()
     {
         var token = this.GetCancellationTokenOnDestroy();
-        await UIManager.Instance.PopupHandler.ClosePopupAsync(this);
+        await Handler.ClosePopupAsync(this);
         if (this == null || token.IsCancellationRequested)
         {
             return;
@@ -88,3 +88,4 @@ public abstract class UI_Popup_Confirm3Buttons : UI_SystemPopup, IUIConfirm3Butt
         OnCancel();
     }
 }
+

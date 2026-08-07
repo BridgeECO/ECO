@@ -20,7 +20,7 @@ public class NPCEventExecutor
 
     private void ExecutePlayCutscene(NPCEventSO eventData)
     {
-        // TODO: Implement cutscene execution logic
+        Debug.LogWarning($"[NPCEventExecutor] 컷신 실행은 아직 구현되지 않았습니다. ({eventData.name})");
     }
 
     private void ExecuteUnlockAbility(EPlayerUnlockableAbility abilityType, PlayerInput playerInput)
@@ -30,15 +30,8 @@ public class NPCEventExecutor
             return;
         }
 
-        switch (abilityType)
-        {
-            case EPlayerUnlockableAbility.Dash:
-                playerInput.IsDashLocked = false;
-                break;
-            case EPlayerUnlockableAbility.WallSlide:
-                playerInput.IsWallSlideLocked = false;
-                break;
-        }
+        // 플레이어 내부 잠금 상태를 직접 대입하지 않고 의도 메서드를 경유한다.
+        playerInput.UnlockAbility(abilityType);
     }
 
     private void ExecuteActivateGimmick(NPCEventSO eventData)

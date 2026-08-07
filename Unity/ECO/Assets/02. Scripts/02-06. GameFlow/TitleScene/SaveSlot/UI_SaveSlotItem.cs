@@ -37,9 +37,15 @@ public class UI_SaveSlotItem : MonoBehaviour, IPointerClickHandler
     [SerializeField]
     private Button _deleteButton;
 
+    // 새 게임 시작 시 진입할 씬. 프리팹에서 설정한다. (코드 하드코딩 제거)
+    [Foldout("Settings")]
+    [SerializeField]
+    private ESceneNames _newGameScene = ESceneNames.Scrap_Nest;
+
     private int _slotIndex;
     private bool _hasSaveData;
     private ESlotPanelMode _mode;
+    private SaveSlotPresenter _presenter;
 
     private void Awake()
     {
@@ -62,6 +68,7 @@ public class UI_SaveSlotItem : MonoBehaviour, IPointerClickHandler
     {
         _slotIndex = slotIndex;
         _mode = mode;
+        _presenter = new SaveSlotPresenter(slotIndex, _newGameScene);
 
         if (_slotNumberText != null)
         {
@@ -174,7 +181,7 @@ public class UI_SaveSlotItem : MonoBehaviour, IPointerClickHandler
 
     private void LoadAndRefreshSlot()
     {
-        SaveData saveData = SaveManager.Instance.Load(_slotIndex);
+        SaveData saveData = _presenter.LoadSlotData();
         _hasSaveData = saveData != null;
         RefreshRegionNameText(saveData);
     }
@@ -215,16 +222,7 @@ public class UI_SaveSlotItem : MonoBehaviour, IPointerClickHandler
         {
             return;
         }
-
-        SaveData saveData = SaveManager.Instance.Load(_slotIndex);
-        if (saveData is null)
-        {
-            return;
-        }
-
-        SaveManager.Instance.CurrentSlotIndex = _slotIndex;
-        LifeManager.Instance.SetLifeToMax();
-        SceneTransitionManager.Instance.TransitionToNewRegionAsync(saveData.SceneName).Forget();
+        _presenter.TryContinue();
     }
 
     private void OnClickNewGameBtn()
@@ -232,51 +230,10 @@ public class UI_SaveSlotItem : MonoBehaviour, IPointerClickHandler
         NewGameAsync().Forget();
     }
 
-    /// <summary>
-    /// 빈 슬롯이면 바로 새 게임 시작.
-    /// 이미 데이터가 있는 슬롯이면 덮어쓰기 경고 팝업을 띄우고 수락 시에만 진행한다.
-    /// </summary>
+    // 진행 여부 판단과 매니저 오케스트레이션은 프레젠터가 담당한다.
     private async UniTaskVoid NewGameAsync()
     {
-        var ct = this.GetCancellationTokenOnDestroy();
-
-        if (_hasSaveData)
-        {
-            bool confirmed = await ShowOverwriteConfirmPopupAsync(ct);
-            if (!confirmed)
-            {
-                return;
-            }
-            SaveManager.Instance.DeleteSave(_slotIndex);
-        }
-
-        StartNewGame();
-    }
-
-    private async UniTask<bool> ShowOverwriteConfirmPopupAsync(System.Threading.CancellationToken ct)
-    {
-        UI_Popup_NewGameConfirm popup = UIManager.Instance.NewGameConfirmPopup;
-        if (popup == null)
-        {
-            Debug.LogWarning("[UI_SaveSlotItem] NewGameConfirmPopup이 UIManager에 할당되지 않았습니다. 즉시 진행합니다.");
-            return true;
-        }
-
-        UI_Popup_NewGameConfirm.EPopupResult result = await popup.ShowPopupAsync();
-
-        return result == UI_Popup_NewGameConfirm.EPopupResult.Confirm;
-    }
-
-    private void StartNewGame()
-    {
-        if (SoundManager.HasInstance)
-        {
-            SoundManager.Instance.PlayUiSfx(ESfxClip.SUI_Title_StartGame);
-        }
-        SaveManager.Instance.CurrentSlotIndex = _slotIndex;
-        SaveManager.Instance.ResetCurrentSaveData();
-        LifeManager.Instance.SetLifeToMax();
-        SceneTransitionManager.Instance.TransitionToNewRegionAsync(ESceneNames.Scrap_Nest).Forget();
+        await _presenter.TryStartNewGameAsync(_hasSaveData);
     }
 
     private void OnClickDeleteBtn()
@@ -287,7 +244,7 @@ public class UI_SaveSlotItem : MonoBehaviour, IPointerClickHandler
     private async UniTaskVoid DeleteSlotAsync()
     {
         var ct = this.GetCancellationTokenOnDestroy();
-        SaveManager.Instance.DeleteSave(_slotIndex);
+        _presenter.DeleteSlot();
         _hasSaveData = false;
 
         if (_regionNameText != null)

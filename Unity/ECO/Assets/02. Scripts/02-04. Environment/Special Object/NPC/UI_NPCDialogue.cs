@@ -7,7 +7,9 @@ using Cysharp.Threading.Tasks;
 
 public class UI_NPCDialogue : MonoBehaviour
 {
-    public Action OnDialogueCompleted;
+    // 외부(NPCEventFlowRunner)가 public 필드에 직접 대입하지 않도록 캡슐화한다.
+    // SetDialogueCompletedCallback으로만 주입하며, Close 시 자동으로 해제된다.
+    private Action _onDialogueCompleted;
 
     [Foldout("Hierarchy")]
     [SerializeField]
@@ -56,6 +58,12 @@ public class UI_NPCDialogue : MonoBehaviour
         }
     }
 
+    /// <summary>마지막 페이지에서 진행 입력 시 호출될 콜백을 지정한다. null로 해제한다.</summary>
+    public void SetDialogueCompletedCallback(Action onCompleted)
+    {
+        _onDialogueCompleted = onCompleted;
+    }
+
     public void Open(string[] lines)
     {
         if (lines is null || lines.Length == 0)
@@ -85,7 +93,7 @@ public class UI_NPCDialogue : MonoBehaviour
 
         if (_lines.Length - 1 <= _currentPageIndex)
         {
-            OnDialogueCompleted?.Invoke();
+            _onDialogueCompleted?.Invoke();
             return;
         }
 
@@ -103,6 +111,7 @@ public class UI_NPCDialogue : MonoBehaviour
 
     public void Close()
     {
+        _onDialogueCompleted = null;
         _isShowingChoices = false;
         _isTransitioning = false;
         _isPrintingText = false;
@@ -122,6 +131,7 @@ public class UI_NPCDialogue : MonoBehaviour
 
     public async UniTask CloseAsync()
     {
+        _onDialogueCompleted = null;
         _isShowingChoices = false;
         _isTransitioning = false;
         _isPrintingText = false;

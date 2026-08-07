@@ -8,8 +8,13 @@ public class UI_Popup_Settings_ResetConfirm : UI_Popup_Confirm2Buttons
     [SerializeField] 
     private Button _buttonResetAndClose;
     
-    [SerializeField] 
+    [SerializeField]
     private Button _buttonClose;
+
+    // 같은 캔버스의 형제 팝업. UIManager 프로퍼티 경유 대신 직접 바인딩한다.
+    [Foldout("Hierarchy")]
+    [SerializeField]
+    private UI_Popup_Settings _settingsPopup;
 
     protected override Button ConfirmButton => _buttonResetAndClose;
     protected override Button CancelButton => _buttonClose;
@@ -17,9 +22,8 @@ public class UI_Popup_Settings_ResetConfirm : UI_Popup_Confirm2Buttons
     protected override void OnConfirm()
     {
         base.OnConfirm();
-        var settingsPopup = UIManager.Instance.SettingsPopup;
-        var targetTab = settingsPopup.ActiveTab;
-        var feedback = settingsPopup.SettingsFeedback;
+        var targetTab = _settingsPopup.ActiveTab;
+        var feedback = _settingsPopup.SettingsFeedback;
         if (targetTab != null)
         {
             targetTab.ResetTabToDefault();

@@ -15,6 +15,13 @@ public class UI_Popup_PauseMenu : UI_Popup
     [SerializeField]
     private Button _exitButton;
 
+    // 같은 캔버스의 형제 팝업. UIManager 프로퍼티 경유 대신 직접 바인딩한다.
+    [SerializeField]
+    private UI_Popup_Settings _settingsPopup;
+
+    [SerializeField]
+    private UI_Popup_ExitConfirm _exitConfirmPopup;
+
     public override void InitPopup()
     {
         base.InitPopup();
@@ -52,7 +59,10 @@ public class UI_Popup_PauseMenu : UI_Popup
     private void OnClickSettingBtn()
     {
         SoundManager.Instance.PlayUiSfx(ESfxClip.SUI_Common_Button);
-        UIManager.Instance.OpenSettingsPopup();
+        if (_settingsPopup != null)
+        {
+            Handler?.OpenPopup(_settingsPopup);
+        }
     }
 
     private void OnClickTitleBtn()
@@ -65,9 +75,9 @@ public class UI_Popup_PauseMenu : UI_Popup
     private void OnClickExitBtn()
     {
         SoundManager.Instance.PlayUiSfx(ESfxClip.SUI_Common_Button);
-        if (UIManager.Instance.ExitConfirmPopup != null)
+        if (_exitConfirmPopup != null)
         {
-            UIManager.Instance.ExitConfirmPopup.Show();
+            _exitConfirmPopup.Show();
         }
     }
 }

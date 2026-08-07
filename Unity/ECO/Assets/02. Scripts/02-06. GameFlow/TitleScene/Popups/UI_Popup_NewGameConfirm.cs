@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
@@ -37,7 +37,7 @@ public class UI_Popup_NewGameConfirm : UI_SystemPopup
             _buttonCancel.onClick.AddListener(() => OnClick_Button(EPopupResult.Cancel));
         }
 
-        UIManager.Instance.PopupHandler.OpenPopup(this);
+        Handler.OpenPopup(this);
 
         _tcs = new UniTaskCompletionSource<EPopupResult>();
 
@@ -46,7 +46,7 @@ public class UI_Popup_NewGameConfirm : UI_SystemPopup
 
     private void OnClick_Button(EPopupResult result)
     {
-        UIManager.Instance.PopupHandler.ClosePopup(this);
+        Handler.ClosePopup(this);
 
         if (_tcs != null)
         {
@@ -55,3 +55,4 @@ public class UI_Popup_NewGameConfirm : UI_SystemPopup
         }
     }
 }
+
