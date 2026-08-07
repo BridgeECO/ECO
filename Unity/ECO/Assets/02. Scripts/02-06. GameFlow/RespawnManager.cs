@@ -54,6 +54,7 @@ public class RespawnManager : MonoBehaviourSingleton<RespawnManager>
 
         SetRespawnPoint(savePoint);
         SaveManager.Instance.Save(_respawnPosition);
+        EventManager.Instance.BroadcastEvent(EEventType.SavePointUpdated);
     }
 
     /// <summary>
