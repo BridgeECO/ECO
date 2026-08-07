@@ -8,13 +8,9 @@ public class RoomTransition : MonoBehaviour
     [Foldout("Hierarchy")]
     [SerializeField]
     private Room _roomA;
-    [SerializeField]
-    private Transform _spawnPointA;
 
     [SerializeField]
     private Room _roomB;
-    [SerializeField]
-    private Transform _spawnPointB;
 
     [SerializeField]
     private bool _canSkipCameraTransition;
@@ -71,9 +67,7 @@ public class RoomTransition : MonoBehaviour
         {
             return;
         }
-
-        Vector3 spawnPosition = targetRoom == _roomA ? _spawnPointA.position : _spawnPointB.position;
-        Region.Instance.SetCurrentRoom(targetRoom, spawnPosition, _canSkipCameraTransition);
+        Region.Instance.SetCurrentRoom(targetRoom, _canSkipCameraTransition);
     }
 
     private Room GetRoomByAxis(Collider2D playerCollider)

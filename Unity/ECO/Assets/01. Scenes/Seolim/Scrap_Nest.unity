@@ -119,6 +119,11 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!4 &666286654 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4055738682172626248, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
+  m_PrefabInstance: {fileID: 6277913269822648675}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2094613634
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -224,6 +229,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 25156672090476615, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -26.52
+      objectReference: {fileID: 0}
+    - target: {fileID: 25156672090476615, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -5.99
+      objectReference: {fileID: 0}
     - target: {fileID: 2053815310187168446, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -264,9 +277,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2391023871224915808, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
+      propertyPath: _spawnPointForDebug
+      value: 
+      objectReference: {fileID: 666286654}
     - target: {fileID: 2845654473629755713, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
       propertyPath: m_Name
       value: Scrap Nest_Region
+      objectReference: {fileID: 0}
+    - target: {fileID: 3504411008045812460, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
+      propertyPath: _orderInRoom
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8091968062585649841, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -22.66
+      objectReference: {fileID: 0}
+    - target: {fileID: 8091968062585649841, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.03
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

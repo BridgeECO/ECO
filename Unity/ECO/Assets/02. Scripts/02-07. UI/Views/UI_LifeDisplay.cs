@@ -22,19 +22,20 @@ public class UI_LifeDisplay : MonoBehaviour
 
     private int _previousLife;
     private CancellationTokenSource[] _iconAnimCts;
+    private bool _isInitialized;
 
     #region Unity Lifecycle Methods
     private void OnEnable()
     {
-        _previousLife = LifeManager.Instance.CurrentLife;
         InitIconAnimCts();
+        InitLifeDisplay();
+    }
 
-        if (EventManager.Instance != null)
-        {
-            EventManager.Instance.AddEventListener(EEventType.LifeChanged, OnLifeChanged);
-        }
-
-        RefreshLifeDisplay();
+    // LifeManager와 EventManager가 있는 PersistentScene이 이 UI가 속한 씬보다 늦게 초기화되면
+    // OnEnable 시점에는 두 싱글톤이 모두 null이다. 모든 Awake가 끝난 Start에서 한 번 더 시도한다.
+    private void Start()
+    {
+        InitLifeDisplay();
     }
 
     private void OnDisable()
@@ -165,6 +166,21 @@ public class UI_LifeDisplay : MonoBehaviour
     #endregion
 
     #region Logic
+    // OnEnable과 Start 양쪽에서 호출되므로 중복 등록을 플래그로 막는다.
+    private void InitLifeDisplay()
+    {
+        if (_isInitialized || LifeManager.Instance == null || EventManager.Instance == null)
+        {
+            return;
+        }
+
+        _previousLife = LifeManager.Instance.CurrentLife;
+        EventManager.Instance.AddEventListener(EEventType.LifeChanged, OnLifeChanged);
+        _isInitialized = true;
+
+        RefreshLifeDisplay();
+    }
+
     private void RefreshLifeDisplay()
     {
         int currentLife = LifeManager.Instance.CurrentLife;
@@ -253,6 +269,12 @@ public class UI_LifeDisplay : MonoBehaviour
 
     private void RemoveEventListeners()
     {
+        if (!_isInitialized)
+        {
+            return;
+        }
+
+        _isInitialized = false;
         if (MonoBehaviourSingleton<EventManager>.HasInstance)
         {
             EventManager.Instance.RemoveEventListener(EEventType.LifeChanged, OnLifeChanged);

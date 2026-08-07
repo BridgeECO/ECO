@@ -1,9 +1,9 @@
 public enum ERegions
 {
     Center,
-    DumpSiteTutorial,
+    ScrapNestTutorial,
     CityOfSlienceTutorial,
-    DumpSite,
+    ScrapNest,
     CityOfSlience,
 
 

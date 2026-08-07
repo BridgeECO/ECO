@@ -4,6 +4,11 @@ using VInspector;
 
 public class Region : MonoBehaviourSingleton<Region>
 {
+    // 저장된 좌표로 세이브 포인트를 되찾을 때 허용하는 반경.
+    // 기획자가 세이브 포인트를 조금 옮겨도 기존 세이브가 깨지지 않도록 여유를 둔다.
+    public const float SAVE_POINT_MATCH_DISTANCE = 2f;
+    public const int INVALID_ROOM_INDEX = -1;
+
     [Foldout("Hierarchy")]
     [SerializeField]
     private ERegions _regionType;
@@ -45,39 +50,42 @@ public class Region : MonoBehaviourSingleton<Region>
 
         SaveData saveData = SaveManager.Instance.CurrentSaveData;
 
-        // 이어하기로 진입한 경우: 저장된 Region과 일치하고 유효한 RoomIndex가 있으면 해당 방/위치로 초기화
+        // 이어하기로 진입한 경우: 저장된 좌표에 해당하는 세이브 포인트를 찾아 그 방으로 초기화한다.
         if (IsValidContinueSaveData(saveData))
         {
-            InitFromSaveData(saveData);
-            return;
+            SavePoint savePoint = GetSavePointAt(saveData.SavePointPosition);
+            if (savePoint != null && savePoint.OwnerRoom != null)
+            {
+                InitFromSavePoint(savePoint);
+                return;
+            }
+            Debug.LogWarning($"저장된 좌표 {saveData.SavePointPosition}에 해당하는 세이브 포인트를 찾지 못해 기본 스폰 지점에서 시작합니다.");
         }
         InitFromDefaultSpawnPoint();
     }
 
-    // 저장 데이터가 현재 씬의 Region과 일치하고 유효한 RoomIndex를 가지는지 검사한다.
+    // 저장 데이터가 현재 씬의 Region과 일치하는지 검사한다.
     private bool IsValidContinueSaveData(SaveData saveData)
     {
-        return saveData is not null && saveData.Region == _regionType && 0 <= saveData.RoomIndex && saveData.RoomIndex < _rooms.Count;
+        return saveData is not null && saveData.Region == _regionType;
     }
 
-    private void InitFromSaveData(SaveData saveData)
+    private void InitFromSavePoint(SavePoint savePoint)
     {
-        _currentRoom = _rooms[saveData.RoomIndex];
-        _currentRoom.IsVisited = true;
+        _currentRoom = savePoint.OwnerRoom;
         InitCameraBounds();
 
-        // UpdateSavePoint는 세이브포인트 등록과 파일 저장을 담당하고,
-        // 이어하기 진입 시에는 플레이어를 해당 위치로 즉시 텔레포트한다.
-        RespawnManager.Instance.UpdateSavePoint(_currentRoom, saveData.SavePointPosition);
-        RespawnManager.Instance.TeleportPlayer(saveData.SavePointPosition);
+        // 저장된 좌표가 아니라 현재 세이브 포인트의 좌표를 쓴다.
+        // 기획자가 세이브 포인트를 옮겼을 때 플레이어가 허공에 놓이는 것을 막는다.
+        RespawnManager.Instance.SetRespawnPoint(savePoint);
+        RespawnManager.Instance.TeleportPlayer(savePoint.RespawnPosition);
     }
 
     private void InitFromDefaultSpawnPoint()
     {
         _currentRoom = _rooms[0];
-        _currentRoom.IsVisited = true;
         InitCameraBounds();
-        InitDefaultSavePoint();
+        InitDefaultRespawnPoint();
     }
 
     private void InitCameraBounds()
@@ -91,18 +99,19 @@ public class Region : MonoBehaviourSingleton<Region>
         _cameraController.transform.position = _cameraController.GetClampedPosition();
     }
 
-    private void InitDefaultSavePoint()
+    // 새 게임 진입 지점. 저장은 하지 않는다 — 첫 세이브는 세이브 포인트를 통과할 때 기록된다.
+    private void InitDefaultRespawnPoint()
     {
         if (_initialSpawnPoint == null)
         {
             Debug.LogWarning($"초기 스폰 포인트를 찾을 수 없습니다.");
             return;
         }
-        RespawnManager.Instance.UpdateSavePoint(_currentRoom, _initialSpawnPoint.position);
+        RespawnManager.Instance.SetRespawnPoint(_currentRoom, _initialSpawnPoint.position);
         RespawnManager.Instance.TeleportPlayer(_initialSpawnPoint.position);
     }
 
-    public void SetCurrentRoom(Room newRoom, Vector3 spawnPosition, bool isCameraTransitionSkipped = false)
+    public void SetCurrentRoom(Room newRoom, bool isCameraTransitionSkipped = false)
     {
         if (_currentRoom == newRoom)
         {
@@ -110,9 +119,6 @@ public class Region : MonoBehaviourSingleton<Region>
         }
 
         _currentRoom = newRoom;
-        _currentRoom.IsVisited = true;
-        RespawnManager.Instance.UpdateSavePoint(_currentRoom, spawnPosition);
-        LifeManager.Instance.RecoverToRoomTransition();
 
         if (newRoom.RoomType == ERoomType.Boss)
         {
@@ -131,47 +137,64 @@ public class Region : MonoBehaviourSingleton<Region>
         _cameraController.SetRoomBounds(_currentRoom.MinBounds, _currentRoom.MaxBounds);
     }
 
+    /// <summary>
+    /// 리스폰 시 세이브 포인트가 속한 방으로 되돌린다.
+    /// RoomChanged를 브로드캐스트하지 않아 페이드 도중 카메라 전환 연출이 끼어들지 않는다.
+    /// </summary>
+    public void SetCurrentRoomOnRespawn(Room saveRoom)
+    {
+        if (saveRoom == null || _currentRoom == saveRoom)
+        {
+            return;
+        }
+        _currentRoom = saveRoom;
+        InitCameraBounds();
+    }
+
+    // 세이브 포인트의 진행 순서를 판정하는 1차 기준. 목록에 없으면 INVALID_ROOM_INDEX.
     public int GetRoomIndex(Room room)
     {
-        return _rooms?.IndexOf(room) ?? -1;
-    }
-
-#if UNITY_EDITOR
-    [ContextMenu("Auto Assign Room List")]
-    private void AutoAssignRooms()
-    {
-        var rooms = GetComponentsInChildren<Room>(true);
-        var sortedRooms = System.Linq.Enumerable.ToList(System.Linq.Enumerable.OrderBy(rooms, room => {
-            string name = room.name;
-            string numStr = "";
-            int startIndex = name.IndexOf("SN_");
-            if (startIndex != -1)
-            {
-                startIndex += 3;
-                while (startIndex < name.Length && char.IsDigit(name[startIndex]))
-                {
-                    numStr += name[startIndex];
-                    startIndex++;
-                }
-            }
-            int num;
-            return int.TryParse(numStr, out num) ? num : 999;
-        }));
-
-        var serializedObject = new UnityEditor.SerializedObject(this);
-        var roomsProp = serializedObject.FindProperty("_rooms");
-        if (roomsProp != null)
+        if (room == null)
         {
-            roomsProp.ClearArray();
-            for (int i = 0; i < sortedRooms.Count; i++)
-            {
-                roomsProp.InsertArrayElementAtIndex(i);
-                roomsProp.GetArrayElementAtIndex(i).objectReferenceValue = sortedRooms[i];
-            }
-            serializedObject.ApplyModifiedProperties();
-            UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(gameObject.scene);
-            Debug.Log($"[Region] 자식 Room {sortedRooms.Count}개를 숫자로 정렬하여 자동 할당했습니다.");
+            return INVALID_ROOM_INDEX;
         }
+        return _rooms.IndexOf(room);
     }
-#endif
+
+    /// <summary>
+    /// 저장된 좌표에 해당하는 세이브 포인트를 찾는다.
+    /// 허용 반경 안에서 가장 가까운 것을 반환하며, 없으면 null.
+    /// </summary>
+    public SavePoint GetSavePointAt(Vector3 position)
+    {
+        SavePoint nearestSavePoint = null;
+        float nearestSqrDistance = SAVE_POINT_MATCH_DISTANCE * SAVE_POINT_MATCH_DISTANCE;
+
+        for (int i = 0; i < _rooms.Count; i++)
+        {
+            if (_rooms[i] == null)
+            {
+                continue;
+            }
+
+            // 비활성 Room은 Awake가 실행되지 않아 목록이 null일 수 있다.
+            IReadOnlyList<SavePoint> savePoints = _rooms[i].SavePoints;
+            if (savePoints == null)
+            {
+                continue;
+            }
+
+            for (int j = 0; j < savePoints.Count; j++)
+            {
+                float sqrDistance = ((Vector2)(savePoints[j].RespawnPosition - position)).sqrMagnitude;
+                if (nearestSqrDistance <= sqrDistance)
+                {
+                    continue;
+                }
+                nearestSqrDistance = sqrDistance;
+                nearestSavePoint = savePoints[j];
+            }
+        }
+        return nearestSavePoint;
+    }
 }
