@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Region 저작을 돕는 에디터 전용 도구. Region 컴포넌트의 컨텍스트 메뉴에서 실행한다.
@@ -54,7 +55,7 @@ public static class RegionEditorTools
             return;
         }
 
-        SavePoint[] savePoints = Object.FindObjectsByType<SavePoint>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        SavePoint[] savePoints = FindSavePointsInScene(region.gameObject.scene);
         if (savePoints.Length == 0)
         {
             Debug.LogWarning("[Region] 씬에 세이브 포인트가 하나도 없습니다. 저장은 세이브 포인트에서만 이루어집니다.", region);
@@ -69,6 +70,23 @@ public static class RegionEditorTools
         {
             Debug.Log($"[Region] 세이브 포인트 {savePoints.Length}개 검사 완료. 문제 없습니다.", region);
         }
+    }
+
+    // 멀티 씬 편집 중에는 다른 지역의 세이브 포인트까지 잡히므로 검사 대상을 같은 씬으로 한정한다.
+    // Region 하위로 좁히지 않는 이유는, Room 밖에 잘못 놓인 세이브 포인트를 잡아내는 것이 이 도구의 목적이기 때문이다.
+    private static SavePoint[] FindSavePointsInScene(Scene scene)
+    {
+        SavePoint[] allSavePoints = Object.FindObjectsByType<SavePoint>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        List<SavePoint> savePointsInScene = new List<SavePoint>();
+
+        for (int i = 0; i < allSavePoints.Length; i++)
+        {
+            if (allSavePoints[i].gameObject.scene == scene)
+            {
+                savePointsInScene.Add(allSavePoints[i]);
+            }
+        }
+        return savePointsInScene.ToArray();
     }
 
     private static int ReportOrphanSavePoints(SavePoint[] savePoints, Region region)
