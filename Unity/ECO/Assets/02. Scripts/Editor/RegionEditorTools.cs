@@ -5,9 +5,6 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-/// <summary>
-/// Region 저작을 돕는 에디터 전용 도구. Region 컴포넌트의 컨텍스트 메뉴에서 실행한다.
-/// </summary>
 public static class RegionEditorTools
 {
     private const string ROOM_NAME_PREFIX = "SN_";
