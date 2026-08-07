@@ -7,6 +7,7 @@ public class Region : MonoBehaviourSingleton<Region>
     // 저장된 좌표로 세이브 포인트를 되찾을 때 허용하는 반경.
     // 기획자가 세이브 포인트를 조금 옮겨도 기존 세이브가 깨지지 않도록 여유를 둔다.
     public const float SAVE_POINT_MATCH_DISTANCE = 2f;
+    public const int INVALID_ROOM_INDEX = -1;
 
     [Foldout("Hierarchy")]
     [SerializeField]
@@ -148,6 +149,16 @@ public class Region : MonoBehaviourSingleton<Region>
         }
         _currentRoom = saveRoom;
         InitCameraBounds();
+    }
+
+    // 세이브 포인트의 진행 순서를 판정하는 1차 기준. 목록에 없으면 INVALID_ROOM_INDEX.
+    public int GetRoomIndex(Room room)
+    {
+        if (room == null)
+        {
+            return INVALID_ROOM_INDEX;
+        }
+        return _rooms.IndexOf(room);
     }
 
     /// <summary>

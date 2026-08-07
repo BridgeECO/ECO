@@ -43,11 +43,18 @@ public class RespawnManager : MonoBehaviourSingleton<RespawnManager>
 
     /// <summary>
     /// 세이브 포인트 통과 시 리스폰 지점을 갱신하고 저장 파일을 기록한다.
+    /// 진행 순서상 앞선 세이브 포인트로만 갱신된다.
     /// </summary>
     public void SetSavePoint(SavePoint savePoint)
     {
         // 직전과 같은 세이브 포인트면 기록될 내용이 동일하므로 파일 쓰기를 생략한다.
         if (savePoint == null || _currentSavePoint == savePoint)
+        {
+            return;
+        }
+
+        // 되돌아가 이전 세이브 포인트를 밟아도 진행도가 뒤로 밀리지 않게 한다.
+        if (!savePoint.IsAheadOf(_currentSavePoint))
         {
             return;
         }

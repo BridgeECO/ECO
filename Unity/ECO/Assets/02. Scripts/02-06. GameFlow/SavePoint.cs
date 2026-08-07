@@ -16,7 +16,14 @@ public class SavePoint : MonoBehaviour
     [SerializeField]
     private Transform _respawnPoint;
 
+    // 진행 순서는 Region의 Room 목록 순서로 판정한다.
+    // 한 방에 세이브 포인트를 둘 이상 둘 때만 이 값으로 방 안에서의 선후를 구분한다.
+    [Foldout("Settings")]
+    [SerializeField]
+    private int _orderInRoom = 0;
+
     public Room OwnerRoom { get; private set; }
+    public int OrderInRoom => _orderInRoom;
 
     // 트리거 중심이 발판에서 떠 있을 수 있어 실제 부활 좌표를 따로 지정할 수 있게 한다.
     public Vector3 RespawnPosition => _respawnPoint != null ? _respawnPoint.position : transform.position;
@@ -43,5 +50,33 @@ public class SavePoint : MonoBehaviour
     public void InitRoom(Room room)
     {
         OwnerRoom = room;
+    }
+
+    /// <summary>
+    /// 진행 순서상 other보다 뒤에 있는 세이브 포인트인지 판정한다.
+    /// Region의 Room 목록 순서가 1차 기준이고, 같은 방 안에서만 OrderInRoom으로 선후를 가린다.
+    /// </summary>
+    public bool IsAheadOf(SavePoint other)
+    {
+        if (other == null || Region.Instance == null)
+        {
+            return true;
+        }
+
+        int roomIndex = Region.Instance.GetRoomIndex(OwnerRoom);
+        int otherRoomIndex = Region.Instance.GetRoomIndex(other.OwnerRoom);
+
+        // Room 하위에 배치되지 않은 세이브 포인트는 순서를 알 수 없다.
+        // 저장 자체를 막으면 진행이 불가능해지므로 이때는 갱신을 허용한다.
+        if (roomIndex == Region.INVALID_ROOM_INDEX || otherRoomIndex == Region.INVALID_ROOM_INDEX)
+        {
+            return true;
+        }
+
+        if (roomIndex != otherRoomIndex)
+        {
+            return otherRoomIndex < roomIndex;
+        }
+        return other.OrderInRoom < OrderInRoom;
     }
 }

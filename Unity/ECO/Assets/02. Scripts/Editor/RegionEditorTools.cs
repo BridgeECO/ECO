@@ -63,6 +63,7 @@ public static class RegionEditorTools
 
         int invalidCount = ReportOrphanSavePoints(savePoints, region);
         invalidCount += ReportTooCloseSavePoints(savePoints);
+        invalidCount += ReportDuplicateOrders(savePoints);
 
         if (invalidCount == 0)
         {
@@ -108,6 +109,36 @@ public static class RegionEditorTools
                 }
                 invalidCount++;
                 Debug.LogWarning($"[Region] '{savePoints[i].name}'과(와) '{savePoints[j].name}'이(가) {distance:F2} 유닛 거리로 너무 가깝습니다. 이어하기 복원 지점이 모호해집니다.", savePoints[i]);
+            }
+        }
+        return invalidCount;
+    }
+
+    // 진행 순서는 방 순서로 판정하므로, 같은 방 안에서는 Order In Room이 서로 달라야 한다.
+    // 같으면 뒤쪽 세이브 포인트가 앞선 것으로 판정되지 않아 영영 갱신되지 않는다.
+    private static int ReportDuplicateOrders(SavePoint[] savePoints)
+    {
+        int invalidCount = 0;
+        for (int i = 0; i < savePoints.Length; i++)
+        {
+            Room room = savePoints[i].GetComponentInParent<Room>(true);
+            if (room == null)
+            {
+                continue;
+            }
+
+            for (int j = i + 1; j < savePoints.Length; j++)
+            {
+                if (room != savePoints[j].GetComponentInParent<Room>(true))
+                {
+                    continue;
+                }
+                if (savePoints[i].OrderInRoom != savePoints[j].OrderInRoom)
+                {
+                    continue;
+                }
+                invalidCount++;
+                Debug.LogWarning($"[Region] '{savePoints[i].name}'과(와) '{savePoints[j].name}'이(가) 같은 방 '{room.name}'에서 Order In Room {savePoints[i].OrderInRoom}을(를) 공유합니다. 뒤쪽 세이브 포인트가 갱신되지 않습니다.", savePoints[i]);
             }
         }
         return invalidCount;
