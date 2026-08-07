@@ -42,6 +42,9 @@ public class EnergyLineTracker : MonoBehaviour
     private EnergyLineTrackingFadeLogic _fadeLogic;
 
     private bool _isRunning;
+    // 자기가 건 입력 차단만 해제하기 위한 플래그.
+    // ForceCleanUp이 무조건 UnblockInput을 호출하면 다른 시스템(리스폰, 씬 전환)의 차단까지 풀 수 있다.
+    private bool _hasBlockedInput;
     private CancellationTokenSource _cts;
 
     private void Awake()
@@ -88,7 +91,7 @@ public class EnergyLineTracker : MonoBehaviour
     private async UniTaskVoid PlayTrackingSequenceAsync(EnergyLine targetLine, CancellationToken ct)
     {
         _isRunning = true;
-        InputHandler.BlockInput();
+        BlockPlayerInput();
 
         try
         {
@@ -139,7 +142,7 @@ public class EnergyLineTracker : MonoBehaviour
     {
         _isRunning = false;
         _fadeLogic.Reset();
-        InputHandler.UnblockInput();
+        ReleasePlayerInput();
 
         _cts?.Dispose();
         _cts = null;
@@ -160,6 +163,26 @@ public class EnergyLineTracker : MonoBehaviour
         }
 
         _fadeLogic?.Reset();
+        ReleasePlayerInput();
+    }
+
+    private void BlockPlayerInput()
+    {
+        if (_hasBlockedInput)
+        {
+            return;
+        }
+        _hasBlockedInput = true;
+        InputHandler.BlockInput();
+    }
+
+    private void ReleasePlayerInput()
+    {
+        if (!_hasBlockedInput)
+        {
+            return;
+        }
+        _hasBlockedInput = false;
         InputHandler.UnblockInput();
     }
 }

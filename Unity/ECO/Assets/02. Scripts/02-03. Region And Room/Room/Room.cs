@@ -56,10 +56,12 @@ public class Room : MonoBehaviour
         }
     }
 
+#if UNITY_EDITOR
     [Button]
     private void SetThisRoomToCurrentRoom()
     {
         Vector3 spawnPoint = _spawnPointForDebug != null ? _spawnPointForDebug.position : transform.position;
         DebugTool.ChangeCurrentRoom(this, spawnPoint);
     }
+#endif
 }

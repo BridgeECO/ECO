@@ -6,5 +6,9 @@ public enum EEventType
     PlayerRespawned,
     RespawnReset,
     SavePointUpdated,
+    RegionInitialized,
+    SavePointReached,
+    TransitionStateChanged,
+    GameplaySceneChanged,
     MaxCount
 }

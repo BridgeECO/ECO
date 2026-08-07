@@ -23,10 +23,10 @@ public class UI_SettingsTab_Sound : UI_SettingsTabBase
     private float _currentSfxVolume;
     private float _currentVoiceVolume;
 
-    private const string PrefKey_MasterVolume = "Settings_Sound_Master";
-    private const string PrefKey_BgmVolume = "Settings_Sound_Bgm";
-    private const string PrefKey_SfxVolume = "Settings_Sound_Sfx";
-    private const string PrefKey_VoiceVolume = "Settings_Sound_Voice";
+    private const string PrefKey_MasterVolume = SoundVolumeKeys.MASTER;
+    private const string PrefKey_BgmVolume = SoundVolumeKeys.BGM;
+    private const string PrefKey_SfxVolume = SoundVolumeKeys.SFX;
+    private const string PrefKey_VoiceVolume = SoundVolumeKeys.VOICE;
 
     private void Awake()
     {

@@ -40,6 +40,8 @@ public class SoundEmitter : MonoBehaviour
     private AudioSource _audioSource;
     private Camera _cachedCamera;
     private Transform _playerTransform;
+    // 매 프레임 SoundManager를 폴링하지 않도록 캐싱하고, 변경 통지를 구독해 갱신한다.
+    private float _sfxVolume = 1f;
 
     private void Awake()
     {
@@ -49,25 +51,38 @@ public class SoundEmitter : MonoBehaviour
     private void OnEnable()
     {
         _cachedCamera = Camera.main;
+        if (SoundManager.HasInstance)
+        {
+            _sfxVolume = SoundManager.Instance.SfxVolume;
+            SoundManager.Instance.OnSfxVolumeChanged += SetSfxVolume;
+        }
         TryFindPlayer();
         UpdateVolume();
     }
 
     private void LateUpdate()
     {
-        if (!SoundManager.HasInstance)
-        {
-            return;
-        }
-
         TryFindPlayer();
         UpdateVolume();
+    }
+
+    private void OnDisable()
+    {
+        if (SoundManager.HasInstance)
+        {
+            SoundManager.Instance.OnSfxVolumeChanged -= SetSfxVolume;
+        }
+    }
+
+    private void SetSfxVolume(float volume)
+    {
+        _sfxVolume = volume;
     }
 
     private void UpdateVolume()
     {
         float attenuation = _isAlwaysAudible ? 1f : CalculateViewportAttenuation();
-        _audioSource.volume = _baseVolume * GetSfxVolume() * attenuation;
+        _audioSource.volume = _baseVolume * _sfxVolume * attenuation;
         _audioSource.panStereo = CalculatePan();
     }
 
@@ -110,10 +125,5 @@ public class SoundEmitter : MonoBehaviour
 
         float dx = transform.position.x - _playerTransform.position.x;
         return Mathf.Clamp(dx / _panRange, -1f, 1f);
-    }
-
-    private float GetSfxVolume()
-    {
-        return SoundManager.HasInstance ? SoundManager.Instance.SfxVolume : 1f;
     }
 }

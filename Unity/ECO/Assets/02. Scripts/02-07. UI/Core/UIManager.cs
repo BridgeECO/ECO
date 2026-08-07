@@ -72,7 +72,6 @@ public class UIManager : MonoBehaviourSingleton<UIManager>
         {
             OpenPauseMenuPopup();
         }
-        InputHandler.TriggerCancelEvent();
     }
 
 
