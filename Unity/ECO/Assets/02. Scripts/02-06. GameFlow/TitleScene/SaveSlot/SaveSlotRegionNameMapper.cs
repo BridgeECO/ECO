@@ -9,9 +9,9 @@ public static class SaveSlotRegionNameMapper
     private static readonly Dictionary<ERegions, string> RegionNames = new Dictionary<ERegions, string>
     {
         { ERegions.Center,                "중앙부" },
-        { ERegions.DumpSiteTutorial,      "폐기장" },
+        { ERegions.ScrapNestTutorial,     "폐기장" },
         { ERegions.CityOfSlienceTutorial, "침묵의 도시" },
-        { ERegions.DumpSite,              "폐기장" },
+        { ERegions.ScrapNest,             "폐기장" },
         { ERegions.CityOfSlience,         "침묵의 도시" },
         { ERegions.None,                  "빈 슬롯" },
     };
