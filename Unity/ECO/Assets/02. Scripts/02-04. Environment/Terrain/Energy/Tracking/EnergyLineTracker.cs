@@ -6,15 +6,11 @@ using UnityEngine.UI;
 using VInspector;
 
 // 에너지 라인 트래킹 시스템의 유일한 MonoBehaviour 진입점.
-// EnergySwitch가 발행하는 정적 이벤트를 구독하여 시퀀스를 시작하며,
+// EnergySwitch가 발행하는 EnergyLineTrackingRequested 이벤트를 구독하여 시퀀스를 시작하며,
 // 순수 C# 클래스(CameraLogic, FadeLogic)를 소유하고 LateUpdate에서 구동한다.
 [RequireComponent(typeof(CameraController))]
 public class EnergyLineTracker : MonoBehaviour
 {
-    // EnergySwitch가 인스턴스 참조 없이 트래킹을 요청하기 위한 정적 이벤트.
-    // EnergyLineTracker가 씬에 없으면 null이므로 EnergySwitch는 안전하게 Invoke한다.
-    public static Action<EnergyLine> OnTrackingRequested;
-
     private CameraController _cameraController;
 
     [Foldout("Hierarchy")]
@@ -61,7 +57,7 @@ public class EnergyLineTracker : MonoBehaviour
 
     private void OnEnable()
     {
-        OnTrackingRequested += StartTracking;
+        EventManager.Instance.AddEventListener<EnergyLine>(EEventType.EnergyLineTrackingRequested, StartTracking);
     }
 
     private void LateUpdate()
@@ -71,8 +67,16 @@ public class EnergyLineTracker : MonoBehaviour
 
     private void OnDisable()
     {
-        OnTrackingRequested -= StartTracking;
+        RemoveEventListeners();
         ForceCleanUp();
+    }
+
+    private void RemoveEventListeners()
+    {
+        if (EventManager.HasInstance)
+        {
+            EventManager.Instance.RemoveEventListener<EnergyLine>(EEventType.EnergyLineTrackingRequested, StartTracking);
+        }
     }
 
     // EnergySwitch의 정적 이벤트 발행에 의해 호출된다.

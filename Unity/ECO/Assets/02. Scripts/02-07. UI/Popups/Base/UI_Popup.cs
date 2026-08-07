@@ -9,6 +9,10 @@ public abstract class UI_Popup : MonoBehaviour
     // 팝업이 UIManager 싱글턴을 역참조하지 않기 위한 통로다.
     protected UI_PopupHandler Handler { get; private set; }
 
+    // 개폐 스케일 연출. 컴포넌트 탐색(TryGetComponent) 대신 인라인으로 소유한다.
+    [SerializeField]
+    private UI_ScaleAnimator _scaleAnimation = new UI_ScaleAnimator();
+
     private UI_SpriteAnimator[] _spriteAnimators;
 
     protected virtual void Awake()
@@ -28,10 +32,7 @@ public abstract class UI_Popup : MonoBehaviour
     public virtual async UniTask OpenAsync()
     {
         gameObject.SetActive(true);
-        if (TryGetComponent<UI_ScaleAnimator>(out var animator))
-        {
-            await animator.PlayOpenAsync(this.GetCancellationTokenOnDestroy());
-        }
+        await _scaleAnimation.PlayOpenAsync(transform, this.GetCancellationTokenOnDestroy());
     }
 
     public virtual async UniTask CloseAsync()
@@ -69,10 +70,7 @@ public abstract class UI_Popup : MonoBehaviour
             return;
         }
 
-        if (TryGetComponent<UI_ScaleAnimator>(out var animator))
-        {
-            await animator.PlayCloseAsync(this.GetCancellationTokenOnDestroy());
-        }
+        await _scaleAnimation.PlayCloseAsync(transform, this.GetCancellationTokenOnDestroy());
 
         if (this == null)
         {

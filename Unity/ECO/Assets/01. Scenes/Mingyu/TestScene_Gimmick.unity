@@ -693,7 +693,6 @@ GameObject:
   - component: {fileID: 131606621}
   - component: {fileID: 131606624}
   - component: {fileID: 131606625}
-  - component: {fileID: 131606622}
   m_Layer: 0
   m_Name: UI_NPCDialogueTab
   m_TagString: Untagged
@@ -730,23 +729,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 131606616}
   m_CullTransparentMesh: 1
---- !u!114 &131606622
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 131606616}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a78e06e79b07fe24cb72b0102ce7de75, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _dialogueText: {fileID: 990688833}
-  _pageIndicatorText: {fileID: 0}
-  _continueIndicator: {fileID: 0}
-  _fadeDuration: 0.3
-  _textPrintSpeed: 100
 --- !u!114 &131606624
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -760,7 +742,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _animator: {fileID: 131606625}
-  _textBox: {fileID: 131606622}
+  _textBox:
+    _dialogueText: {fileID: 990688833}
+    _pageIndicatorText: {fileID: 0}
+    _continueIndicator: {fileID: 0}
+    _fadeDuration: 0.3
+    _textPrintSpeed: 100
   _choiceUI: {fileID: 116679034}
   _dialogueClip: 0
   _hasDialogueSfx: 0

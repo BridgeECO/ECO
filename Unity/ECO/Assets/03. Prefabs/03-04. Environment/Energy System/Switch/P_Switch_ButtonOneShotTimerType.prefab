@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 5346412093722230796}
   - component: {fileID: 5693064154715065878}
   - component: {fileID: 6416656175868631814}
-  - component: {fileID: 8835489116434647774}
   m_Layer: 0
   m_Name: P_Switch_ButtonOneShotTimerType
   m_TagString: Untagged
@@ -150,22 +149,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _interactionType: 3
   _buttonOneShotDuration: 3
-  _spriteView: {fileID: -3071261625900567300, guid: 5d5dd206ceda8bc4fad30d1013506b59, type: 3}
   _connectedLines:
   - {fileID: 0}
   - {fileID: 0}
---- !u!114 &8835489116434647774
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6493625022883482424}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ba0d5d1807943d245a934850c3174814, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _spriteRenderer: {fileID: 5346412093722230796, guid: 5d5dd206ceda8bc4fad30d1013506b59, type: 3}
-  _spriteOn: {fileID: 21300000, guid: 1a72bde4aefa15a48a3e80d393f7f809, type: 3}
-  _spriteOff: {fileID: 21300000, guid: ceaa48efd41744647b5b817dd17a50e6, type: 3}
+  _spriteView:
+    _spriteRenderer: {fileID: 5346412093722230796}
+    _spriteOn: {fileID: 21300000, guid: 1a72bde4aefa15a48a3e80d393f7f809, type: 3}
+    _spriteOff: {fileID: 21300000, guid: ceaa48efd41744647b5b817dd17a50e6, type: 3}

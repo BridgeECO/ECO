@@ -10,6 +10,7 @@ public enum EEventType
     SavePointReached,
     RespawnStateRestored,
     SceneTransitionStarted,
+    EnergyLineTrackingRequested,
     TransitionStateChanged,
     GameplaySceneChanged,
     MaxCount

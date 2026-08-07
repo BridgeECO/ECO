@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using R3;
@@ -11,7 +11,7 @@ public class ButtonOneShotTimerInteraction : InteractionBase
     private IDisposable _inputDisposable;
     private CancellationTokenSource _cts;
 
-    public ButtonOneShotTimerInteraction(SpecialObjectBase target, float activeDuration) : base(target)
+    public ButtonOneShotTimerInteraction(IInteractionTarget target, float activeDuration) : base(target)
     {
         _activeDuration = activeDuration;
     }
@@ -45,8 +45,8 @@ public class ButtonOneShotTimerInteraction : InteractionBase
     private async UniTaskVoid ActivateAsync()
     {
         _isInteracting = true;
-        TargetObject.CallInteract();
-        TargetObject.CallSetState(true);
+        TargetObject.Interact();
+        TargetObject.SetState(true);
 
         _cts?.Cancel();
         _cts?.Dispose();
@@ -57,12 +57,12 @@ public class ButtonOneShotTimerInteraction : InteractionBase
             await UniTask.Delay(TimeSpan.FromSeconds(_activeDuration), cancellationToken: _cts.Token);
             if (TargetObject != null)
             {
-                TargetObject.CallSetState(false);
+                TargetObject.SetState(false);
             }
         }
         catch (OperationCanceledException)
         {
-            // 취소 시 무시
+            // 痍⑥냼 ??臾댁떆
         }
         finally
         {
@@ -81,3 +81,4 @@ public class ButtonOneShotTimerInteraction : InteractionBase
         }
     }
 }
+

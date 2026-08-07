@@ -15,8 +15,9 @@ public class UI_NPCDialogue : MonoBehaviour
     [SerializeField]
     private UI_NPCDialogueAnimator _animator;
 
+    // 인라인 직렬화 텍스트 박스. 별도 컴포넌트 참조 대신 이 클래스가 소유한다.
     [SerializeField]
-    private UI_NPCDialogueTextBox _textBox;
+    private UI_NPCDialogueTextBox _textBox = new UI_NPCDialogueTextBox();
 
     [SerializeField]
     private UI_NPCChoice _choiceUI;

@@ -1,12 +1,16 @@
+using System;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
-using VInspector;
 using Cysharp.Threading.Tasks;
 
-public class UI_NPCDialogueTextBox : MonoBehaviour
+/// <summary>
+/// 대화 텍스트 타이핑·페이지 표시를 담당한다. Unity 생명주기가 필요 없어
+/// 컴포넌트가 아닌 직렬화 클래스로 두고, UI_NPCDialogue가 인라인 필드로 소유한다.
+/// </summary>
+[Serializable]
+public class UI_NPCDialogueTextBox
 {
-    [Foldout("Hierarchy")]
     [SerializeField]
     private TextMeshProUGUI _dialogueText;
 
@@ -16,7 +20,6 @@ public class UI_NPCDialogueTextBox : MonoBehaviour
     [SerializeField]
     private GameObject _continueIndicator;
 
-    [Foldout("Settings")]
     [SerializeField]
     private float _fadeDuration;
 
@@ -138,7 +141,7 @@ public class UI_NPCDialogueTextBox : MonoBehaviour
         .SetUpdate(UpdateType.Normal, true);
 
         await _typewriterTween.ToUniTask();
-        if (this == null || _dialogueText == null)
+        if (_dialogueText == null)
         {
             return;
         }

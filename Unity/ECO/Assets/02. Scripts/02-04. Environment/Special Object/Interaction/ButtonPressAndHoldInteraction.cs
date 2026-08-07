@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using R3;
 using UnityEngine;
 
@@ -7,7 +7,7 @@ public class ButtonPressAndHoldInteraction : InteractionBase
     private bool _isInteracting = false;
     private IDisposable _inputDisposable;
 
-    public ButtonPressAndHoldInteraction(SpecialObjectBase target) : base(target) { }
+    public ButtonPressAndHoldInteraction(IInteractionTarget target) : base(target) { }
 
     public override void OnTriggerEnter2D(Collider2D other)
     {
@@ -43,7 +43,7 @@ public class ButtonPressAndHoldInteraction : InteractionBase
     private void Activate()
     {
         _isInteracting = true;
-        TargetObject.CallInteract();
+        TargetObject.Interact();
     }
 
     private void Deactivate()
@@ -53,6 +53,7 @@ public class ButtonPressAndHoldInteraction : InteractionBase
             return;
         }
         _isInteracting = false;
-        TargetObject.CallSetState(false);
+        TargetObject.SetState(false);
     }
 }
+
