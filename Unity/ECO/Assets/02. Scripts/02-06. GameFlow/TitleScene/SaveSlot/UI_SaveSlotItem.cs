@@ -223,6 +223,7 @@ public class UI_SaveSlotItem : MonoBehaviour, IPointerClickHandler
         }
 
         SaveManager.Instance.CurrentSlotIndex = _slotIndex;
+        LifeManager.Instance.SetLifeToMax();
         SceneTransitionManager.Instance.TransitionToNewRegionAsync(saveData.SceneName).Forget();
     }
 
@@ -274,6 +275,7 @@ public class UI_SaveSlotItem : MonoBehaviour, IPointerClickHandler
         }
         SaveManager.Instance.CurrentSlotIndex = _slotIndex;
         SaveManager.Instance.ResetCurrentSaveData();
+        LifeManager.Instance.SetLifeToMax();
         SceneTransitionManager.Instance.TransitionToNewRegionAsync(ESceneNames.Scrap_Nest).Forget();
     }
 

@@ -16,7 +16,7 @@ public static class DebugTool
         {
             return;
         }
-        Region.Instance.SetCurrentRoom(targetRoom, spawnPoint);
+        Region.Instance.SetCurrentRoom(targetRoom);
         _playerTransform.position = spawnPoint;
     }
 }

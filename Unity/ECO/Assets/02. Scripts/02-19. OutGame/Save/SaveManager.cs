@@ -20,7 +20,7 @@ public class SaveManager : MonoBehaviourSingleton<SaveManager>
         CurrentSaveData = new SaveData();
     }
 
-    public void Save(Room targetRoom, Vector3 savePointPosition)
+    public void Save(Vector3 savePointPosition)
     {
         Region region = Region.Instance;
         if (region == null)
@@ -34,17 +34,15 @@ public class SaveManager : MonoBehaviourSingleton<SaveManager>
         }
 
         string activeSceneName = SceneTransitionManager.Instance != null ? SceneTransitionManager.Instance.CurrentLoadedRegionScene : null;
-        if (!string.IsNullOrEmpty(activeSceneName) && System.Enum.TryParse(activeSceneName, out ESceneNames sceneName))
+        if (string.IsNullOrEmpty(activeSceneName) || !System.Enum.TryParse(activeSceneName, out ESceneNames sceneName))
         {
-            CurrentSaveData.SceneName = sceneName;
-        }
-        else
-        {
-            CurrentSaveData.SceneName = ESceneNames.TitleScene;
+            // TitleScene으로 폴백하면 이어하기가 타이틀로 진입하는 슬롯이 만들어지므로 저장 자체를 중단한다.
+            Debug.LogError($"현재 씬 이름('{activeSceneName}')을 ESceneNames로 변환할 수 없어 저장을 건너뜁니다.");
+            return;
         }
 
+        CurrentSaveData.SceneName = sceneName;
         CurrentSaveData.Region = region.RegionType;
-        CurrentSaveData.RoomIndex = region.GetRoomIndex(targetRoom);
         CurrentSaveData.SavePointPosition = savePointPosition;
         Save(CurrentSlotIndex, CurrentSaveData.ToDTO());
     }
@@ -92,7 +90,7 @@ public class SaveManager : MonoBehaviourSingleton<SaveManager>
         {
             return null;
         }
-        SaveData saveData = new SaveData(dto.SceneName, dto.Region, dto.RoomIndex, dto.SavePointPosition);
+        SaveData saveData = new SaveData(dto.SceneName, dto.Region, dto.SavePointPosition);
         CurrentSaveData = saveData;
         return saveData;
     }

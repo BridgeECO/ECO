@@ -5,7 +5,6 @@ public class SaveDataDTO
 {
     public readonly ESceneNames SceneName;
     public readonly ERegions Region;
-    public readonly int RoomIndex;
 
     // Vector3는 JSON 직렬화 시 순환 참조 문제가 생길 수 있어 float 3개로 분리 저장
     public readonly float SavePointX;
@@ -16,11 +15,10 @@ public class SaveDataDTO
     public Vector3 SavePointPosition => new Vector3(SavePointX, SavePointY, SavePointZ);
 
     [JsonConstructor]
-    public SaveDataDTO(ESceneNames sceneName, ERegions region, int roomIndex, float savePointX, float savePointY, float savePointZ)
+    public SaveDataDTO(ESceneNames sceneName, ERegions region, float savePointX, float savePointY, float savePointZ)
     {
         SceneName = sceneName;
         Region = region;
-        RoomIndex = roomIndex;
         SavePointX = savePointX;
         SavePointY = savePointY;
         SavePointZ = savePointZ;
