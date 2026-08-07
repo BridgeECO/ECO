@@ -122,7 +122,7 @@ public class PoolManager : MonoBehaviourSingleton<PoolManager>
                 return poolInfo.Prefab;
             }
         }
-        Debug.LogError($"[ObjectPool] '{type}' Å¸ÀÔ¿¡ ´ëÇÑ ÇÁ¸®ÆÕ ¼³Á¤ÀÌ _poolInfos¿¡ ´©¶ôµÇ¾ú½À´Ï´Ù!");
+        Debug.LogError($"[ObjectPool] '{type}' íƒ€ì…ì— ëŒ€í•œ í”„ë¦¬íŒ¹ ì •ë³´ê°€ _poolInfosì— ëˆ„ë½ë˜ì—ˆìŠµë‹ˆë‹¤!");
         return null;
     }
 
