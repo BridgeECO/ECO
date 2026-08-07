@@ -59,8 +59,15 @@ public class RespawnManager : MonoBehaviourSingleton<RespawnManager>
             return;
         }
 
+        // 파일 기록에 실패해도 리스폰 지점은 갱신한다. 저장은 실패했더라도
+        // 이번 세션에서 죽었을 때 방금 지난 지점으로 되살아나는 편이 낫다.
         SetRespawnPoint(savePoint);
-        SaveManager.Instance.Save(_respawnPosition);
+
+        // 저장되지 않았는데 갱신 알림을 띄우면 플레이어에게 거짓말이 된다.
+        if (!SaveManager.Instance.Save(_respawnPosition))
+        {
+            return;
+        }
         EventManager.Instance.BroadcastEvent(EEventType.SavePointUpdated);
     }
 
