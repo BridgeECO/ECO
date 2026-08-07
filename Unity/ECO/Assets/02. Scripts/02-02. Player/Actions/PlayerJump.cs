@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class PlayerJump
 {
-    private IPlayerFsmContext _sm;
+    private IPlayerFSMContext _sm;
     private PlayerMotor _motor;
     private PlayerDataSO _data;
 
@@ -13,7 +13,7 @@ public class PlayerJump
 
     public bool IsEarlyReleased => _isEarlyReleased;
 
-    public PlayerJump(IPlayerFsmContext stateMachine, PlayerMotor motor, PlayerDataSO data)
+    public PlayerJump(IPlayerFSMContext stateMachine, PlayerMotor motor, PlayerDataSO data)
     {
         _sm = stateMachine;
         _motor = motor;

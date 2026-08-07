@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class PlayerAirborneState : IPlayerState
 {
-    private IPlayerFsmContext _sm;
+    private IPlayerFSMContext _sm;
     private PlayerInput _input;
     private PlayerSensor _sensor;
     private PlayerMotor _motor;
@@ -10,7 +10,7 @@ public class PlayerAirborneState : IPlayerState
     private PlayerJump _jump;
     private PlayerSlip _slip;
 
-    public PlayerAirborneState(IPlayerFsmContext stateMachine, PlayerDataSO data)
+    public PlayerAirborneState(IPlayerFSMContext stateMachine, PlayerDataSO data)
     {
         _sm = stateMachine;
         _input = stateMachine.Input;

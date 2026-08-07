@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class PlayerHoverState : IPlayerState
 {
-    private IPlayerFsmContext _sm;
+    private IPlayerFSMContext _sm;
     private PlayerInput _input;
     private PlayerSensor _sensor;
     private PlayerMotor _motor;
@@ -10,7 +10,7 @@ public class PlayerHoverState : IPlayerState
 
     private float _hoverTimer;
 
-    public PlayerHoverState(IPlayerFsmContext stateMachine, PlayerDataSO data)
+    public PlayerHoverState(IPlayerFSMContext stateMachine, PlayerDataSO data)
     {
         _sm = stateMachine;
         _input = stateMachine.Input;

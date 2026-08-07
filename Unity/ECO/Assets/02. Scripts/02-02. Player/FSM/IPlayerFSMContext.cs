@@ -6,7 +6,7 @@ using UnityEngine;
 /// State가 PlayerStateMachine 구체 타입을 직접 참조하지 않도록 격리한다.
 /// (SM→State는 IPlayerState, State→SM은 이 인터페이스로 양쪽 모두 추상에 의존)
 /// </summary>
-public interface IPlayerFsmContext
+public interface IPlayerFSMContext
 {
     PlayerInput Input { get; }
     PlayerSensor Sensor { get; }

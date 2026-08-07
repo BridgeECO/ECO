@@ -2,13 +2,13 @@ using UnityEngine;
 
 public class PlayerWallSlideState : IPlayerState
 {
-    private IPlayerFsmContext _sm;
+    private IPlayerFSMContext _sm;
     private PlayerInput _input;
     private PlayerSensor _sensor;
     private PlayerMotor _motor;
     private PlayerDataSO _data;
 
-    public PlayerWallSlideState(IPlayerFsmContext stateMachine, PlayerDataSO data)
+    public PlayerWallSlideState(IPlayerFSMContext stateMachine, PlayerDataSO data)
     {
         _sm = stateMachine;
         _input = stateMachine.Input;

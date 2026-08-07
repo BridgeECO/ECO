@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class PlayerDashState : IPlayerState
 {
-    private IPlayerFsmContext _sm;
+    private IPlayerFSMContext _sm;
     private PlayerInput _input;
     private PlayerSensor _sensor;
     private PlayerMotor _motor;
@@ -11,7 +11,7 @@ public class PlayerDashState : IPlayerState
     private float _dashTimer;
     private Vector2 _dashDirection;
 
-    public PlayerDashState(IPlayerFsmContext stateMachine, PlayerDataSO data)
+    public PlayerDashState(IPlayerFSMContext stateMachine, PlayerDataSO data)
     {
         _sm = stateMachine;
         _input = stateMachine.Input;

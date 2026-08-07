@@ -6,7 +6,7 @@ using UnityEngine;
 using VInspector;
 
 [RequireComponent(typeof(PlayerInput), typeof(PlayerSensor), typeof(PlayerMotor))]
-public class PlayerStateMachine : MonoBehaviour, IPlayerFsmContext
+public class PlayerStateMachine : MonoBehaviour, IPlayerFSMContext
 {
     public Action<EPlayerState> OnStateChanged;
 
