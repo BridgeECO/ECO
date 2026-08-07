@@ -25,12 +25,23 @@ public class SavePoint : MonoBehaviour
     public Room OwnerRoom { get; private set; }
     public int OrderInRoom => _orderInRoom;
 
+    // 한 번 발동한 세이브 포인트는 비활성 상태가 되어 다시 발동하지 않는다.
+    // 리스폰 라이프(2개)로 되살아난 뒤 같은 세이브 포인트를 다시 지나면
+    // 최대치로 회복되어 버려 리스폰 페널티가 사라지기 때문이다.
+    // Room.ResetRoom의 대상이 아니므로 사망해도 이 상태는 유지된다.
+    public bool IsUsed { get; private set; }
+
     // 트리거 중심이 발판에서 떠 있을 수 있어 실제 부활 좌표를 따로 지정할 수 있게 한다.
     public Vector3 RespawnPosition => _respawnPoint != null ? _respawnPoint.position : transform.position;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (!other.CompareTag(nameof(ETags.PlayerInteract)))
+        {
+            return;
+        }
+
+        if (IsUsed)
         {
             return;
         }
@@ -42,6 +53,7 @@ public class SavePoint : MonoBehaviour
             return;
         }
 
+        IsUsed = true;
         RespawnManager.Instance.SetSavePoint(this);
         LifeManager.Instance.SetLifeToMax();
         OnSaved?.Invoke();
