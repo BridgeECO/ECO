@@ -23,9 +23,15 @@ public class RespawnManager : MonoBehaviourSingleton<RespawnManager>
     // 페이드 도중 OnTriggerEnter2D가 재발동한다. SavePoint가 이 플래그로 자신을 억제한다.
     public bool IsRespawning { get; private set; }
 
-    private void Start()
+    private void OnEnable()
     {
+        if (EventManager.Instance == null)
+        {
+            return;
+        }
         EventManager.Instance.AddEventListener(EEventType.PlayerDied, Respawn);
+        EventManager.Instance.AddEventListener<RegionSpawnInfo>(EEventType.RegionInitialized, OnRegionInitialized);
+        EventManager.Instance.AddEventListener<SavePoint>(EEventType.SavePointReached, OnSavePointReached);
     }
 
     private void OnDisable()
@@ -35,9 +41,43 @@ public class RespawnManager : MonoBehaviourSingleton<RespawnManager>
 
     private void RemoveEventListeners()
     {
-        if (MonoBehaviourSingleton<EventManager>.HasInstance)
+        if (EventManager.HasInstance)
         {
             EventManager.Instance.RemoveEventListener(EEventType.PlayerDied, Respawn);
+            EventManager.Instance.RemoveEventListener<RegionSpawnInfo>(EEventType.RegionInitialized, OnRegionInitialized);
+            EventManager.Instance.RemoveEventListener<SavePoint>(EEventType.SavePointReached, OnSavePointReached);
+        }
+    }
+
+    // Region이 초기 배치를 결정하면 리스폰 지점을 갱신하고 플레이어를 이동시킨다.
+    private void OnRegionInitialized(RegionSpawnInfo info)
+    {
+        if (info.SavePoint != null)
+        {
+            SetRespawnPoint(info.SavePoint);
+        }
+        else
+        {
+            SetRespawnPoint(info.Room, info.Position);
+        }
+        TeleportPlayer(info.Position);
+    }
+
+    // 세이브 포인트 통과 이벤트를 수락할지 판단하고, 수락 시 사용 처리·저장·라이프 회복을 수행한다.
+    private void OnSavePointReached(SavePoint savePoint)
+    {
+        // 리스폰은 플레이어를 세이브 포인트 트리거 위로 텔레포트시키므로 페이드 도중 재발동한다.
+        // 막지 않으면 리스폰 라이프(2개)가 즉시 최대치로 덮어써져 하트 연출이 튄다.
+        if (IsRespawning)
+        {
+            return;
+        }
+
+        savePoint.SetUsed();
+        SetSavePoint(savePoint);
+        if (LifeManager.Instance != null)
+        {
+            LifeManager.Instance.SetLifeToMax();
         }
     }
 
@@ -45,7 +85,7 @@ public class RespawnManager : MonoBehaviourSingleton<RespawnManager>
     /// 세이브 포인트 통과 시 리스폰 지점을 갱신하고 저장 파일을 기록한다.
     /// 진행 순서상 앞선 세이브 포인트로만 갱신된다.
     /// </summary>
-    public void SetSavePoint(SavePoint savePoint)
+    private void SetSavePoint(SavePoint savePoint)
     {
         // 직전과 같은 세이브 포인트면 기록될 내용이 동일하므로 파일 쓰기를 생략한다.
         if (savePoint == null || _currentSavePoint == savePoint)
@@ -64,17 +104,37 @@ public class RespawnManager : MonoBehaviourSingleton<RespawnManager>
         SetRespawnPoint(savePoint);
 
         // 저장되지 않았는데 갱신 알림을 띄우면 플레이어에게 거짓말이 된다.
-        if (!SaveManager.Instance.Save(_respawnPosition))
+        if (!TrySaveProgress())
         {
             return;
         }
         EventManager.Instance.BroadcastEvent(EEventType.SavePointUpdated);
     }
 
+    // 저장에 필요한 컨텍스트(씬 이름, 지역)를 수집해 SaveManager에 전달한다.
+    // SaveManager가 Region/SceneTransitionManager를 직접 조회하지 않도록 여기서 모은다.
+    private bool TrySaveProgress()
+    {
+        if (Region.Instance == null || SceneTransitionManager.Instance == null)
+        {
+            return false;
+        }
+
+        string activeSceneName = SceneTransitionManager.Instance.CurrentLoadedRegionScene;
+        if (string.IsNullOrEmpty(activeSceneName) || !System.Enum.TryParse(activeSceneName, out ESceneNames sceneName))
+        {
+            // TitleScene으로 폴백하면 이어하기가 타이틀로 진입하는 슬롯이 만들어지므로 저장 자체를 중단한다.
+            Debug.LogError($"현재 씬 이름('{activeSceneName}')을 ESceneNames로 변환할 수 없어 저장을 건너뜁니다.");
+            return false;
+        }
+
+        return SaveManager.Instance.Save(sceneName, Region.Instance.RegionType, _respawnPosition);
+    }
+
     /// <summary>
     /// 저장 없이 리스폰 지점만 갱신한다. 이어하기 진입 시 사용한다.
     /// </summary>
-    public void SetRespawnPoint(SavePoint savePoint)
+    private void SetRespawnPoint(SavePoint savePoint)
     {
         if (savePoint == null)
         {
@@ -89,7 +149,7 @@ public class RespawnManager : MonoBehaviourSingleton<RespawnManager>
     /// 세이브 포인트 없이 리스폰 지점을 지정한다. 새 게임의 기본 스폰 지점에서 사용한다.
     /// Region 진입마다 반드시 호출되므로, 씬 언로드로 파괴된 세이브 포인트 참조를 여기서 비운다.
     /// </summary>
-    public void SetRespawnPoint(Room room, Vector3 position)
+    private void SetRespawnPoint(Room room, Vector3 position)
     {
         _currentSavePoint = null;
         _saveRoom = room;
@@ -99,7 +159,7 @@ public class RespawnManager : MonoBehaviourSingleton<RespawnManager>
     /// <summary>
     /// 이어하기 진입 시 리스폰 이벤트 없이 플레이어를 세이브포인트 위치로 즉시 이동시킨다.
     /// </summary>
-    public void TeleportPlayer(Vector3 position)
+    private void TeleportPlayer(Vector3 position)
     {
         MovePlayer(position);
     }
@@ -131,9 +191,8 @@ public class RespawnManager : MonoBehaviourSingleton<RespawnManager>
                 LifeManager.Instance.SetLifeOnRespawn();
             }
 
-            // 페이드인 직전에 BGM을 재개한다.
-            // StopBgm()으로 _currentBgmType을 null로 초기화해야 동일 트랙도 다시 재생된다.
-            RestoreBgmForSaveRoom();
+            // 페이드인 직전에 방 복원 완료를 알린다. BGM 재개는 BgmDirector가 구독해 처리한다.
+            EventManager.Instance.BroadcastEvent(EEventType.RespawnStateRestored, _saveRoom);
 
             if (UIManager.Instance != null)
             {
@@ -194,26 +253,5 @@ public class RespawnManager : MonoBehaviourSingleton<RespawnManager>
             }
             rooms[i].ResetRoom();
         }
-    }
-
-    // 리스폰 지점 방 타입에 맞게 BGM을 복구한다.
-    // _currentBgmType이 동일한 값이면 PlayBgm이 스킵되므로,
-    // StopBgm()으로 상태를 null로 초기화한 뒤 재생한다.
-    private void RestoreBgmForSaveRoom()
-    {
-        if (SoundManager.Instance == null)
-        {
-            return;
-        }
-
-        // 보스방은 보스가 추격 시작 시 BGM을 켜므로 여기서는 무음 유지
-        if (_saveRoom != null && _saveRoom.RoomType == ERoomType.Boss)
-        {
-            SoundManager.Instance.StopBgm();
-            return;
-        }
-
-        SoundManager.Instance.StopBgm();
-        SoundManager.Instance.PlayBgm(EBgmType.SyrNormal);
     }
 }

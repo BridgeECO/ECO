@@ -3,9 +3,9 @@ using UnityEngine;
 
 public abstract class InteractionBase : IDisposable
 {
-    protected SpecialObjectBase TargetObject { get; private set; }
+    protected IInteractionTarget TargetObject { get; private set; }
 
-    public InteractionBase(SpecialObjectBase target)
+    public InteractionBase(IInteractionTarget target)
     {
         TargetObject = target;
     }

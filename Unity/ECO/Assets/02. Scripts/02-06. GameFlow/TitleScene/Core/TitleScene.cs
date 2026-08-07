@@ -1,6 +1,7 @@
 using System;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using VInspector;
 
 public class TitleScene : MonoBehaviour
 {
@@ -9,16 +10,20 @@ public class TitleScene : MonoBehaviour
     public Action OnWaitInputStarted;
     public Action OnMenuStarted;
 
+    // 탐색(GetComponentInChildren) 대신 인스펙터에서 직접 바인딩한다.
+    [Foldout("Hierarchy")]
+    [SerializeField]
+    private UI_TitleButtonsKeyboardHandler _keyboardHandler;
+
     public readonly float IntroDuration = 5f;
 
     private ETitleState _currentState = ETitleState.Intro;
 
     private void Start()
     {
-        var keyboardHandler = GetComponentInChildren<UI_TitleButtonsKeyboardHandler>(true);
-        if (keyboardHandler != null)
+        if (_keyboardHandler != null)
         {
-            keyboardHandler.Init(this);
+            _keyboardHandler.Init(this);
         }
 
         PlayIntroSequence().Forget();

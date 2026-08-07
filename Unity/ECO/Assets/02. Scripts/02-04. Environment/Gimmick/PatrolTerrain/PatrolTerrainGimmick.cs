@@ -93,7 +93,7 @@ public class PatrolTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizable
     {
         _patrolCts?.Cancel();
         _patrolCts?.Dispose();
-        _patrolCts = new CancellationTokenSource();
+        _patrolCts = CancellationTokenSource.CreateLinkedTokenSource(OwnerDestroyToken);
     }
 
     private void StartPatrol(TerrainObject target)

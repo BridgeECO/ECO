@@ -46,17 +46,10 @@ public class SavePoint : MonoBehaviour
             return;
         }
 
-        // 리스폰은 플레이어를 이 트리거 위로 텔레포트시키므로 페이드 도중 재발동한다.
-        // 막지 않으면 리스폰 라이프(2개)가 즉시 최대치로 덮어써져 하트 연출이 튄다.
-        if (RespawnManager.Instance == null || RespawnManager.Instance.IsRespawning)
-        {
-            return;
-        }
-
-        IsUsed = true;
-        RespawnManager.Instance.SetSavePoint(this);
-        LifeManager.Instance.SetLifeToMax();
-        OnSaved?.Invoke();
+        // 통과 사실만 발행한다. 리스폰 중 재발동 억제와 저장/라이프 회복 처리는
+        // RespawnManager가 구독해 판단하고, 수락 시 SetUsed를 호출한다.
+        // (SavePoint가 매니저들을 직접 호출하지 않기 위한 구조)
+        EventManager.Instance.BroadcastEvent(EEventType.SavePointReached, this);
     }
 
     public void InitRoom(Room room)
@@ -65,22 +58,31 @@ public class SavePoint : MonoBehaviour
     }
 
     /// <summary>
+    /// 세이브 포인트 통과가 수락되어 사용 처리되었음을 표시한다. RespawnManager가 호출한다.
+    /// </summary>
+    public void SetUsed()
+    {
+        IsUsed = true;
+        OnSaved?.Invoke();
+    }
+
+    /// <summary>
     /// 진행 순서상 other보다 뒤에 있는 세이브 포인트인지 판정한다.
     /// Region의 Room 목록 순서가 1차 기준이고, 같은 방 안에서만 OrderInRoom으로 선후를 가린다.
     /// </summary>
     public bool IsAheadOf(SavePoint other)
     {
-        if (other == null || Region.Instance == null)
+        if (other == null)
         {
             return true;
         }
 
-        int roomIndex = Region.Instance.GetRoomIndex(OwnerRoom);
-        int otherRoomIndex = Region.Instance.GetRoomIndex(other.OwnerRoom);
+        int roomIndex = OwnerRoom != null ? OwnerRoom.Index : Room.INVALID_INDEX;
+        int otherRoomIndex = other.OwnerRoom != null ? other.OwnerRoom.Index : Room.INVALID_INDEX;
 
         // Room 하위에 배치되지 않은 세이브 포인트는 순서를 알 수 없다.
         // 저장 자체를 막으면 진행이 불가능해지므로 이때는 갱신을 허용한다.
-        if (roomIndex == Region.INVALID_ROOM_INDEX || otherRoomIndex == Region.INVALID_ROOM_INDEX)
+        if (roomIndex == Room.INVALID_INDEX || otherRoomIndex == Room.INVALID_INDEX)
         {
             return true;
         }

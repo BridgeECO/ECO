@@ -8,6 +8,9 @@ using VInspector;
 /// </summary>
 public class SoundManager : MonoBehaviourSingleton<SoundManager>
 {
+    // SoundEmitter 등이 매 프레임 폴링하는 대신 구독으로 볼륨 변화를 통지받는다.
+    public System.Action<float> OnSfxVolumeChanged;
+
     private const float BGM_FADE_DURATION = 1.0f;
 
     [Foldout("Hierarchy")]
@@ -24,8 +27,17 @@ public class SoundManager : MonoBehaviourSingleton<SoundManager>
     private float _sfxVolume = 1f;
     private EBgmType? _currentBgmType;
 
-    // SoundEmitter가 매 프레임 참조하는 SFX 전역 볼륨 배율.
+    // SFX 전역 볼륨 배율. 실시간 갱신은 OnSfxVolumeChanged 구독으로 통지받는다.
     public float SfxVolume => _sfxVolume;
+
+    // 월드 SFX 감쇠·거리 계산의 기준점(플레이어). 씬 로드 후 플레이어가 스스로 등록한다.
+    // 오디오 시스템이 플레이어 구체 타입을 탐색(Find)하지 않기 위한 수용점이다.
+    public Transform ListenerTarget { get; private set; }
+
+    public void SetListener(Transform listenerTarget)
+    {
+        ListenerTarget = listenerTarget;
+    }
 
     protected override void Awake()
     {
@@ -169,14 +181,15 @@ public class SoundManager : MonoBehaviourSingleton<SoundManager>
     {
         _sfxVolume = Mathf.Clamp01(volume);
         _sfxController.SetVolume(_sfxVolume);
+        OnSfxVolumeChanged?.Invoke(_sfxVolume);
     }
 
     // 게임 시작 시 PlayerPrefs에 저장된 볼륨 설정을 즉시 적용한다.
     private void LoadSavedVolumes()
     {
-        SetMasterVolume(PlayerPrefs.GetFloat("Settings_Sound_Master", 1f));
-        SetBgmVolume(PlayerPrefs.GetFloat("Settings_Sound_Bgm", 1f));
-        SetSfxVolume(PlayerPrefs.GetFloat("Settings_Sound_Sfx", 1f));
+        SetMasterVolume(PlayerPrefs.GetFloat(SoundVolumeKeys.MASTER, 1f));
+        SetBgmVolume(PlayerPrefs.GetFloat(SoundVolumeKeys.BGM, 1f));
+        SetSfxVolume(PlayerPrefs.GetFloat(SoundVolumeKeys.SFX, 1f));
     }
 
 

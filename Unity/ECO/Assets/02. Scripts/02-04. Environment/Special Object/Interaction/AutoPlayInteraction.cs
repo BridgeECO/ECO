@@ -1,17 +1,18 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class AutoPlayInteraction : InteractionBase
 {
-    public AutoPlayInteraction(SpecialObjectBase target) : base(target) { }
+    public AutoPlayInteraction(IInteractionTarget target) : base(target) { }
 
     public override void OnTriggerEnter2D(Collider2D other)
     {
-        TargetObject.CallInteract();
-        TargetObject.CallSetState(true);
+        TargetObject.Interact();
+        TargetObject.SetState(true);
     }
 
     public override void OnTriggerExit2D(Collider2D other)
     {
-        TargetObject.CallSetState(false);
+        TargetObject.SetState(false);
     }
 }
+

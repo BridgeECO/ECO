@@ -12,6 +12,9 @@ public class Room : MonoBehaviour
     [SerializeField]
     private ERoomType _roomType = ERoomType.Normal;
 
+    // Region의 Room 목록에 없는 방의 인덱스 (진행 순서 판정 불가)
+    public const int INVALID_INDEX = -1;
+
     private BoxCollider2D _cameraBounds;
     private List<IResettable> _resettables;
     private List<SavePoint> _savePoints;
@@ -21,6 +24,9 @@ public class Room : MonoBehaviour
     public Vector2 Center => _cameraBounds.bounds.center;
     public ERoomType RoomType => _roomType;
     public IReadOnlyList<SavePoint> SavePoints => _savePoints;
+    // Region의 Room 목록에서의 순서. 세이브 포인트 진행 순서 판정의 1차 기준으로,
+    // Region이 초기화 시 InitIndex로 주입한다. (SavePoint가 Region을 조회하지 않게 하기 위함)
+    public int Index { get; private set; } = INVALID_INDEX;
 
     private void Awake()
     {
@@ -28,6 +34,11 @@ public class Room : MonoBehaviour
         _resettables = new List<IResettable>();
         GetComponentsInChildren<IResettable>(true, _resettables);
         InitSavePoints();
+    }
+
+    public void InitIndex(int index)
+    {
+        Index = index;
     }
 
     public void ResetRoom()
@@ -56,10 +67,12 @@ public class Room : MonoBehaviour
         }
     }
 
+#if UNITY_EDITOR
     [Button]
     private void SetThisRoomToCurrentRoom()
     {
         Vector3 spawnPoint = _spawnPointForDebug != null ? _spawnPointForDebug.position : transform.position;
         DebugTool.ChangeCurrentRoom(this, spawnPoint);
     }
+#endif
 }

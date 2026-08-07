@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using VInspector;
 
 [RequireComponent(typeof(PlayerInput), typeof(PlayerSensor), typeof(PlayerMotor))]
-public class PlayerStateMachine : MonoBehaviour
+public class PlayerStateMachine : MonoBehaviour, IPlayerFSMContext
 {
     public Action<EPlayerState> OnStateChanged;
 
@@ -20,6 +22,8 @@ public class PlayerStateMachine : MonoBehaviour
     public PlayerSensor Sensor { get; private set; }
     public PlayerMotor Motor { get; private set; }
     public Animator Animator { get; private set; }
+    public Transform Transform => transform;
+    public CancellationToken DestroyToken => this.GetCancellationTokenOnDestroy();
     public PlayerSoundHandler SoundHandler { get; private set; }
     public EPlayerState CurrentPlayerState { get; private set; }
     public float JumpBufferTimer { get; set; }
@@ -37,6 +41,14 @@ public class PlayerStateMachine : MonoBehaviour
         Animator = GetComponent<Animator>();
         SoundHandler = new PlayerSoundHandler(Sensor);
 
+        // 플레이어 루트 컴포넌트들의 조립을 SM이 담당한다.
+        // (PlayerLife가 SM 내부 소유물을 꺼내 쓰는 대신 여기서 주입)
+        PlayerLife playerLife = GetComponent<PlayerLife>();
+        if (playerLife != null)
+        {
+            playerLife.InitSoundHandler(SoundHandler);
+        }
+
         _states = new Dictionary<EPlayerState, IPlayerState>
         {
             { EPlayerState.Grounded, new PlayerGroundedState(this, _playerData) },
@@ -45,18 +57,23 @@ public class PlayerStateMachine : MonoBehaviour
             { EPlayerState.Hover, new PlayerHoverState(this, _playerData) },
             { EPlayerState.Dash, new PlayerDashState(this, _playerData) }
         };
-
-        DebugTool.InitDebugTool(transform);
     }
 
     private void OnEnable()
     {
         Input.OnJumpPressed += HandleJumpPressed;
+        Motor.OnTeleported += InitState;
+        OnStateChanged += SoundHandler.HandleStateChanged;
     }
 
     private void Start()
     {
         ChangeState(EPlayerState.Grounded);
+
+        if (SoundManager.HasInstance)
+        {
+            SoundManager.Instance.SetListener(transform);
+        }
     }
 
     private void Update()
@@ -78,6 +95,11 @@ public class PlayerStateMachine : MonoBehaviour
     private void OnDisable()
     {
         Input.OnJumpPressed -= HandleJumpPressed;
+        Motor.OnTeleported -= InitState;
+        OnStateChanged -= SoundHandler.HandleStateChanged;
+
+        // 비활성화는 상태 전이를 거치지 않으므로 루프 SFX를 여기서 직접 끊는다.
+        SoundHandler.StopAllLoops();
     }
 
     private void HandleJumpPressed()
@@ -93,34 +115,11 @@ public class PlayerStateMachine : MonoBehaviour
             _currentState = state;
             CurrentPlayerState = newState;
             OnStateChanged?.Invoke(newState);
-            NotifySoundHandler(newState);
             _currentState?.Enter();
         }
         else
         {
             Debug.LogError($"Invalid state transition: {newState}");
-        }
-    }
-
-    private void NotifySoundHandler(EPlayerState newState)
-    {
-        switch (newState)
-        {
-            case EPlayerState.Grounded:
-                SoundHandler.OnEnterGrounded();
-                break;
-            case EPlayerState.Airborne:
-                SoundHandler.OnEnterAirborne();
-                break;
-            case EPlayerState.WallSlide:
-                SoundHandler.OnEnterWallSlide();
-                break;
-            case EPlayerState.Hover:
-                SoundHandler.OnEnterHover();
-                break;
-            case EPlayerState.Dash:
-                SoundHandler.OnEnterDash();
-                break;
         }
     }
 

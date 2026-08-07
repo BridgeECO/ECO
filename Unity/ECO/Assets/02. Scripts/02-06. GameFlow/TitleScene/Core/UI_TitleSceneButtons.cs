@@ -40,12 +40,14 @@ public class UI_TitleSceneButtons : MonoBehaviour
     private void OnClickStartBtn()
     {
         SoundManager.Instance.PlayUiSfx(ESfxClip.SUI_Common_Button);
-        UIManager.Instance.PopupHandler.OpenSaveSlotPopup(_saveSlotPanel, ESlotPanelMode.NewGame);
+        _saveSlotPanel.SetMode(ESlotPanelMode.NewGame);
+        UIManager.Instance.PopupHandler.OpenPopup(_saveSlotPanel);
     }
 
     private void OnClickContinueBtn()
     {
         SoundManager.Instance.PlayUiSfx(ESfxClip.SUI_Common_Button);
+        _saveSlotPanel.SetMode(ESlotPanelMode.Continue);
         UIManager.Instance.PopupHandler.OpenPopup(_saveSlotPanel);
     }
 
@@ -58,9 +60,6 @@ public class UI_TitleSceneButtons : MonoBehaviour
     private void OnClickExitBtn()
     {
         SoundManager.Instance.PlayUiSfx(ESfxClip.SUI_Title_EndProgram);
-        if (UIManager.Instance.ExitConfirmPopup != null)
-        {
-            UIManager.Instance.ExitConfirmPopup.Show();
-        }
+        UIManager.Instance.OpenExitConfirmPopup();
     }
 }

@@ -158,8 +158,7 @@ public class NPCEventFlowRunner
 
         using (token.Register(() => tcs.TrySetCanceled()))
         {
-            _uiNPCDialogue.OnDialogueCompleted = null;
-            _uiNPCDialogue.OnDialogueCompleted = () =>
+            _uiNPCDialogue.SetDialogueCompletedCallback(() =>
             {
                 if (eventData.HasChoices && eventData.Choices is not null && 0< eventData.Choices.Count )
                 {
@@ -172,7 +171,7 @@ public class NPCEventFlowRunner
                 {
                     tcs.TrySetResult(eventData);
                 }
-            };
+            });
 
             _uiNPCDialogue.Open(eventData.DialogueLines);
 
@@ -192,7 +191,7 @@ public class NPCEventFlowRunner
             {
                 if (_uiNPCDialogue != null)
                 {
-                    _uiNPCDialogue.OnDialogueCompleted = null;
+                    _uiNPCDialogue.SetDialogueCompletedCallback(null);
                 }
             }
         }

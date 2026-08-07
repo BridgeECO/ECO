@@ -140,7 +140,7 @@ public class UI_SavePointNotice : MonoBehaviour
         }
 
         _isListenerAdded = false;
-        if (MonoBehaviourSingleton<EventManager>.HasInstance)
+        if (EventManager.HasInstance)
         {
             EventManager.Instance.RemoveEventListener(EEventType.SavePointUpdated, OnSavePointUpdated);
         }

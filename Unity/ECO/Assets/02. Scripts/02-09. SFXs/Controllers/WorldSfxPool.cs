@@ -88,7 +88,8 @@ public class WorldSfxPool : MonoBehaviour
         }
     }
 
-    // 플레이어를 아직 못 찾은 경우에만 탐색하여 캐싱한다.
+    // 플레이어가 SoundManager에 등록한 리스너 기준점을 캐싱한다.
+    // (오디오 시스템이 플레이어 구체 타입을 탐색하지 않기 위함)
     private void TryFindPlayer()
     {
         if (_playerTransform != null)
@@ -96,10 +97,9 @@ public class WorldSfxPool : MonoBehaviour
             return;
         }
 
-        var player = FindFirstObjectByType<PlayerStateMachine>();
-        if (player != null)
+        if (SoundManager.HasInstance)
         {
-            _playerTransform = player.transform;
+            _playerTransform = SoundManager.Instance.ListenerTarget;
         }
     }
 

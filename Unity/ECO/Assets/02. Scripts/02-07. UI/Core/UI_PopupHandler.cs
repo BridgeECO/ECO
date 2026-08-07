@@ -39,6 +39,8 @@ public class UI_PopupHandler
             return;
         }
 
+        // 늦게 등장하는 팝업(씬 로드 후 열리는 팝업 포함)도 닫기 경로를 갖도록 여기서 주입한다.
+        popup.SetHandler(this);
         SetTopPopupFocusState(false);
 
         _popups.Push(popup);
@@ -46,22 +48,6 @@ public class UI_PopupHandler
 
         InputHandler.ChangeToUIInput();
         SetPopupFocusState(popup, true);
-    }
-
-    public void OpenSaveSlotPopup(UI_SaveSlotPopup panel, ESlotPanelMode mode)
-    {
-        if (panel.gameObject.activeSelf)
-        {
-            return;
-        }
-
-        SetTopPopupFocusState(false);
-
-        _popups.Push(panel);
-        panel.OpenAsync(mode).Forget();
-
-        InputHandler.ChangeToUIInput();
-        SetPopupFocusState(panel, true);
     }
 
     public void ClosePopup(UI_Popup popup)

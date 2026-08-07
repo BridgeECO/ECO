@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 3808593795159081942}
   - component: {fileID: 7496535760389472727}
   - component: {fileID: 2738394595206423557}
-  - component: {fileID: 5564138418032349042}
   m_Layer: 0
   m_Name: P_Switch_PressurePlateType
   m_TagString: Untagged
@@ -150,21 +149,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _interactionType: 2
   _buttonOneShotDuration: 3
-  _spriteView: {fileID: -3071261625900567300, guid: 5d5dd206ceda8bc4fad30d1013506b59, type: 3}
   _connectedLines:
   - {fileID: 0}
---- !u!114 &5564138418032349042
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2096825329879657545}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ba0d5d1807943d245a934850c3174814, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _spriteRenderer: {fileID: 3808593795159081942}
-  _spriteOn: {fileID: 21300000, guid: ad0634ab888bce643b0d484a1d66bc3c, type: 3}
-  _spriteOff: {fileID: 21300000, guid: f61bc09c672a9cd4fb4743aa45bfac58, type: 3}
+  _spriteView:
+    _spriteRenderer: {fileID: 3808593795159081942}
+    _spriteOn: {fileID: 21300000, guid: ad0634ab888bce643b0d484a1d66bc3c, type: 3}
+    _spriteOff: {fileID: 21300000, guid: f61bc09c672a9cd4fb4743aa45bfac58, type: 3}

@@ -3,14 +3,14 @@ using UnityEngine;
 
 public class PlayerGroundedState : IPlayerState
 {
-    private PlayerStateMachine _sm;
+    private IPlayerFSMContext _sm;
     private PlayerInput _input;
     private PlayerSensor _sensor;
     private PlayerMotor _motor;
     private PlayerDataSO _data;
     private PlayerUnderJump _underJump;
 
-    public PlayerGroundedState(PlayerStateMachine stateMachine, PlayerDataSO data)
+    public PlayerGroundedState(IPlayerFSMContext stateMachine, PlayerDataSO data)
     {
         _sm = stateMachine;
         _input = stateMachine.Input;
@@ -42,7 +42,7 @@ public class PlayerGroundedState : IPlayerState
                 if (_sensor.IsOnPlatform)
                 {
                     _sm.JumpBufferTimer = 0f;
-                    _underJump.ExecuteAsync(_sensor.CurrentPlatformEffector, _sm.GetCancellationTokenOnDestroy()).Forget();
+                    _underJump.ExecuteAsync(_sensor.CurrentPlatformEffector, _sm.DestroyToken).Forget();
                     _sm.ChangeState(EPlayerState.Airborne);
                     return;
                 }

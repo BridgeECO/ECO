@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public enum EPlayerState
 {
     Grounded,
@@ -7,7 +5,4 @@ public enum EPlayerState
     WallSlide,
     Hover,
     Dash,
-
-
-    Count,
 }

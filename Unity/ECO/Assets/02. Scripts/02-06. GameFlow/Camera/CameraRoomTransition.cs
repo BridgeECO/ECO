@@ -16,9 +16,9 @@ public class CameraRoomTransition : MonoBehaviour
     private float _roomTransitionDuration;
 
     [Header("BossRoom")]
-    [SerializeField, Tooltip("º¸½º¹æÀÏ ¶§ Ä«¸Ş¶óÀÇ Z°ª")]
+    [SerializeField, Tooltip("ë³´ìŠ¤ë°©ì¼ ë•Œ ì¹´ë©”ë¼ì˜ Zê°’")]
     private float _bossRoomZValue;
-    [SerializeField, Tooltip("ÀÏ¹İ¹æÀÏ ¶§ Ä«¸Ş¶óÀÇ Z°ª")]
+    [SerializeField, Tooltip("ì¼ë°˜ë°©ì¼ ë•Œ ì¹´ë©”ë¼ì˜ Zê°’")]
     private float _defaultZValue;
 
     private CameraController _cameraController;
@@ -37,20 +37,29 @@ public class CameraRoomTransition : MonoBehaviour
 
     private void OnEnable()
     {
+        if (EventManager.Instance == null)
+        {
+            return;
+        }
         EventManager.Instance.AddEventListener(EEventType.RoomChanged, OnRoomChanged);
     }
 
     private void OnDisable()
     {
-        if (MonoBehaviourSingleton<EventManager>.HasInstance)
-        {
-            EventManager.Instance.RemoveEventListener(EEventType.RoomChanged, OnRoomChanged);
-        }
+        RemoveEventListeners();
     }
 
     private void OnDestroy()
     {
         StopTransition();
+    }
+
+    private void RemoveEventListeners()
+    {
+        if (EventManager.HasInstance)
+        {
+            EventManager.Instance.RemoveEventListener(EEventType.RoomChanged, OnRoomChanged);
+        }
     }
 
     private void OnRoomChanged()

@@ -20,16 +20,19 @@ public class PlayerLife : MonoBehaviour
         _isInvincible = false;
     }
 
-    private void Start()
+    private void OnEnable()
     {
-        // PlayerStateMachine이 동일 GameObject에 있으므로 GetComponent로 주입
-        var stateMachine = GetComponent<PlayerStateMachine>();
-        if (stateMachine != null)
+        if (EventManager.Instance == null)
         {
-            _soundHandler = stateMachine.SoundHandler;
+            return;
         }
-
         EventManager.Instance.AddEventListener(EEventType.PlayerRespawned, OnPlayerRespawned);
+    }
+
+    // 플레이어 루트의 조립자(PlayerStateMachine.Awake)가 주입한다.
+    public void InitSoundHandler(PlayerSoundHandler soundHandler)
+    {
+        _soundHandler = soundHandler;
     }
 
     private void Update()
@@ -51,11 +54,12 @@ public class PlayerLife : MonoBehaviour
     private void OnDisable()
     {
         _activeObstacles.Clear();
+        RemoveEventListeners();
     }
 
-    private void OnDestroy()
+    private void RemoveEventListeners()
     {
-        if (MonoBehaviourSingleton<EventManager>.HasInstance)
+        if (EventManager.HasInstance)
         {
             EventManager.Instance.RemoveEventListener(EEventType.PlayerRespawned, OnPlayerRespawned);
         }

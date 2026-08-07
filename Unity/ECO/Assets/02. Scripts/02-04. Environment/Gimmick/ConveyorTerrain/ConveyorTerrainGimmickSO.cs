@@ -9,6 +9,10 @@ public class ConveyorTerrainGimmickSO : TerrainGimmickBaseSO
     [SerializeField]
     private bool _isPathVisible = true;
 
+    // 기존에는 소유자가 Move/Patrol만 이동 김믹으로 검사해 컨베이어 지형이
+    // 이동 김믹으로 분류되지 않는 버그가 있었다. 컨베이어도 지형을 이동시킨다.
+    public override bool IsMovementGimmick => true;
+
     public override TerrainGimmickBase CreateGimmick(TerrainGimmickEntry entry)
     {
         return new ConveyorTerrainGimmick(ActivationType, IsInverted, entry, _pathLinePrefab, _isPathVisible);

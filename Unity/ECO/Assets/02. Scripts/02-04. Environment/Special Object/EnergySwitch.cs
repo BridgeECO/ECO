@@ -8,7 +8,10 @@ public class EnergySwitch : SpecialObjectBase
     [SerializeField]
     private List<EnergyLine> _connectedLines = new List<EnergyLine>();
 
-    private SwitchSpriteView _spriteView;
+    // 인라인 직렬화 뷰. 별도 컴포넌트 취득(GetComponent) 없이 인스펙터에서 함께 설정한다.
+    [SerializeField]
+    private SwitchSpriteView _spriteView = new SwitchSpriteView();
+
     private bool _isOn = false;
 
     // 원래의 퀘스트 최초 발동 시에만 1회 수행한다.
@@ -17,8 +20,7 @@ public class EnergySwitch : SpecialObjectBase
     protected override void Awake()
     {
         base.Awake();
-        _spriteView = GetComponent<SwitchSpriteView>();
-        _spriteView?.Refresh(_isOn);
+        _spriteView.Refresh(_isOn);
     }
 
     protected override void Interact()
@@ -46,7 +48,7 @@ public class EnergySwitch : SpecialObjectBase
         }
 
         _isOn = isOn;
-        _spriteView?.Refresh(_isOn);
+        _spriteView.Refresh(_isOn);
 
         if (SoundManager.HasInstance)
         {
@@ -69,7 +71,8 @@ public class EnergySwitch : SpecialObjectBase
     }
 
     // 최초 On 발동 시, UseTracking이 설정된 첫 번째 라인에 한해 트래킹을 요청한다.
-    // EnergyLineTracker의 정적 이벤트로 발행하므로 씬에 Tracker가 없어도 안전하다.
+    // Tracker는 PersistentScene에 있어 씬 간 직접 참조가 불가능하므로 이벤트로 발행한다.
+    // (스위치가 EnergyLineTracker 타입을 직접 알지 않게 하기 위함)
     private void RequestTrackingIfNeeded()
     {
         if (_hasTriggeredTracking)
@@ -84,7 +87,7 @@ public class EnergySwitch : SpecialObjectBase
         }
 
         _hasTriggeredTracking = true;
-        EnergyLineTracker.OnTrackingRequested?.Invoke(trackingTarget);
+        EventManager.Instance.BroadcastEvent(EEventType.EnergyLineTrackingRequested, trackingTarget);
     }
 
     private EnergyLine FindFirstTrackingLine()

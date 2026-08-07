@@ -275,7 +275,7 @@ public class UI_LifeDisplay : MonoBehaviour
         }
 
         _isInitialized = false;
-        if (MonoBehaviourSingleton<EventManager>.HasInstance)
+        if (EventManager.HasInstance)
         {
             EventManager.Instance.RemoveEventListener(EEventType.LifeChanged, OnLifeChanged);
         }

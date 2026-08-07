@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using VInspector;
@@ -7,14 +8,17 @@ using Cysharp.Threading.Tasks;
 
 public class UI_NPCDialogue : MonoBehaviour
 {
-    public Action OnDialogueCompleted;
+    // 외부(NPCEventFlowRunner)가 public 필드에 직접 대입하지 않도록 캡슐화한다.
+    // SetDialogueCompletedCallback으로만 주입하며, Close 시 자동으로 해제된다.
+    private Action _onDialogueCompleted;
 
     [Foldout("Hierarchy")]
     [SerializeField]
     private UI_NPCDialogueAnimator _animator;
 
+    // 인라인 직렬화 텍스트 박스. 별도 컴포넌트 참조 대신 이 클래스가 소유한다.
     [SerializeField]
-    private UI_NPCDialogueTextBox _textBox;
+    private UI_NPCDialogueTextBox _textBox = new UI_NPCDialogueTextBox();
 
     [SerializeField]
     private UI_NPCChoice _choiceUI;
@@ -56,6 +60,12 @@ public class UI_NPCDialogue : MonoBehaviour
         }
     }
 
+    /// <summary>마지막 페이지에서 진행 입력 시 호출될 콜백을 지정한다. null로 해제한다.</summary>
+    public void SetDialogueCompletedCallback(Action onCompleted)
+    {
+        _onDialogueCompleted = onCompleted;
+    }
+
     public void Open(string[] lines)
     {
         if (lines is null || lines.Length == 0)
@@ -85,7 +95,7 @@ public class UI_NPCDialogue : MonoBehaviour
 
         if (_lines.Length - 1 <= _currentPageIndex)
         {
-            OnDialogueCompleted?.Invoke();
+            _onDialogueCompleted?.Invoke();
             return;
         }
 
@@ -103,6 +113,7 @@ public class UI_NPCDialogue : MonoBehaviour
 
     public void Close()
     {
+        _onDialogueCompleted = null;
         _isShowingChoices = false;
         _isTransitioning = false;
         _isPrintingText = false;
@@ -122,6 +133,7 @@ public class UI_NPCDialogue : MonoBehaviour
 
     public async UniTask CloseAsync()
     {
+        _onDialogueCompleted = null;
         _isShowingChoices = false;
         _isTransitioning = false;
         _isPrintingText = false;
@@ -141,48 +153,65 @@ public class UI_NPCDialogue : MonoBehaviour
 
     private async UniTaskVoid OpenDialogueFlowAsync()
     {
-        _isTransitioning = true;
-        await _animator.PlayFadeInAsync();
-        if (this == null || !IsDialogueOpen)
+        // 텍스트 박스는 POCO라 스스로 파괴를 감지할 수 없으므로 소유자의 토큰을 넘긴다.
+        CancellationToken cancellationToken = this.GetCancellationTokenOnDestroy();
+        try
         {
-            return;
+            _isTransitioning = true;
+            await _animator.PlayFadeInAsync();
+            if (this == null || !IsDialogueOpen)
+            {
+                return;
+            }
+
+            PlayDialogueSfx();
+            _isPrintingText = true;
+            _isTransitioning = false;
+
+            await _textBox.ShowPageAsync(_lines[_currentPageIndex], _currentPageIndex, _lines.Length, cancellationToken);
+            if (!IsDialogueOpen)
+            {
+                return;
+            }
+
+            _isPrintingText = false;
         }
-
-        PlayDialogueSfx();
-        _isPrintingText = true;
-        _isTransitioning = false;
-
-        await _textBox.ShowPageAsync(_lines[_currentPageIndex], _currentPageIndex, _lines.Length);
-        if (this == null || !IsDialogueOpen)
+        catch (OperationCanceledException)
         {
-            return;
+            // 대화 UI가 파괴되어 취소된 경우다. 진행 중이던 트윈은 함께 정리된다.
         }
-
-        _isPrintingText = false;
     }
 
     private async UniTaskVoid TransitionToNextPageAsync()
     {
-        _isTransitioning = true;
-        await _textBox.HideAsync();
-        if (this == null || !IsDialogueOpen)
+        CancellationToken cancellationToken = this.GetCancellationTokenOnDestroy();
+        try
         {
-            return;
+            _isTransitioning = true;
+            await _textBox.HideAsync(cancellationToken);
+            if (this == null || !IsDialogueOpen)
+            {
+                return;
+            }
+
+            _currentPageIndex++;
+
+            PlayDialogueSfx();
+            _isPrintingText = true;
+            _isTransitioning = false;
+
+            await _textBox.ShowPageAsync(_lines[_currentPageIndex], _currentPageIndex, _lines.Length, cancellationToken);
+            if (!IsDialogueOpen)
+            {
+                return;
+            }
+
+            _isPrintingText = false;
         }
-
-        _currentPageIndex++;
-
-        PlayDialogueSfx();
-        _isPrintingText = true;
-        _isTransitioning = false;
-
-        await _textBox.ShowPageAsync(_lines[_currentPageIndex], _currentPageIndex, _lines.Length);
-        if (this == null || !IsDialogueOpen)
+        catch (OperationCanceledException)
         {
-            return;
+            // 대화 UI가 파괴되어 취소된 경우다. 진행 중이던 트윈은 함께 정리된다.
         }
-
-        _isPrintingText = false;
     }
 
     private void PlayDialogueSfx()

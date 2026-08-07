@@ -8,14 +8,16 @@ public class BossEnergySwitch : SpecialObjectBase
     [SerializeField]
     private List<TerrainObject> _connectedTargets = new List<TerrainObject>();
 
-    private SwitchSpriteView _spriteView;
+    // 인라인 직렬화 뷰. 별도 컴포넌트 취득(GetComponent) 없이 인스펙터에서 함께 설정한다.
+    [SerializeField]
+    private SwitchSpriteView _spriteView = new SwitchSpriteView();
+
     private bool _isOn = false;
 
     protected override void Awake()
     {
         base.Awake();
-        _spriteView = GetComponent<SwitchSpriteView>();
-        _spriteView?.Refresh(_isOn);
+        _spriteView.Refresh(_isOn);
     }
 
     protected override void OnTriggerEnter2D(Collider2D other)
@@ -52,7 +54,7 @@ public class BossEnergySwitch : SpecialObjectBase
         }
 
         _isOn = isOn;
-        _spriteView?.Refresh(_isOn);
+        _spriteView.Refresh(_isOn);
 
         foreach (TerrainObject target in _connectedTargets)
         {

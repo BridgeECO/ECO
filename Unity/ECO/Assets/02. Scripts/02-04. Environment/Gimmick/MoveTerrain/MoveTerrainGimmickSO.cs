@@ -9,6 +9,8 @@ public class MoveTerrainGimmickSO : TerrainGimmickBaseSO
     [SerializeField]
     private bool _isPathVisible = true;
 
+    public override bool IsMovementGimmick => true;
+
     public override TerrainGimmickBase CreateGimmick(TerrainGimmickEntry entry)
     {
         return new MoveTerrainGimmick(ActivationType, IsInverted, entry, _pathLinePrefab, _isPathVisible);

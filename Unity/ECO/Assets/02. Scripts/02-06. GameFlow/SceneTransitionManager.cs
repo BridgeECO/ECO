@@ -74,12 +74,20 @@ public class SceneTransitionManager : MonoBehaviourSingleton<SceneTransitionMana
         // 저장은 이 값을 ESceneNames로 변환해 기록하므로, 채택 시점에 채워 두지 않으면
         // 세이브 포인트를 밟아도 저장이 중단된다.
         _currentLoadedRegionScene = preloadedScene.name;
+        BroadcastGameplaySceneChanged();
 
         if (_player != null)
         {
             _player.SetActive(true);
         }
         Debug.Log($"이미 열려 있는 '{preloadedScene.name}'에서 시작합니다. 타이틀 씬을 로드하지 않습니다.");
+    }
+
+    // 구독자(UIManager, PlayerInput 등)가 매 프레임 IsGameplayScene을 조회하지 않도록
+    // 게임플레이 여부가 바뀌는 시점마다 통지한다.
+    private void BroadcastGameplaySceneChanged()
+    {
+        EventManager.Instance.BroadcastEvent(EEventType.GameplaySceneChanged, IsGameplayScene);
     }
 
     // PersistentScene과 타이틀을 제외한, 열려 있는 첫 인게임 씬.
@@ -135,6 +143,7 @@ public class SceneTransitionManager : MonoBehaviourSingleton<SceneTransitionMana
         Scene newlyLoadedScene = SceneManager.GetSceneByName(sceneName);
         SceneManager.SetActiveScene(newlyLoadedScene);
         _currentLoadedRegionScene = sceneName;
+        BroadcastGameplaySceneChanged();
 
         if (_player != null)
         {
@@ -151,6 +160,7 @@ public class SceneTransitionManager : MonoBehaviourSingleton<SceneTransitionMana
             return;
         }
         _isTransitioning = true;
+        EventManager.Instance.BroadcastEvent(EEventType.TransitionStateChanged, true);
         InputHandler.BlockInput();
 
         Time.timeScale = 1f;
@@ -161,7 +171,8 @@ public class SceneTransitionManager : MonoBehaviourSingleton<SceneTransitionMana
 
         try
         {
-            PlayTransitionBgm(targetSceneName);
+            // BGM 전환은 BgmDirector가 구독해 처리한다.
+            EventManager.Instance.BroadcastEvent(EEventType.SceneTransitionStarted, targetSceneName);
 
             await UIManager.Instance.FadeOutAsync(1f, this.GetCancellationTokenOnDestroy());
 
@@ -172,6 +183,7 @@ public class SceneTransitionManager : MonoBehaviourSingleton<SceneTransitionMana
         finally
         {
             _isTransitioning = false;
+            EventManager.Instance.BroadcastEvent(EEventType.TransitionStateChanged, false);
             InputHandler.UnblockInput();
         }
     }
@@ -179,23 +191,5 @@ public class SceneTransitionManager : MonoBehaviourSingleton<SceneTransitionMana
     public async UniTask TransitionToTitleAsync()
     {
         await TransitionToNewRegionAsync(ESceneNames.TitleScene);
-    }
-
-    // 전환 대상 씬에 따라 적절한 BGM으로 크로스페이드한다.
-    // Title 씬으로 복귀할 때는 Title BGM, 인게임 씬 진입 시 SyrNormal BGM으로 전환한다.
-    private void PlayTransitionBgm(ESceneNames targetSceneName)
-    {
-        if (!SoundManager.HasInstance)
-        {
-            return;
-        }
-
-        if (targetSceneName == ESceneNames.TitleScene)
-        {
-            SoundManager.Instance.PlayBgm(EBgmType.Title);
-            return;
-        }
-
-        SoundManager.Instance.PlayBgm(EBgmType.SyrNormal);
     }
 }

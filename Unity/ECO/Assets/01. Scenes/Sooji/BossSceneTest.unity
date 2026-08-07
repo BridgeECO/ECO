@@ -2561,6 +2561,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4f7fc9d7fdc1d94782e473797fd975c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _followTarget: {fileID: 1936596916}
   _cameraYOffset: 3
   _trackingTimeAfterTransition: 0.2
 --- !u!114 &667192220
@@ -3929,8 +3930,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Respawn
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 4fb4b51c5f4e84cfc940851f0728bfbc, type: 2}
-  m_sharedMaterial: {fileID: -1895591174926498930, guid: 4fb4b51c5f4e84cfc940851f0728bfbc, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: dbd8374f1dbde00429f26ef4414bd103, type: 2}
+  m_sharedMaterial: {fileID: -4516803714574628671, guid: dbd8374f1dbde00429f26ef4414bd103, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -5120,6 +5121,8 @@ MonoBehaviour:
   - {fileID: 1013079857}
   - {fileID: 1235466937}
   - {fileID: 2118061579}
+  _heartSprites: []
+  _frameInterval: 0.0333
 --- !u!4 &1687107861 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1970478039626273190, guid: aefca409521d23c419120c86b0fc4544, type: 3}
@@ -6197,6 +6200,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c4859a728bb40ee4c94d7adee5ded22c, type: 3}
+--- !u!4 &1936596916 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5776003008716666939, guid: c4859a728bb40ee4c94d7adee5ded22c, type: 3}
+  m_PrefabInstance: {fileID: 1936596915}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1955944002
 GameObject:
   m_ObjectHideFlags: 0

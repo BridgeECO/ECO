@@ -107,7 +107,7 @@ public class MoveTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizable
     {
         _moveCts?.Cancel();
         _moveCts?.Dispose();
-        _moveCts = new CancellationTokenSource();
+        _moveCts = CancellationTokenSource.CreateLinkedTokenSource(OwnerDestroyToken);
     }
 
     private void UpdateMoveDirection(bool isActivated)

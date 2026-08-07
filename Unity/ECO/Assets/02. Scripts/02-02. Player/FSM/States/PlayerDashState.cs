@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class PlayerDashState : IPlayerState
 {
-    private PlayerStateMachine _sm;
+    private IPlayerFSMContext _sm;
     private PlayerInput _input;
     private PlayerSensor _sensor;
     private PlayerMotor _motor;
@@ -11,7 +11,7 @@ public class PlayerDashState : IPlayerState
     private float _dashTimer;
     private Vector2 _dashDirection;
 
-    public PlayerDashState(PlayerStateMachine stateMachine, PlayerDataSO data)
+    public PlayerDashState(IPlayerFSMContext stateMachine, PlayerDataSO data)
     {
         _sm = stateMachine;
         _input = stateMachine.Input;
@@ -25,7 +25,7 @@ public class PlayerDashState : IPlayerState
         _dashTimer = 0f;
 
         Vector2 mouseWorldPos = _input.MouseWorldPosition;
-        _dashDirection = (mouseWorldPos - (Vector2)_sm.transform.position).normalized;
+        _dashDirection = (mouseWorldPos - (Vector2)_sm.Transform.position).normalized;
 
         _motor.SetVelocity(_dashDirection * _data.DashSpeed);
     }

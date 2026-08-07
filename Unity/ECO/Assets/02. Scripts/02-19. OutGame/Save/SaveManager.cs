@@ -2,51 +2,46 @@ using System.IO;
 using Newtonsoft.Json;
 using UnityEngine;
 
-public class SaveManager : MonoBehaviourSingleton<SaveManager>
+// 파일 입출력과 현재 세이브 데이터 보관만 담당하는 순수 C# 클래스.
+// Unity 생명주기와 씬 오브젝트에 의존하지 않으므로 MonoBehaviour가 아닌 POCO 싱글턴으로 관리한다.
+public class SaveManager : POCOSingleton<SaveManager>
 {
     public int CurrentSlotIndex { get; set; }
     public SaveData CurrentSaveData { get; private set; }
 
     private const string SaveFileNameFormat = "saveData_{0}.json";
 
+    public SaveManager()
+    {
+        CurrentSaveData = new SaveData();
+    }
+
     public void ResetCurrentSaveData()
     {
         CurrentSaveData = null;
     }
 
-    protected override void Awake()
+    // 도메인 리로드 비활성화 환경에서 플레이 세션 간 상태 잔류 방지
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void InitStaticState()
     {
-        base.Awake();
-        CurrentSaveData = new SaveData();
+        ResetInstance();
     }
 
     /// <summary>
     /// 세이브 포인트 좌표를 현재 슬롯에 기록한다. 실제로 파일을 쓴 경우에만 true를 반환한다.
-    /// 호출자가 저장 성공 여부에 따라 연출을 분기할 수 있어야 하므로 bool을 돌려준다.
+    /// 씬/지역 컨텍스트는 호출자(RespawnManager)가 수집해 전달한다.
+    /// (SaveManager가 Region/SceneTransitionManager를 직접 조회하지 않기 위함)
     /// </summary>
-    public bool Save(Vector3 savePointPosition)
+    public bool Save(ESceneNames sceneName, ERegions region, Vector3 savePointPosition)
     {
-        Region region = Region.Instance;
-        if (region == null)
-        {
-            return false;
-        }
-
         if (CurrentSaveData is null)
         {
             CurrentSaveData = new SaveData();
         }
 
-        string activeSceneName = SceneTransitionManager.Instance != null ? SceneTransitionManager.Instance.CurrentLoadedRegionScene : null;
-        if (string.IsNullOrEmpty(activeSceneName) || !System.Enum.TryParse(activeSceneName, out ESceneNames sceneName))
-        {
-            // TitleScene으로 폴백하면 이어하기가 타이틀로 진입하는 슬롯이 만들어지므로 저장 자체를 중단한다.
-            Debug.LogError($"현재 씬 이름('{activeSceneName}')을 ESceneNames로 변환할 수 없어 저장을 건너뜁니다.");
-            return false;
-        }
-
         CurrentSaveData.SceneName = sceneName;
-        CurrentSaveData.Region = region.RegionType;
+        CurrentSaveData.Region = region;
         CurrentSaveData.SavePointPosition = savePointPosition;
         Save(CurrentSlotIndex, CurrentSaveData.ToDTO());
         return true;

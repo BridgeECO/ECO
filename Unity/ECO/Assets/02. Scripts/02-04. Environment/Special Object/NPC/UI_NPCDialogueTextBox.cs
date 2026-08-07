@@ -1,12 +1,17 @@
+using System;
+using System.Threading;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
-using VInspector;
 using Cysharp.Threading.Tasks;
 
-public class UI_NPCDialogueTextBox : MonoBehaviour
+/// <summary>
+/// 대화 텍스트 타이핑·페이지 표시를 담당한다. Unity 생명주기가 필요 없어
+/// 컴포넌트가 아닌 직렬화 클래스로 두고, UI_NPCDialogue가 인라인 필드로 소유한다.
+/// </summary>
+[Serializable]
+public class UI_NPCDialogueTextBox
 {
-    [Foldout("Hierarchy")]
     [SerializeField]
     private TextMeshProUGUI _dialogueText;
 
@@ -16,7 +21,6 @@ public class UI_NPCDialogueTextBox : MonoBehaviour
     [SerializeField]
     private GameObject _continueIndicator;
 
-    [Foldout("Settings")]
     [SerializeField]
     private float _fadeDuration;
 
@@ -25,19 +29,19 @@ public class UI_NPCDialogueTextBox : MonoBehaviour
 
     private Tween _typewriterTween;
 
-    public async UniTask ShowPageAsync(string text, int currentIndex, int totalCount)
+    public async UniTask ShowPageAsync(string text, int currentIndex, int totalCount, CancellationToken cancellationToken)
     {
         SetText(text);
         RefreshPageIndicator(currentIndex, totalCount);
         RefreshContinueIndicator(currentIndex, totalCount);
         SetTextAlpha(1f);
-        await PlayTypewriterAsync();
+        await PlayTypewriterAsync(cancellationToken);
     }
 
-    public async UniTask HideAsync()
+    public async UniTask HideAsync(CancellationToken cancellationToken)
     {
         KillTypewriter();
-        await PlayTextFadeOutAsync();
+        await PlayTextFadeOutAsync(cancellationToken);
     }
 
     public void SkipPrinting()
@@ -107,7 +111,7 @@ public class UI_NPCDialogueTextBox : MonoBehaviour
         _typewriterTween = null;
     }
 
-    private async UniTask PlayTypewriterAsync()
+    private async UniTask PlayTypewriterAsync(CancellationToken cancellationToken)
     {
         if (_dialogueText == null)
         {
@@ -137,8 +141,8 @@ public class UI_NPCDialogueTextBox : MonoBehaviour
         .SetEase(Ease.Linear)
         .SetUpdate(UpdateType.Normal, true);
 
-        await _typewriterTween.ToUniTask();
-        if (this == null || _dialogueText == null)
+        await _typewriterTween.ToUniTask(cancellationToken: cancellationToken);
+        if (_dialogueText == null)
         {
             return;
         }
@@ -146,7 +150,7 @@ public class UI_NPCDialogueTextBox : MonoBehaviour
         _dialogueText.maxVisibleCharacters = totalVisibleCharacters;
     }
 
-    private async UniTask PlayTextFadeOutAsync()
+    private async UniTask PlayTextFadeOutAsync(CancellationToken cancellationToken)
     {
         if (_dialogueText == null)
         {
@@ -154,6 +158,7 @@ public class UI_NPCDialogueTextBox : MonoBehaviour
         }
 
         _dialogueText.DOKill();
-        await _dialogueText.DOFade(0f, _fadeDuration).SetEase(Ease.InQuad).ToUniTask();
+        await _dialogueText.DOFade(0f, _fadeDuration).SetEase(Ease.InQuad)
+            .ToUniTask(cancellationToken: cancellationToken);
     }
 }

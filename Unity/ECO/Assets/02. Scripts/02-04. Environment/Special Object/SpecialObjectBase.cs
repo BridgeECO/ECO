@@ -3,7 +3,7 @@ using UnityEngine;
 using VInspector;
 
 [RequireComponent(typeof(Collider2D))]
-public abstract class SpecialObjectBase : MonoBehaviour, IResettable
+public abstract class SpecialObjectBase : MonoBehaviour, IResettable, IInteractionTarget
 {
     public Action OnInteract;
 
@@ -24,21 +24,8 @@ public abstract class SpecialObjectBase : MonoBehaviour, IResettable
 
     protected virtual void Awake()
     {
-        switch (_interactionType)
-        {
-            case EInteractionType.ButtonPressAndHold:
-                _interaction = new ButtonPressAndHoldInteraction(this);
-                break;
-            case EInteractionType.ButtonOneShotTimer:
-                _interaction = new ButtonOneShotTimerInteraction(this, _buttonOneShotDuration);
-                break;
-            case EInteractionType.AutoPlay:
-                _interaction = new AutoPlayInteraction(this);
-                break;
-            case EInteractionType.PressurePlate:
-                _interaction = new PressurePlateInteraction(this);
-                break;
-        }
+        // 파생 Interaction 구체 타입 선택은 팩토리가 담당한다. (베이스→파생 의존 제거)
+        _interaction = InteractionFactory.Create(_interactionType, this, _buttonOneShotDuration);
     }
 
     protected virtual void OnDisable()
@@ -86,12 +73,14 @@ public abstract class SpecialObjectBase : MonoBehaviour, IResettable
     {
     }
 
-    public void CallInteract()
+    // Interaction에게만 노출되는 진입점. 명시적 인터페이스 구현이라
+    // 일반 참조로는 호출할 수 없어 protected 캡슐화가 유지된다.
+    void IInteractionTarget.Interact()
     {
         Interact();
     }
 
-    public void CallSetState(bool isOn)
+    void IInteractionTarget.SetState(bool isOn)
     {
         SetState(isOn);
     }

@@ -14,6 +14,8 @@ public class PlayerSoundHandler
     // 씬 기본 지형 타입 — PlayerStateMachine이 씬 진입 시 Set으로 주입
     private ETerrainSoundType _defaultTerrainType = ETerrainSoundType.Scrap;
     private bool _isHoverLoopPlaying;
+    // Hover 이탈(루프 정지) 감지를 위해 직전 상태를 기억한다.
+    private EPlayerState _lastState = EPlayerState.Grounded;
     // Walk SFX 쿨다운 (Loop 의미이지만 PlayerSFX 풀 방식이라 주기 재생)
     private float _walkSfxTimer;
     private const float WALK_SFX_INTERVAL = 0.38f;
@@ -33,41 +35,53 @@ public class PlayerSoundHandler
         _defaultTerrainType = type;
     }
 
-    // ──────────────────────────────────────────
-    // 상태별 진입/종료 SFX (PlayerStateMachine.OnStateChanged에서 호출)
-    // ──────────────────────────────────────────
-
-    public void OnEnterAirborne()
-    {
-        StopWalkLoop();
-    }
-
-    public void OnEnterGrounded()
-    {
-        PlayLandSfx();
-    }
-
-    public void OnEnterWallSlide()
-    {
-        StopWalkLoop();
-        PlayHitWallSfx();
-    }
-
-    public void OnEnterHover()
-    {
-        StopWalkLoop();
-        PlayHoverLoop();
-    }
-
-    public void OnExitHover()
+    /// <summary>
+    /// 플레이어 비활성화처럼 상태 전이 없이 사운드를 끊어야 할 때 재생 중인 루프를 모두 정지한다.
+    /// 호출하지 않으면 Hover 상태로 비활성화됐을 때 루프 SFX가 계속 재생된다.
+    /// </summary>
+    public void StopAllLoops()
     {
         StopHoverLoop();
+        StopWalkLoop();
     }
 
-    public void OnEnterDash()
+    // ──────────────────────────────────────────
+    // 상태별 진입/종료 SFX (PlayerStateMachine.OnStateChanged 구독)
+    // ──────────────────────────────────────────
+
+    /// <summary>
+    /// 상태 전이 시 사운드 매핑을 이 클래스가 소유한다.
+    /// (FSM이 상태별 사운드 메서드를 switch로 직접 매핑하지 않도록 분리)
+    /// </summary>
+    public void HandleStateChanged(EPlayerState newState)
     {
-        StopWalkLoop();
-        PlayDashSfx();
+        if (_lastState == EPlayerState.Hover && newState != EPlayerState.Hover)
+        {
+            StopHoverLoop();
+        }
+        _lastState = newState;
+
+        switch (newState)
+        {
+            case EPlayerState.Grounded:
+                PlayLandSfx();
+                break;
+            case EPlayerState.Airborne:
+                StopWalkLoop();
+                break;
+            case EPlayerState.WallSlide:
+                StopWalkLoop();
+                PlayHitWallSfx();
+                break;
+            case EPlayerState.Hover:
+                StopWalkLoop();
+                PlayHoverLoop();
+                break;
+            case EPlayerState.Dash:
+                StopWalkLoop();
+                PlayDashSfx();
+                break;
+        }
     }
 
     // ──────────────────────────────────────────

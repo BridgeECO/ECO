@@ -1,8 +1,13 @@
+using System;
 using UnityEngine;
 using VInspector;
 
 public class PlayerMotor : MonoBehaviour
 {
+    // 텔레포트 직후 후처리(FSM 상태 초기화 등)를 구독자에게 맡긴다.
+    // Motor가 상위 컴포넌트(PlayerStateMachine)를 역참조하지 않기 위한 이벤트다.
+    public Action OnTeleported;
+
     [Foldout("Project")]
     [SerializeField]
     private PhysicsMaterial2D _frictionlessMaterial;
@@ -11,12 +16,10 @@ public class PlayerMotor : MonoBehaviour
     public Vector2 ExternalVelocity { get; set; }
     // 스폰 시 플레이어는 오른쪽(Quaternion.identity)을 바라보므로 true로 초기화
     public bool IsForward { get; private set; } = true;
-    private PlayerStateMachine _stateMachine;
     private Rigidbody2D _rigidbody;
 
     private void Awake()
     {
-        _stateMachine = GetComponent<PlayerStateMachine>();
         _rigidbody = GetComponent<Rigidbody2D>();
         if (_frictionlessMaterial == null)
         {
@@ -87,6 +90,6 @@ public class PlayerMotor : MonoBehaviour
         _rigidbody.position = position;
         Velocity = Vector2.zero;
         _rigidbody.linearVelocity = Vector2.zero;
-        _stateMachine.InitState();
+        OnTeleported?.Invoke();
     }
 }

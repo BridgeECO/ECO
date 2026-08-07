@@ -5,12 +5,24 @@ using UnityEngine;
 public abstract class UI_Popup : MonoBehaviour
 {
     public bool IsClosing { get; private set; }
+    // 팝업을 여닫는 핸들러. UIManager(등록 팝업) 또는 UI_PopupHandler(열릴 때)가 주입한다.
+    // 팝업이 UIManager 싱글턴을 역참조하지 않기 위한 통로다.
+    protected UI_PopupHandler Handler { get; private set; }
+
+    // 개폐 스케일 연출. 컴포넌트 탐색(TryGetComponent) 대신 인라인으로 소유한다.
+    [SerializeField]
+    private UI_ScaleAnimator _scaleAnimation = new UI_ScaleAnimator();
 
     private UI_SpriteAnimator[] _spriteAnimators;
 
     protected virtual void Awake()
     {
         _spriteAnimators = GetComponentsInChildren<UI_SpriteAnimator>(true);
+    }
+
+    public void SetHandler(UI_PopupHandler handler)
+    {
+        Handler = handler;
     }
 
     public virtual void InitPopup()
@@ -20,10 +32,7 @@ public abstract class UI_Popup : MonoBehaviour
     public virtual async UniTask OpenAsync()
     {
         gameObject.SetActive(true);
-        if (TryGetComponent<UI_ScaleAnimator>(out var animator))
-        {
-            await animator.PlayOpenAsync(this.GetCancellationTokenOnDestroy());
-        }
+        await _scaleAnimation.PlayOpenAsync(transform, this.GetCancellationTokenOnDestroy());
     }
 
     public virtual async UniTask CloseAsync()
@@ -61,10 +70,7 @@ public abstract class UI_Popup : MonoBehaviour
             return;
         }
 
-        if (TryGetComponent<UI_ScaleAnimator>(out var animator))
-        {
-            await animator.PlayCloseAsync(this.GetCancellationTokenOnDestroy());
-        }
+        await _scaleAnimation.PlayCloseAsync(transform, this.GetCancellationTokenOnDestroy());
 
         if (this == null)
         {
@@ -85,6 +91,6 @@ public abstract class UI_Popup : MonoBehaviour
 
     public void OnCloseButtonClicked()
     {
-        UIManager.Instance.PopupHandler.ClosePopup(this);
+        Handler?.ClosePopup(this);
     }
 }

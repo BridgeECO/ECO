@@ -29,35 +29,108 @@ public class UIManager : MonoBehaviourSingleton<UIManager>
     [SerializeField]
     private UI_Popup_NewGameConfirm _popupNewGameConfirm;
 
+    // 씬 전환 상태를 매 프레임 싱글턴 조회하는 대신 이벤트로 통지받아 캐싱한다.
+    private bool _isTransitioning;
+    private bool _isGameplayScene;
+    private bool _isListenerAdded;
+
     public UI_PopupHandler PopupHandler { get; private set; }
-    public UI_Popup_Settings SettingsPopup => _popupSettings;
-    public IUIConfirm3Buttons SettingsCloseConfirmPopup => _popupSettingsCloseConfirm;
-    public IUIConfirm2Buttons SettingsResetConfirmPopup => _popupSettingsResetConfirm;
-    public IUIConfirm2Buttons ExitConfirmPopup => _popupExitConfirm;
-    public UI_Popup_NewGameConfirm NewGameConfirmPopup => _popupNewGameConfirm;
 
     protected override void Awake()
     {
         base.Awake();
         PopupHandler = new UI_PopupHandler();
+        InitPopupHandlers();
+    }
+
+    // 등록된 팝업들에 핸들러를 주입한다. 팝업이 스스로를 열어야 하는 경우(Show 계열)에도
+    // UIManager 싱글턴을 역참조하지 않게 하기 위함이다.
+    private void InitPopupHandlers()
+    {
+        UI_Popup[] popups =
+        {
+            _popupPauseMenu, _popupSettings, _popupSettingsCloseConfirm,
+            _popupSettingsResetConfirm, _popupExitConfirm, _popupNewGameConfirm
+        };
+        foreach (UI_Popup popup in popups)
+        {
+            if (popup != null)
+            {
+                popup.SetHandler(PopupHandler);
+            }
+        }
+    }
+
+    private void OnEnable()
+    {
+        AddEventListeners();
     }
 
     private void Start()
     {
         PopupHandler.Init();
+
+        // OnEnable 시점에는 EventManager의 Awake가 아직 안 돌았을 수 있어 한 번 더 시도한다.
+        AddEventListeners();
+
+        // 구독 이전에 확정된 상태(에디터 멀티 씬 채택 등)를 한 번 동기화한다.
+        if (SceneTransitionManager.Instance != null)
+        {
+            _isTransitioning = SceneTransitionManager.Instance.IsTransitioning;
+            _isGameplayScene = SceneTransitionManager.Instance.IsGameplayScene;
+        }
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape) && !_isTransitioning)
+        {
+            HandleEscapeInput();
+        }
     }
 
     private void OnDisable()
     {
         PopupHandler.Dispose();
+        RemoveEventListeners();
     }
 
-    private void Update()
+    // OnEnable과 Start 양쪽에서 호출되므로 중복 등록을 플래그로 막는다.
+    private void AddEventListeners()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) && !(SceneTransitionManager.Instance != null && SceneTransitionManager.Instance.IsTransitioning))
+        if (_isListenerAdded || EventManager.Instance == null)
         {
-            HandleEscapeInput();
+            return;
         }
+
+        EventManager.Instance.AddEventListener<bool>(EEventType.TransitionStateChanged, SetTransitioning);
+        EventManager.Instance.AddEventListener<bool>(EEventType.GameplaySceneChanged, SetGameplayScene);
+        _isListenerAdded = true;
+    }
+
+    private void RemoveEventListeners()
+    {
+        if (!_isListenerAdded)
+        {
+            return;
+        }
+
+        _isListenerAdded = false;
+        if (EventManager.HasInstance)
+        {
+            EventManager.Instance.RemoveEventListener<bool>(EEventType.TransitionStateChanged, SetTransitioning);
+            EventManager.Instance.RemoveEventListener<bool>(EEventType.GameplaySceneChanged, SetGameplayScene);
+        }
+    }
+
+    private void SetTransitioning(bool isTransitioning)
+    {
+        _isTransitioning = isTransitioning;
+    }
+
+    private void SetGameplayScene(bool isGameplayScene)
+    {
+        _isGameplayScene = isGameplayScene;
     }
 
     private void HandleEscapeInput()
@@ -68,13 +141,11 @@ public class UIManager : MonoBehaviourSingleton<UIManager>
             PopupHandler.CloseLatestPopup();
         }
         // 팝업이 없다면 일시정지 메뉴 열기 (인게임 플레이 중일 때만 허용)
-        else if (SceneTransitionManager.Instance != null && SceneTransitionManager.Instance.IsGameplayScene)
+        else if (_isGameplayScene)
         {
             OpenPauseMenuPopup();
         }
-        InputHandler.TriggerCancelEvent();
     }
-
 
     public void OpenPauseMenuPopup()
     {
@@ -90,6 +161,27 @@ public class UIManager : MonoBehaviourSingleton<UIManager>
         {
             PopupHandler.OpenPopup(_popupSettings);
         }
+    }
+
+    // 타이틀 씬 등 다른 씬의 UI가 PersistentScene의 팝업을 직접 참조할 수 없으므로
+    // 크로스 씬 진입점은 의도가 드러나는 메서드로만 노출한다.
+    public void OpenExitConfirmPopup()
+    {
+        if (_popupExitConfirm != null)
+        {
+            _popupExitConfirm.Show();
+        }
+    }
+
+    /// <summary>새 게임 확인 팝업을 띄우고 플레이어가 확인을 눌렀는지 반환한다.</summary>
+    public async UniTask<bool> ShowNewGameConfirmAsync(System.Threading.CancellationToken cancellationToken)
+    {
+        if (_popupNewGameConfirm == null)
+        {
+            return true;
+        }
+        UI_Popup_NewGameConfirm.EPopupResult result = await _popupNewGameConfirm.ShowPopupAsync(cancellationToken);
+        return result == UI_Popup_NewGameConfirm.EPopupResult.Confirm;
     }
 
     public void FadeIn(float duration = 1f, Action onComplete = null)

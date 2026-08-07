@@ -196,6 +196,50 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5776003008716666939, guid: c4859a728bb40ee4c94d7adee5ded22c, type: 3}
   m_PrefabInstance: {fileID: 254770379}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &745560531
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 745560532}
+  - component: {fileID: 745560533}
+  m_Layer: 0
+  m_Name: BgmDirector
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &745560532
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 745560531}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1707510240388866341}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &745560533
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 745560531}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5203edf6693125f4396e4a41db4f0fc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &846240391
 GameObject:
   m_ObjectHideFlags: 0
@@ -283,10 +327,34 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 120763734849724041, guid: 6601a48c4847da341bcf3b02e90ade3e, type: 3}
+      propertyPath: _closeConfirmPopup
+      value: 
+      objectReference: {fileID: 1325880376}
+    - target: {fileID: 120763734849724041, guid: 6601a48c4847da341bcf3b02e90ade3e, type: 3}
+      propertyPath: _resetConfirmPopup
+      value: 
+      objectReference: {fileID: 1325880375}
     - target: {fileID: 2977885308316829974, guid: 6601a48c4847da341bcf3b02e90ade3e, type: 3}
       propertyPath: m_Name
       value: ======= [ Persistent Canvas ] =======
       objectReference: {fileID: 0}
+    - target: {fileID: 3465064381716528888, guid: 6601a48c4847da341bcf3b02e90ade3e, type: 3}
+      propertyPath: _settingsPopup
+      value: 
+      objectReference: {fileID: 1325880377}
+    - target: {fileID: 6119061856042505092, guid: 6601a48c4847da341bcf3b02e90ade3e, type: 3}
+      propertyPath: _settingsPopup
+      value: 
+      objectReference: {fileID: 1325880377}
+    - target: {fileID: 7035204322057810989, guid: 6601a48c4847da341bcf3b02e90ade3e, type: 3}
+      propertyPath: _settingsPopup
+      value: 
+      objectReference: {fileID: 1325880377}
+    - target: {fileID: 7035204322057810989, guid: 6601a48c4847da341bcf3b02e90ade3e, type: 3}
+      propertyPath: _exitConfirmPopup
+      value: 
+      objectReference: {fileID: 1325880374}
     - target: {fileID: 8333902624423376938, guid: 6601a48c4847da341bcf3b02e90ade3e, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -560,9 +628,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 7579147376322705185, guid: fddbb2706c7050c40b5b5029b544f51d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 745560532}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fddbb2706c7050c40b5b5029b544f51d, type: 3}
+--- !u!4 &1707510240388866341 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7579147376322705185, guid: fddbb2706c7050c40b5b5029b544f51d, type: 3}
+  m_PrefabInstance: {fileID: 1707510240388866340}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &4482923624138204123
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -571,6 +647,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 910708795708416886, guid: 92b9f9e170f70f54cbf6d7ac6f2b0720, type: 3}
+      propertyPath: _followTarget
+      value: 
+      objectReference: {fileID: 254770381}
     - target: {fileID: 910708795708416886, guid: 92b9f9e170f70f54cbf6d7ac6f2b0720, type: 3}
       propertyPath: _playerTransform
       value: 

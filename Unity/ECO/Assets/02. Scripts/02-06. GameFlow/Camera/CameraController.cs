@@ -1,9 +1,16 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
+using VInspector;
 
 public class CameraController : MonoBehaviour
 {
+    // 플레이어와 같은 PersistentScene에 상주하므로 탐색 대신 인스펙터에서 직접 바인딩한다.
+    [Foldout("Hierarchy")]
+    [SerializeField]
+    private Transform _followTarget;
+
+    [Foldout("Settings")]
     [Header("Camera Offset")]
     [SerializeField]
     private float _cameraYOffset;
@@ -15,8 +22,6 @@ public class CameraController : MonoBehaviour
     private Vector2 _currentRoomMin;
     private Vector2 _currentRoomMax;
 
-    private Transform _playerTransform;
-
     private float _halfCamHeight;
     private float _halfCamWidth;
     private Vector3 _velocity = Vector3.zero;
@@ -27,19 +32,14 @@ public class CameraController : MonoBehaviour
 
     private void Awake()
     {
-        PlayerStateMachine playerStateMachine = FindFirstObjectByType<PlayerStateMachine>(FindObjectsInactive.Include);
-        if (playerStateMachine != null)
+        if (_followTarget == null)
         {
-            _playerTransform = playerStateMachine.transform;
-        }
-        else
-        {
-            Debug.LogError($"[CameraController] PlayerStateMachine을 씬에서 찾을 수 없습니다.");
+            Debug.LogError($"[CameraController] 추적 대상(_followTarget)이 인스펙터에 할당되지 않았습니다.");
         }
 
         InitCameraController();
 
-        if (_playerTransform != null)
+        if (_followTarget != null)
         {
             Vector3 clamped = GetClampedPosition();
             transform.position = clamped;
@@ -48,7 +48,7 @@ public class CameraController : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (!IsFollowingPlayer)
+        if (!IsFollowingPlayer || _followTarget == null)
         {
             return;
         }
@@ -94,8 +94,8 @@ public class CameraController : MonoBehaviour
 
     public Vector3 GetClampedPosition()
     {
-        float clampedX = ClampAxis(_playerTransform.position.x, _currentRoomMin.x, _currentRoomMax.x, _halfCamWidth);
-        float clampedY = ClampAxis(_playerTransform.position.y + _cameraYOffset, _currentRoomMin.y, _currentRoomMax.y, _halfCamHeight);
+        float clampedX = ClampAxis(_followTarget.position.x, _currentRoomMin.x, _currentRoomMax.x, _halfCamWidth);
+        float clampedY = ClampAxis(_followTarget.position.y + _cameraYOffset, _currentRoomMin.y, _currentRoomMax.y, _halfCamHeight);
         return new Vector3(clampedX, clampedY, transform.position.z);
     }
     public Vector3 GetClampedPosition(Vector3 targetPos)

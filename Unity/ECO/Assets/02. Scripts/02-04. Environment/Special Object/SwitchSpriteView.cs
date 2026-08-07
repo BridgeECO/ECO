@@ -1,21 +1,22 @@
+using System;
 using UnityEngine;
-using VInspector;
 
 /// <summary>
 /// 스위치의 On/Off 상태에 따라 SpriteRenderer의 스프라이트를 교체한다.
-/// EnergySwitch, BossEnergySwitch 공통으로 사용 가능한 뷰 컴포넌트.
+/// Unity 생명주기가 필요 없어 컴포넌트가 아닌 직렬화 클래스로 두고,
+/// EnergySwitch/BossEnergySwitch가 인라인 필드로 소유한다.
 /// </summary>
-public class SwitchSpriteView : UnityEngine.MonoBehaviour
+[Serializable]
+public class SwitchSpriteView
 {
-    [Foldout("Sprites")]
-    [UnityEngine.SerializeField]
-    private UnityEngine.SpriteRenderer _spriteRenderer;
+    [SerializeField]
+    private SpriteRenderer _spriteRenderer;
 
-    [UnityEngine.SerializeField]
-    private UnityEngine.Sprite _spriteOn;
+    [SerializeField]
+    private Sprite _spriteOn;
 
-    [UnityEngine.SerializeField]
-    private UnityEngine.Sprite _spriteOff;
+    [SerializeField]
+    private Sprite _spriteOff;
 
     public void Refresh(bool isOn)
     {

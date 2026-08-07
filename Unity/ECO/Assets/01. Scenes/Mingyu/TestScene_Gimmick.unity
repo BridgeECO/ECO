@@ -693,7 +693,6 @@ GameObject:
   - component: {fileID: 131606621}
   - component: {fileID: 131606624}
   - component: {fileID: 131606625}
-  - component: {fileID: 131606622}
   m_Layer: 0
   m_Name: UI_NPCDialogueTab
   m_TagString: Untagged
@@ -730,23 +729,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 131606616}
   m_CullTransparentMesh: 1
---- !u!114 &131606622
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 131606616}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a78e06e79b07fe24cb72b0102ce7de75, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _dialogueText: {fileID: 990688833}
-  _pageIndicatorText: {fileID: 0}
-  _continueIndicator: {fileID: 0}
-  _fadeDuration: 0.3
-  _textPrintSpeed: 100
 --- !u!114 &131606624
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -760,8 +742,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _animator: {fileID: 131606625}
-  _textBox: {fileID: 131606622}
+  _textBox:
+    _dialogueText: {fileID: 990688833}
+    _pageIndicatorText: {fileID: 0}
+    _continueIndicator: {fileID: 0}
+    _fadeDuration: 0.3
+    _textPrintSpeed: 100
   _choiceUI: {fileID: 116679034}
+  _dialogueClip: 0
+  _hasDialogueSfx: 0
 --- !u!114 &131606625
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1985,6 +1974,8 @@ MonoBehaviour:
   - {fileID: 1568003630}
   - {fileID: 1573228333}
   - {fileID: 1698996953}
+  _heartSprites: []
+  _frameInterval: 0.0333
 --- !u!1001 &570617542
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5289,6 +5280,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 910708795708416886, guid: 92b9f9e170f70f54cbf6d7ac6f2b0720, type: 3}
+      propertyPath: _followTarget
+      value: 
+      objectReference: {fileID: 1445714896194426395}
+    - target: {fileID: 910708795708416886, guid: 92b9f9e170f70f54cbf6d7ac6f2b0720, type: 3}
       propertyPath: _playerTransform
       value: 
       objectReference: {fileID: 0}
@@ -6639,6 +6634,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c4859a728bb40ee4c94d7adee5ded22c, type: 3}
+--- !u!4 &1445714896194426395 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5776003008716666939, guid: c4859a728bb40ee4c94d7adee5ded22c, type: 3}
+  m_PrefabInstance: {fileID: 1445714896194426394}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2048225868174512647
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7203,8 +7203,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Respawn
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 4fb4b51c5f4e84cfc940851f0728bfbc, type: 2}
-  m_sharedMaterial: {fileID: -1895591174926498930, guid: 4fb4b51c5f4e84cfc940851f0728bfbc, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: dbd8374f1dbde00429f26ef4414bd103, type: 2}
+  m_sharedMaterial: {fileID: -4516803714574628671, guid: dbd8374f1dbde00429f26ef4414bd103, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

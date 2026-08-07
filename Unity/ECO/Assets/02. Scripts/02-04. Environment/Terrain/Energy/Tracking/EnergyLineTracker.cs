@@ -6,15 +6,11 @@ using UnityEngine.UI;
 using VInspector;
 
 // 에너지 라인 트래킹 시스템의 유일한 MonoBehaviour 진입점.
-// EnergySwitch가 발행하는 정적 이벤트를 구독하여 시퀀스를 시작하며,
+// EnergySwitch가 발행하는 EnergyLineTrackingRequested 이벤트를 구독하여 시퀀스를 시작하며,
 // 순수 C# 클래스(CameraLogic, FadeLogic)를 소유하고 LateUpdate에서 구동한다.
 [RequireComponent(typeof(CameraController))]
 public class EnergyLineTracker : MonoBehaviour
 {
-    // EnergySwitch가 인스턴스 참조 없이 트래킹을 요청하기 위한 정적 이벤트.
-    // EnergyLineTracker가 씬에 없으면 null이므로 EnergySwitch는 안전하게 Invoke한다.
-    public static Action<EnergyLine> OnTrackingRequested;
-
     private CameraController _cameraController;
 
     [Foldout("Hierarchy")]
@@ -42,6 +38,9 @@ public class EnergyLineTracker : MonoBehaviour
     private EnergyLineTrackingFadeLogic _fadeLogic;
 
     private bool _isRunning;
+    // 자기가 건 입력 차단만 해제하기 위한 플래그.
+    // ForceCleanUp이 무조건 UnblockInput을 호출하면 다른 시스템(리스폰, 씬 전환)의 차단까지 풀 수 있다.
+    private bool _hasBlockedInput;
     private CancellationTokenSource _cts;
 
     private void Awake()
@@ -58,7 +57,11 @@ public class EnergyLineTracker : MonoBehaviour
 
     private void OnEnable()
     {
-        OnTrackingRequested += StartTracking;
+        if (EventManager.Instance == null)
+        {
+            return;
+        }
+        EventManager.Instance.AddEventListener<EnergyLine>(EEventType.EnergyLineTrackingRequested, StartTracking);
     }
 
     private void LateUpdate()
@@ -68,8 +71,16 @@ public class EnergyLineTracker : MonoBehaviour
 
     private void OnDisable()
     {
-        OnTrackingRequested -= StartTracking;
+        RemoveEventListeners();
         ForceCleanUp();
+    }
+
+    private void RemoveEventListeners()
+    {
+        if (EventManager.HasInstance)
+        {
+            EventManager.Instance.RemoveEventListener<EnergyLine>(EEventType.EnergyLineTrackingRequested, StartTracking);
+        }
     }
 
     // EnergySwitch의 정적 이벤트 발행에 의해 호출된다.
@@ -88,7 +99,7 @@ public class EnergyLineTracker : MonoBehaviour
     private async UniTaskVoid PlayTrackingSequenceAsync(EnergyLine targetLine, CancellationToken ct)
     {
         _isRunning = true;
-        InputHandler.BlockInput();
+        BlockPlayerInput();
 
         try
         {
@@ -139,7 +150,7 @@ public class EnergyLineTracker : MonoBehaviour
     {
         _isRunning = false;
         _fadeLogic.Reset();
-        InputHandler.UnblockInput();
+        ReleasePlayerInput();
 
         _cts?.Dispose();
         _cts = null;
@@ -160,6 +171,26 @@ public class EnergyLineTracker : MonoBehaviour
         }
 
         _fadeLogic?.Reset();
+        ReleasePlayerInput();
+    }
+
+    private void BlockPlayerInput()
+    {
+        if (_hasBlockedInput)
+        {
+            return;
+        }
+        _hasBlockedInput = true;
+        InputHandler.BlockInput();
+    }
+
+    private void ReleasePlayerInput()
+    {
+        if (!_hasBlockedInput)
+        {
+            return;
+        }
+        _hasBlockedInput = false;
         InputHandler.UnblockInput();
     }
 }
