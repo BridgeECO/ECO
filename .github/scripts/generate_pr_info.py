@@ -1,3 +1,4 @@
+import json
 import os
 import sys
 from google import genai
@@ -62,10 +63,83 @@ Diff:
 }}
 """
 
+# enum을 비워 보내면 API가 400을 돌려주므로, 라벨 목록이 비었을 땐 제약 없이 보낸다.
+LABEL_SCHEMA = {"type": "STRING"}
+if repo_labels:
+    LABEL_SCHEMA["enum"] = repo_labels
+
+PR_SCHEMA = {
+    "type": "OBJECT",
+    "properties": {
+        "title": {"type": "STRING"},
+        "labels": {"type": "ARRAY", "items": LABEL_SCHEMA},
+        "body": {"type": "STRING"},
+    },
+    "required": ["title", "labels", "body"],
+}
+
 models = [
     'gemini-3-flash-preview',
     'gemini-2.5-flash'
 ]
+
+
+def build_config(model_name):
+    # thinking 토큰이 출력 예산을 잠식하면 응답이 MAX_TOKENS로 잘려 JSON이 깨진 채 나온다.
+    # Gemini 3 계열은 thinking_budget 대신 thinking_level만 받으므로 모델별로 분기한다.
+    if model_name.startswith('gemini-3'):
+        try:
+            thinking = types.ThinkingConfig(thinking_level='low')
+        except Exception:
+            thinking = None
+    else:
+        thinking = types.ThinkingConfig(thinking_budget=0)
+
+    return types.GenerateContentConfig(
+        response_mime_type="application/json",
+        response_schema=PR_SCHEMA,
+        max_output_tokens=16384,
+        thinking_config=thinking,
+    )
+
+
+def parse_response(model_name, response):
+    if response is None:
+        print(f"No response from {model_name}", file=sys.stderr)
+        return None
+
+    finish = response.candidates[0].finish_reason if response.candidates else None
+    text = (response.text or "").strip()
+
+    if not text:
+        print(f"Empty response from {model_name} (finish={finish})", file=sys.stderr)
+        return None
+
+    try:
+        data = json.loads(text)
+    except json.JSONDecodeError as e:
+        # 응답이 잘리면 여기서 걸러진다. 꼬리를 함께 남겨야 로그만 보고 잘림 여부를 판별할 수 있다.
+        print(f"Invalid JSON from {model_name} (finish={finish}): {e}", file=sys.stderr)
+        print(f"...{text[-300:]}", file=sys.stderr)
+        return None
+
+    if isinstance(data, list):
+        data = data[0] if data else None
+
+    if not isinstance(data, dict):
+        print(f"Unexpected JSON shape from {model_name}", file=sys.stderr)
+        return None
+
+    if not isinstance(data.get("title"), str) or not isinstance(data.get("body"), str):
+        print(f"Missing title/body from {model_name} (finish={finish})", file=sys.stderr)
+        return None
+
+    if not isinstance(data.get("labels"), list):
+        data["labels"] = []
+
+    return data
+
+
 success = False
 
 for model_name in models:
@@ -73,17 +147,18 @@ for model_name in models:
         response = client.models.generate_content(
             model=model_name,
             contents=prompt,
-            config=types.GenerateContentConfig(
-                response_mime_type="application/json",
-            )
+            config=build_config(model_name),
         )
-        if response and response.text:
-            print(response.text)
-            success = True
-            break
     except Exception as e:
         print(f"Failed {model_name}: {e}", file=sys.stderr)
         continue
+
+    data = parse_response(model_name, response)
+    if data is not None:
+        json.dump(data, sys.stdout, ensure_ascii=False)
+        sys.stdout.write("\n")
+        success = True
+        break
 
 if not success:
     sys.exit(1)
