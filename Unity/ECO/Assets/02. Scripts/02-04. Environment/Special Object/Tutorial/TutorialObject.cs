@@ -81,6 +81,14 @@ public class TutorialObject : MonoBehaviour, IResettable
 
         _isPlayerInRange = true;
 
+        // 표시 중에는 범위를 벗어나도 참조와 조건 상태를 그대로 들고 있다(OnTriggerExit2D 참고).
+        // 여기서 다시 바인딩하면 조건이 초기화되어 다음 프레임에 곧바로 "깨진 것"으로 읽히고,
+        // 플레이어가 조작을 익히지 않았는데도 발동이 끝나버린다.
+        if (Trigger.IsVisible)
+        {
+            return;
+        }
+
         // 발동이 끝난 상태에서도 바인딩해 둔다. 리스폰으로 감시가 되살아났을 때
         // 플레이어가 이미 범위 안이면 진입 이벤트가 다시 오지 않기 때문이다.
         BindPlayer(other);
