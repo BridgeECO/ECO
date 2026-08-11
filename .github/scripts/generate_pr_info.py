@@ -130,12 +130,24 @@ def parse_response(model_name, response):
         print(f"Unexpected JSON shape from {model_name}", file=sys.stderr)
         return None
 
-    if not isinstance(data.get("title"), str) or not isinstance(data.get("body"), str):
+    title = data.get("title")
+    if not isinstance(title, str) or not title.strip() or not isinstance(data.get("body"), str):
         print(f"Missing title/body from {model_name} (finish={finish})", file=sys.stderr)
         return None
 
-    if not isinstance(data.get("labels"), list):
-        data["labels"] = []
+    labels = data.get("labels")
+    if not isinstance(labels, list):
+        labels = []
+
+    # gh pr create 는 저장소에 없는 라벨을 받으면 실패한다. 응답 전체를 버리면 멀쩡한 본문까지
+    # 잃으므로 어긋난 항목만 걸러낸다. 전부 걸러져도 워크플로우가 작성자 라벨만으로 PR을 만든다.
+    valid_labels = [label for label in labels if isinstance(label, str) and label in repo_labels]
+    dropped = len(labels) - len(valid_labels)
+    if dropped:
+        print(f"Dropped {dropped} unknown label(s) from {model_name}", file=sys.stderr)
+
+    data["title"] = title.strip()
+    data["labels"] = valid_labels
 
     return data
 
