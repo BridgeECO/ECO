@@ -3,11 +3,9 @@ using UnityEngine;
 
 /// <summary>
 /// 이 오브젝트의 인식 범위에서 낙사한 횟수가 지정 횟수에 도달하면 만족한다.
-/// 건너뛰기 구간에서 여러 번 떨어졌다는 것은 곧 이 플레이어에게 안내가 필요하다는 신호다.
 ///
-/// 만족이 단조 증가라 스스로 깨지지 않는다. 안내를 거둘 신호를 주는 조건과 반드시 함께 써야 하며,
-/// 의도한 조합은 이 조건(게이트) + NoJumpForDurationCondition(점프하면 익힌 것)이다.
-/// 단독으로 두면 한 번 뜬 안내가 사라지지 않는다.
+/// 만족이 단조 증가라 스스로 깨지지 않으므로, 안내를 거둘 조건(NoJumpForDurationCondition 등)과
+/// 반드시 함께 써야 한다. 단독으로 두면 한 번 뜬 안내가 사라지지 않는다.
 ///
 /// 클래스명 변경 시 직렬화된 참조가 끊긴다. [MovedFrom] 없이 리네임하지 말 것.
 /// </summary>
@@ -17,8 +15,8 @@ public class RepeatedFallCondition : TutorialConditionBase
     [SerializeField]
     private int _requiredFallCount = 2;
 
-    // 플레이어는 발판에서 떨어지며 인식 범위를 먼저 벗어난 뒤에야 즉사 지형에 닿는다.
-    // 그래서 "낙사 순간 범위 안"이 아니라 "범위를 벗어난 지 이만큼 이내"로 판정해야 한다.
+    // 플레이어는 떨어지며 범위를 먼저 벗어난 뒤에 즉사 지형에 닿는다. 낙사 순간에는 이미 범위 밖이라
+    // "벗어난 지 이만큼 이내"로 판정해야 한다.
     [SerializeField]
     private float _fallGraceSeconds = 2f;
 
@@ -58,12 +56,8 @@ public class RepeatedFallCondition : TutorialConditionBase
         }
     }
 
-    // 낙하 기록은 리스폰을 넘어 유지되어야 한다. 리스폰마다 호출되는 이 지점에서 지우면
-    // 매번 0으로 돌아가 "여러 번 실패"에 영원히 도달하지 못한다.
-    public override void ResetCondition()
-    {
-        ExpireGrace();
-    }
+    // ResetCondition은 일부러 구현하지 않는다. 범위 이탈에서도 호출되는데 떨어지는 순간이 곧
+    // 범위 이탈이라, 여기서 되돌리면 정작 세어야 할 낙사를 놓친다.
 
     public override void Tick(bool isPlayerInRange, float deltaTime)
     {
@@ -73,16 +67,15 @@ public class RepeatedFallCondition : TutorialConditionBase
             return;
         }
 
-        // 유예 시간을 넘긴 뒤로는 더 잴 이유가 없다. 계속 더하면 값만 무한히 커진다.
+        // 유예를 넘긴 뒤로는 값만 무한히 커지므로 더 재지 않는다.
         if (_secondsSinceInRange <= _fallGraceSeconds)
         {
             _secondsSinceInRange += deltaTime;
         }
     }
 
-    // 즉사는 전역 이벤트라 맵에 배치된 모든 튜토리얼 오브젝트에 똑같이 전달된다.
-    // 자기 구간의 낙사만 골라내지 않으면, 한 곳에서 실패한 기록으로
-    // 아직 가보지도 않은 다른 구간의 안내가 진입 즉시 떠버린다.
+    // 전역 이벤트라 모든 튜토리얼 오브젝트에 똑같이 전달된다. 자기 구간의 낙사만 골라내지 않으면
+    // 한 곳에서 실패한 기록으로 다른 구간의 안내가 떠버린다.
     private void HandlePlayerInstantKilled()
     {
         if (_fallGraceSeconds < _secondsSinceInRange)
@@ -91,6 +84,9 @@ public class RepeatedFallCondition : TutorialConditionBase
         }
 
         _fallCount++;
+
+        // 즉사 지형에 닿은 채 리스폰 연출이 진행되면 충돌이 재발생한다. 한 번의 접근당 한 번만 센다.
+        ExpireGrace();
     }
 
     private void ExpireGrace()
