@@ -17,6 +17,8 @@ public class EnergySwitch : SpecialObjectBase
     // 원래의 퀘스트 최초 발동 시에만 1회 수행한다.
     private bool _hasTriggeredTracking = false;
 
+    public bool IsOn => _isOn;
+
     protected override void Awake()
     {
         base.Awake();
