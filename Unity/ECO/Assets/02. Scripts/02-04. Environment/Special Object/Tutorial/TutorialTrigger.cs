@@ -28,8 +28,7 @@ public class TutorialTrigger
             return false;
         }
 
-        // 표시 판정보다 먼저 갱신한다. 범위 밖에서 벌어지는 일을 감시하는 조건(RepeatedFallCondition 등)은
-        // 범위를 벗어난 뒤 얼마나 지났는지를 알아야 자기 구간의 사건만 골라낼 수 있다.
+        // 표시 판정보다 먼저 갱신한다. 범위 밖을 감시하는 조건은 벗어난 뒤 경과 시간을 알아야 한다.
         _conditionSet.Tick(isPlayerInRange, deltaTime);
 
         if (_currentState == ETutorialObjectState.Idle && !isPlayerInRange)

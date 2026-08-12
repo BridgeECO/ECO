@@ -49,8 +49,7 @@ public class NoInputForDurationCondition : TutorialConditionBase
 
     public override void Tick(bool isPlayerInRange, float deltaTime)
     {
-        // 리스폰·팝업·씬 전환 중에는 입력 자체가 발행되지 않으므로,
-        // 이때 타이머를 돌리면 "가만히 있다"고 오판하게 된다.
+        // 입력이 막힌 동안에는 입력 자체가 발행되지 않아, 타이머를 돌리면 가만히 있다고 오판한다.
         if (!isPlayerInRange || InputHandler.IsInputBlocked)
         {
             return;
@@ -69,8 +68,8 @@ public class NoInputForDurationCondition : TutorialConditionBase
         }
     }
 
-    // 점프와 대시는 이벤트로 들어온다. 이동은 PlayerInput이 이벤트를 노출하지 않아 폴링하고,
-    // 상호작용 키는 PlayerInput이 아예 다루지 않아 InteractionBase 파생 클래스들과 같은 방식으로 직접 읽는다.
+    // 이동은 PlayerInput이 이벤트를 노출하지 않아 폴링한다. 상호작용 키는 PlayerInput이 다루지 않아
+    // InteractionBase 파생 클래스들과 같은 방식으로 직접 읽는다.
     private bool IsManipulating()
     {
         if (_playerInput != null
