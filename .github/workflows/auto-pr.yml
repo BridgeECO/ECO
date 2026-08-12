@@ -28,7 +28,7 @@ jobs:
           python-version: '3.12'
       - name: Install dependencies
         if: steps.check_pr.outputs.exists == '0'
-        run: pip install google-genai jq
+        run: pip install google-genai
       - name: Fetch Repository Labels
         if: steps.check_pr.outputs.exists == '0'
         env:
@@ -51,11 +51,19 @@ jobs:
           SONGJUNE_PAT: ${{ secrets.SONGJUNE_PERSONAL_TOKEN }}
           BOT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          PR_OBJ=$(jq 'if type=="array" then .[0] else . end' pr_info.json)
-          TITLE=$(echo "$PR_OBJ" | jq -r '.title')
-          BODY=$(echo "$PR_OBJ" | jq -r '.body')
-          AI_LABELS=$(echo "$PR_OBJ" | jq -r '.labels | join(",")')
-          
+          if jq -e 'type=="object" or type=="array"' pr_info.json >/dev/null 2>&1; then
+            PR_OBJ=$(jq 'if type=="array" then .[0] else . end' pr_info.json)
+            TITLE=$(echo "$PR_OBJ" | jq -r '.title')
+            AI_LABELS=$(echo "$PR_OBJ" | jq -r '.labels | join(",")')
+            echo "$PR_OBJ" | jq -r '.body' > pr_body.md
+          else
+            echo "::warning::pr_info.json 파싱 실패 - 커밋 메시지로 대체합니다"
+            cat pr_info.json || true
+            TITLE=$(git log -1 --pretty=%s)
+            AI_LABELS=""
+            git log origin/main..HEAD --pretty=format:'- %s' > pr_body.md
+          fi
+
           case "${{ github.actor }}" in
             "Mingyu0626")
               USER_LABEL="🍎최민규"
@@ -85,8 +93,6 @@ jobs:
             ALL_LABELS="$AI_LABELS,$USER_LABEL"
           fi
           
-          echo "$BODY" > pr_body.md
-          
           GH_TOKEN=$SELECT_TOKEN gh pr create \
             --base main \
             --head ${{ github.ref_name }} \
@@ -94,4 +100,4 @@ jobs:
             --body-file pr_body.md \
             --label "$ALL_LABELS" \
             --assignee "${{ github.actor }}" \
-            --draft || true
+            --draft
