@@ -19,4 +19,15 @@ public readonly struct TutorialConditionContext
         Sensor = sensor;
         PlayerTransform = playerTransform;
     }
+
+    /// <summary>인식 범위에 들어온 콜라이더에서 참조를 역으로 수집해 컨텍스트를 만든다. (NPC와 동일한 방식)</summary>
+    public static TutorialConditionContext FromCollider(Collider2D playerCollider)
+    {
+        PlayerInput input = playerCollider.GetComponentInParent<PlayerInput>();
+        PlayerStateMachine stateMachine = playerCollider.GetComponentInParent<PlayerStateMachine>();
+        PlayerSensor sensor = playerCollider.GetComponentInParent<PlayerSensor>();
+        Transform playerTransform = input != null ? input.transform : playerCollider.transform;
+
+        return new TutorialConditionContext(input, stateMachine, sensor, playerTransform);
+    }
 }
