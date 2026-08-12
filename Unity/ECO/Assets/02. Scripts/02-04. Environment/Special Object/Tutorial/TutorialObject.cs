@@ -56,12 +56,15 @@ public class TutorialObject : MonoBehaviour, IResettable
     private void OnEnable()
     {
         AddEventListeners();
+        Trigger.Activate();
     }
 
     // EventManager가 아직 없는 로드 순서에서도 구독이 성사되도록 한 번 더 시도한다.
+    // 전역 이벤트를 구독하는 조건(RepeatedFallCondition 등)도 같은 순서 문제를 겪으므로 함께 다시 건다.
     private void Start()
     {
         AddEventListeners();
+        Trigger.Activate();
     }
 
     private void Update()
@@ -91,7 +94,7 @@ public class TutorialObject : MonoBehaviour, IResettable
 
         // 발동이 끝난 상태에서도 바인딩해 둔다. 리스폰으로 감시가 되살아났을 때
         // 플레이어가 이미 범위 안이면 진입 이벤트가 다시 오지 않기 때문이다.
-        BindPlayer(other);
+        Trigger.Bind(TutorialConditionContext.FromCollider(other));
     }
 
     private void OnTriggerExit2D(Collider2D other)
@@ -116,7 +119,7 @@ public class TutorialObject : MonoBehaviour, IResettable
     {
         RemoveEventListeners();
         _isPlayerInRange = false;
-        Trigger.Suspend();
+        Trigger.Deactivate();
         HideTutorialImmediate();
     }
     #endregion
@@ -157,18 +160,6 @@ public class TutorialObject : MonoBehaviour, IResettable
         {
             _uiTutorial.HideTutorialImmediate();
         }
-    }
-
-    // 플레이어 전역 접근점이 없고 Find 계열 탐색이 금지되어 있어,
-    // 범위에 들어온 콜라이더에서 역으로 참조를 수집한다. (NPC와 동일한 방식)
-    private void BindPlayer(Collider2D playerCollider)
-    {
-        PlayerInput input = playerCollider.GetComponentInParent<PlayerInput>();
-        PlayerStateMachine stateMachine = playerCollider.GetComponentInParent<PlayerStateMachine>();
-        PlayerSensor sensor = playerCollider.GetComponentInParent<PlayerSensor>();
-        Transform playerTransform = input != null ? input.transform : playerCollider.transform;
-
-        Trigger.Bind(new TutorialConditionContext(input, stateMachine, sensor, playerTransform));
     }
 
     private void AddEventListeners()
