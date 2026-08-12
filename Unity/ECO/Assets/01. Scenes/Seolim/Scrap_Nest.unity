@@ -119,11 +119,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!4 &666286654 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4055738682172626248, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
-  m_PrefabInstance: {fileID: 6277913269822648675}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2094613634
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -221,6 +216,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1ae65a089a1e9c44a9f860163fc1e283, type: 3}
+--- !u!114 &2096931210 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8771467422680677593, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
+  m_PrefabInstance: {fileID: 6277913269822648675}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a4fe4518abf4d5da2e828ebfb23d737, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &6277913269822648675
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -229,14 +235,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 25156672090476615, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -26.52
-      objectReference: {fileID: 0}
-    - target: {fileID: 25156672090476615, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -5.99
-      objectReference: {fileID: 0}
     - target: {fileID: 2053815310187168446, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -277,34 +275,30 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2391023871224915808, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
-      propertyPath: _spawnPointForDebug
+    - target: {fileID: 2635966555421899222, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
+      propertyPath: _targetBoss
       value: 
-      objectReference: {fileID: 666286654}
+      objectReference: {fileID: 2096931210}
+    - target: {fileID: 2635966555421899222, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
+      propertyPath: _triggerAction
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 2845654473629755713, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
       propertyPath: m_Name
       value: Scrap Nest_Region
       objectReference: {fileID: 0}
-    - target: {fileID: 3504411008045812460, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
-      propertyPath: _orderInRoom
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4576081170890048140, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 11.8
-      objectReference: {fileID: 0}
-    - target: {fileID: 4576081170890048140, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.6
-      objectReference: {fileID: 0}
-    - target: {fileID: 8091968062585649841, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -22.66
-      objectReference: {fileID: 0}
-    - target: {fileID: 8091968062585649841, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.03
-      objectReference: {fileID: 0}
+    - target: {fileID: 6152410684733600257, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
+      propertyPath: _targetBoss
+      value: 
+      objectReference: {fileID: 2096931210}
+    - target: {fileID: 7109357812854216922, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
+      propertyPath: _targetBoss
+      value: 
+      objectReference: {fileID: 2096931210}
+    - target: {fileID: 7514958798506155693, guid: 4787b4085b9eac745b83361b386c2b49, type: 3}
+      propertyPath: _targetBoss
+      value: 
+      objectReference: {fileID: 2096931210}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

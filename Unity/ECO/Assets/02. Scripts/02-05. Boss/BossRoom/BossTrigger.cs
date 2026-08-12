@@ -7,8 +7,15 @@ public class BossTrigger : MonoBehaviour, IResettable
     public enum ETriggerTarget { Player, Boss }
 
     [Foldout("Trigger Settings")]
-    [SerializeField, Tooltip("트리거를 발동시킬 대상을 설정하세요.")]
+    [SerializeField]
+    [Tooltip("트리거를 발동시킬 대상을 설정하세요.")]
     private ETriggerTarget _targetType = ETriggerTarget.Player;
+
+    [SerializeField]
+    [Tooltip("이 트리거가 제어할 보스입니다. 새 보스전에서는 직접 할당하세요.")]
+    private BossBase _targetBoss;
+
+    [HideInInspector]
     [SerializeField]
     private EBoss _targetBossType;
     [SerializeField]
@@ -44,15 +51,18 @@ public class BossTrigger : MonoBehaviour, IResettable
 
     private void ExecuteAction()
     {
-        BossBase targetBoss = BossManager.Instance.GetBoss(_targetBossType);
-        if (targetBoss == null)
+        if (_targetBoss == null)
         {
-            return;
+            _targetBoss = BossManager.Instance.GetBoss(_targetBossType);
+            if (_targetBoss == null)
+            {
+                return;
+            }
         }
 
         _hasTriggered = true;
 
-        StartCinematic(targetBoss).Forget();
+        StartCinematic(_targetBoss).Forget();
     }
 
     private async UniTask StartCinematic(BossBase boss)
