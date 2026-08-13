@@ -1,4 +1,6 @@
 using Cysharp.Threading.Tasks;
+using System;
+using System.Threading;
 using UnityEngine;
 using VInspector;
 
@@ -62,29 +64,50 @@ public class BossTrigger : MonoBehaviour, IResettable
 
         _hasTriggered = true;
 
-        StartCinematic(_targetBoss).Forget();
+        CancellationToken triggerToken = this.GetCancellationTokenOnDestroy();
+        CancellationToken bossToken = _targetBoss.GetCancellationTokenOnDestroy();
+        StartCinematic(_targetBoss, triggerToken, bossToken).Forget();
     }
 
-    private async UniTask StartCinematic(BossBase boss)
+    private async UniTask StartCinematic(
+        BossBase boss,
+        CancellationToken triggerToken,
+        CancellationToken bossToken)
     {
-        if (_cinematicSequence != null)
+        using CancellationTokenSource linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
+            triggerToken,
+            bossToken);
+        CancellationToken cancellationToken = linkedCts.Token;
+
+        try
         {
-            await _cinematicSequence.PlayCinematicAsync(boss);
+            if (_cinematicSequence != null)
+            {
+                await _cinematicSequence.PlayCinematicAsync(boss, cancellationToken);
+            }
+            else
+            {
+                ExecuteStateAction(boss);
+            }
         }
-        else
+        catch (OperationCanceledException)
         {
-            if (_triggerAction == EBossState.Chasing)
-            {
-                boss.StartChase();
-            }
-            else if (_triggerAction == EBossState.Groggy)
-            {
-                boss.StartGroggy();
-            }
-            else if (_triggerAction == EBossState.Idle)
-            {
-                boss.StopChase();
-            }
+        }
+    }
+
+    private void ExecuteStateAction(BossBase boss)
+    {
+        if (_triggerAction == EBossState.Chasing)
+        {
+            boss.StartChase();
+        }
+        else if (_triggerAction == EBossState.Groggy)
+        {
+            boss.StartGroggy();
+        }
+        else if (_triggerAction == EBossState.Idle)
+        {
+            boss.StopChase();
         }
     }
 

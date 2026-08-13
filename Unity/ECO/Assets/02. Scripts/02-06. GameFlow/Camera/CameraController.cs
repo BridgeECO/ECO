@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using System.Threading;
 using UnityEngine;
 using VInspector;
 
@@ -114,13 +115,21 @@ public class CameraController : MonoBehaviour
         return (clampMax < clampMin) ? (roomMin + roomMax) * 0.5f : Mathf.Clamp(target, clampMin, clampMax);
     }
 
-    public async UniTask PanToPositionAsync(Vector3 targetPosition, float duration, Ease ease = Ease.InOutCubic)
+    public async UniTask PanToPositionAsync(
+        Vector3 targetPosition,
+        float duration,
+        Ease ease,
+        CancellationToken cancellationToken)
     {
         IsFollowingPlayer = false;
 
+        using CancellationTokenSource linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
+            cancellationToken,
+            this.GetCancellationTokenOnDestroy());
+
         await transform.DOMove(targetPosition, duration)
             .SetEase(ease)
-            .ToUniTask(cancellationToken: this.GetCancellationTokenOnDestroy());
+            .ToUniTask(cancellationToken: linkedCts.Token);
     }
 
     public void MoveTowardsPosition(Vector3 targetPosition, float speed)

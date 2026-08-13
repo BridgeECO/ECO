@@ -16,7 +16,6 @@ public class BossChasingCharacter : BossBase
     [SerializeField]
     [UnityEngine.Serialization.FormerlySerializedAs("_starBerserkAnimation")]
     private float _startBerserkDistance = 30f;
-
     private Rigidbody2D _rigidbody;
     private Collider2D _collider;
     private BossPathFollower _pathFollower;
@@ -44,7 +43,6 @@ public class BossChasingCharacter : BossBase
     protected override void FixedUpdate()
     {
         base.FixedUpdate();
-
         if (IsFrozen)
         {
             return;
@@ -54,7 +52,6 @@ public class BossChasingCharacter : BossBase
             ProcessChase();
             return;
         }
-
         if (CurrentState == EBossState.Idle || CurrentState == EBossState.Groggy)
         {
             _rigidbody.linearVelocity = Vector2.zero;
@@ -77,7 +74,6 @@ public class BossChasingCharacter : BossBase
         CancelTasks();
         base.OnDestroy();
     }
-
     protected override void OnStateChanged(EBossState newState)
     {
         AnimationController.SetState(newState);
@@ -144,6 +140,11 @@ public class BossChasingCharacter : BossBase
         }
         catch (OperationCanceledException)
         {
+            if (this != null)
+            {
+                _rigidbody.linearVelocity = Vector2.zero;
+                StopChase();
+            }
         }
         finally
         {
