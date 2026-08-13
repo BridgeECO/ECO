@@ -28,7 +28,12 @@ public class RepeatedFallCondition : TutorialConditionBase
 
     public override void Activate()
     {
-        Deactivate();
+        // 소유자는 EventManager의 로드 순서를 몰라 Activate를 두 번 부른다. 이미 감시 중인데도
+        // 되감으면 그사이 쌓인 낙사가 지워지므로, 구독에 실패했던 경우에만 다시 시도한다.
+        if (_isListenerAdded)
+        {
+            return;
+        }
 
         _fallCount = 0;
         ExpireGrace();
