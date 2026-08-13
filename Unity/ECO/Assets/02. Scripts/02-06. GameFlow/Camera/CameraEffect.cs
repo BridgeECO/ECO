@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
@@ -18,15 +19,29 @@ public class CameraEffect : MonoBehaviour
 
     public void PlayShake(float duration = 0.5f, float strength = 1f, int vibrato = 10, float randomness = 90f)
     {
-        ShakeCameraAsync(duration, strength, vibrato, randomness).Forget();
+        ShakeCameraAsync(
+            duration,
+            strength,
+            vibrato,
+            randomness,
+            this.GetCancellationTokenOnDestroy()).Forget();
     }
 
-    public async UniTask ShakeCameraAsync(float duration, float strength, int vibrato = 10, float randomness = 90f)
+    public async UniTask ShakeCameraAsync(
+        float duration,
+        float strength,
+        int vibrato = 10,
+        float randomness = 90f,
+        CancellationToken cancellationToken = default)
     {
         transform.DOComplete();
+        using CancellationTokenSource linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
+            cancellationToken,
+            this.GetCancellationTokenOnDestroy());
+
         await transform.DOShakePosition(duration, strength, vibrato, randomness, fadeOut: true)
             .SetLink(gameObject)
-            .ToUniTask(cancellationToken: this.GetCancellationTokenOnDestroy());
+            .ToUniTask(cancellationToken: linkedCts.Token);
 
         transform.localPosition = Vector3.zero;
     }

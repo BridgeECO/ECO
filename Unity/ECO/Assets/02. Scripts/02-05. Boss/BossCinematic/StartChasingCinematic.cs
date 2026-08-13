@@ -24,14 +24,17 @@ public class StartChasingCinematic : BossCinematicBase
     [Tooltip("컷신 도중 활성화할 에너지 라인들")]
     private List<EnergyLine> _connectedLines;
 
-    public override async UniTask PlayCinematicAsync(BossBase boss)
+    public override async UniTask PlayCinematicAsync(BossBase boss, CancellationToken cancellationToken)
     {
         if (boss == null || _camController == null || _camEffect == null)
         {
             return;
         }
 
-        CancellationToken cancellationToken = this.GetCancellationTokenOnDestroy();
+        using CancellationTokenSource linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
+            cancellationToken,
+            this.GetCancellationTokenOnDestroy());
+        CancellationToken linkedToken = linkedCts.Token;
 
         try
         {
@@ -40,7 +43,11 @@ public class StartChasingCinematic : BossCinematicBase
             _camController.IsFollowingPlayer = false;
 
             Vector3 bossTargetPos = _camController.GetClampedPosition(boss.transform.position);
-            await _camController.PanToPositionAsync(bossTargetPos, _panToBossDuration, Ease.InOutCubic);
+            await _camController.PanToPositionAsync(
+                bossTargetPos,
+                _panToBossDuration,
+                Ease.InOutCubic,
+                linkedToken);
 
             if (boss == null)
             {
@@ -51,7 +58,10 @@ public class StartChasingCinematic : BossCinematicBase
 
             ActivateEnergyLines();
 
-            await _camEffect.ShakeCameraAsync(_shakeDuration, _shakeStrength);
+            await _camEffect.ShakeCameraAsync(
+                _shakeDuration,
+                _shakeStrength,
+                cancellationToken: linkedToken);
 
             if (boss == null)
             {
@@ -59,7 +69,7 @@ public class StartChasingCinematic : BossCinematicBase
             }
 
             boss.StartChase();
-            await boss.WaitForStateAsync(EBossState.Chasing, cancellationToken);
+            await boss.WaitForStateAsync(EBossState.Chasing, linkedToken);
         }
         catch (OperationCanceledException)
         {

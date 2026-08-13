@@ -1,8 +1,16 @@
 using Cysharp.Threading.Tasks;
+using System.Threading;
 using UnityEngine;
+using VInspector;
 
 public class BossFloorTransition : MonoBehaviour
 {
+    [Foldout("Hierarchy")]
+    [SerializeField]
+    [Tooltip("이 지형 전환을 사용할 보스입니다. 새 보스전에서는 직접 할당하세요.")]
+    private BossChasingCharacter _boss;
+
+    [HideInInspector]
     [SerializeField] 
     private EBoss _targetBossType;
     [SerializeField] 
@@ -12,12 +20,14 @@ public class BossFloorTransition : MonoBehaviour
     [SerializeField]
     private float _jumpHeight;
 
-    private BossBase _boss;
     private bool _hasTriggered = false;
 
     private void Start()
     {
-        _boss = BossManager.Instance.GetBoss(_targetBossType);
+        if (_boss == null)
+        {
+            _boss = BossManager.Instance.GetBoss(_targetBossType) as BossChasingCharacter;
+        }
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -26,24 +36,35 @@ public class BossFloorTransition : MonoBehaviour
             return;
         }
 
-        if (_boss is SilenceCityBoss silenceBoss)
-        {
-            GroggyEnd();
-        }
+        StartTransition();
     }
 
-    public void GroggyEnd()
+    public void StartTransition()
     {
         if (_hasTriggered)
         {
             return;
         }
-        if (_boss is SilenceCityBoss silenceBoss)
-        {
-            _hasTriggered = true;
 
-            silenceBoss.FloorTransition(_jumpStartPoint, _jumpEndPoint, _jumpHeight).Forget();
+        if (_boss == null)
+        {
+            Debug.LogError($"[{nameof(BossFloorTransition)}] Boss reference is missing.", this);
+            return;
         }
+
+        if (_jumpStartPoint == null || _jumpEndPoint == null)
+        {
+            Debug.LogError($"[{nameof(BossFloorTransition)}] Jump points are missing.", this);
+            return;
+        }
+
+        _hasTriggered = true;
+        CancellationToken cancellationToken = this.GetCancellationTokenOnDestroy();
+        _boss.TransitionFloorAsync(
+            _jumpStartPoint,
+            _jumpEndPoint,
+            _jumpHeight,
+            cancellationToken).Forget();
     }
     public void ResetFloorTransition()
     {

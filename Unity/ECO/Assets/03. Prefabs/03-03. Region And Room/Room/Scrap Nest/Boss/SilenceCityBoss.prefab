@@ -13,10 +13,10 @@ GameObject:
   - component: {fileID: 3758144147376617261}
   - component: {fileID: 2633453124784534629}
   - component: {fileID: 472499849203144255}
-  - component: {fileID: 4365149821968243707}
   - component: {fileID: 4790505743378670025}
   - component: {fileID: -9081673047606534581}
   - component: {fileID: -4952171108004106781}
+  - component: {fileID: -4689640115012691928}
   m_Layer: 0
   m_Name: SilenceCityBoss
   m_TagString: Boss
@@ -189,26 +189,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &4365149821968243707
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2980974419822240012}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8d8415513d39a6748b4b51e1f3395e09, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _bossData: {fileID: 11400000, guid: 2683c6a03cae58840a513db22aa60a37, type: 2}
-  _bossType: 0
-  _animationController: {fileID: 4790505743378670025}
-  _sfxAudioSource: {fileID: -9081673047606534581}
-  _sfxLoopAudioSource: {fileID: -4952171108004106781}
-  _currentState: 0
-  _floorDatas: []
-  _starBerserkAnimation: 30
 --- !u!114 &4790505743378670025
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -416,3 +396,23 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &-4689640115012691928
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2980974419822240012}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a4fe4518abf4d5da2e828ebfb23d737, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _bossData: {fileID: 11400000, guid: 2683c6a03cae58840a513db22aa60a37, type: 2}
+  _bossType: 0
+  _animationController: {fileID: 4790505743378670025}
+  _sfxAudioSource: {fileID: -9081673047606534581}
+  _sfxLoopAudioSource: {fileID: -4952171108004106781}
+  _currentState: 0
+  _floorDatas: []
+  _startBerserkDistance: 30

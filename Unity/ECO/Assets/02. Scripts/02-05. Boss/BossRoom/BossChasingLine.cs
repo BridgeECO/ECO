@@ -4,138 +4,190 @@ using VInspector;
 
 public class BossChasingLine : MonoBehaviour
 {
-    [Foldout("Path Settings")]
-    [SerializeField, Tooltip("°æ·ÎÀÇ ½ÃÀÛÁ¡ (ºñ¿öµÎ¸é º¸½ºÀÇ ÇöÀç À§Ä¡ »ç¿ë)")]
+    private const float DEFAULT_SPEED_MULTIPLIER = 1f;
+
+    [Foldout("Hierarchy")]
+    [Header("Path")]
+    [SerializeField]
+    [Tooltip("ê²½ë¡œì˜ ì‹œì‘ì . ë¹„ì›Œë‘ë©´ ì´ ì˜¤ë¸Œì íŠ¸ì˜ ìœ„ì¹˜ë¥¼ ì‚¬ìš©í•©ë‹ˆë‹¤.")]
     private Transform _startPoint;
 
-    [SerializeField, Tooltip("°î¼±À» ±×¸®±â À§ÇÑ °æÀ¯Áöµé (Waypoint)")]
+    [SerializeField]
+    [Tooltip("ì´ì „ ì§€ì ì—ì„œ ë„ì°©ì ê¹Œì§€ì˜ ê²½ë¡œì™€ ë°°ì†ì„ ìˆœì„œëŒ€ë¡œ ì„¤ì •í•©ë‹ˆë‹¤.")]
+    private List<BossPathSection> _sections = new List<BossPathSection>();
+
+    [Foldout("Path Settings")]
+    [SerializeField]
+    [Tooltip("ê° êµ¬ê°„ì˜ ê³¡ì„  ë¶„í•  í•´ìƒë„ì…ë‹ˆë‹¤.")]
+    private int _curveResolution = 10;
+
+    [SerializeField]
+    [Tooltip("ìŠ¤í”Œë¼ì¸ ê³¡ì„ ì˜ ì¥ë ¥ì…ë‹ˆë‹¤.")]
+    private float _splineTension = 1f;
+
+    [HideInInspector]
+    [SerializeField]
     private List<Transform> _waypoints = new List<Transform>();
 
-    [SerializeField, Tooltip("°æ·ÎÀÇ ÃÖÁ¾ µµÂøÁ¡")]
+    [HideInInspector]
+    [SerializeField]
     private Transform _endPoint;
 
-    [Tooltip("°î¼±ÀÇ ºÎµå·¯¿ò ºĞÇÒ ÇØ»óµµ (ÀûÁ¤°ª: 10 ~ 20)")]
-    [SerializeField] private int _curveResolution = 10;
+    [HideInInspector]
+    [SerializeField]
+    private List<float> _speedMultipliers = new List<float>();
 
-    [Tooltip("½ºÇÃ¶óÀÎ °î¼± °æ·ÎÀÇ Àå·Â ¹× ÈÖ¾îÁü °­µµ (ÀûÁ¤°ª: 0.5 ~ 1.0)")]
-    [SerializeField] private float _splineTension = 1f;
-
-    private List<Vector3> _computedWaypoints = new List<Vector3>();
+    private List<BossPathPoint> _computedPaths = new List<BossPathPoint>();
 
     private void Awake()
     {
+        MigrateLegacySections();
         CalculatePath();
     }
 
-    /// <summary>
-    /// °è»êÀÌ ¿Ï·áµÈ ½ºÇÃ¶óÀÎ °î¼± °æ·Î ÁÂÇ¥ ¸®½ºÆ®¸¦ ¹İÈ¯ÇÕ´Ï´Ù.
-    /// </summary>
-    public List<Vector3> GetComputedPath()
+    private void OnValidate()
     {
-        if (_computedWaypoints.Count == 0)
-        {
-            CalculatePath();
-        }
-        return _computedWaypoints;
-    }
-
-    public void CalculatePath()
-    {
-        _computedWaypoints.Clear();
-
-        List<Vector3> keyPoints = new List<Vector3>();
-        if (_startPoint != null)
-        {
-            keyPoints.Add(_startPoint.position);
-        }
-        else keyPoints.Add(transform.position);
-
-        foreach (var wp in _waypoints)
-        {
-            if (wp != null)
-            {
-                keyPoints.Add(wp.position);
-            }
-        }
-
-        if (_endPoint != null)
-        {
-            keyPoints.Add(_endPoint.position);
-        }
-
-        if (keyPoints.Count < 2)
-        {
-            if (keyPoints.Count == 1)
-            {
-                _computedWaypoints.Add(keyPoints[0]);
-            }
-            return;
-        }
-
-        Vector3[] tangents = SplineUtility.CalculateTangents(keyPoints);
-
-        _computedWaypoints.Add(keyPoints[0]);
-
-        for (int i = 0; i < keyPoints.Count - 1; i++)
-        {
-            Vector3 p0 = keyPoints[i];
-            Vector3 p1 = keyPoints[i + 1];
-            float dist = Vector3.Distance(p0, p1);
-
-            Vector3 m0 = tangents[i] * (dist * _splineTension);
-            Vector3 m1 = tangents[i + 1] * (dist * _splineTension);
-
-            int resolution = Mathf.Max(1, _curveResolution);
-
-            for (int j = 1; j <= resolution; j++)
-            {
-                float t = j / (float)resolution;
-                Vector3 point = SplineUtility.GetHermiteCurvePosition(t, p0, p1, m0, m1);
-                _computedWaypoints.Add(point);
-            }
-        }
+        MigrateLegacySections();
+        CalculatePath();
     }
 
     private void OnDrawGizmos()
     {
 #if UNITY_EDITOR
+        MigrateLegacySections();
         List<Vector3> keyPoints = new List<Vector3>();
-        if (_startPoint != null) keyPoints.Add(_startPoint.position);
-        else keyPoints.Add(transform.position);
+        CollectKeyPoints(keyPoints);
 
-        foreach (var wp in _waypoints) if (wp != null) keyPoints.Add(wp.position);
-        if (_endPoint != null) keyPoints.Add(_endPoint.position);
-
-        if (keyPoints.Count < 2) return;
+        if (keyPoints.Count < 2)
+        {
+            return;
+        }
 
         Vector3[] tangents = SplineUtility.CalculateTangents(keyPoints);
-
-        Gizmos.color = Color.cyan;
+        int resolution = Mathf.Max(1, _curveResolution);
 
         for (int i = 0; i < keyPoints.Count - 1; i++)
         {
-            Vector3 p0 = keyPoints[i];
-            Vector3 p1 = keyPoints[i + 1];
-            float dist = Vector3.Distance(p0, p1);
-
-            Vector3 m0 = tangents[i] * (dist * _splineTension);
-            Vector3 m1 = tangents[i + 1] * (dist * _splineTension);
-
-            int res = Mathf.Max(1, _curveResolution);
-            Vector3 prevPoint = p0;
-
-            for (int j = 1; j <= res; j++)
-            {
-                float t = j / (float)res;
-                Vector3 nextPoint = SplineUtility.GetHermiteCurvePosition(t, p0, p1, m0, m1);
-
-                Gizmos.DrawLine(prevPoint, nextPoint);
-                prevPoint = nextPoint;
-            }
+            BossPathGizmoDrawer.DrawSection(
+                keyPoints,
+                tangents,
+                i,
+                resolution,
+                _splineTension);
         }
 
         Gizmos.color = Color.yellow;
-        foreach (var kp in keyPoints) Gizmos.DrawSphere(kp, 0.2f);
+        for (int i = 0; i < keyPoints.Count; i++)
+        {
+            Gizmos.DrawSphere(keyPoints[i], 0.2f);
+        }
 #endif
     }
+
+    public IReadOnlyList<BossPathPoint> GetComputedPath()
+    {
+        if (_computedPaths.Count == 0)
+        {
+            CalculatePath();
+        }
+
+        return _computedPaths;
+    }
+
+    public void CalculatePath()
+    {
+        _computedPaths.Clear();
+
+        List<Vector3> keyPoints = new List<Vector3>();
+        CollectKeyPoints(keyPoints);
+
+        if (keyPoints.Count < 2)
+        {
+            return;
+        }
+
+        Vector3[] tangents = SplineUtility.CalculateTangents(keyPoints);
+        _computedPaths.Add(new BossPathPoint(keyPoints[0], GetSpeedMultiplier(0)));
+
+        for (int i = 0; i < keyPoints.Count - 1; i++)
+        {
+            AddSectionPoints(keyPoints, tangents, i);
+        }
+    }
+
+    private void MigrateLegacySections()
+    {
+        BossPathSectionMigration.Populate(
+            _sections,
+            _waypoints,
+            _endPoint,
+            _speedMultipliers);
+    }
+
+    private void CollectKeyPoints(List<Vector3> keyPoints)
+    {
+        keyPoints.Add(_startPoint != null ? _startPoint.position : transform.position);
+
+        for (int i = 0; i < _sections.Count; i++)
+        {
+            BossPathSection section = _sections[i];
+            if (section is null)
+            {
+                continue;
+            }
+
+            Transform endPoint = section.EndPoint;
+            if (endPoint != null)
+            {
+                keyPoints.Add(endPoint.position);
+            }
+        }
+    }
+
+    private void AddSectionPoints(IReadOnlyList<Vector3> keyPoints, IReadOnlyList<Vector3> tangents, int sectionIndex)
+    {
+        Vector3 startPosition = keyPoints[sectionIndex];
+        Vector3 endPosition = keyPoints[sectionIndex + 1];
+        float distance = Vector3.Distance(startPosition, endPosition);
+        Vector3 startTangent = tangents[sectionIndex] * (distance * _splineTension);
+        Vector3 endTangent = tangents[sectionIndex + 1] * (distance * _splineTension);
+        float speedMultiplier = GetSpeedMultiplier(sectionIndex);
+        int resolution = Mathf.Max(1, _curveResolution);
+
+        for (int i = 1; i <= resolution; i++)
+        {
+            float interpolation = i / (float)resolution;
+            Vector3 position = SplineUtility.GetHermiteCurvePosition(
+                interpolation,
+                startPosition,
+                endPosition,
+                startTangent,
+                endTangent);
+
+            _computedPaths.Add(new BossPathPoint(position, speedMultiplier));
+        }
+    }
+
+    private float GetSpeedMultiplier(int sectionIndex)
+    {
+        int validSectionIndex = 0;
+        for (int i = 0; i < _sections.Count; i++)
+        {
+            BossPathSection section = _sections[i];
+            if (section is null || section.EndPoint == null)
+            {
+                continue;
+            }
+
+            if (validSectionIndex == sectionIndex)
+            {
+                return section.SpeedMultiplier;
+            }
+
+            validSectionIndex++;
+        }
+
+        return DEFAULT_SPEED_MULTIPLIER;
+    }
+
 }

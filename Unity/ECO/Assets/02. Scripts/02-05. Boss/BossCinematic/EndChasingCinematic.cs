@@ -20,33 +20,31 @@ public class EndChasingCinematic : BossCinematicBase
     [Tooltip("플레이어에게 다시 돌아오는 시간")]
     private float _returnDuration;
 
-    public override async UniTask PlayCinematicAsync(BossBase boss)
+    public override async UniTask PlayCinematicAsync(BossBase boss, CancellationToken cancellationToken)
     {
         if (boss == null || _camController == null || _camEffect == null)
         {
             return;
         }
 
-        CancellationToken cinematicToken = this.GetCancellationTokenOnDestroy();
-        CancellationToken bossToken = boss.GetCancellationTokenOnDestroy();
         using CancellationTokenSource linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
-            cinematicToken,
-            bossToken);
-        CancellationToken cancellationToken = linkedCts.Token;
+            cancellationToken,
+            this.GetCancellationTokenOnDestroy());
+        CancellationToken linkedToken = linkedCts.Token;
 
         InputHandler.BlockInput();
         _camController.IsFollowingPlayer = false;
 
         try
         {
-            UniTask waitForGroggy = boss.WaitForStateAsync(EBossState.Groggy, cancellationToken);
+            UniTask waitForGroggy = boss.WaitForStateAsync(EBossState.Groggy, linkedToken);
             while (boss != null && waitForGroggy.Status == UniTaskStatus.Pending)
             {
                 Vector3 targetPos = _camController.GetClampedPosition(boss.transform.position);
 
                 _camController.MoveTowardsPosition(targetPos, 20f);
 
-                await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
+                await UniTask.Yield(PlayerLoopTiming.Update, linkedToken);
             }
 
             await waitForGroggy;

@@ -1,4 +1,6 @@
 using Cysharp.Threading.Tasks;
+using System;
+using System.Threading;
 using UnityEngine;
 using VInspector;
 
@@ -7,8 +9,15 @@ public class BossTrigger : MonoBehaviour, IResettable
     public enum ETriggerTarget { Player, Boss }
 
     [Foldout("Trigger Settings")]
-    [SerializeField, Tooltip("트리거를 발동시킬 대상을 설정하세요.")]
+    [SerializeField]
+    [Tooltip("트리거를 발동시킬 대상을 설정하세요.")]
     private ETriggerTarget _targetType = ETriggerTarget.Player;
+
+    [SerializeField]
+    [Tooltip("이 트리거가 제어할 보스입니다. 새 보스전에서는 직접 할당하세요.")]
+    private BossBase _targetBoss;
+
+    [HideInInspector]
     [SerializeField]
     private EBoss _targetBossType;
     [SerializeField]
@@ -44,37 +53,61 @@ public class BossTrigger : MonoBehaviour, IResettable
 
     private void ExecuteAction()
     {
-        BossBase targetBoss = BossManager.Instance.GetBoss(_targetBossType);
-        if (targetBoss == null)
+        if (_targetBoss == null)
         {
-            return;
+            _targetBoss = BossManager.Instance.GetBoss(_targetBossType);
+            if (_targetBoss == null)
+            {
+                return;
+            }
         }
 
         _hasTriggered = true;
 
-        StartCinematic(targetBoss).Forget();
+        CancellationToken triggerToken = this.GetCancellationTokenOnDestroy();
+        CancellationToken bossToken = _targetBoss.GetCancellationTokenOnDestroy();
+        StartCinematic(_targetBoss, triggerToken, bossToken).Forget();
     }
 
-    private async UniTask StartCinematic(BossBase boss)
+    private async UniTask StartCinematic(
+        BossBase boss,
+        CancellationToken triggerToken,
+        CancellationToken bossToken)
     {
-        if (_cinematicSequence != null)
+        using CancellationTokenSource linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
+            triggerToken,
+            bossToken);
+        CancellationToken cancellationToken = linkedCts.Token;
+
+        try
         {
-            await _cinematicSequence.PlayCinematicAsync(boss);
+            if (_cinematicSequence != null)
+            {
+                await _cinematicSequence.PlayCinematicAsync(boss, cancellationToken);
+            }
+            else
+            {
+                ExecuteStateAction(boss);
+            }
         }
-        else
+        catch (OperationCanceledException)
         {
-            if (_triggerAction == EBossState.Chasing)
-            {
-                boss.StartChase();
-            }
-            else if (_triggerAction == EBossState.Groggy)
-            {
-                boss.StartGroggy();
-            }
-            else if (_triggerAction == EBossState.Idle)
-            {
-                boss.StopChase();
-            }
+        }
+    }
+
+    private void ExecuteStateAction(BossBase boss)
+    {
+        if (_triggerAction == EBossState.Chasing)
+        {
+            boss.StartChase();
+        }
+        else if (_triggerAction == EBossState.Groggy)
+        {
+            boss.StartGroggy();
+        }
+        else if (_triggerAction == EBossState.Idle)
+        {
+            boss.StopChase();
         }
     }
 

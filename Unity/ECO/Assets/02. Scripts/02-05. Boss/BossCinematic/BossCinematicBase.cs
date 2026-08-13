@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using System.Threading;
 using UnityEngine;
 
 public abstract class BossCinematicBase : MonoBehaviour
@@ -15,5 +16,5 @@ public abstract class BossCinematicBase : MonoBehaviour
             _camEffect = mainCamera.GetComponent<CameraEffect>();
         }
     }
-    public abstract UniTask PlayCinematicAsync(BossBase boss);
+    public abstract UniTask PlayCinematicAsync(BossBase boss, CancellationToken cancellationToken);
 }

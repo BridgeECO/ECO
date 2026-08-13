@@ -1,17 +1,22 @@
 using Cysharp.Threading.Tasks;
+using System.Threading;
 using UnityEngine;
 using VInspector;
 
 public class BossGroggyCinematic : BossCinematicBase
 {
     [Foldout("Cinematic Settings")]
-    [SerializeField, Tooltip("Ä«¸Ş¶ó¸¦ Èçµå´Â ½Ã°£")]
+    [SerializeField, Tooltip("ì¹´ë©”ë¼ë¥¼ í”ë“œëŠ” ì‹œê°„")]
     private float _shakeDuration = 1.5f;
-    [SerializeField, Tooltip("Ä«¸Ş¶ó Èçµé¸² °­µµ")]
+    [SerializeField, Tooltip("ì¹´ë©”ë¼ í”ë“¤ë¦¼ ê°•ë„")]
     private float _shakeStrength = 1f;
 
-    public override async UniTask PlayCinematicAsync(BossBase boss)
+    public override async UniTask PlayCinematicAsync(BossBase boss, CancellationToken cancellationToken)
     {
+        using CancellationTokenSource linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
+            cancellationToken,
+            this.GetCancellationTokenOnDestroy());
+
         boss.StartGroggy();
 
         if (_camEffect == null)
@@ -19,7 +24,10 @@ public class BossGroggyCinematic : BossCinematicBase
             return;
         }
 
-        await _camEffect.ShakeCameraAsync(_shakeDuration, _shakeStrength);
+        await _camEffect.ShakeCameraAsync(
+            _shakeDuration,
+            _shakeStrength,
+            cancellationToken: linkedCts.Token);
 
     }
 }
