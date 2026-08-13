@@ -80,6 +80,14 @@ public class PlayerLife : MonoBehaviour
         if (other.CompareTag(nameof(ETags.InstantKill)))
         {
             _soundHandler?.PlayDeathSfx();
+
+            // 리스폰 연쇄(PlayerDied → RespawnAsync → ResetRoom)보다 먼저 알려야
+            // 구독자가 리셋되기 전에 낙사를 집계할 수 있다.
+            if (EventManager.HasInstance)
+            {
+                EventManager.Instance.BroadcastEvent(EEventType.PlayerInstantKilled);
+            }
+
             LifeManager.Instance.InstantKill();
             return;
         }
