@@ -124,9 +124,27 @@ public class TutorialConditionDrawer : PropertyDrawer
             return;
         }
 
+        // 고른 타입이 지금 것과 같으면 손대지 않는다. 새 인스턴스로 갈아치우면
+        // 기획자가 입력해 둔 수치와 참조가 그대로 사라진다.
+        if (IsSameType(property, conditionType))
+        {
+            return;
+        }
+
         property.managedReferenceValue = conditionType == null ? null : Activator.CreateInstance(conditionType);
         property.isExpanded = true;
         serializedObject.ApplyModifiedProperties();
+    }
+
+    private static bool IsSameType(SerializedProperty property, Type conditionType)
+    {
+        if (conditionType == null)
+        {
+            return !HasCondition(property);
+        }
+
+        object currentCondition = property.managedReferenceValue;
+        return currentCondition != null && currentCondition.GetType() == conditionType;
     }
 
     private static bool HasCondition(SerializedProperty property)
