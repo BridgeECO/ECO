@@ -12,13 +12,28 @@ public abstract class TutorialConditionBase
 {
     public abstract bool IsSatisfied { get; }
 
+    /// <summary>
+    /// 인식 범위와 무관하게 유지할 감시를 시작한다. 범위를 벗어나며 벌어지는 사건(낙사 등)은
+    /// Bind~Unbind 구간 밖이라 여기서 건 감시로만 관측된다.
+    ///
+    /// 전역 이벤트는 모든 튜토리얼 오브젝트에 똑같이 전달되므로, 구독하는 조건은 반드시 자기 범위로
+    /// 스코핑한다. 소유자가 두 번 호출할 수 있어 몇 번 불러도 같은 결과가 되어야 한다.
+    /// </summary>
+    public virtual void Activate() { }
+
+    /// <summary>감시를 중단한다. Activate 없이 호출되어도 안전해야 한다.</summary>
+    public virtual void Deactivate() { }
+
     /// <summary>플레이어 참조가 확보된 시점. 입력 이벤트 구독은 여기서 수행한다.</summary>
     public virtual void Bind(TutorialConditionContext context) { }
 
     /// <summary>구독을 해제한다. Bind 없이 호출되어도 안전해야 한다.</summary>
     public virtual void Unbind() { }
 
-    /// <summary>누적된 감시 상태(타이머 등)를 초기화한다.</summary>
+    /// <summary>
+    /// 누적된 감시 상태(타이머 등)를 초기화한다.
+    /// 리스폰마다 호출되므로, 리스폰을 넘어 유지되어야 하는 기록은 여기서 지우지 않는다.
+    /// </summary>
     public virtual void ResetCondition() { }
 
     /// <summary>시간 누적이 필요한 조건만 구현한다. 단순 조회형 조건은 IsSatisfied만으로 충분하다.</summary>

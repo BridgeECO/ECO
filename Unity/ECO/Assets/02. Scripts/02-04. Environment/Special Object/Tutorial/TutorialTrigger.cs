@@ -28,12 +28,13 @@ public class TutorialTrigger
             return false;
         }
 
+        // 표시 판정보다 먼저 갱신한다. 범위 밖을 감시하는 조건은 벗어난 뒤 경과 시간을 알아야 한다.
+        _conditionSet.Tick(isPlayerInRange, deltaTime);
+
         if (_currentState == ETutorialObjectState.Idle && !isPlayerInRange)
         {
             return false;
         }
-
-        _conditionSet.Tick(isPlayerInRange, deltaTime);
 
         if (_currentState == ETutorialObjectState.Idle)
         {
@@ -65,6 +66,19 @@ public class TutorialTrigger
         return true;
     }
 
+    /// <summary>인식 범위와 무관하게 유지되는 조건 감시를 시작한다. 소유자의 활성화 시점에 호출한다.</summary>
+    public void Activate()
+    {
+        _conditionSet.Activate();
+    }
+
+    /// <summary>감시를 모두 걷고 표시 상태를 되돌린다. 소유자의 비활성화 시점에 호출한다.</summary>
+    public void Deactivate()
+    {
+        Suspend();
+        _conditionSet.Deactivate();
+    }
+
     public void Bind(TutorialConditionContext context)
     {
         _conditionSet.Bind(context);
@@ -86,7 +100,7 @@ public class TutorialTrigger
     /// 표시 중이던 상태를 처음으로 되돌린다. Visible로 남겨두면 다시 켜져 재진입할 때
     /// 초기화된 조건이 곧바로 "깨진 것"으로 읽혀 발동이 끝나버린다.
     /// </summary>
-    public void Suspend()
+    private void Suspend()
     {
         if (_currentState == ETutorialObjectState.Visible)
         {

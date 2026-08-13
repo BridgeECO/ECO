@@ -40,6 +40,28 @@ public class TutorialConditionSet
         _conditions = conditions;
     }
 
+    public void Activate()
+    {
+        for (int i = 0; i < Count; i++)
+        {
+            if (!ReferenceEquals(_conditions[i], null))
+            {
+                _conditions[i].Activate();
+            }
+        }
+    }
+
+    public void Deactivate()
+    {
+        for (int i = 0; i < Count; i++)
+        {
+            if (!ReferenceEquals(_conditions[i], null))
+            {
+                _conditions[i].Deactivate();
+            }
+        }
+    }
+
     public void Bind(TutorialConditionContext context)
     {
         for (int i = 0; i < Count; i++)
