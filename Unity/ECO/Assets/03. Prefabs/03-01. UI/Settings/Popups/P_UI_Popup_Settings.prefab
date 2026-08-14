@@ -254,6 +254,7 @@ GameObject:
   - component: {fileID: 6824335176899605466}
   - component: {fileID: 3576279817001842526}
   - component: {fileID: 7131519634802014493}
+  - component: {fileID: 8746607270474600499}
   m_Layer: 5
   m_Name: P_UI_Popup_Settings
   m_TagString: Untagged
@@ -385,6 +386,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fa1db68545fe884aa560bbe7e1a7574, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _reactor: {fileID: 8746607270474600499}
+  _scaleAnimation:
+    _openDuration: 0.3
+    _closeDuration: 0.2
+    _openEase: 27
+    _closeEase: 26
+    _startScale: {x: 0.5, y: 0.5, z: 0.5}
+    _targetScale: {x: 1, y: 1, z: 1}
   _tabToggles:
   - {fileID: 8018579909484085684}
   - {fileID: 6435226200967417493}
@@ -399,6 +408,8 @@ MonoBehaviour:
   _applyButton: {fileID: 5275978019286085651}
   _backButton: {fileID: 9043522487057105462}
   _settingsFeedback: {fileID: 4969954738038889262}
+  _resetConfirmPopup: {fileID: 0}
+  _closeConfirmPopup: {fileID: 0}
 --- !u!114 &7131519634802014493
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -411,6 +422,124 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f9ab6a319d52074592ef893e912760a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &8746607270474600499
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5636884118460415536}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12d356bb42a9ab841b99b3913ad90c35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _entries:
+  - _label: "\uD31D\uC5C5 \uC5F4\uAE30"
+    _isMuted: 0
+    _kind: 2
+    _stateTrigger: 0
+    _eventTrigger: 0
+    _signalTrigger: 0
+    _interruptPolicy: 0
+    _exitPolicy: 0
+    _reactions:
+    - rid: 914377283501293691
+  - _label: "\uD31D\uC5C5 \uB2EB\uAE30"
+    _isMuted: 0
+    _kind: 2
+    _stateTrigger: 0
+    _eventTrigger: 0
+    _signalTrigger: 1
+    _interruptPolicy: 0
+    _exitPolicy: 0
+    _reactions:
+    - rid: 914377283501293692
+  _isPlayShowOnEnable: 0
+  _previewState: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: 914377283501293691
+      type: {class: UI_ScaleReaction, ns: , asm: Assembly-CSharp}
+      data:
+        _target: {fileID: 0}
+        _motion:
+          _duration: 0.3
+          _delay: 0
+          _valueMode: 1
+          _isUseCurve: 0
+          _ease: 27
+          _curve:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 0
+              inSlope: 0
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 1
+              value: 1
+              inSlope: 0
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          _loops: 1
+          _loopType: 1
+          _isIgnoreTimeScale: 1
+        _isUseStartValue: 1
+        _scale: {x: 1, y: 1, z: 1}
+        _startScale: {x: 0.5, y: 0.5, z: 0.5}
+    - rid: 914377283501293692
+      type: {class: UI_ScaleReaction, ns: , asm: Assembly-CSharp}
+      data:
+        _target: {fileID: 0}
+        _motion:
+          _duration: 0.2
+          _delay: 0
+          _valueMode: 1
+          _isUseCurve: 0
+          _ease: 26
+          _curve:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 0
+              inSlope: 0
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 1
+              value: 1
+              inSlope: 0
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          _loops: 1
+          _loopType: 1
+          _isIgnoreTimeScale: 1
+        _isUseStartValue: 1
+        _scale: {x: 0.5, y: 0.5, z: 0.5}
+        _startScale: {x: 1, y: 1, z: 1}
 --- !u!1 &5777101736058789554
 GameObject:
   m_ObjectHideFlags: 0
@@ -459,6 +588,7 @@ GameObject:
   - component: {fileID: 3353226226039281054}
   - component: {fileID: 6745307794286664876}
   - component: {fileID: 4969954738038889262}
+  - component: {fileID: 7827742362386971860}
   m_Layer: 5
   m_Name: Text_InitalizeAndApplyFeedback
   m_TagString: Untagged
@@ -617,6 +747,126 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3543551b13c944438a1fde6bc64fc17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _reactor: {fileID: 7827742362386971860}
+  _visibleDuration: 1.5
+--- !u!114 &7827742362386971860
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5791751540472882435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12d356bb42a9ab841b99b3913ad90c35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _entries:
+  - _label: "\uC548\uB0B4 \uB4F1\uC7A5"
+    _isMuted: 0
+    _kind: 2
+    _stateTrigger: 0
+    _eventTrigger: 0
+    _signalTrigger: 0
+    _interruptPolicy: 0
+    _exitPolicy: 0
+    _reactions:
+    - rid: 914377283501293707
+  - _label: "\uC548\uB0B4 \uD1F4\uC7A5"
+    _isMuted: 0
+    _kind: 2
+    _stateTrigger: 0
+    _eventTrigger: 0
+    _signalTrigger: 1
+    _interruptPolicy: 0
+    _exitPolicy: 0
+    _reactions:
+    - rid: 914377283501293708
+  _isPlayShowOnEnable: 0
+  _previewState: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: 914377283501293707
+      type: {class: UI_AlphaReaction, ns: , asm: Assembly-CSharp}
+      data:
+        _target: {fileID: 0}
+        _motion:
+          _duration: 0.1
+          _delay: 0
+          _valueMode: 1
+          _isUseCurve: 0
+          _ease: 1
+          _curve:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 0
+              inSlope: 0
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 1
+              value: 1
+              inSlope: 0
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          _loops: 1
+          _loopType: 1
+          _isIgnoreTimeScale: 1
+        _isUseStartValue: 1
+        _alpha: 1
+        _startAlpha: 0
+    - rid: 914377283501293708
+      type: {class: UI_AlphaReaction, ns: , asm: Assembly-CSharp}
+      data:
+        _target: {fileID: 0}
+        _motion:
+          _duration: 0.1
+          _delay: 0
+          _valueMode: 1
+          _isUseCurve: 0
+          _ease: 1
+          _curve:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 0
+              inSlope: 0
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 1
+              value: 1
+              inSlope: 0
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          _loops: 1
+          _loopType: 1
+          _isIgnoreTimeScale: 1
+        _isUseStartValue: 1
+        _alpha: 0
+        _startAlpha: 1
 --- !u!1 &6880385215426842985
 GameObject:
   m_ObjectHideFlags: 0

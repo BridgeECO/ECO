@@ -2071,6 +2071,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -50
       objectReference: {fileID: 0}
+    - target: {fileID: 4969954738038889262, guid: 620fe023cfa7e204dbeb43d42d927293, type: 3}
+      propertyPath: _reactor
+      value: 
+      objectReference: {fileID: 448934514668934986}
     - target: {fileID: 4986273201642901274, guid: 620fe023cfa7e204dbeb43d42d927293, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -2986,8 +2990,134 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5791751540472882435, guid: 620fe023cfa7e204dbeb43d42d927293, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 448934514668934986}
   m_SourcePrefab: {fileID: 100100000, guid: 620fe023cfa7e204dbeb43d42d927293, type: 3}
+--- !u!1 &6947955979305192660 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5791751540472882435, guid: 620fe023cfa7e204dbeb43d42d927293, type: 3}
+  m_PrefabInstance: {fileID: 3462272444209605079}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &448934514668934986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6947955979305192660}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12d356bb42a9ab841b99b3913ad90c35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _entries:
+  - _label: "\uC548\uB0B4 \uB4F1\uC7A5"
+    _isMuted: 0
+    _kind: 2
+    _stateTrigger: 0
+    _eventTrigger: 0
+    _signalTrigger: 0
+    _interruptPolicy: 0
+    _exitPolicy: 0
+    _reactions:
+    - rid: 914377283501293705
+  - _label: "\uC548\uB0B4 \uD1F4\uC7A5"
+    _isMuted: 0
+    _kind: 2
+    _stateTrigger: 0
+    _eventTrigger: 0
+    _signalTrigger: 1
+    _interruptPolicy: 0
+    _exitPolicy: 0
+    _reactions:
+    - rid: 914377283501293706
+  _isPlayShowOnEnable: 0
+  _previewState: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: 914377283501293705
+      type: {class: UI_AlphaReaction, ns: , asm: Assembly-CSharp}
+      data:
+        _target: {fileID: 0}
+        _motion:
+          _duration: 0.1
+          _delay: 0
+          _valueMode: 1
+          _isUseCurve: 0
+          _ease: 1
+          _curve:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 0
+              inSlope: 0
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 1
+              value: 1
+              inSlope: 0
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          _loops: 1
+          _loopType: 1
+          _isIgnoreTimeScale: 1
+        _isUseStartValue: 1
+        _alpha: 1
+        _startAlpha: 0
+    - rid: 914377283501293706
+      type: {class: UI_AlphaReaction, ns: , asm: Assembly-CSharp}
+      data:
+        _target: {fileID: 0}
+        _motion:
+          _duration: 0.1
+          _delay: 0
+          _valueMode: 1
+          _isUseCurve: 0
+          _ease: 1
+          _curve:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 0
+              inSlope: 0
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 1
+              value: 1
+              inSlope: 0
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          _loops: 1
+          _loopType: 1
+          _isIgnoreTimeScale: 1
+        _isUseStartValue: 1
+        _alpha: 0
+        _startAlpha: 1
 --- !u!224 &8160726386381374863 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4705363414994119768, guid: 620fe023cfa7e204dbeb43d42d927293, type: 3}
