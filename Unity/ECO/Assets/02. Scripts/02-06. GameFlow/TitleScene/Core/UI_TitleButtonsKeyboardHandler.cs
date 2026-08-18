@@ -19,6 +19,7 @@ public class UI_TitleButtonsKeyboardHandler : MonoBehaviour, IKeyboardControllab
     private TitleScene _titleScene;
     private int _currentIndex;
     private bool _isMenuStarted;
+    private bool _isHandlerPushed;
 
     private List<UnityAction> _clickActions;
 
@@ -44,9 +45,9 @@ public class UI_TitleButtonsKeyboardHandler : MonoBehaviour, IKeyboardControllab
             }
         }
 
-        if (_isMenuStarted && UI_KeyboardInputManager.HasInstance)
+        if (_isMenuStarted)
         {
-            UI_KeyboardInputManager.Instance.PushHandler(this);
+            SafePushHandler();
         }
     }
 
@@ -89,10 +90,7 @@ public class UI_TitleButtonsKeyboardHandler : MonoBehaviour, IKeyboardControllab
     private void HandleMenuStarted()
     {
         _isMenuStarted = true;
-        if (UI_KeyboardInputManager.HasInstance)
-        {
-            UI_KeyboardInputManager.Instance.PushHandler(this);
-        }
+        SafePushHandler();
 
         // OnEnable 시점에는 아직 메뉴가 시작되지 않아 선택을 미뤄 두었다. 여기서 처음 반영한다.
         RefreshSelection();
@@ -197,10 +195,29 @@ public class UI_TitleButtonsKeyboardHandler : MonoBehaviour, IKeyboardControllab
     }
     #endregion
 
-    #region Cleanup
+    #region Handler Registration
+    // 매니저 Awake 이전에도 등록되어야 하므로, 캐시만 보는 HasInstance가 아니라
+    // 씬 탐색 폴백이 있는 Instance로 확인한다.
+    private void SafePushHandler()
+    {
+        if (_isHandlerPushed || UI_KeyboardInputManager.Instance == null)
+        {
+            return;
+        }
+
+        UI_KeyboardInputManager.Instance.PushHandler(this);
+        _isHandlerPushed = true;
+    }
+
     // OnDisable 내부에서 직접 싱글톤 접근을 지양하는 컨벤션 준수를 위해 별도 메서드로 분리
     private void SafePopHandler()
     {
+        if (!_isHandlerPushed)
+        {
+            return;
+        }
+
+        _isHandlerPushed = false;
         if (UI_KeyboardInputManager.HasInstance)
         {
             UI_KeyboardInputManager.Instance.PopHandler(this);
