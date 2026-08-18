@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 using VInspector;
 
 /// <summary>
@@ -91,6 +93,9 @@ public class UI_TitleButtonsKeyboardHandler : MonoBehaviour, IKeyboardControllab
         {
             UI_KeyboardInputManager.Instance.PushHandler(this);
         }
+
+        // OnEnable 시점에는 아직 메뉴가 시작되지 않아 선택을 미뤄 두었다. 여기서 처음 반영한다.
+        RefreshSelection();
     }
 
     #region IKeyboardControllable
@@ -146,32 +151,29 @@ public class UI_TitleButtonsKeyboardHandler : MonoBehaviour, IKeyboardControllab
         RefreshSelection();
     }
 
+    /// <summary>
+    /// 무엇이 선택됐는지만 정한다. 선택 표시는 각 버튼의 UI_Reactor가 Selected 항목으로 맡는다.
+    /// </summary>
     private void RefreshSelection()
     {
-        if (_items == null || _items.Count == 0)
+        // 메뉴가 시작되기 전에 선택을 강제하면 타이틀 인트로 도중에 버튼이 눌린 것처럼 보인다.
+        if (!_isMenuStarted || _items == null || _items.Count == 0)
         {
             return;
         }
 
-        for (int i = 0; i < _items.Count; i++)
+        if (_currentIndex < 0 || _items.Count <= _currentIndex)
         {
-            bool isSelected = (i == _currentIndex);
-
-            if (_items[i].SelectionArrows == null)
-            {
-                continue;
-            }
-
-            for (int j = 0; j < _items[i].SelectionArrows.Count; j++)
-            {
-                GameObject arrow = _items[i].SelectionArrows[j];
-
-                if (arrow != null)
-                {
-                    arrow.SetActive(isSelected);
-                }
-            }
+            return;
         }
+
+        Button target = _items[_currentIndex].TargetButton;
+        if (target == null || EventSystem.current == null)
+        {
+            return;
+        }
+
+        EventSystem.current.SetSelectedGameObject(target.gameObject);
     }
 
     private void SelectCurrentButton()
