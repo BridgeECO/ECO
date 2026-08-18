@@ -12,13 +12,19 @@ public class UI_ReactionRuntime
     private readonly UI_ReactionStateTracker _tracker = new UI_ReactionStateTracker();
     private readonly UI_ReactionDispatcher _dispatcher = new UI_ReactionDispatcher();
     private readonly UI_ReactionBaselineStore _baselines = new UI_ReactionBaselineStore();
-    private readonly List<UniTask> _signalTasks = new List<UniTask>();
+    private readonly UI_ReactionSignalPlayer _signalPlayer;
 
     private IReadOnlyList<UI_ReactionEntry> _entries;
     private UI_ReactionContext _context;
     private CancellationToken _token;
     private bool _isLayoutSettled;
     private int _lastActivateFrame = -1;
+
+    public UI_ReactionRuntime()
+    {
+        // 필드 초기화가 먼저 끝나므로 여기서 디스패처를 넘겨받을 수 있다.
+        _signalPlayer = new UI_ReactionSignalPlayer(_dispatcher);
+    }
 
     /// <summary>Disabled 항목이 있을 때만 interactable 폴링이 필요하다.</summary>
     public bool HasDisabledEntry => UI_ReactionEntryScanner.HasState(_entries, EUIReactionState.Disabled);
@@ -28,6 +34,7 @@ public class UI_ReactionRuntime
         _entries = entries;
         _context = new UI_ReactionContext(owner, _baselines);
         _dispatcher.Init(entries, _tracker, _context);
+        _signalPlayer.Init(entries);
 
         // 매번 새 델리게이트가 잡히지 않도록 한 번만 연결한다.
         _tracker.OnStateChanged = _dispatcher.RefreshStates;
@@ -88,39 +95,10 @@ public class UI_ReactionRuntime
         _dispatcher.PlayEvent(EUIReactionEvent.Activate);
     }
 
-    /// <summary>호출부의 토큰과 이 Reactor의 활성 토큰을 함께 묶어, 어느 쪽이 끊겨도 멈춘다.</summary>
-    public async UniTask PlaySignalAsync(EUIReactionSignal signal, CancellationToken cancellationToken)
+    /// <summary>게임 코드가 요청한 연출. 재생과 취소 처리는 신호 플레이어가 맡는다.</summary>
+    public UniTask PlaySignalAsync(EUIReactionSignal signal, CancellationToken cancellationToken)
     {
-        if (_entries == null)
-        {
-            return;
-        }
-
-        using CancellationTokenSource linked =
-            CancellationTokenSource.CreateLinkedTokenSource(_token, cancellationToken);
-
-        _signalTasks.Clear();
-        _dispatcher.Lock();
-
-        try
-        {
-            UI_ReactionEntryScanner.CollectSignalTasks(_entries, signal, _context, linked.Token,
-                _dispatcher, _signalTasks);
-
-            if (0 < _signalTasks.Count)
-            {
-                await UniTask.WhenAll(_signalTasks);
-            }
-        }
-        finally
-        {
-            _dispatcher.Unlock();
-        }
-
-        if (!linked.Token.IsCancellationRequested)
-        {
-            _dispatcher.RefreshStates();
-        }
+        return _signalPlayer.PlayAsync(signal, _context, _token, cancellationToken);
     }
 
     /// <summary>인스펙터 미리보기. 실제 입력 없이 한 상태만 켜 본다.</summary>
@@ -134,6 +112,9 @@ public class UI_ReactionRuntime
     /// uGUI 레이아웃은 PostLateUpdate에 돌기 때문에 첫 프레임의 anchoredPosition은 최종값이 아니다.
     /// 확정 시점에 잠정 기준값을 버려 다음 재생 때 다시 잡히게 하되, 이미 무언가 재생 중이면
     /// 그 값이 기준으로 굳어 버리므로 건너뛴다.
+    ///
+    /// 자리 장부만 보면 신호 재생을 놓친다. 신호는 자리를 잡지 않아 장부가 비어 있고,
+    /// 그 사이 기준값을 지우면 재생이 끝난 뒤 되돌릴 값이 사라진다.
     /// </summary>
     public async UniTaskVoid WaitLayoutSettledAsync(CancellationToken token)
     {
@@ -146,7 +127,7 @@ public class UI_ReactionRuntime
 
         _isLayoutSettled = true;
 
-        if (!_dispatcher.HasOwners)
+        if (!_dispatcher.HasOwners && !UI_ReactionEntryScanner.IsAnyPlaying(_entries))
         {
             _baselines.Clear();
         }

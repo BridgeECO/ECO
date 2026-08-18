@@ -42,6 +42,56 @@ public static class UI_ReactionEntryScanner
         }
     }
 
+    /// <summary>
+    /// 해당 신호에 묶인 리액션만 끊는다. 신호가 취소됐을 때 함께 돌고 있을지 모를
+    /// 상태 연출까지 건드리지 않기 위해 대상을 좁힌다.
+    /// </summary>
+    public static void KillSignal(IReadOnlyList<UI_ReactionEntry> entries, EUIReactionSignal signal)
+    {
+        if (entries == null)
+        {
+            return;
+        }
+
+        for (int e = 0; e < entries.Count; e++)
+        {
+            UI_ReactionEntry entry = entries[e];
+            if (!entry.MatchesSignal(signal))
+            {
+                continue;
+            }
+
+            List<UI_ReactionBase> reactions = entry.Reactions;
+            for (int r = 0; r < reactions.Count; r++)
+            {
+                reactions[r]?.Kill();
+            }
+        }
+    }
+
+    /// <summary>재생 중인 리액션이 하나라도 있는지. 신호 재생은 자리 장부에 오르지 않아 따로 본다.</summary>
+    public static bool IsAnyPlaying(IReadOnlyList<UI_ReactionEntry> entries)
+    {
+        if (entries == null)
+        {
+            return false;
+        }
+
+        for (int e = 0; e < entries.Count; e++)
+        {
+            List<UI_ReactionBase> reactions = entries[e].Reactions;
+            for (int r = 0; r < reactions.Count; r++)
+            {
+                if (reactions[r] != null && reactions[r].IsPlaying)
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     public static void RestoreAll(IReadOnlyList<UI_ReactionEntry> entries, UI_ReactionContext context)
     {
         if (entries == null)

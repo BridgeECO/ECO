@@ -117,13 +117,25 @@ public class UI_ReactionDispatcher
                 continue;
             }
 
-            if (_arbiter.TryGet(owner.TargetId, owner.Channel, out UI_ReactionChannelOwner candidate)
-                && candidate.Reaction == owner.Reaction)
+            bool hasSuccessor = _arbiter.TryGet(owner.TargetId, owner.Channel,
+                out UI_ReactionChannelOwner candidate);
+            if (hasSuccessor && candidate.Reaction == owner.Reaction)
             {
                 continue;
             }
 
             _owners.RemoveAt(i);
+
+            // 자리를 이어받을 리액션이 있으면 물러나는 연출은 재생하지 않고 끊기만 한다.
+            // 두 트윈이 같은 값을 동시에 쓰면 프레임마다 나중에 갱신된 쪽이 이겨 떨리고,
+            // 물러나는 쪽이 더 길면 새 연출이 끝난 뒤 값을 기준값으로 끌고 가 버린다.
+            // 누름을 뗄 때 Pressed가 물러나고 Hover가 들어오는 경로가 정확히 이 경우다.
+            if (hasSuccessor)
+            {
+                owner.Reaction.Kill();
+                continue;
+            }
+
             owner.Reaction.ExitAsync(_context, owner.ExitPolicy, _token).Forget();
         }
     }
