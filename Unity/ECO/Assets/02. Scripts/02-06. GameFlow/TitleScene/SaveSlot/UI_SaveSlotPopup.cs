@@ -23,7 +23,7 @@ public class UI_SaveSlotPopup : UI_Popup, IKeyboardControllable
     // 열기 전에 SetMode로 지정한다. 팝업 핸들러가 모드 인자를 몰라도 되도록
     // (전용 오버로드 제거) 팝업이 자기 상태로 보관한다.
     private ESlotPanelMode _mode = ESlotPanelMode.Continue;
-    private bool _isHandlerPushed;
+    private readonly KeyboardHandlerRegistration _registration = new KeyboardHandlerRegistration();
 
     protected override void Awake()
     {
@@ -47,13 +47,13 @@ public class UI_SaveSlotPopup : UI_Popup, IKeyboardControllable
 
         RefreshAllSlots(_mode);
         ApplySelection();
-        SafePushHandler();
+        _registration.Push(this);
     }
 
     public override async UniTask CloseAsync()
     {
         // 애니메이션 시작 전에 Pop하여 닫히는 도중 입력이 처리되지 않도록 함
-        SafePopHandler();
+        _registration.Pop(this);
         await base.CloseAsync();
     }
 
@@ -101,35 +101,6 @@ public class UI_SaveSlotPopup : UI_Popup, IKeyboardControllable
 
     // ESC는 UIManager가 CloseLatestPopup으로 전역 처리하므로 여기서는 응답하지 않음
     public void OnCancel() { }
-    #endregion
-
-    #region Handler Registration
-    // 매니저가 없는 씬(자립형 테스트 씬 등)에서도 팝업이 열릴 수 있으므로 등록/해제 양쪽을 가드한다.
-    private void SafePushHandler()
-    {
-        if (_isHandlerPushed || UI_KeyboardInputManager.Instance == null)
-        {
-            return;
-        }
-
-        UI_KeyboardInputManager.Instance.PushHandler(this);
-        _isHandlerPushed = true;
-    }
-
-    // 등록에 성공했다면 캐시가 이미 채워져 있으므로, 해제 시점의 씬 탐색을 피해 HasInstance로 확인한다.
-    private void SafePopHandler()
-    {
-        if (!_isHandlerPushed)
-        {
-            return;
-        }
-
-        _isHandlerPushed = false;
-        if (UI_KeyboardInputManager.HasInstance)
-        {
-            UI_KeyboardInputManager.Instance.PopHandler(this);
-        }
-    }
     #endregion
 
     #region Slot Management

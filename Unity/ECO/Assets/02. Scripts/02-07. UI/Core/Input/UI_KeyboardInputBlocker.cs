@@ -7,24 +7,24 @@ using UnityEngine;
 /// </summary>
 public class UI_KeyboardInputBlocker : MonoBehaviour, IKeyboardControllable
 {
-    private bool _isHandlerPushed;
+    private readonly KeyboardHandlerRegistration _registration = new KeyboardHandlerRegistration();
 
     #region Unity Lifecycle Methods
     private void OnEnable()
     {
-        SafePushHandler();
+        _registration.Push(this);
     }
 
     // 이 팝업이 속한 씬이 매니저가 있는 PersistentScene보다 먼저 로드되면
     // OnEnable 시점에는 매니저가 아직 없다. 모든 Awake가 끝난 Start에서 한 번 더 시도한다.
     private void Start()
     {
-        SafePushHandler();
+        _registration.Push(this);
     }
 
     private void OnDisable()
     {
-        SafePopHandler();
+        _registration.Pop(this);
     }
     #endregion
 
@@ -51,37 +51,6 @@ public class UI_KeyboardInputBlocker : MonoBehaviour, IKeyboardControllable
 
     public void OnCancel()
     {
-    }
-    #endregion
-
-    #region Handler Registration
-    // OnEnable과 Start 양쪽에서 호출되므로 중복 등록을 플래그로 막는다.
-    // 매니저 Awake 이전에도 등록되어야 하므로, 캐시만 보는 HasInstance가 아니라
-    // 씬 탐색 폴백이 있는 Instance로 확인한다.
-    private void SafePushHandler()
-    {
-        if (_isHandlerPushed || UI_KeyboardInputManager.Instance == null)
-        {
-            return;
-        }
-
-        UI_KeyboardInputManager.Instance.PushHandler(this);
-        _isHandlerPushed = true;
-    }
-
-    // 등록에 성공했다면 캐시가 이미 채워져 있으므로, 해제 시점의 씬 탐색을 피해 HasInstance로 확인한다.
-    private void SafePopHandler()
-    {
-        if (!_isHandlerPushed)
-        {
-            return;
-        }
-
-        _isHandlerPushed = false;
-        if (UI_KeyboardInputManager.HasInstance)
-        {
-            UI_KeyboardInputManager.Instance.PopHandler(this);
-        }
     }
     #endregion
 }
