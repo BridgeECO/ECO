@@ -3,10 +3,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// 리액션 항목을 접었다 펴며 그린다.
-///
-/// 트리거 종류에 따라 쓰이지 않는 필드는 아예 그리지 않는다. 단발 이벤트에 중단·복귀 정책을
-/// 남겨 두면 기획자가 값을 넣어 놓고 왜 안 먹는지 묻게 된다.
+/// 리액션 항목을 접었다 펴며 그린다. 트리거 종류에 쓰이지 않는 필드는 아예 그리지 않는다.
 /// </summary>
 [CustomPropertyDrawer(typeof(UI_ReactionEntry))]
 public class UI_ReactionEntryDrawer : PropertyDrawer

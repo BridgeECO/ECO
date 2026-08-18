@@ -4,7 +4,6 @@ using UnityEngine.UI;
 
 /// <summary>
 /// UI_Reactor를 잘못 배치했을 때 조용히 망가지는 대신 바로 알려 준다.
-/// 에디터에서만 도는 코드라 파일 전체를 UNITY_EDITOR로 감싼다(MapViewGizmoDrawer 선례).
 /// </summary>
 public static class UI_ReactorValidator
 {

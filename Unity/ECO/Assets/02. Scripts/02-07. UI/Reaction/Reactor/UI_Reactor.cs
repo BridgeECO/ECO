@@ -7,15 +7,9 @@ using UnityEngine.UI;
 using VInspector;
 
 /// <summary>
-/// UI 오브젝트에 붙이는 단 하나의 연출 컴포넌트. 기획자는 인스펙터에서 트리거별로
-/// 원하는 리액션을 붙였다 떼며 수치를 조정한다.
-///
-/// 배치 규칙: 입력을 받는 UI라면 반드시 Selectable(Button 등)과 **같은 게임오브젝트**에 둔다.
-/// 자식에 두면 ExecuteHierarchy가 포인터 이벤트를 이 컴포넌트에서 멈춰 버려 부모 버튼의
-/// onClick이 아예 발화하지 않는다. 자식 요소를 움직이고 싶으면 각 리액션의 대상을 지정한다.
-///
-/// IDragHandler 계열은 절대 구현하지 않는다. 붙이는 순간 ScrollRect 안의 버튼이 스크롤을 먹는다.
+/// UI 오브젝트에 붙이는 연출 컴포넌트. 기획자가 인스펙터에서 트리거별로 리액션을 조립한다.
 /// </summary>
+// IDragHandler 계열은 구현하지 않는다. 붙이는 순간 ScrollRect 안의 버튼이 스크롤을 먹는다.
 public class UI_Reactor : MonoBehaviour,
     IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler,
     IPointerClickHandler, ISelectHandler, IDeselectHandler, ISubmitHandler, ICancelHandler

@@ -5,8 +5,6 @@ using UnityEngine;
 
 /// <summary>
 /// 채널 승자를 재생하고 자리를 뺏긴 리액션을 물러나게 한다.
-/// 후보 선정은 UI_ReactionStateArbiter가, 자리 장부는 UI_ReactionChannelTable이,
-/// 단발 이벤트 재생은 UI_ReactionEventPlayer가 맡는다.
 /// </summary>
 public class UI_ReactionDispatcher
 {

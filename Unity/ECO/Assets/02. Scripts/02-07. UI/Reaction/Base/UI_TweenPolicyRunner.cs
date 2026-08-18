@@ -4,13 +4,7 @@ using UnityEngine;
 
 /// <summary>
 /// 트윈 리액션 하나의 핸들 수명을 맡는다.
-///
-/// DOKill()은 그 대상의 모든 트윈을 죽여 Scale 리액션이 Position 리액션까지 끊어 버린다.
-/// 그래서 여기서는 자기 핸들만 들고 Kill한다. 외부 코드가 DOKill을 부르더라도 OnKill로
-/// 핸들을 비워 두므로 죽은 트윈을 붙들지 않는다.
-///
-/// AutoKill을 끄는 이유는 되감기 때문이다. Hover가 끝난 뒤 되돌리려면 이미 완료된 트윈이
-/// 살아 있어야 SmoothRewind를 걸 수 있다. 대신 반드시 Kill로 직접 정리한다.
+/// DOKill은 대상의 모든 트윈을 죽여 남의 리액션까지 끊으므로 자기 핸들만 들고 Kill한다.
 /// </summary>
 public class UI_TweenPolicyRunner
 {
@@ -41,6 +35,7 @@ public class UI_TweenPolicyRunner
             return;
         }
 
+        // 되감기를 걸려면 완료된 트윈이 살아 있어야 해 AutoKill을 끈다. 대신 반드시 Kill로 직접 정리한다.
         _tween = tween
             .SetAutoKill(false)
             .SetLink(linkTarget, LinkBehaviour.KillOnDestroy)

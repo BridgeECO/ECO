@@ -3,7 +3,6 @@ using UnityEditor;
 
 /// <summary>
 /// 접힌 항목 한 줄에 "무엇에 반응해 무엇을 하는지"를 적는다.
-/// 항목이 열 개쯤 되면 Element 0/1/2 표기로는 어느 게 어느 건지 알 수 없다.
 /// </summary>
 public static class UI_ReactionEntrySummary
 {

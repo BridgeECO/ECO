@@ -4,8 +4,7 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 /// <summary>
-/// 시간 축이 없는 리액션의 공통 뼈대. 값을 한 번 바꾸고 끝나므로 중단 정책이 의미가 없고,
-/// 물러날 때는 곧바로 기준값으로 되돌린다.
+/// 시간 축이 없는 리액션의 공통 뼈대. 값을 한 번 바꾸고 물러날 때 곧바로 되돌린다.
 /// </summary>
 [Serializable]
 public abstract class UI_InstantReactionBase : UI_ReactionBase

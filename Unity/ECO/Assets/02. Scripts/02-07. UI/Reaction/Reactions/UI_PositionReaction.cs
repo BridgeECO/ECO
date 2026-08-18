@@ -5,10 +5,7 @@ using UnityEngine.Scripting;
 
 /// <summary>
 /// 대상의 anchoredPosition을 굴린다.
-///
-/// 주의: LayoutGroup의 자식이거나 ContentSizeFitter가 붙은 대상은 레이아웃이 매 리빌드마다
-/// 위치를 덮어써서 이 연출이 간헐적으로 먹지 않는다. 그럴 때는 자식을 하나 더 두고
-/// 그 자식을 움직인다.
+/// LayoutGroup 자식이나 ContentSizeFitter 대상은 레이아웃이 위치를 덮어쓰므로 자식을 하나 더 두고 움직인다.
 /// </summary>
 [Serializable]
 [Preserve]

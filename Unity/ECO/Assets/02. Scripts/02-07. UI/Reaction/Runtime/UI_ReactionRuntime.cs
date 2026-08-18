@@ -4,8 +4,7 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 /// <summary>
-/// UI_Reactor가 위임받는 실제 동작. 상태 추적기·디스패처·기준값 저장소를 엮고,
-/// 게임 코드가 보내는 Signal 재생과 비활성화 시 복원을 맡는다.
+/// UI_Reactor가 위임하는 실제 동작. 추적기·디스패처·기준값 저장소를 엮는다.
 /// </summary>
 public class UI_ReactionRuntime
 {

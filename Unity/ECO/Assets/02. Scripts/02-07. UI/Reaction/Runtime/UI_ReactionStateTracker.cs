@@ -2,9 +2,7 @@ using System;
 
 /// <summary>
 /// 포인터·선택·상호작용 플래그로부터 지금 성립하는 UI 상태를 판정한다.
-///
-/// Selectable은 상태를 하나만 돌려주기 때문에 Hover와 Selected가 동시에 성립하는 상황을
-/// 표현하지 못한다. 서브클래싱 대신 EventSystem이 주는 신호를 직접 모아 집합으로 다룬다.
+/// Selectable은 상태를 하나만 돌려줘 Hover와 Selected의 동시 성립을 표현하지 못한다.
 /// </summary>
 public class UI_ReactionStateTracker
 {

@@ -3,11 +3,8 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 /// <summary>
-/// interactable 변화를 감시해야 하는 Reactor만 모아 프레임당 한 번 훑는다.
-///
-/// Selectable.interactable에는 변경 콜백이 없어 폴링 외에 방법이 없다. 그렇다고 Reactor마다
-/// Update를 두면 버튼 20개짜리 화면에서 Update가 20개 돈다. Disabled 항목을 가진 Reactor만
-/// 등록하므로 대부분의 Reactor는 매 프레임 비용이 0이고, 등록이 비면 루프 자체가 멈춘다.
+/// interactable 변화를 감시할 Reactor만 모아 프레임당 한 번 훑는다.
+/// Selectable.interactable에는 변경 콜백이 없어 폴링 외에 방법이 없다.
 /// </summary>
 public static class UI_ReactorTicker
 {

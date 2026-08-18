@@ -5,8 +5,7 @@ using DG.Tweening;
 using UnityEngine;
 
 /// <summary>
-/// DOTween으로 값을 굴리는 리액션의 공통 뼈대. 중단·복귀 정책을 여기서 한 번만 처리하고,
-/// 파생 클래스는 어떤 값을 어떻게 굴릴지(트윈 생성)와 기준값 읽기·쓰기만 채운다.
+/// DOTween으로 값을 굴리는 리액션의 공통 뼈대. 중단·복귀 정책을 여기서 한 번만 처리한다.
 /// </summary>
 [Serializable]
 public abstract class UI_TweenReactionBase : UI_ReactionBase

@@ -2,10 +2,7 @@ using System.Collections.Generic;
 
 /// <summary>
 /// (대상, 채널)마다 지금 누가 값을 쓰고 있는지 적어 두는 표.
-///
-/// 한 Reactor가 가지는 자리는 보통 10개 안팎이라 딕셔너리 대신 선형 탐색을 쓴다.
-/// 구조체를 키로 쓰는 딕셔너리는 IEquatable을 직접 구현하지 않으면 조회마다 박싱이 생겨,
-/// 리스트를 훑으며 hover가 연달아 들어오는 경로에서 쓰레기를 만든다.
+/// 자리가 10개 안팎이라, 구조체 키 딕셔너리의 조회 박싱을 피해 선형 탐색을 쓴다.
 /// </summary>
 public class UI_ReactionChannelTable
 {

@@ -2,8 +2,6 @@ using UnityEngine;
 
 /// <summary>
 /// 리액션이 건드리기 전의 원래 값 한 건. 채널에 따라 쓰는 칸이 다르다.
-/// 채널 수가 적고 한 Reactor가 가지는 항목이 10개 안팎이라, 칸을 나누는 대신
-/// 한 구조체에 모아 두고 선형 탐색한다(딕셔너리 키 박싱 회피).
 /// </summary>
 public struct UI_ReactionBaseline
 {

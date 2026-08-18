@@ -4,13 +4,10 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 /// <summary>
-/// 인스펙터에서 자유롭게 추가·삭제하는 UI 연출 한 건.
-/// 파생 클래스 파일 하나를 추가하면 드롭다운에 자동으로 나타나며 기존 코드는 수정하지 않는다.
-///
-/// 이 계층은 [SerializeReference]로 씬·프리팹에 직렬화된다. 클래스명이나 네임스페이스,
-/// 어셈블리가 바뀌면 저장된 참조가 끊기므로 리네임 시 반드시 [MovedFrom]을 남긴다.
-/// IL2CPP 스트리핑 대상이기도 해서 파생 클래스마다 [Preserve]를 붙인다(상속되지 않는다).
+/// 인스펙터에서 자유롭게 추가·삭제하는 UI 연출 한 건. 파생 클래스를 만들면 드롭다운에 자동으로 나타난다.
 /// </summary>
+// [SerializeReference]로 직렬화되므로 클래스명·네임스페이스·어셈블리가 바뀌면 저장된 참조가 끊긴다.
+// 리네임 시 [MovedFrom]을, IL2CPP 스트리핑 대비로 파생 클래스마다 [Preserve]를 붙인다(상속되지 않는다).
 [Serializable]
 public abstract class UI_ReactionBase
 {

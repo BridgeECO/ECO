@@ -6,9 +6,7 @@ using UnityEngine.UI;
 
 /// <summary>
 /// 대상 Graphic의 색을 굴린다.
-///
-/// 주의: 버튼의 Transition이 ColorTint로 남아 있으면 Selectable이 CrossFadeColor로 같은 값을
-/// 계속 덮어써 서로 싸운다. Transition을 None으로 두고 이 리액션으로 색을 관리한다.
+/// 버튼의 Transition이 ColorTint로 남아 있으면 CrossFadeColor가 같은 값을 덮어써 싸운다. None으로 둘 것.
 /// </summary>
 [Serializable]
 [Preserve]

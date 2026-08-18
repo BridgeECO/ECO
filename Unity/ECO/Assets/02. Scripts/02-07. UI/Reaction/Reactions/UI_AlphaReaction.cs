@@ -6,10 +6,7 @@ using UnityEngine.UI;
 
 /// <summary>
 /// 대상의 투명도를 굴린다.
-///
-/// CanvasGroup이 있으면 그쪽을 쓴다. Graphic.color를 건드리면 세터가 SetVerticesDirty를
-/// 불러 트윈이 도는 내내 메시가 다시 만들어지는데, CanvasGroup.alpha는 float 하나라
-/// 리빌드가 없고 자식까지 한꺼번에 먹는다. 대상에 CanvasGroup을 붙여 두길 권한다.
+/// CanvasGroup이 있으면 그쪽을 쓴다. Graphic.color는 트윈이 도는 내내 메시를 다시 만든다.
 /// </summary>
 [Serializable]
 [Preserve]

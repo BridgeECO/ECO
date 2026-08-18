@@ -3,7 +3,6 @@ using UnityEngine;
 
 /// <summary>
 /// 지금 성립하는 상태들로부터 (대상, 채널)마다 이길 리액션 하나씩을 뽑는다.
-/// 실제 재생·복귀는 UI_ReactionDispatcher가 맡는다.
 /// </summary>
 public class UI_ReactionStateArbiter
 {

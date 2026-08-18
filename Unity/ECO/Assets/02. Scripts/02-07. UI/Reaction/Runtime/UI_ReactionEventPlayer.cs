@@ -5,10 +5,8 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 /// <summary>
-/// 단발 이벤트 리액션을 재생한다.
-///
-/// 재생하는 동안 해당 자리를 확실히 뺏고, 끝나면 돌려준다. 그러지 않으면 클릭 연출과
-/// hover 연출이 같은 값을 매 프레임 번갈아 써서 눈에 띄게 떨린다.
+/// 단발 이벤트 리액션을 재생한다. 재생 동안 해당 자리를 뺏고 끝나면 돌려준다.
+/// 뺏지 않으면 클릭 연출과 hover 연출이 같은 값을 매 프레임 번갈아 써 떨린다.
 /// </summary>
 public class UI_ReactionEventPlayer
 {

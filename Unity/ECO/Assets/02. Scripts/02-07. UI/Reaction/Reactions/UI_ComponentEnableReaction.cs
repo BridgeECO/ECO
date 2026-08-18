@@ -3,8 +3,7 @@ using UnityEngine;
 using UnityEngine.Scripting;
 
 /// <summary>
-/// 지정한 컴포넌트를 켜거나 끈다. 게임오브젝트는 그대로 둔 채 특정 연출 컴포넌트만
-/// 여닫고 싶을 때 쓴다.
+/// 지정한 컴포넌트를 켜거나 끈다. 게임오브젝트는 그대로 두고 연출 컴포넌트만 여닫을 때 쓴다.
 /// </summary>
 [Serializable]
 [Preserve]

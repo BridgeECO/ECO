@@ -6,12 +6,8 @@ using UnityEngine.Scripting;
 using UnityEngine.UI;
 
 /// <summary>
-/// 씬·프리팹에 이미 배치된 UI_SpriteAnimator를 구동한다.
-///
-/// UI_SpriteAnimator는 OnEnable에서 재생을 시작하고 OnDisable에서 취소하므로,
-/// 컴포넌트를 켜고 끄는 것이 곧 재생·정지다. 기존 컴포넌트는 손대지 않는다.
-///
-/// 정지해도 Image는 마지막 프레임에 멈춰 있으므로 원래 스프라이트 복원은 이쪽이 책임진다.
+/// 씬·프리팹에 이미 배치된 UI_SpriteAnimator를 켜고 꺼서 재생·정지한다.
+/// 정지해도 Image는 마지막 프레임에 멈춰 있어 원래 스프라이트 복원은 이쪽이 책임진다.
 /// </summary>
 [Serializable]
 [Preserve]

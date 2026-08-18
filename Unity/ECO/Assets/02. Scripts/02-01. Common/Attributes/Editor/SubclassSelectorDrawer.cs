@@ -5,10 +5,7 @@ using UnityEngine;
 
 /// <summary>
 /// [SubclassSelector]가 붙은 [SerializeReference] 항목에 타입 선택 드롭다운을 그린다.
-///
-/// 유니티 기본 선택기는 UI Toolkit 인스펙터 전용인데 이 프로젝트는 VInspector가 IMGUI로
-/// 인스펙터를 대체한다. 선택기가 따라오지 않아 리스트에 항목을 추가해도 타입을 고를 방법이
-/// 없고 빈 줄만 생기므로 직접 그린다.
+/// 유니티 기본 선택기는 UI Toolkit 전용이라, IMGUI로 인스펙터를 대체하는 VInspector에서는 따라오지 않는다.
 /// </summary>
 [CustomPropertyDrawer(typeof(SubclassSelectorAttribute))]
 public class SubclassSelectorDrawer : PropertyDrawer

@@ -8,9 +8,7 @@ using UnityEngine.UI;
 
 /// <summary>
 /// 스프라이트를 프레임 단위로 갈아 끼워 애니메이션을 만든다.
-/// 이 프로젝트는 최적화를 위해 UI 애니메이션에 Animator를 쓰지 않고 이 방식으로 통일한다.
-///
-/// 이탈 시 되감기를 고르면 프레임을 역순으로 돌려준다. 요청서의 Reverse on Roll Off가 여기에 해당한다.
+/// 이 프로젝트는 UI 애니메이션에 Animator를 쓰지 않고 이 방식으로 통일한다.
 /// </summary>
 [Serializable]
 [Preserve]

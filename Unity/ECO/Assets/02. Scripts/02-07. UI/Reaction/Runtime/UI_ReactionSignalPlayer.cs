@@ -5,9 +5,7 @@ using Cysharp.Threading.Tasks;
 
 /// <summary>
 /// 게임 코드가 보낸 신호 하나를 재생하고 묶인 리액션이 모두 끝날 때까지 기다린다.
-/// 단발 이벤트를 맡는 UI_ReactionEventPlayer와 짝을 이룬다.
-///
-/// 재생하는 동안 디스패처를 잠가 상태 연출이 끼어들지 못하게 하고, 끝나면 다시 상태를 맞춘다.
+/// 재생 동안 디스패처를 잠가 상태 연출이 끼어들지 못하게 한다.
 /// </summary>
 public class UI_ReactionSignalPlayer
 {
