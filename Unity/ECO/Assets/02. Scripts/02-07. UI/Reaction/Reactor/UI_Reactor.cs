@@ -87,6 +87,7 @@ public class UI_Reactor : MonoBehaviour,
     private void OnValidate()
     {
         UI_ReactorValidator.Validate(this);
+        UI_ReactionReferenceRepairer.Repair(this);
     }
 #endif
     #endregion
