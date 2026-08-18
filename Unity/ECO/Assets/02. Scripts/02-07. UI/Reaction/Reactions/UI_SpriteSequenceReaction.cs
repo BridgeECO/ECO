@@ -25,43 +25,59 @@ public class UI_SpriteSequenceReaction : UI_ReactionBase
     private bool _isLoop = false;
 
     [SerializeField]
+    [Tooltip("반복 사이에 쉬는 시간(초). 0이면 곧바로 다음 회차를 시작합니다.")]
+    private float _loopInterval = 0f;
+
+    [SerializeField]
     private bool _isIgnoreTimeScale = true;
 
-    private CancellationTokenSource _cts;
-    private bool _isPlaying;
+    private UI_SpriteFrameRunner _runner;
 
     public override EUIReactionChannel Channel => EUIReactionChannel.Sprite;
 
-    public override bool IsPlaying => _isPlaying;
+    public override bool IsPlaying => Runner.IsPlaying;
 
-    public override async UniTask PlayAsync(UI_ReactionContext context,
+    // [SerializeReference] 역직렬화 경로에서 초기화가 도는지에 기대지 않고 지연 생성한다.
+    private UI_SpriteFrameRunner Runner
+    {
+        get
+        {
+            if (_runner == null)
+            {
+                _runner = new UI_SpriteFrameRunner();
+            }
+
+            return _runner;
+        }
+    }
+
+    public override UniTask PlayAsync(UI_ReactionContext context,
         EUIReactionInterruptPolicy interruptPolicy, CancellationToken cancellationToken)
     {
-        if (_isPlaying
+        if (Runner.IsPlaying
             && (interruptPolicy == EUIReactionInterruptPolicy.IgnoreUntilDone
                 || interruptPolicy == EUIReactionInterruptPolicy.SkipIfSame))
         {
-            return;
+            return UniTask.CompletedTask;
         }
 
         Image image = ResolveImage(context);
         if (image == null || _sprites.Count == 0)
         {
-            return;
+            return UniTask.CompletedTask;
         }
 
         EnsureBaseline(context, image.gameObject, default, image.sprite, false);
-        Kill();
-        _cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        UniTask playTask = Runner.PlayAsync(image, _sprites, BuildSettings(), true, cancellationToken);
 
         // 무한 반복은 끝나지 않으므로 기다리면 호출부가 영영 풀리지 않는다.
         if (_isLoop)
         {
-            PlayFramesAsync(image, true, _cts.Token).Forget();
-            return;
+            playTask.Forget();
+            return UniTask.CompletedTask;
         }
 
-        await PlayFramesAsync(image, true, _cts.Token);
+        return playTask;
     }
 
     public override async UniTask ExitAsync(UI_ReactionContext context,
@@ -74,7 +90,7 @@ public class UI_SpriteSequenceReaction : UI_ReactionBase
 
         // 람다를 쓰는 WaitUntil 대신 직접 돌린다. hover가 끊길 때마다 지나가는 경로라
         // 여기서 델리게이트를 새로 잡으면 그대로 쓰레기가 된다.
-        while (exitPolicy == EUIReactionExitPolicy.PlayToEnd && _isPlaying)
+        while (exitPolicy == EUIReactionExitPolicy.PlayToEnd && Runner.IsPlaying)
         {
             bool isCanceled = await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken)
                 .SuppressCancellationThrow();
@@ -91,8 +107,7 @@ public class UI_SpriteSequenceReaction : UI_ReactionBase
             Image image = ResolveImage(context);
             if (image != null)
             {
-                _cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-                await PlayFramesAsync(image, false, _cts.Token);
+                await Runner.PlayAsync(image, _sprites, BuildSettings(), false, cancellationToken);
             }
         }
 
@@ -101,14 +116,7 @@ public class UI_SpriteSequenceReaction : UI_ReactionBase
 
     public override void Kill()
     {
-        if (_cts != null)
-        {
-            _cts.Cancel();
-            _cts.Dispose();
-            _cts = null;
-        }
-
-        _isPlaying = false;
+        Runner.Stop();
     }
 
     public override void RestoreBaseline(UI_ReactionContext context)
@@ -124,48 +132,14 @@ public class UI_SpriteSequenceReaction : UI_ReactionBase
         image.sprite = baseline.Reference as Sprite;
     }
 
+    private UI_SpriteFrameSettings BuildSettings()
+    {
+        return new UI_SpriteFrameSettings(_frameInterval, _isLoop, _loopInterval, _isIgnoreTimeScale);
+    }
+
     private Image ResolveImage(UI_ReactionContext context)
     {
         GameObject target = ResolveTarget(context);
         return target == null ? null : target.GetComponent<Image>();
-    }
-
-    private async UniTask PlayFramesAsync(Image image, bool isForward, CancellationToken token)
-    {
-        _isPlaying = true;
-        DelayType delayType = _isIgnoreTimeScale ? DelayType.UnscaledDeltaTime : DelayType.DeltaTime;
-
-        try
-        {
-            do
-            {
-                for (int i = 0; i < _sprites.Count; i++)
-                {
-                    if (image == null)
-                    {
-                        return;
-                    }
-
-                    image.sprite = _sprites[isForward ? i : _sprites.Count - 1 - i];
-
-                    if (i == _sprites.Count - 1)
-                    {
-                        break;
-                    }
-
-                    await UniTask.Delay(TimeSpan.FromSeconds(_frameInterval), delayType,
-                        PlayerLoopTiming.Update, token);
-                }
-            }
-            while (_isLoop && isForward && !token.IsCancellationRequested);
-        }
-        catch (OperationCanceledException)
-        {
-            // 취소는 이 시스템의 정상 경로다. hover가 끊길 때마다 들어온다.
-        }
-        finally
-        {
-            _isPlaying = false;
-        }
     }
 }
