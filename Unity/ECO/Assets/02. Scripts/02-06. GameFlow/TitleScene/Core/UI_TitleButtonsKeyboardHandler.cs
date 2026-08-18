@@ -1,14 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 using VInspector;
 
 /// <summary>
-/// 타이틀씬 수직 버튼 리스트의 키보드 조작 핸들러.
+/// 타이틀씬 수직 버튼 리스트의 키보드 조작 진입점.
 /// 상/하 방향키로 버튼을 순환하며, Enter로 현재 버튼을 클릭한다.
-/// OnEnable/OnDisable 시점에 UI_KeyboardInputManager에 자동 등록/해제된다.
+/// 선택 상태는 TitleButtonSelector가 쥐고, 이 클래스는 생명주기와
+/// UI_KeyboardInputManager 등록/해제만 담당한다.
 /// </summary>
 public class UI_TitleButtonsKeyboardHandler : MonoBehaviour, IKeyboardControllable
 {
@@ -17,35 +15,22 @@ public class UI_TitleButtonsKeyboardHandler : MonoBehaviour, IKeyboardControllab
     private List<UI_ButtonSelectionItem> _items;
 
     private TitleScene _titleScene;
-    private int _currentIndex;
-    private bool _isMenuStarted;
+    private TitleButtonSelector _selector;
     private bool _isHandlerPushed;
 
-    private List<UnityAction> _clickActions;
-
     #region Unity Lifecycle Methods
+    // Init은 TitleScene.Start에서 호출되므로, 그보다 앞선 Awake에서 셀렉터를 준비해 둔다.
+    private void Awake()
+    {
+        _selector = new TitleButtonSelector(_items);
+    }
+
     private void OnEnable()
     {
-        InitSelection();
+        _selector.InitSelection();
+        _selector.BindClickListeners();
 
-        _clickActions = new List<UnityAction>();
-        for (int i = 0; i < _items.Count; i++)
-        {
-            int index = i;
-            UnityAction action = () =>
-            {
-                _currentIndex = index;
-                RefreshSelection();
-            };
-            _clickActions.Add(action);
-
-            if (_items[i].TargetButton != null)
-            {
-                _items[i].TargetButton.onClick.AddListener(action);
-            }
-        }
-
-        if (_isMenuStarted)
+        if (_selector.IsSelectionEnabled)
         {
             SafePushHandler();
         }
@@ -54,19 +39,7 @@ public class UI_TitleButtonsKeyboardHandler : MonoBehaviour, IKeyboardControllab
     private void OnDisable()
     {
         SafePopHandler();
-
-        if (_clickActions != null)
-        {
-            for (int i = 0; i < _items.Count; i++)
-            {
-                if (i < _clickActions.Count && _items[i].TargetButton != null)
-                {
-                    _items[i].TargetButton.onClick.RemoveListener(_clickActions[i]);
-                }
-            }
-            _clickActions.Clear();
-            _clickActions = null;
-        }
+        _selector.UnbindClickListeners();
     }
 
     private void OnDestroy()
@@ -89,22 +62,22 @@ public class UI_TitleButtonsKeyboardHandler : MonoBehaviour, IKeyboardControllab
 
     private void HandleMenuStarted()
     {
-        _isMenuStarted = true;
+        _selector.SetSelectionEnabled(true);
         SafePushHandler();
 
         // OnEnable 시점에는 아직 메뉴가 시작되지 않아 선택을 미뤄 두었다. 여기서 처음 반영한다.
-        RefreshSelection();
+        _selector.RefreshSelection();
     }
 
     #region IKeyboardControllable
     public void OnMoveUp()
     {
-        ChangeSelection(-1);
+        _selector.ChangeSelection(-1);
     }
 
     public void OnMoveDown()
     {
-        ChangeSelection(1);
+        _selector.ChangeSelection(1);
     }
 
     // 타이틀씬은 수직 리스트만 지원하므로 좌/우 입력은 비활성화
@@ -114,85 +87,11 @@ public class UI_TitleButtonsKeyboardHandler : MonoBehaviour, IKeyboardControllab
 
     public void OnConfirm()
     {
-        SelectCurrentButton();
+        _selector.InvokeCurrentButton();
     }
 
     // ESC는 UIManager가 전역 처리하므로 여기서는 응답하지 않음
     public void OnCancel() { }
-    #endregion
-
-    #region Selection Logic
-    private void InitSelection()
-    {
-        _currentIndex = 0;
-        RefreshSelection();
-    }
-
-    private void ChangeSelection(int offset)
-    {
-        if (_items == null || _items.Count == 0)
-        {
-            return;
-        }
-
-        _currentIndex += offset;
-
-        if (_currentIndex < 0)
-        {
-            _currentIndex = _items.Count - 1;
-        }
-        else if (_items.Count<= _currentIndex )
-        {
-            _currentIndex = 0;
-        }
-
-        RefreshSelection();
-    }
-
-    /// <summary>
-    /// 무엇이 선택됐는지만 정한다. 선택 표시는 각 버튼의 UI_Reactor가 Selected 항목으로 맡는다.
-    /// </summary>
-    private void RefreshSelection()
-    {
-        // 메뉴가 시작되기 전에 선택을 강제하면 타이틀 인트로 도중에 버튼이 눌린 것처럼 보인다.
-        if (!_isMenuStarted || _items == null || _items.Count == 0)
-        {
-            return;
-        }
-
-        if (_currentIndex < 0 || _items.Count <= _currentIndex)
-        {
-            return;
-        }
-
-        Button target = _items[_currentIndex].TargetButton;
-        if (target == null || EventSystem.current == null)
-        {
-            return;
-        }
-
-        EventSystem.current.SetSelectedGameObject(target.gameObject);
-    }
-
-    private void SelectCurrentButton()
-    {
-        if (_items == null || _items.Count == 0)
-        {
-            return;
-        }
-
-        if (_currentIndex < 0 || _items.Count<= _currentIndex )
-        {
-            return;
-        }
-
-        UI_ButtonSelectionItem currentItem = _items[_currentIndex];
-
-        if (currentItem.TargetButton != null)
-        {
-            currentItem.TargetButton.onClick.Invoke();
-        }
-    }
     #endregion
 
     #region Handler Registration
