@@ -89,7 +89,10 @@ public static class SfxEnumGenerator
             string.Join(", ", orphanNames));
     }
 
-    /// <summary>guids에서 AudioClip 파일명을 수집하고 알파벳 오름차순으로 정렬한다.</summary>
+    /// <summary>
+    /// AssetDatabase.FindAssets의 반환 순서는 보장되지 않는다. 이름으로 정렬해 두어야
+    /// 신규 클립이 받는 번호가 실행 환경과 무관하게 같은 순서로 결정된다.
+    /// </summary>
     private static List<string> CollectSortedClipNames(string[] guids)
     {
         return guids

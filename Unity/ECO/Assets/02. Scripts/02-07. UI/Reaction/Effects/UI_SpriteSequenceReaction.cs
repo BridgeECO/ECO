@@ -25,7 +25,8 @@ public class UI_SpriteSequenceReaction : UI_ReactionBase
     private bool _isLoop = false;
 
     [SerializeField]
-    [Tooltip("반복 사이에 쉬는 시간(초). 0이면 곧바로 다음 회차를 시작합니다.")]
+    [Tooltip("반복 주기(초). 쉬는 시간이 아니라 회차가 시작한 시점부터 재는 값이라 재생 시간이 포함됩니다. " +
+        "재생이 이 값보다 길면 곧바로 다음 회차를 시작합니다.")]
     private float _loopInterval = 0f;
 
     [SerializeField]
