@@ -47,7 +47,7 @@ public class UI_SpriteFrameRunner
             {
                 float cycleStartTime = settings.GetTime();
 
-                await PlayCycleAsync(image, sprites, settings, isForward, token);
+                await PlayCycleAsync(image, sprites, settings, isForward, isLoop, token);
 
                 if (!isLoop)
                 {
@@ -85,7 +85,7 @@ public class UI_SpriteFrameRunner
     }
 
     private static async UniTask PlayCycleAsync(Image image, IReadOnlyList<Sprite> sprites,
-        UI_SpriteFrameSettings settings, bool isForward, CancellationToken token)
+        UI_SpriteFrameSettings settings, bool isForward, bool isLoop, CancellationToken token)
     {
         DelayType delayType = settings.IsIgnoreTimeScale ? DelayType.UnscaledDeltaTime : DelayType.DeltaTime;
 
@@ -98,8 +98,10 @@ public class UI_SpriteFrameRunner
 
             image.sprite = sprites[isForward ? i : sprites.Count - 1 - i];
 
-            // 마지막 프레임 뒤에 기다리면 한 회차가 프레임 하나만큼 길어진다.
-            if (i == sprites.Count - 1)
+            // 단발 재생은 마지막 프레임 뒤에 기다리면 한 회차가 프레임 하나만큼 길어진다.
+            // 반대로 반복 재생은 여기서 기다리지 않으면 다음 회차가 곧바로 덮어써, 마지막 프레임만
+            // 화면에 한 프레임 스쳐 지나간다. 반복 간격이 0일 때 그대로 드러난다.
+            if (i == sprites.Count - 1 && !isLoop)
             {
                 return;
             }

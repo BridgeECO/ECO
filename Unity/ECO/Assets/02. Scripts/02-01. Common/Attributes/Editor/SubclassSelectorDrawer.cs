@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
@@ -54,13 +55,9 @@ public class SubclassSelectorDrawer : PropertyDrawer
             return height;
         }
 
-        SerializedProperty iterator = property.Copy();
-        SerializedProperty end = property.GetEndProperty();
-        bool enterChildren = true;
-        while (iterator.NextVisible(enterChildren) && !SerializedProperty.EqualContents(iterator, end))
+        foreach (SerializedProperty child in EnumerateChildren(property))
         {
-            enterChildren = false;
-            height += EditorGUI.GetPropertyHeight(iterator, true) + EditorGUIUtility.standardVerticalSpacing;
+            height += EditorGUI.GetPropertyHeight(child, true) + EditorGUIUtility.standardVerticalSpacing;
         }
 
         return height;
@@ -71,15 +68,27 @@ public class SubclassSelectorDrawer : PropertyDrawer
     {
         float y = position.y + EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
 
+        foreach (SerializedProperty child in EnumerateChildren(property))
+        {
+            float fieldHeight = EditorGUI.GetPropertyHeight(child, true);
+            EditorGUI.PropertyField(new Rect(position.x, y, position.width, fieldHeight), child, true);
+            y += fieldHeight + EditorGUIUtility.standardVerticalSpacing;
+        }
+    }
+
+    /// <summary>
+    /// 높이 계산과 실제 그리기가 반드시 같은 순서·같은 개수를 훑어야 한다.
+    /// 두 벌로 두면 한쪽만 고쳐졌을 때 인스펙터 레이아웃이 어긋난다.
+    /// </summary>
+    private static IEnumerable<SerializedProperty> EnumerateChildren(SerializedProperty property)
+    {
         SerializedProperty iterator = property.Copy();
         SerializedProperty end = property.GetEndProperty();
         bool enterChildren = true;
         while (iterator.NextVisible(enterChildren) && !SerializedProperty.EqualContents(iterator, end))
         {
             enterChildren = false;
-            float fieldHeight = EditorGUI.GetPropertyHeight(iterator, true);
-            EditorGUI.PropertyField(new Rect(position.x, y, position.width, fieldHeight), iterator, true);
-            y += fieldHeight + EditorGUIUtility.standardVerticalSpacing;
+            yield return iterator;
         }
     }
 

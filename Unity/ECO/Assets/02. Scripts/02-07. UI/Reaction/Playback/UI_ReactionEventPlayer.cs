@@ -73,9 +73,16 @@ public class UI_ReactionEventPlayer
             ExitPolicy = entry.ExitPolicy,
         });
 
-        await reaction.PlayAsync(context, entry.InterruptPolicy, token);
-
-        _owners.Release(targetId, channel, reaction);
-        _onChannelReleased?.Invoke();
+        try
+        {
+            await reaction.PlayAsync(context, entry.InterruptPolicy, token);
+        }
+        finally
+        {
+            // 예외로 빠져나가도 자리는 반드시 놓는다. ReleaseLosers가 EVENT_PRIORITY 소유자를
+            // 건너뛰므로, 한 번 놓치면 그 자리에 상태 연출이 영영 들어오지 못한다.
+            _owners.Release(targetId, channel, reaction);
+            _onChannelReleased?.Invoke();
+        }
     }
 }

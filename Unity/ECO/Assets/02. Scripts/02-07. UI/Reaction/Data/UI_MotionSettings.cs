@@ -6,10 +6,13 @@ using UnityEngine;
 [Serializable]
 public class UI_MotionSettings
 {
+    // 음수가 그대로 DOTween에 넘어가면 트윈이 무엇을 할지 예측할 수 없다. 인스펙터에서 막는다.
     [SerializeField]
+    [Min(0f)]
     private float _duration = 0.15f;
 
     [SerializeField]
+    [Min(0f)]
     private float _delay = 0f;
 
     [SerializeField]
@@ -40,7 +43,10 @@ public class UI_MotionSettings
     public EUIReactionValueMode ValueMode => _valueMode;
 
     /// <summary>무한 반복은 끝나지 않으므로 완료를 기다리는 정책에서는 즉시 완료로 취급한다.</summary>
-    public bool IsInfiniteLoop => _loops < 0;
+    public bool IsInfiniteLoop => Loops < 0;
+
+    // 기획자가 0을 넣으면 "반복 없음"을 뜻한 것이지 "0번 재생"이 아니다. 1회 재생으로 읽는다.
+    private int Loops => _loops == 0 ? 1 : _loops;
 
     public Tween ApplyTo(Tween tween)
     {
@@ -56,9 +62,9 @@ public class UI_MotionSettings
             tween.SetDelay(_delay);
         }
 
-        if (_loops != 1)
+        if (Loops != 1)
         {
-            tween.SetLoops(_loops, _loopType);
+            tween.SetLoops(Loops, _loopType);
         }
 
         return ApplyCommon(tween);

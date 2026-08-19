@@ -63,6 +63,15 @@ public class UI_TitleButtonsKeyboardHandler : MonoBehaviour, IKeyboardControllab
     private void HandleMenuStarted()
     {
         _selector.SetSelectionEnabled(true);
+
+        // 구독은 OnDestroy까지 살아 있어 비활성 상태에서도 이 콜백이 올 수 있다. 그때 등록하면
+        // 화면에 없는 타이틀 버튼이 키 입력을 받는다. 메뉴 시작 여부는 위에서 셀렉터가 이미 기억했으므로
+        // 다음 OnEnable에서 정상적으로 등록된다.
+        if (!isActiveAndEnabled)
+        {
+            return;
+        }
+
         _registration.Push(this);
 
         // OnEnable 시점에는 아직 메뉴가 시작되지 않아 선택을 미뤄 두었다. 여기서 처음 반영한다.

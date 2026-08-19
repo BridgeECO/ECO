@@ -57,6 +57,14 @@ public class UI_SaveSlotPopup : UI_Popup, IKeyboardControllable
         await base.CloseAsync();
     }
 
+    // CloseAsync를 거치지 않고 꺼지는 경로에서도 핸들러를 남기지 않는다. 매니저는 파괴된 핸들러만
+    // 걸러내므로, 살아 있지만 꺼져 있는 팝업은 그대로 입력을 받아 간다. Pop은 등록 플래그로 멱등이라
+    // CloseAsync가 이미 해제했더라도 안전하다.
+    private void OnDisable()
+    {
+        _registration.Pop(this);
+    }
+
     private void OnDestroy()
     {
         if (_slotItems is null)

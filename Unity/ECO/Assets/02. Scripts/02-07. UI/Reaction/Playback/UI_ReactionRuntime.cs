@@ -136,5 +136,8 @@ public class UI_ReactionRuntime
         _tracker.ResetState();
         _baselines.Clear();
         _isLayoutSettled = false;
+
+        // 프레임 번호가 남으면, 풀에서 같은 프레임에 되살아난 UI의 첫 Activate가 중복으로 걸러진다.
+        _lastActivateFrame = -1;
     }
 }

@@ -52,10 +52,20 @@ public static class UI_ReactionEntrySummary
     private static void AppendReactionNames(SerializedProperty reactions)
     {
         int shown = 0;
-        for (int i = 0; i < reactions.arraySize && shown < MAX_REACTION_NAMES; i++)
+        int assigned = 0;
+
+        // 숨은 개수는 arraySize가 아니라 타입이 지정된 것만 센다. 타입을 아직 안 고른 빈 줄까지
+        // 세면 "외 N개"가 있지도 않은 리액션을 가리킨다.
+        for (int i = 0; i < reactions.arraySize; i++)
         {
             string typeName = GetShortTypeName(reactions.GetArrayElementAtIndex(i));
             if (string.IsNullOrEmpty(typeName))
+            {
+                continue;
+            }
+
+            assigned++;
+            if (MAX_REACTION_NAMES <= shown)
             {
                 continue;
             }
@@ -75,9 +85,9 @@ public static class UI_ReactionEntrySummary
             return;
         }
 
-        if (MAX_REACTION_NAMES < reactions.arraySize)
+        if (MAX_REACTION_NAMES < assigned)
         {
-            _builder.Append(" 외 ").Append(reactions.arraySize - MAX_REACTION_NAMES).Append("개");
+            _builder.Append(" 외 ").Append(assigned - MAX_REACTION_NAMES).Append("개");
         }
     }
 
