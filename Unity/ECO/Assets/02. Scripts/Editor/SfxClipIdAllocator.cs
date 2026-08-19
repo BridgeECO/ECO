@@ -13,8 +13,10 @@ public class SfxClipIdAllocator
     public const string NEXT_ID_MARKER = "SfxEnumGenerator:nextId=";
 
     // "Name = 12," 와 "Name," 양쪽을 받는다. 후자는 명시값 도입 이전 파일의 마이그레이션용이다.
+    // 후행 주석까지 받아야 하는 이유: 생성기가 클립 없는 항목을 "Name = 12,   // 오디오 클립 없음"으로 쓴다.
+    // 이 꼬리를 놓치면 그 항목이 KnownNames에서 빠져 다음 생성 때 enum에서 조용히 사라진다.
     private static readonly Regex MEMBER_PATTERN =
-        new Regex(@"^\s*(?<name>[A-Za-z_]\w*)\s*(?:=\s*(?<id>\d+)\s*)?,\s*$", RegexOptions.Compiled);
+        new Regex(@"^\s*(?<name>[A-Za-z_]\w*)\s*(?:=\s*(?<id>\d+)\s*)?,\s*(?://.*)?$", RegexOptions.Compiled);
 
     private static readonly Regex NEXT_ID_PATTERN =
         new Regex(NEXT_ID_MARKER + @"(?<id>\d+)", RegexOptions.Compiled);
