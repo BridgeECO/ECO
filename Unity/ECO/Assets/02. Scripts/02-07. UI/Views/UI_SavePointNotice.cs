@@ -11,15 +11,15 @@ using VInspector;
 [RequireComponent(typeof(CanvasGroup))]
 public class UI_SavePointNotice : MonoBehaviour
 {
+    // 나타나고 사라지는 모양은 UI_Reactor의 Show/Hide 항목이 쥔다.
+    // 이 클래스는 언제 띄우고 얼마나 남겨 둘지만 정한다.
+    [Foldout("Hierarchy")]
+    [SerializeField]
+    private UI_Reactor _reactor;
+
     [Foldout("Settings")]
     [SerializeField]
-    private float _fadeInDuration = 0.25f;
-
-    [SerializeField]
     private float _visibleDuration = 1f;
-
-    [SerializeField]
-    private float _fadeOutDuration = 0.25f;
 
     private CanvasGroup _canvasGroup;
     private CancellationTokenSource _noticeCts;
@@ -62,39 +62,26 @@ public class UI_SavePointNotice : MonoBehaviour
     #endregion
 
     #region Animation
+    // 등장과 퇴장 사이에 유지 시간이 끼는 순차 연출이라, 한 신호에 몰아넣지 않고 코드가 순서를 잡는다.
     private async UniTaskVoid PlayNoticeAsync(CancellationToken cancellationToken)
     {
+        if (_reactor == null)
+        {
+            return;
+        }
+
         try
         {
-            await FadeAsync(0f, 1f, _fadeInDuration, cancellationToken);
-            await UniTask.Delay(TimeSpan.FromSeconds(_visibleDuration), ignoreTimeScale: true, cancellationToken: cancellationToken);
-            await FadeAsync(1f, 0f, _fadeOutDuration, cancellationToken);
+            await _reactor.PlaySignalAsync(EUIReactionSignal.Show, cancellationToken);
+            await UniTask.Delay(TimeSpan.FromSeconds(_visibleDuration), ignoreTimeScale: true,
+                cancellationToken: cancellationToken);
+            await _reactor.PlaySignalAsync(EUIReactionSignal.Hide, cancellationToken);
         }
         catch (OperationCanceledException)
         {
             // 알림이 겹쳐 취소되었거나 오브젝트가 파괴된 경우다.
             // 알파는 다음 재생이 0f부터 다시 지정하므로 여기서 되돌리지 않는다.
         }
-    }
-
-    // 일시정지 중에도 알림이 멈추지 않도록 unscaled 시간으로 보간한다.
-    private async UniTask FadeAsync(float fromAlpha, float toAlpha, float duration, CancellationToken cancellationToken)
-    {
-        if (duration <= 0f)
-        {
-            SetAlpha(toAlpha);
-            return;
-        }
-
-        float elapsed = 0f;
-        while (elapsed < duration)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            SetAlpha(Mathf.Lerp(fromAlpha, toAlpha, elapsed / duration));
-            elapsed += Time.unscaledDeltaTime;
-            await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
-        }
-        SetAlpha(toAlpha);
     }
     #endregion
 

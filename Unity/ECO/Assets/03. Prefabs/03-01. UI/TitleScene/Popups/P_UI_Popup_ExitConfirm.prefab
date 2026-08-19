@@ -452,6 +452,7 @@ GameObject:
   - component: {fileID: 8982252968641725739}
   - component: {fileID: 5881257479341192056}
   - component: {fileID: 3698102966611280839}
+  - component: {fileID: 7993132593818048673}
   m_Layer: 5
   m_Name: P_UI_Popup_ExitConfirm
   m_TagString: Untagged
@@ -504,6 +505,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b95d0d803b4d9104a90cfff79c9c97f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _reactor: {fileID: 7993132593818048673}
+  _scaleAnimation:
+    _openDuration: 0.3
+    _closeDuration: 0.2
+    _openEase: 27
+    _closeEase: 26
+    _startScale: {x: 0.5, y: 0.5, z: 0.5}
+    _targetScale: {x: 1, y: 1, z: 1}
   _uiTitleText: {fileID: 2904627550778502197}
   _uiMessageText: {fileID: 6624348822315236428}
   _buttonExitGame: {fileID: 3195983903674974800}
@@ -520,6 +529,124 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f9ab6a319d52074592ef893e912760a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &7993132593818048673
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6553306777639288930}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12d356bb42a9ab841b99b3913ad90c35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _entries:
+  - _label: "\uD31D\uC5C5 \uC5F4\uAE30"
+    _isMuted: 0
+    _kind: 2
+    _stateTrigger: 0
+    _eventTrigger: 0
+    _signalTrigger: 0
+    _interruptPolicy: 0
+    _exitPolicy: 0
+    _reactions:
+    - rid: 914377283501293697
+  - _label: "\uD31D\uC5C5 \uB2EB\uAE30"
+    _isMuted: 0
+    _kind: 2
+    _stateTrigger: 0
+    _eventTrigger: 0
+    _signalTrigger: 1
+    _interruptPolicy: 0
+    _exitPolicy: 0
+    _reactions:
+    - rid: 914377283501293698
+  _isPlayShowOnEnable: 0
+  _previewState: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: 914377283501293697
+      type: {class: UI_ScaleReaction, ns: , asm: Assembly-CSharp}
+      data:
+        _target: {fileID: 0}
+        _motion:
+          _duration: 0.3
+          _delay: 0
+          _valueMode: 1
+          _isUseCurve: 0
+          _ease: 27
+          _curve:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 0
+              inSlope: 0
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 1
+              value: 1
+              inSlope: 0
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          _loops: 1
+          _loopType: 1
+          _isIgnoreTimeScale: 1
+        _isUseStartValue: 1
+        _scale: {x: 1, y: 1, z: 1}
+        _startScale: {x: 0.5, y: 0.5, z: 0.5}
+    - rid: 914377283501293698
+      type: {class: UI_ScaleReaction, ns: , asm: Assembly-CSharp}
+      data:
+        _target: {fileID: 0}
+        _motion:
+          _duration: 0.2
+          _delay: 0
+          _valueMode: 1
+          _isUseCurve: 0
+          _ease: 26
+          _curve:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 0
+              inSlope: 0
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 1
+              value: 1
+              inSlope: 0
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          _loops: 1
+          _loopType: 1
+          _isIgnoreTimeScale: 1
+        _isUseStartValue: 1
+        _scale: {x: 0.5, y: 0.5, z: 0.5}
+        _startScale: {x: 1, y: 1, z: 1}
 --- !u!1 &7700704994393389251
 GameObject:
   m_ObjectHideFlags: 0
