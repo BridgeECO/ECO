@@ -9,6 +9,10 @@ reviews:
   high_level_summary_in_walkthrough: false
   auto_review:
     enabled: true
+    # 기본값이 true라 명시하지 않으면 푸시할 때마다 재리뷰가 돈다.
+    # PR을 올릴 때 한 번만 받고, 이후 재리뷰는 @coderabbitai review로 직접 요청한다.
+    auto_incremental_review: false
+    # 위 항목이 false인 동안에는 쓰이지 않는다. 인크리멘털을 다시 켤 때를 대비해 남겨 둔다.
     auto_pause_after_reviewed_commits: 1
   # 유니티는 스크립트/에셋 1개 수정마다 .meta가 함께 변경되어 리뷰 대상 파일 수가 항상 2배로 잡힌다.
   # 무료 플랜의 100개 한도를 넘겨 리뷰 자체가 스킵되는 것을 막기 위해 제외한다.
