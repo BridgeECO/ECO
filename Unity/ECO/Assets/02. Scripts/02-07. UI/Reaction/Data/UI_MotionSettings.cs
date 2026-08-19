@@ -49,15 +49,7 @@ public class UI_MotionSettings
             return null;
         }
 
-        // 커브에 키가 하나도 없으면 계속 0을 반환해 대상이 시작값에 붙어 버린다.
-        if (_isUseCurve && _curve != null && 0 < _curve.length)
-        {
-            tween.SetEase(_curve);
-        }
-        else
-        {
-            tween.SetEase(_ease);
-        }
+        ApplyEase(tween);
 
         if (0f < _delay)
         {
@@ -69,8 +61,42 @@ public class UI_MotionSettings
             tween.SetLoops(_loops, _loopType);
         }
 
-        // 재활용을 켠다. 전역 기본값이 꺼짐이라 그대로 두면 hover가 오갈 때마다 트윈이 새로 할당된다.
-        // 핸들이 남의 트윈을 가리킬 위험은 UI_TweenPolicyRunner가 OnKill에서 비워 막는다.
+        return ApplyCommon(tween);
+    }
+
+    /// <summary>
+    /// 물러날 때 쓰는 트윈. 이즈와 시간 축만 물려주고 Delay와 Loops는 뺀다.
+    /// 진입을 늦추려고 넣은 Delay가 퇴장에도 걸리면 포인터를 뗀 뒤 그만큼 이전 값이 남아 반응이 굼떠 보이고,
+    /// Loops가 걸리면 기준값 복귀가 왕복 횟수만큼 늦어진다. 둘 다 진입 연출을 꾸미려던 설정이다.
+    /// </summary>
+    public Tween ApplyToExit(Tween tween)
+    {
+        if (tween == null)
+        {
+            return null;
+        }
+
+        ApplyEase(tween);
+        return ApplyCommon(tween);
+    }
+
+    private void ApplyEase(Tween tween)
+    {
+        // 커브에 키가 하나도 없으면 계속 0을 반환해 대상이 시작값에 붙어 버린다.
+        if (_isUseCurve && _curve != null && 0 < _curve.length)
+        {
+            tween.SetEase(_curve);
+        }
+        else
+        {
+            tween.SetEase(_ease);
+        }
+    }
+
+    // 재활용을 켠다. 전역 기본값이 꺼짐이라 그대로 두면 hover가 오갈 때마다 트윈이 새로 할당된다.
+    // 핸들이 남의 트윈을 가리킬 위험은 UI_TweenPolicyRunner가 OnKill에서 비워 막는다.
+    private Tween ApplyCommon(Tween tween)
+    {
         return tween.SetUpdate(_isIgnoreTimeScale).SetRecyclable(true);
     }
 }

@@ -43,7 +43,21 @@ public abstract class UI_TweenReactionBase : UI_ReactionBase
         EUIReactionInterruptPolicy interruptPolicy, CancellationToken cancellationToken)
     {
         GameObject target = ResolveTarget(context);
-        if (target == null || !TryEnterPlay(interruptPolicy))
+        if (target == null)
+        {
+            return UniTask.CompletedTask;
+        }
+
+        // 되감기는 재생 중일 때만 성립한다. 완료된 트윈은 AutoKill을 꺼 둔 탓에 살아 있을 뿐이라,
+        // 이걸 되감으면 새로 요청한 재생이 거꾸로 도는 꼴이 된다.
+        // 되감기가 끝날 때까지 기다린다. 즉시 완료로 돌려주면 자리 해제를 태스크 완료에 묶어 둔
+        // 이벤트 경로가 아직 도는 트윈을 두고 자리를 놓고, 신호 경로는 팝업을 그대로 꺼 버린다.
+        if (interruptPolicy == EUIReactionInterruptPolicy.Reverse && Runner.IsPlaying)
+        {
+            return Runner.TryReverse() ? Runner.WaitAsync() : UniTask.CompletedTask;
+        }
+
+        if (!TryEnterPlay(interruptPolicy))
         {
             return UniTask.CompletedTask;
         }
@@ -82,7 +96,7 @@ public abstract class UI_TweenReactionBase : UI_ReactionBase
 
         if (exitPolicy == EUIReactionExitPolicy.TweenToBaseline)
         {
-            Runner.Run(_motion.ApplyTo(CreateExitTween(context, target)), target);
+            Runner.Run(_motion.ApplyToExit(CreateExitTween(context, target)), target);
             return Runner.WaitAsync();
         }
 
@@ -173,17 +187,8 @@ public abstract class UI_TweenReactionBase : UI_ReactionBase
             case EUIReactionInterruptPolicy.SkipIfSame:
                 return !Runner.IsPlaying;
 
-            // 재생 중일 때만 되감는다. 완료된 트윈은 AutoKill을 꺼 둔 탓에 살아 있을 뿐이라,
-            // 이걸 되감으면 새로 요청한 재생이 거꾸로 도는 꼴이 된다.
-            case EUIReactionInterruptPolicy.Reverse:
-                if (Runner.IsPlaying)
-                {
-                    Runner.TryReverse();
-                    return false;
-                }
-
-                return true;
-
+            // Reverse는 되감기를 기다려야 해서 PlayAsync가 앞에서 직접 처리한다.
+            // 여기까지 왔다면 재생 중이 아니라는 뜻이라 평범하게 새로 재생한다.
             default:
                 return true;
         }

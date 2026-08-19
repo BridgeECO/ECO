@@ -54,7 +54,8 @@ public class UI_SpriteSequenceReaction : UI_ReactionBase
     public override UniTask PlayAsync(UI_ReactionContext context,
         EUIReactionInterruptPolicy interruptPolicy, CancellationToken cancellationToken)
     {
-        if (Runner.IsPlaying
+        // 무한 반복은 끝나지 않으므로 "끝날 때까지 무시"가 영구 무시가 된다. 그 경우 정책을 적용하지 않는다.
+        if (!_isLoop && Runner.IsPlaying
             && (interruptPolicy == EUIReactionInterruptPolicy.IgnoreUntilDone
                 || interruptPolicy == EUIReactionInterruptPolicy.SkipIfSame))
         {
@@ -89,7 +90,8 @@ public class UI_SpriteSequenceReaction : UI_ReactionBase
         }
 
         // WaitUntil 대신 직접 돌린다. hover가 끊길 때마다 지나가는 경로라 람다가 그대로 쓰레기가 된다.
-        while (exitPolicy == EUIReactionExitPolicy.PlayToEnd && Runner.IsPlaying)
+        // 무한 반복은 끝나지 않으므로 여기서 기다리면 아래 Kill에 영영 닿지 못한다. PlayAsync와 같은 예외를 둔다.
+        while (!_isLoop && exitPolicy == EUIReactionExitPolicy.PlayToEnd && Runner.IsPlaying)
         {
             bool isCanceled = await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken)
                 .SuppressCancellationThrow();
