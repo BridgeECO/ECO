@@ -2,9 +2,7 @@ using System;
 using DG.Tweening;
 using UnityEngine;
 
-/// <summary>
-/// 모션 리액션이 공유하는 재생 설정. 트윈 리액션마다 같은 필드를 다시 쓰지 않도록 묶어 둔다.
-/// </summary>
+/// <summary>모션 리액션이 공유하는 재생 설정. 트윈 리액션마다 같은 필드를 다시 쓰지 않도록 묶어 둔다.</summary>
 [Serializable]
 public class UI_MotionSettings
 {
@@ -71,9 +69,8 @@ public class UI_MotionSettings
             tween.SetLoops(_loops, _loopType);
         }
 
-        // 재활용을 켠다. 이 프로젝트의 전역 기본값은 꺼짐이라 그대로 두면 hover가 오갈 때마다
-        // 트윈 객체가 새로 할당된다. 보관 중인 핸들이 남의 트윈을 가리킬 위험은
-        // UI_TweenPolicyRunner가 OnKill에서 핸들을 비워 막는다.
+        // 재활용을 켠다. 전역 기본값이 꺼짐이라 그대로 두면 hover가 오갈 때마다 트윈이 새로 할당된다.
+        // 핸들이 남의 트윈을 가리킬 위험은 UI_TweenPolicyRunner가 OnKill에서 비워 막는다.
         return tween.SetUpdate(_isIgnoreTimeScale).SetRecyclable(true);
     }
 }

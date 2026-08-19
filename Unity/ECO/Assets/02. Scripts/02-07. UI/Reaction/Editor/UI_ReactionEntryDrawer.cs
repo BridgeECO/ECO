@@ -2,9 +2,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-/// <summary>
-/// 리액션 항목을 접었다 펴며 그린다. 트리거 종류에 쓰이지 않는 필드는 아예 그리지 않는다.
-/// </summary>
+/// <summary>리액션 항목을 접었다 펴며 그린다. 트리거 종류에 쓰이지 않는 필드는 아예 그리지 않는다.</summary>
 [CustomPropertyDrawer(typeof(UI_ReactionEntry))]
 public class UI_ReactionEntryDrawer : PropertyDrawer
 {

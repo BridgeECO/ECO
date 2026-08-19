@@ -3,9 +3,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-/// <summary>
-/// 채널 승자를 재생하고 자리를 뺏긴 리액션을 물러나게 한다.
-/// </summary>
+/// <summary>채널 승자를 재생하고 자리를 뺏긴 리액션을 물러나게 한다.</summary>
 public class UI_ReactionDispatcher
 {
     private readonly UI_ReactionChannelTable _owners = new UI_ReactionChannelTable();
@@ -77,10 +75,7 @@ public class UI_ReactionDispatcher
         _arbiter.Clear();
     }
 
-    /// <summary>
-    /// 이 리액션이 쓰려는 자리를 쥐고 있는 다른 리액션을 끊고 자리를 비운다.
-    /// Signal이 상태 연출을 밀어내고 값을 가져갈 때 쓴다.
-    /// </summary>
+    /// <summary>Signal이 상태 연출을 밀어낼 때, 그 자리를 쥔 리액션을 끊고 장부를 비운다.</summary>
     public void KillChannel(UI_ReactionBase reaction, UI_ReactionContext context)
     {
         GameObject target = reaction.ResolveTarget(context);
@@ -124,10 +119,8 @@ public class UI_ReactionDispatcher
 
             _owners.RemoveAt(i);
 
-            // 자리를 이어받을 리액션이 있으면 물러나는 연출은 재생하지 않고 끊기만 한다.
-            // 두 트윈이 같은 값을 동시에 쓰면 프레임마다 나중에 갱신된 쪽이 이겨 떨리고,
-            // 물러나는 쪽이 더 길면 새 연출이 끝난 뒤 값을 기준값으로 끌고 가 버린다.
-            // 누름을 뗄 때 Pressed가 물러나고 Hover가 들어오는 경로가 정확히 이 경우다.
+            // 이어받을 리액션이 있으면 퇴장 연출 없이 끊기만 한다. 두 트윈이 같은 값을 다투면
+            // 떨리고, 퇴장이 더 길면 새 연출을 기준값으로 끌고 간다(누름 해제 → Hover).
             if (hasSuccessor)
             {
                 owner.Reaction.Kill();

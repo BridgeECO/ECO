@@ -11,9 +11,8 @@ public static class UI_ReactionReferenceRepairer
     private static readonly HashSet<UI_ReactionBase> _seen = new HashSet<UI_ReactionBase>();
 
     /// <summary>
-    /// 리스트의 '+'는 마지막 원소를 복제하는데 [SerializeReference]는 객체가 아니라 참조만 복사된다.
-    /// 그대로 두면 한쪽 수치를 고칠 때 다른 쪽까지 바뀌고, 런타임에도 트윈 핸들 하나를 두 트리거가
-    /// 나눠 쓰는 탓에 채널 장부가 자리 주인을 구별하지 못한다.
+    /// 리스트의 '+'는 마지막 원소를 복제하는데 [SerializeReference]는 참조만 복사된다.
+    /// 두면 한쪽 수치를 고칠 때 다른 쪽까지 바뀌고, 두 트리거가 트윈 핸들 하나를 나눠 쓴다.
     /// </summary>
     public static bool Repair(UI_Reactor reactor)
     {

@@ -2,9 +2,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 
-/// <summary>
-/// 항목 목록을 통째로 훑는 일만 모아 둔다. 상태를 갖지 않아 전부 정적 메서드다.
-/// </summary>
+/// <summary>항목 목록을 통째로 훑는 일만 모아 둔다. 상태를 갖지 않아 전부 정적 메서드다.</summary>
 public static class UI_ReactionEntryScanner
 {
     public static bool HasState(IReadOnlyList<UI_ReactionEntry> entries, EUIReactionState state)
@@ -42,10 +40,7 @@ public static class UI_ReactionEntryScanner
         }
     }
 
-    /// <summary>
-    /// 해당 신호에 묶인 리액션만 끊는다. 신호가 취소됐을 때 함께 돌고 있을지 모를
-    /// 상태 연출까지 건드리지 않기 위해 대상을 좁힌다.
-    /// </summary>
+    /// <summary>해당 신호에 묶인 리액션만 끊는다. 함께 돌고 있을 상태 연출까지 건드리지 않기 위해서다.</summary>
     public static void KillSignal(IReadOnlyList<UI_ReactionEntry> entries, EUIReactionSignal signal)
     {
         if (entries == null)

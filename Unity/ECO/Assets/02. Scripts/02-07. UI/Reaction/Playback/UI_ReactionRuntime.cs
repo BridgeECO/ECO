@@ -3,9 +3,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-/// <summary>
-/// UI_Reactor가 위임하는 실제 동작. 추적기·디스패처·기준값 저장소를 엮는다.
-/// </summary>
+/// <summary>UI_Reactor가 위임하는 실제 동작. 추적기·디스패처·기준값 저장소를 엮는다.</summary>
 public class UI_ReactionRuntime
 {
     private readonly UI_ReactionStateTracker _tracker = new UI_ReactionStateTracker();
@@ -55,8 +53,7 @@ public class UI_ReactionRuntime
         _dispatcher.PlayEvent(uiEvent);
     }
 
-    // 상태 플래그와 단발 이벤트는 언제나 짝으로 움직인다. 호출부가 둘을 따로 부르며
-    // 한쪽을 빠뜨리지 않도록 여기서 묶는다.
+    // 상태 플래그와 단발 이벤트는 짝으로 움직인다. 호출부가 한쪽을 빠뜨리지 않도록 묶는다.
     public void SetPointerInside(bool isInside)
     {
         _tracker.SetPointerInside(isInside);
@@ -80,9 +77,7 @@ public class UI_ReactionRuntime
         _tracker.SetInteractable(isInteractable);
     }
 
-    /// <summary>
-    /// 클릭과 Submit 두 경로가 한 프레임에 겹치더라도 실행 연출이 두 번 울리지 않게 막는다.
-    /// </summary>
+    /// <summary>클릭과 Submit 두 경로가 한 프레임에 겹치더라도 실행 연출이 두 번 울리지 않게 막는다.</summary>
     public void PlayActivate()
     {
         if (_lastActivateFrame == Time.frameCount)
@@ -108,12 +103,9 @@ public class UI_ReactionRuntime
     }
 
     /// <summary>
-    /// uGUI 레이아웃은 PostLateUpdate에 돌기 때문에 첫 프레임의 anchoredPosition은 최종값이 아니다.
-    /// 확정 시점에 잠정 기준값을 버려 다음 재생 때 다시 잡히게 하되, 이미 무언가 재생 중이면
-    /// 그 값이 기준으로 굳어 버리므로 건너뛴다.
-    ///
-    /// 자리 장부만 보면 신호 재생을 놓친다. 신호는 자리를 잡지 않아 장부가 비어 있고,
-    /// 그 사이 기준값을 지우면 재생이 끝난 뒤 되돌릴 값이 사라진다.
+    /// uGUI 레이아웃은 PostLateUpdate에 확정되므로 첫 프레임의 anchoredPosition은 최종값이 아니다.
+    /// 잠정 기준값을 버려 다시 잡히게 하되, 재생 중이면 그 값이 기준으로 굳으므로 건너뛴다.
+    /// 신호는 자리를 잡지 않아 장부가 비니 IsAnyPlaying까지 함께 봐야 한다.
     /// </summary>
     public async UniTaskVoid WaitLayoutSettledAsync(CancellationToken token)
     {
@@ -134,8 +126,7 @@ public class UI_ReactionRuntime
 
     /// <summary>
     /// 비활성화 경로. 풀링된 UI가 같은 프레임에 재사용될 수 있어 전부 동기로 끝낸다.
-    /// 순서가 중요하다 — 자리 정리 → 트윈 정지 → 기준값 복원 → 상태 초기화.
-    /// 모든 트윈을 먼저 죽여야 복원한 값 위에 남은 트윈이 덮어쓰지 않는다.
+    /// 트윈을 먼저 죽여야 복원한 기준값을 남은 트윈이 덮어쓰지 않으므로 아래 순서를 지킬 것.
     /// </summary>
     public void Deactivate()
     {

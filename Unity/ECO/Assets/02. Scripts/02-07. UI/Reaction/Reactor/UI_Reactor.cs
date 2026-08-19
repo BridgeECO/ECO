@@ -6,9 +6,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using VInspector;
 
-/// <summary>
-/// UI 오브젝트에 붙이는 연출 컴포넌트. 기획자가 인스펙터에서 트리거별로 리액션을 조립한다.
-/// </summary>
+/// <summary>UI 오브젝트에 붙이는 연출 컴포넌트. 기획자가 인스펙터에서 트리거별로 리액션을 조립한다.</summary>
 // IDragHandler 계열은 구현하지 않는다. 붙이는 순간 ScrollRect 안의 버튼이 스크롤을 먹는다.
 public class UI_Reactor : MonoBehaviour,
     IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler,
@@ -142,10 +140,7 @@ public class UI_Reactor : MonoBehaviour,
     #endregion
 
     #region Logic
-    /// <summary>
-    /// 게임 코드가 연출을 요청한다. Hide처럼 끝나야 다음 단계로 넘어가는 연출은
-    /// 반드시 await한 뒤 비활성화한다.
-    /// </summary>
+    /// <summary>Hide처럼 끝나야 다음 단계로 넘어가는 연출은 반드시 await한 뒤 비활성화할 것.</summary>
     public UniTask PlaySignalAsync(EUIReactionSignal signal, CancellationToken cancellationToken = default)
     {
         // 꺼져 있으면 재생할 대상이 없다. Hide는 호출부가 끄기 전에 await하는 순서를 지켜야 한다.

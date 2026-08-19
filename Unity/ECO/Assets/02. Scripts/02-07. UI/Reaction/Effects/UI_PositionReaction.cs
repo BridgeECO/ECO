@@ -4,8 +4,8 @@ using UnityEngine;
 using UnityEngine.Scripting;
 
 /// <summary>
-/// 대상의 anchoredPosition을 굴린다.
-/// LayoutGroup 자식이나 ContentSizeFitter 대상은 레이아웃이 위치를 덮어쓰므로 자식을 하나 더 두고 움직인다.
+/// anchoredPosition을 굴린다. LayoutGroup 자식이나 ContentSizeFitter 대상은 레이아웃이 위치를
+/// 덮어쓰므로 자식을 하나 더 두고 움직인다.
 /// </summary>
 [Serializable]
 [Preserve]

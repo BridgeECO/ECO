@@ -4,10 +4,7 @@ using UnityEngine;
 using UnityEngine.Scripting;
 using UnityEngine.UI;
 
-/// <summary>
-/// 대상의 투명도를 굴린다.
-/// CanvasGroup이 있으면 그쪽을 쓴다. Graphic.color는 트윈이 도는 내내 메시를 다시 만든다.
-/// </summary>
+/// <summary>CanvasGroup이 있으면 그쪽을 쓴다. Graphic.color는 트윈이 도는 내내 메시를 다시 만든다.</summary>
 [Serializable]
 [Preserve]
 public class UI_AlphaReaction : UI_TweenReactionBase

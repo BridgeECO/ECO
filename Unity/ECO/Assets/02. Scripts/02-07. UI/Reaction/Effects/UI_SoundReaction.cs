@@ -2,9 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.Scripting;
 
-/// <summary>
-/// UI 효과음을 재생한다. 되돌릴 상태가 없어 물러날 때 하는 일이 없다.
-/// </summary>
+/// <summary>UI 효과음을 재생한다. 되돌릴 상태가 없어 물러날 때 하는 일이 없다.</summary>
 [Serializable]
 [Preserve]
 public class UI_SoundReaction : UI_InstantReactionBase

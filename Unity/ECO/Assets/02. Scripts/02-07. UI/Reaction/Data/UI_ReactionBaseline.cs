@@ -1,8 +1,6 @@
 using UnityEngine;
 
-/// <summary>
-/// 리액션이 건드리기 전의 원래 값 한 건. 채널에 따라 쓰는 칸이 다르다.
-/// </summary>
+/// <summary>리액션이 건드리기 전의 원래 값 한 건. 채널에 따라 쓰는 칸이 다르다.</summary>
 public struct UI_ReactionBaseline
 {
     public int TargetId;

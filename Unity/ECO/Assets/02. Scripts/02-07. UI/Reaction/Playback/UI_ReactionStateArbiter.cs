@@ -1,9 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// 지금 성립하는 상태들로부터 (대상, 채널)마다 이길 리액션 하나씩을 뽑는다.
-/// </summary>
+/// <summary>지금 성립하는 상태들로부터 (대상, 채널)마다 이길 리액션 하나씩을 뽑는다.</summary>
 public class UI_ReactionStateArbiter
 {
     private readonly List<UI_ReactionChannelOwner> _candidates = new List<UI_ReactionChannelOwner>();

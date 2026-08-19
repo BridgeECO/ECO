@@ -2,14 +2,11 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// 트리거 하나와 거기에 묶인 리액션 목록. 인스펙터에서 기획자가 다루는 단위다.
-/// </summary>
+/// <summary>트리거 하나와 거기에 묶인 리액션 목록. 인스펙터에서 기획자가 다루는 단위다.</summary>
 [Serializable]
 public class UI_ReactionEntry
 {
-    // 리스트에 원소를 추가하면 유니티가 필드를 0으로 채우고 C# 초기값을 무시한다.
-    // 아래 초기값을 전부 0번 항목으로 맞춰 둔 이유이며, 새 필드도 0이 정상 동작이 되도록 둔다.
+    // 리스트에 원소를 추가하면 유니티가 C# 초기값을 무시하고 0으로 채운다. 새 필드도 0이 정상 동작이어야 한다.
     [SerializeField]
     [Tooltip("인스펙터에서 항목을 구분하기 위한 이름입니다. 동작에는 영향이 없습니다.")]
     private string _label = string.Empty;

@@ -3,8 +3,8 @@ using DG.Tweening;
 using UnityEngine;
 
 /// <summary>
-/// 트윈 리액션 하나의 핸들 수명을 맡는다.
-/// DOKill은 대상의 모든 트윈을 죽여 남의 리액션까지 끊으므로 자기 핸들만 들고 Kill한다.
+/// 트윈 리액션 하나의 핸들 수명을 맡는다. DOKill은 대상의 모든 트윈을 죽여 남의 리액션까지
+/// 끊으므로 자기 핸들만 들고 Kill한다.
 /// </summary>
 public class UI_TweenPolicyRunner
 {
@@ -44,10 +44,7 @@ public class UI_TweenPolicyRunner
             .OnKill(_onKilled);
     }
 
-    /// <summary>
-    /// 재생이 끝날 때까지 기다린다. 아무도 기다리지 않으면 완료 소스를 만들지 않으므로
-    /// 상태 트리거처럼 던져 놓고 잊는 경로에서는 할당이 생기지 않는다.
-    /// </summary>
+    /// <summary>기다리는 쪽이 없으면 완료 소스를 만들지 않아, 던져 놓고 잊는 경로에는 할당이 없다.</summary>
     public UniTask WaitAsync()
     {
         if (!IsPlaying)

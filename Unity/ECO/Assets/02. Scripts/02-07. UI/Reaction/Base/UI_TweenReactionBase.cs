@@ -4,9 +4,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
 
-/// <summary>
-/// DOTween으로 값을 굴리는 리액션의 공통 뼈대. 중단·복귀 정책을 여기서 한 번만 처리한다.
-/// </summary>
+/// <summary>DOTween으로 값을 굴리는 리액션의 공통 뼈대. 중단·복귀 정책을 여기서 한 번만 처리한다.</summary>
 [Serializable]
 public abstract class UI_TweenReactionBase : UI_ReactionBase
 {
@@ -157,9 +155,7 @@ public abstract class UI_TweenReactionBase : UI_ReactionBase
         return false;
     }
 
-    /// <summary>
-    /// 재생 직전에 출발 지점을 맞춘다. 시작값을 쓰지 않고 기준값에서 출발하는 모드도 여기서 처리한다.
-    /// </summary>
+    /// <summary>재생 직전에 출발 지점을 맞춘다. 시작값을 쓰지 않고 기준값에서 출발하는 모드도 여기서 처리한다.</summary>
     protected abstract void ApplyStartValue(UI_ReactionContext context, GameObject target);
 
     protected abstract Tween CreatePlayTween(UI_ReactionContext context, GameObject target);

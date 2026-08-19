@@ -1,9 +1,7 @@
 using System.Text;
 using UnityEditor;
 
-/// <summary>
-/// 접힌 항목 한 줄에 "무엇에 반응해 무엇을 하는지"를 적는다.
-/// </summary>
+/// <summary>접힌 항목 한 줄에 "무엇에 반응해 무엇을 하는지"를 적는다.</summary>
 public static class UI_ReactionEntrySummary
 {
     private const int MAX_REACTION_NAMES = 3;

@@ -4,10 +4,7 @@ using UnityEngine;
 using UnityEngine.Scripting;
 using UnityEngine.UI;
 
-/// <summary>
-/// 대상 Graphic의 색을 굴린다.
-/// 버튼의 Transition이 ColorTint로 남아 있으면 CrossFadeColor가 같은 값을 덮어써 싸운다. None으로 둘 것.
-/// </summary>
+/// <summary>버튼 Transition이 ColorTint면 CrossFadeColor가 같은 값을 덮어써 싸운다. None으로 둘 것.</summary>
 [Serializable]
 [Preserve]
 public class UI_ColorReaction : UI_TweenReactionBase

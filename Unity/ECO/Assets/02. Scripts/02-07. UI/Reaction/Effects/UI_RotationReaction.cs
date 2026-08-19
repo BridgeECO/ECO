@@ -3,9 +3,7 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Scripting;
 
-/// <summary>
-/// 대상을 회전시킨다. localEulerAngles는 Layout이 덮어쓰지 않아 어디에나 안전하다.
-/// </summary>
+/// <summary>대상을 회전시킨다. localEulerAngles는 Layout이 덮어쓰지 않아 어디에나 안전하다.</summary>
 [Serializable]
 [Preserve]
 public class UI_RotationReaction : UI_TweenReactionBase

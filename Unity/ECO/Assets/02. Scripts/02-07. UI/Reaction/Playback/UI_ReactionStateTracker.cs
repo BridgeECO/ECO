@@ -60,8 +60,7 @@ public class UI_ReactionStateTracker
     }
 
     /// <summary>
-    /// 상호작용이 막힌 동안에는 Disabled만 성립시킨다.
-    /// interactable을 꺼도 레이캐스트는 살아 있어 포인터 이벤트가 계속 들어오기 때문에,
+    /// 상호작용이 막힌 동안에는 Disabled만 성립시킨다. interactable을 꺼도 레이캐스트는 살아 있어,
     /// 이 가드가 없으면 비활성 버튼이 hover 연출을 낸다.
     /// </summary>
     public bool IsActive(EUIReactionState state)
@@ -90,9 +89,7 @@ public class UI_ReactionStateTracker
         }
     }
 
-    /// <summary>
-    /// 실제 입력 없이 한 상태만 켜 본다. 인스펙터 미리보기 전용이다.
-    /// </summary>
+    /// <summary>실제 입력 없이 한 상태만 켜 본다. 인스펙터 미리보기 전용이다.</summary>
     public void ApplyPreview(EUIReactionState state)
     {
         ResetState();

@@ -45,9 +45,8 @@ public class UI_ReactionSignalPlayer
             return;
         }
 
-        // 트윈의 완료 신호는 토큰을 보지 않는다. 취소가 들어왔을 때 여기서 끊어 주지 않으면
-        // 기다리던 호출부만 풀려나고 연출은 계속 돌아 다음 재생과 같은 값을 두고 다툰다.
-        // 신호는 팝업 개폐나 알림처럼 드문 경로라 등록 비용을 감수한다.
+        // 트윈 완료 신호는 토큰을 보지 않아, 여기서 끊지 않으면 호출부만 풀려나고 연출은 계속 돌아
+        // 다음 재생과 값을 다툰다. 신호는 팝업 개폐처럼 드문 경로라 등록 비용을 감수한다.
         _playingSignal = signal;
         using CancellationTokenRegistration registration = linked.Token.Register(_onCanceled);
 
@@ -75,8 +74,7 @@ public class UI_ReactionSignalPlayer
         }
     }
 
-    // 신호는 호출부가 순차로 await하는 경로라 두 신호가 동시에 돌지 않는다.
-    // 그래서 재생 중인 신호 하나만 들고 있어도 취소 대상을 특정할 수 있다.
+    // 호출부가 순차로 await하는 경로라 두 신호가 동시에 돌지 않는다. 하나만 들고 있어도 충분하다.
     private void KillPlayingSignal()
     {
         UI_ReactionEntryScanner.KillSignal(_entries, _playingSignal);

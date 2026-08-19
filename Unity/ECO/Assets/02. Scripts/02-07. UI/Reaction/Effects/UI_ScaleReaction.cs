@@ -3,9 +3,7 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Scripting;
 
-/// <summary>
-/// 대상의 크기를 굴린다. localScale은 Layout이 덮어쓰지 않아 LayoutGroup 자식에도 안전하다.
-/// </summary>
+/// <summary>대상의 크기를 굴린다. localScale은 Layout이 덮어쓰지 않아 LayoutGroup 자식에도 안전하다.</summary>
 [Serializable]
 [Preserve]
 public class UI_ScaleReaction : UI_TweenReactionBase

@@ -88,8 +88,7 @@ public class UI_SpriteSequenceReaction : UI_ReactionBase
             return;
         }
 
-        // 람다를 쓰는 WaitUntil 대신 직접 돌린다. hover가 끊길 때마다 지나가는 경로라
-        // 여기서 델리게이트를 새로 잡으면 그대로 쓰레기가 된다.
+        // WaitUntil 대신 직접 돌린다. hover가 끊길 때마다 지나가는 경로라 람다가 그대로 쓰레기가 된다.
         while (exitPolicy == EUIReactionExitPolicy.PlayToEnd && Runner.IsPlaying)
         {
             bool isCanceled = await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken)
