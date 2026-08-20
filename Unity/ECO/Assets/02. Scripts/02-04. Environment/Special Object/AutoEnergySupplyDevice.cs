@@ -22,17 +22,13 @@ public class AutoEnergySupplyDevice : MonoBehaviour, IResettable
     [SerializeField]
     private float _cutoffDuration = 3f;
 
+    private bool _isDeviceActive;
     private bool _isSupplying;
     private float _remainingDuration;
 
-    private void OnEnable()
-    {
-        InitSupplyCycle();
-    }
-
     private void Update()
     {
-        if (_supplyPattern != EAutoEnergySupplyPattern.Periodic)
+        if (!_isDeviceActive || _supplyPattern != EAutoEnergySupplyPattern.Periodic)
         {
             return;
         }
@@ -42,29 +38,42 @@ public class AutoEnergySupplyDevice : MonoBehaviour, IResettable
 
     private void OnDisable()
     {
-        SetSupplyState(false);
+        StopSupplyCycle();
     }
 
     public void SetDeviceActive(bool isActive)
     {
-        enabled = isActive;
+        if (_isDeviceActive == isActive)
+        {
+            return;
+        }
+
+        _isDeviceActive = isActive;
+        if (_isDeviceActive)
+        {
+            InitSupplyCycle();
+            return;
+        }
+
+        StopSupplyCycle();
     }
 
     public void ResetState()
     {
-        if (!isActiveAndEnabled)
-        {
-            SetSupplyState(false);
-            return;
-        }
-
-        InitSupplyCycle();
+        StopSupplyCycle();
     }
 
     private void InitSupplyCycle()
     {
         SetSupplyState(true);
         _remainingDuration = _supplyDuration;
+    }
+
+    private void StopSupplyCycle()
+    {
+        _isDeviceActive = false;
+        _remainingDuration = 0f;
+        SetSupplyState(false);
     }
 
     private void UpdateSupplyCycle(float deltaTime)
@@ -96,4 +105,30 @@ public class AutoEnergySupplyDevice : MonoBehaviour, IResettable
             }
         }
     }
+
+#if UNITY_EDITOR
+    [Button("공급 시작")]
+    private void TestStartSupply()
+    {
+        if (!Application.isPlaying)
+        {
+            Debug.LogWarning("자동 에너지 공급 장치는 Play Mode에서 테스트할 수 있습니다.", this);
+            return;
+        }
+
+        SetDeviceActive(true);
+    }
+
+    [Button("공급 중단")]
+    private void TestStopSupply()
+    {
+        if (!Application.isPlaying)
+        {
+            Debug.LogWarning("자동 에너지 공급 장치는 Play Mode에서 테스트할 수 있습니다.", this);
+            return;
+        }
+
+        SetDeviceActive(false);
+    }
+#endif
 }
