@@ -23,6 +23,7 @@ public class UI_SaveSlotPopup : UI_Popup, IKeyboardControllable
     // 열기 전에 SetMode로 지정한다. 팝업 핸들러가 모드 인자를 몰라도 되도록
     // (전용 오버로드 제거) 팝업이 자기 상태로 보관한다.
     private ESlotPanelMode _mode = ESlotPanelMode.Continue;
+    private readonly KeyboardHandlerRegistration _registration = new KeyboardHandlerRegistration();
 
     protected override void Awake()
     {
@@ -46,14 +47,22 @@ public class UI_SaveSlotPopup : UI_Popup, IKeyboardControllable
 
         RefreshAllSlots(_mode);
         ApplySelection();
-        UI_KeyboardInputManager.Instance.PushHandler(this);
+        _registration.Push(this);
     }
 
     public override async UniTask CloseAsync()
     {
         // 애니메이션 시작 전에 Pop하여 닫히는 도중 입력이 처리되지 않도록 함
-        UI_KeyboardInputManager.Instance.PopHandler(this);
+        _registration.Pop(this);
         await base.CloseAsync();
+    }
+
+    // CloseAsync를 거치지 않고 꺼지는 경로에서도 핸들러를 남기지 않는다. 매니저는 파괴된 핸들러만
+    // 걸러내므로, 살아 있지만 꺼져 있는 팝업은 그대로 입력을 받아 간다. Pop은 등록 플래그로 멱등이라
+    // CloseAsync가 이미 해제했더라도 안전하다.
+    private void OnDisable()
+    {
+        _registration.Pop(this);
     }
 
     private void OnDestroy()

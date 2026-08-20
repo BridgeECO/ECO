@@ -18,7 +18,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3347734640518028996
 RectTransform:
   m_ObjectHideFlags: 0
@@ -123,7 +123,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3875571993253775412
 RectTransform:
   m_ObjectHideFlags: 0
@@ -283,6 +283,42 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8888228170884614250}
     m_Modifications:
+    - target: {fileID: 1512908844073366250, guid: d5272d879ed88c04aa447ca80f516330, type: 3}
+      propertyPath: 'managedReferences[3763461585082515542]'
+      value: Assembly-CSharp UI_ActiveReaction
+      objectReference: {fileID: 0}
+    - target: {fileID: 1512908844073366250, guid: d5272d879ed88c04aa447ca80f516330, type: 3}
+      propertyPath: 'managedReferences[3763461585082515543]'
+      value: Assembly-CSharp UI_ActiveReaction
+      objectReference: {fileID: 0}
+    - target: {fileID: 1512908844073366250, guid: d5272d879ed88c04aa447ca80f516330, type: 3}
+      propertyPath: _entries.Array.data[2]._reactions.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1512908844073366250, guid: d5272d879ed88c04aa447ca80f516330, type: 3}
+      propertyPath: managedReferences[3763461585082515542]._target
+      value: 
+      objectReference: {fileID: 1346077922031796571}
+    - target: {fileID: 1512908844073366250, guid: d5272d879ed88c04aa447ca80f516330, type: 3}
+      propertyPath: managedReferences[3763461585082515543]._target
+      value: 
+      objectReference: {fileID: 2228491382314629309}
+    - target: {fileID: 1512908844073366250, guid: d5272d879ed88c04aa447ca80f516330, type: 3}
+      propertyPath: '_entries.Array.data[2]._reactions.Array.data[1]'
+      value: 3763461585082515542
+      objectReference: {fileID: 0}
+    - target: {fileID: 1512908844073366250, guid: d5272d879ed88c04aa447ca80f516330, type: 3}
+      propertyPath: '_entries.Array.data[2]._reactions.Array.data[2]'
+      value: 3763461585082515543
+      objectReference: {fileID: 0}
+    - target: {fileID: 1512908844073366250, guid: d5272d879ed88c04aa447ca80f516330, type: 3}
+      propertyPath: managedReferences[3763461585082515542]._isActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1512908844073366250, guid: d5272d879ed88c04aa447ca80f516330, type: 3}
+      propertyPath: managedReferences[3763461585082515543]._isActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3719347031176140518, guid: d5272d879ed88c04aa447ca80f516330, type: 3}
       propertyPath: m_Name
       value: Button_Start

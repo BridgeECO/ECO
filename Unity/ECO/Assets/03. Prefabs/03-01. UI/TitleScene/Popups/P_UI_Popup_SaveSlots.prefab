@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 6578858875691617737}
   - component: {fileID: 583543084199339901}
   - component: {fileID: 6471039553638414021}
+  - component: {fileID: 5378026721014914411}
   m_Layer: 0
   m_Name: P_UI_Popup_SaveSlots
   m_TagString: Untagged
@@ -131,12 +132,137 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cc66bc6e19cc4841b447a69cdff7262, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _destroyTime: 0.5
+  _reactor: {fileID: 5378026721014914411}
+  _scaleAnimation:
+    _openDuration: 0.3
+    _closeDuration: 0.2
+    _openEase: 27
+    _closeEase: 26
+    _startScale: {x: 0.5, y: 0.5, z: 0.5}
+    _targetScale: {x: 1, y: 1, z: 1}
   _panelCanvasGroup: {fileID: 6578858875691617737}
   _slotItems:
   - {fileID: 1512240467108485883}
   - {fileID: 4049323982413839667}
   - {fileID: 6198385958696871401}
+--- !u!114 &5378026721014914411
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1098456895696844446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12d356bb42a9ab841b99b3913ad90c35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _entries:
+  - _label: "\uD31D\uC5C5 \uC5F4\uAE30"
+    _isMuted: 0
+    _kind: 2
+    _stateTrigger: 0
+    _eventTrigger: 0
+    _signalTrigger: 0
+    _interruptPolicy: 0
+    _exitPolicy: 0
+    _reactions:
+    - rid: 914377283501293701
+  - _label: "\uD31D\uC5C5 \uB2EB\uAE30"
+    _isMuted: 0
+    _kind: 2
+    _stateTrigger: 0
+    _eventTrigger: 0
+    _signalTrigger: 1
+    _interruptPolicy: 0
+    _exitPolicy: 0
+    _reactions:
+    - rid: 914377283501293702
+  _isPlayShowOnEnable: 0
+  _previewState: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: 914377283501293701
+      type: {class: UI_ScaleReaction, ns: , asm: Assembly-CSharp}
+      data:
+        _target: {fileID: 0}
+        _motion:
+          _duration: 0.3
+          _delay: 0
+          _valueMode: 1
+          _isUseCurve: 0
+          _ease: 27
+          _curve:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 0
+              inSlope: 0
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 1
+              value: 1
+              inSlope: 0
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          _loops: 1
+          _loopType: 1
+          _isIgnoreTimeScale: 1
+        _isUseStartValue: 1
+        _scale: {x: 1, y: 1, z: 1}
+        _startScale: {x: 0.5, y: 0.5, z: 0.5}
+    - rid: 914377283501293702
+      type: {class: UI_ScaleReaction, ns: , asm: Assembly-CSharp}
+      data:
+        _target: {fileID: 0}
+        _motion:
+          _duration: 0.2
+          _delay: 0
+          _valueMode: 1
+          _isUseCurve: 0
+          _ease: 26
+          _curve:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 0
+              inSlope: 0
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 1
+              value: 1
+              inSlope: 0
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          _loops: 1
+          _loopType: 1
+          _isIgnoreTimeScale: 1
+        _isUseStartValue: 1
+        _scale: {x: 0.5, y: 0.5, z: 0.5}
+        _startScale: {x: 1, y: 1, z: 1}
 --- !u!1001 &3777587395416633543
 PrefabInstance:
   m_ObjectHideFlags: 0

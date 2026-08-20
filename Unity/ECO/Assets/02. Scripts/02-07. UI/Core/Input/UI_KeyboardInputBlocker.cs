@@ -7,15 +7,24 @@ using UnityEngine;
 /// </summary>
 public class UI_KeyboardInputBlocker : MonoBehaviour, IKeyboardControllable
 {
+    private readonly KeyboardHandlerRegistration _registration = new KeyboardHandlerRegistration();
+
     #region Unity Lifecycle Methods
     private void OnEnable()
     {
-        UI_KeyboardInputManager.Instance.PushHandler(this);
+        _registration.Push(this);
+    }
+
+    // 이 팝업이 속한 씬이 매니저가 있는 PersistentScene보다 먼저 로드되면
+    // OnEnable 시점에는 매니저가 아직 없다. 모든 Awake가 끝난 Start에서 한 번 더 시도한다.
+    private void Start()
+    {
+        _registration.Push(this);
     }
 
     private void OnDisable()
     {
-        SafePopHandler();
+        _registration.Pop(this);
     }
     #endregion
 
@@ -42,16 +51,6 @@ public class UI_KeyboardInputBlocker : MonoBehaviour, IKeyboardControllable
 
     public void OnCancel()
     {
-    }
-    #endregion
-
-    #region Cleanup
-    private void SafePopHandler()
-    {
-        if (UI_KeyboardInputManager.Instance != null)
-        {
-            UI_KeyboardInputManager.Instance.PopHandler(this);
-        }
     }
     #endregion
 }

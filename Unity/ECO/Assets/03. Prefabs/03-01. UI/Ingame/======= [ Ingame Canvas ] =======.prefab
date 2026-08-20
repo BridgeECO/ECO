@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3574746892276338869}
   - component: {fileID: 4199764188477603764}
   - component: {fileID: 7150056397617183491}
+  - component: {fileID: 5216887765008051264}
   m_Layer: 0
   m_Name: Notice_SavePoint
   m_TagString: Untagged
@@ -62,9 +63,126 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdd32edc3ed54b042b04eb450a230963, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _fadeInDuration: 0.25
+  _reactor: {fileID: 5216887765008051264}
   _visibleDuration: 1
-  _fadeOutDuration: 0.25
+--- !u!114 &5216887765008051264
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1147339573304224464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12d356bb42a9ab841b99b3913ad90c35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _entries:
+  - _label: "\uC548\uB0B4 \uB4F1\uC7A5"
+    _isMuted: 0
+    _kind: 2
+    _stateTrigger: 0
+    _eventTrigger: 0
+    _signalTrigger: 0
+    _interruptPolicy: 0
+    _exitPolicy: 0
+    _reactions:
+    - rid: 914377283501293709
+  - _label: "\uC548\uB0B4 \uD1F4\uC7A5"
+    _isMuted: 0
+    _kind: 2
+    _stateTrigger: 0
+    _eventTrigger: 0
+    _signalTrigger: 1
+    _interruptPolicy: 0
+    _exitPolicy: 0
+    _reactions:
+    - rid: 914377283501293710
+  _isPlayShowOnEnable: 0
+  _previewState: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: 914377283501293709
+      type: {class: UI_AlphaReaction, ns: , asm: Assembly-CSharp}
+      data:
+        _target: {fileID: 0}
+        _motion:
+          _duration: 0.25
+          _delay: 0
+          _valueMode: 1
+          _isUseCurve: 0
+          _ease: 1
+          _curve:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 0
+              inSlope: 0
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 1
+              value: 1
+              inSlope: 0
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          _loops: 1
+          _loopType: 1
+          _isIgnoreTimeScale: 1
+        _isUseStartValue: 1
+        _alpha: 1
+        _startAlpha: 0
+    - rid: 914377283501293710
+      type: {class: UI_AlphaReaction, ns: , asm: Assembly-CSharp}
+      data:
+        _target: {fileID: 0}
+        _motion:
+          _duration: 0.25
+          _delay: 0
+          _valueMode: 1
+          _isUseCurve: 0
+          _ease: 1
+          _curve:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 0
+              inSlope: 0
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 1
+              value: 1
+              inSlope: 0
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          _loops: 1
+          _loopType: 1
+          _isIgnoreTimeScale: 1
+        _isUseStartValue: 1
+        _alpha: 0
+        _startAlpha: 1
 --- !u!1 &2003373852364068796
 GameObject:
   m_ObjectHideFlags: 0
