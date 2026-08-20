@@ -1,4 +1,3 @@
-<img width="1920" height="1080" alt="03_ingame" src="https://github.com/user-attachments/assets/e6fd9c70-a2ab-4745-9ba1-1cad59637317" /><div align="center">
 <h2>ECO 🌙</h2>
 
 몰락한 소리 문명의 도시 ‘율’을 다시 깨우는, 몽환적인 2D 액션 플랫포머 게임 ECO입니다!<br>
