@@ -1,11 +1,11 @@
-<div align="center">
+<img width="1920" height="1080" alt="03_ingame" src="https://github.com/user-attachments/assets/e6fd9c70-a2ab-4745-9ba1-1cad59637317" /><div align="center">
 <h2>ECO 🌙</h2>
 
 몰락한 소리 문명의 도시 ‘율’을 다시 깨우는, 몽환적인 2D 액션 플랫포머 게임 ECO입니다!<br>
 플레이어는 이름조차 없는 실험체 ‘이코(EC-0)’가 되어, 잠들어버린 고대 도시의 구조물에 에너지를 흘려보내며 나아갑니다.🌿
 
 #### ↓↓↓↓↓ ECO의 타이틀 화면입니다. ↓↓↓↓↓
-![타이틀 화면](https://github.com/user-attachments/assets/PASTE_01_title)<br>
+![타이틀 화면](https://github.com/user-attachments/assets/218fe211-4547-44b8-872f-ffaad9f4d402)<br>
 
 </div><br>
 
@@ -26,9 +26,10 @@
 <br>
 
 ## 게임 설명
-|![타이틀 화면](https://github.com/user-attachments/assets/PASTE_02_title_menu)|![인게임 화면](https://github.com/user-attachments/assets/PASTE_03_ingame)|
+|![타이틀 화면](https://github.com/user-attachments/assets/95f86386-47ad-415c-abac-95a30b5c155b)|![인게임 화면](https://github.com/user-attachments/assets/7cf6b57f-7492-466f-bc58-652b0c67a998)|
 |:---:|:---:|
 |타이틀 화면|인게임 화면|
+
 
 #### **잠든 도시에 다시 소리를 불어넣으세요!** 🔔<br>
 
@@ -120,19 +121,19 @@ ECO는 플레이어가 고대 도시의 발판과 장치에 에너지를 공급�
 #### 1. 타이틀 및 시스템 화면
 |타이틀 메뉴|저장 데이터 선택|환경설정|일시정지|
 |:---:|:---:|:---:|:---:|
-|![타이틀 메뉴](https://github.com/user-attachments/assets/PASTE_02_title_menu)|![저장 데이터 선택](https://github.com/user-attachments/assets/PASTE_07_save_slot)|![환경설정](https://github.com/user-attachments/assets/PASTE_06_settings)|![일시정지](https://github.com/user-attachments/assets/PASTE_08_pause)|
+|![타이틀 메뉴](https://github.com/user-attachments/assets/95f86386-47ad-415c-abac-95a30b5c155b)|![저장 데이터 선택](https://github.com/user-attachments/assets/6862d552-d36d-4849-ba2c-73177e239526)|![환경설정](https://github.com/user-attachments/assets/4819a798-5ca2-4c87-b0c3-17aaf72eca87)|![일시정지](https://github.com/user-attachments/assets/91f91b95-845f-43cc-9546-50407ff4df7e)|
 |새 게임과 이어하기, 환경설정으로 진입합니다.|3개의 슬롯에 마지막으로 저장된 지역이 표시됩니다.|그래픽·사운드·조작·게임플레이 탭으로 나뉩니다.|게임 진행 중 설정과 타이틀 복귀를 지원합니다.|
 <br>
 
 #### 2. 탐험 단계
 |인게임 화면|에너지 공급선|
 |:---:|:---:|
-|![인게임 화면](https://github.com/user-attachments/assets/PASTE_03_ingame)|![에너지 공급선](https://github.com/user-attachments/assets/PASTE_04_energy_line)|
+|![인게임 화면](https://github.com/user-attachments/assets/7cf6b57f-7492-466f-bc58-652b0c67a998)|![에너지 공급선](https://github.com/user-attachments/assets/dfa921a3-2241-4a64-a537-587da57f4642)|
 |우측 상단에 남은 목숨이 표시되며, 지형을 이용해 출구로 향합니다.|스위치를 작동시키면 에너지가 공급선을 따라 흐르며 플랫폼을 깨웁니다.|
 <br>
 
 #### 3. 보스전 단계
-![보스 추격전](https://github.com/user-attachments/assets/PASTE_05_boss_chase)
+![보스 추격전](https://github.com/user-attachments/assets/4d7c1113-633c-4515-84ea-62a7ab606928)
 <br>
 
 지역의 마지막에는 보스가 기다립니다. 보스를 공격할 수단은 없으며, 지금까지 익힌 기믹을 총동원해 추격을 따돌리고 탈출해야 합니다.
