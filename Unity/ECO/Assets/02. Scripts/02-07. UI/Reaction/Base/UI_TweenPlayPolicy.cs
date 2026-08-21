@@ -25,7 +25,9 @@ public static class UI_TweenPlayPolicy
         // 이벤트 경로가 아직 도는 트윈을 두고 자리를 놓고, 신호 경로는 팝업을 그대로 꺼 버린다.
         if (interruptPolicy == EUIReactionInterruptPolicy.Reverse && reaction.Runner.IsPlaying)
         {
-            return reaction.Runner.TryReverse() ? reaction.Runner.WaitAsync() : UniTask.CompletedTask;
+            return reaction.Runner.TryReverse()
+                ? reaction.Runner.WaitAsync(cancellationToken)
+                : UniTask.CompletedTask;
         }
 
         if (!TryEnterPlay(interruptPolicy, reaction.Runner))
@@ -33,33 +35,37 @@ public static class UI_TweenPlayPolicy
             return UniTask.CompletedTask;
         }
 
-        if (interruptPolicy == EUIReactionInterruptPolicy.PlayToEndThenPlay && reaction.Runner.IsPlaying)
+        // 무한 반복에는 "끝까지"가 없다. 기다리면 이 리액션이 다시는 재생되지 않으므로
+        // 그때는 Restart와 같게 곧바로 새로 재생한다.
+        if (interruptPolicy == EUIReactionInterruptPolicy.PlayToEndThenPlay
+            && reaction.Runner.IsPlaying && !reaction.IsInfiniteLoop)
         {
             return PlayAfterCurrentAsync(reaction, context, target, cancellationToken);
         }
 
-        return StartAsync(reaction, context, target);
+        return StartAsync(reaction, context, target, cancellationToken);
     }
 
-    private static UniTask StartAsync(IUITweenReaction reaction, UI_ReactionContext context, GameObject target)
+    private static UniTask StartAsync(IUITweenReaction reaction, UI_ReactionContext context, GameObject target,
+        CancellationToken cancellationToken)
     {
         reaction.ApplyStartValue(context, target);
         reaction.Runner.Run(reaction.ApplyPlayMotion(reaction.CreatePlayTween(context, target)), target);
 
         // 무한 반복은 끝나지 않으므로 기다리면 호출부가 영영 풀리지 않는다.
-        return reaction.IsInfiniteLoop ? UniTask.CompletedTask : reaction.Runner.WaitAsync();
+        return reaction.IsInfiniteLoop ? UniTask.CompletedTask : reaction.Runner.WaitAsync(cancellationToken);
     }
 
     private static async UniTask PlayAfterCurrentAsync(IUITweenReaction reaction, UI_ReactionContext context,
         GameObject target, CancellationToken cancellationToken)
     {
-        await reaction.Runner.WaitAsync();
+        await reaction.Runner.WaitAsync(cancellationToken);
         if (cancellationToken.IsCancellationRequested)
         {
             return;
         }
 
-        await StartAsync(reaction, context, target);
+        await StartAsync(reaction, context, target, cancellationToken);
     }
 
     // 정책상 새 재생을 시작해도 되는지. 대기가 필요한 정책은 호출부에서 따로 처리한다.
@@ -67,6 +73,9 @@ public static class UI_TweenPlayPolicy
     {
         switch (interruptPolicy)
         {
+            // 리액션마다 트윈 핸들을 따로 들기 때문에 "같은 연출이 이미 돌고 있다"는 곧
+            // "이 핸들이 돌고 있다"와 같다. 그래서 두 정책은 이 구조에서 결과가 같다.
+            // 저장된 값과의 호환 때문에 열거형에는 둘 다 남겨 둔다.
             case EUIReactionInterruptPolicy.IgnoreUntilDone:
             case EUIReactionInterruptPolicy.SkipIfSame:
                 return !runner.IsPlaying;

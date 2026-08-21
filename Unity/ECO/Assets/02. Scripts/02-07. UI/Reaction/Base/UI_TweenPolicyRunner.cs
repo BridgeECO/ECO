@@ -1,3 +1,4 @@
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
@@ -45,9 +46,9 @@ public class UI_TweenPolicyRunner
     }
 
     /// <summary>기다리는 쪽이 없으면 완료 소스를 만들지 않아, 던져 놓고 잊는 경로에는 할당이 없다.</summary>
-    public UniTask WaitAsync()
+    public UniTask WaitAsync(CancellationToken cancellationToken)
     {
-        if (!IsPlaying)
+        if (!IsPlaying || cancellationToken.IsCancellationRequested)
         {
             return UniTask.CompletedTask;
         }
@@ -57,7 +58,17 @@ public class UI_TweenPolicyRunner
             _completion = new UniTaskCompletionSource();
         }
 
-        return _completion.Task;
+        // 토큰을 걸지 않으면 대기가 트윈의 완료·중단 신호에만 매달린다. 그 신호가 한 번이라도
+        // 빠지면 기다리던 쪽이 영영 풀리지 않아, Hide를 await하던 팝업이 열린 채로 남는다.
+        // 취소는 정상 종료로 다루므로 예외를 던지지 않는다.
+        return cancellationToken.CanBeCanceled
+            ? WaitCoreAsync(_completion.Task, cancellationToken)
+            : _completion.Task;
+    }
+
+    private static async UniTask WaitCoreAsync(UniTask task, CancellationToken cancellationToken)
+    {
+        await task.AttachExternalCancellation(cancellationToken).SuppressCancellationThrow();
     }
 
     /// <summary>현재 지점에서 시작값으로 되감는다. 되감을 트윈이 없으면 false.</summary>

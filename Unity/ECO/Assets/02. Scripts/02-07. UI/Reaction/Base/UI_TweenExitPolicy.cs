@@ -24,10 +24,12 @@ public static class UI_TweenExitPolicy
 
         if (exitPolicy == EUIReactionExitPolicy.Reverse && reaction.Runner.TryReverse())
         {
-            return reaction.Runner.WaitAsync();
+            return reaction.Runner.WaitAsync(cancellationToken);
         }
 
-        if (exitPolicy == EUIReactionExitPolicy.PlayToEnd)
+        // 무한 반복에는 "끝까지"가 없다. 기다리면 기준값으로 영영 돌아오지 않으므로
+        // 그때는 아래 즉시 복귀로 흘려보낸다.
+        if (exitPolicy == EUIReactionExitPolicy.PlayToEnd && !reaction.IsInfiniteLoop)
         {
             return RestoreAfterCurrentAsync(reaction, context, cancellationToken);
         }
@@ -35,7 +37,7 @@ public static class UI_TweenExitPolicy
         if (exitPolicy == EUIReactionExitPolicy.TweenToBaseline)
         {
             reaction.Runner.Run(reaction.ApplyExitMotion(reaction.CreateExitTween(context, target)), target);
-            return reaction.Runner.WaitAsync();
+            return reaction.Runner.WaitAsync(cancellationToken);
         }
 
         reaction.RestoreBaseline(context);
@@ -45,7 +47,7 @@ public static class UI_TweenExitPolicy
     private static async UniTask RestoreAfterCurrentAsync(IUITweenReaction reaction, UI_ReactionContext context,
         CancellationToken cancellationToken)
     {
-        await reaction.Runner.WaitAsync();
+        await reaction.Runner.WaitAsync(cancellationToken);
         if (!cancellationToken.IsCancellationRequested)
         {
             reaction.RestoreBaseline(context);
