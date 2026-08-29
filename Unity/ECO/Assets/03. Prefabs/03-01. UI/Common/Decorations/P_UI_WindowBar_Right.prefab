@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3599024470646828698}
   - component: {fileID: 3712291871952016552}
   - component: {fileID: 3853807097564719861}
-  - component: {fileID: 4375598351621659159}
+  - component: {fileID: 6928946125777990690}
   m_Layer: 5
   m_Name: P_UI_WindowBar_Right
   m_TagString: Untagged
@@ -76,7 +76,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &4375598351621659159
+--- !u!114 &6928946125777990690
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -85,24 +85,44 @@ MonoBehaviour:
   m_GameObject: {fileID: 9012990950964856996}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0213216c11e3f0408f1488ec31c4382, type: 3}
+  m_Script: {fileID: 11500000, guid: 12d356bb42a9ab841b99b3913ad90c35, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _targetImage: {fileID: 3853807097564719861}
-  _sprites:
-  - {fileID: 21300000, guid: 0c8cb392beb6be0459610c8262c7bee9, type: 3}
-  - {fileID: 21300000, guid: b3a329618c315e94a93c8490faacfdd2, type: 3}
-  - {fileID: 21300000, guid: 719eb57843a62564aa3d66d641190af5, type: 3}
-  - {fileID: 21300000, guid: aa09590af5ce4bb4b822b741065d6947, type: 3}
-  - {fileID: 21300000, guid: 285fcf34630b231469b5f584365c0c6a, type: 3}
-  - {fileID: 21300000, guid: 892cc1fb4eca69a49a975a9eff46bcb0, type: 3}
-  - {fileID: 21300000, guid: 0f6656760a6f0fa4a953ca091f4a3b13, type: 3}
-  - {fileID: 21300000, guid: d4b6b637ee109b84d9837200a15d72fc, type: 3}
-  - {fileID: 21300000, guid: 99c74b23da9e7fe4fa8e2655e34b448d, type: 3}
-  - {fileID: 21300000, guid: bc7111db81a88fb49902547851f00e84, type: 3}
-  - {fileID: 21300000, guid: adbc0b24bb981194584e2256f9b09e9c, type: 3}
-  - {fileID: 21300000, guid: 48565f88725421a43a060576a978e7e5, type: 3}
-  - {fileID: 21300000, guid: 7d285c950dfe7124584c7e018820f639, type: 3}
-  _frameDelay: 0.0333333
-  _isLoop: 0
-  _loopInterval: 2
+  _entries:
+  - _label: "\uB4F1\uC7A5 \uC560\uB2C8\uBA54\uC774\uC158"
+    _isMuted: 0
+    _kind: 2
+    _stateTrigger: 0
+    _eventTrigger: 0
+    _signalTrigger: 0
+    _interruptPolicy: 0
+    _exitPolicy: 2
+    _reactions:
+    - rid: 914377620068499552
+  _isPlayShowOnEnable: 1
+  _previewState: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: 914377620068499552
+      type: {class: UI_SpriteAnimationReaction, ns: , asm: Assembly-CSharp}
+      data:
+        _target: {fileID: 0}
+        _sprites:
+        - {fileID: 21300000, guid: 0c8cb392beb6be0459610c8262c7bee9, type: 3}
+        - {fileID: 21300000, guid: b3a329618c315e94a93c8490faacfdd2, type: 3}
+        - {fileID: 21300000, guid: 719eb57843a62564aa3d66d641190af5, type: 3}
+        - {fileID: 21300000, guid: aa09590af5ce4bb4b822b741065d6947, type: 3}
+        - {fileID: 21300000, guid: 285fcf34630b231469b5f584365c0c6a, type: 3}
+        - {fileID: 21300000, guid: 892cc1fb4eca69a49a975a9eff46bcb0, type: 3}
+        - {fileID: 21300000, guid: 0f6656760a6f0fa4a953ca091f4a3b13, type: 3}
+        - {fileID: 21300000, guid: d4b6b637ee109b84d9837200a15d72fc, type: 3}
+        - {fileID: 21300000, guid: 99c74b23da9e7fe4fa8e2655e34b448d, type: 3}
+        - {fileID: 21300000, guid: bc7111db81a88fb49902547851f00e84, type: 3}
+        - {fileID: 21300000, guid: adbc0b24bb981194584e2256f9b09e9c, type: 3}
+        - {fileID: 21300000, guid: 48565f88725421a43a060576a978e7e5, type: 3}
+        - {fileID: 21300000, guid: 7d285c950dfe7124584c7e018820f639, type: 3}
+        _frameInterval: 0.0333333
+        _isLoop: 0
+        _loopInterval: 2
+        _isIgnoreTimeScale: 1
