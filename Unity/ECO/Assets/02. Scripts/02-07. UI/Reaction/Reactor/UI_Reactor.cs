@@ -152,6 +152,17 @@ public class UI_Reactor : MonoBehaviour,
         return _runtime.PlaySignalAsync(signal, cancellationToken);
     }
 
+    /// <summary>재생해 둔 신호를 되감는다. 같은 리액션이 처리하므로 진행 중이던 정재생은 자동으로 끊긴다.</summary>
+    public UniTask PlaySignalExitAsync(EUIReactionSignal signal, CancellationToken cancellationToken = default)
+    {
+        if (_cts == null)
+        {
+            return UniTask.CompletedTask;
+        }
+
+        return _runtime.PlaySignalExitAsync(signal, cancellationToken);
+    }
+
     /// <summary>UI_ReactorTicker가 프레임마다 부른다. 필드 두 개를 읽는 비교라 비용이 거의 없다.</summary>
     public void TickInteractable()
     {

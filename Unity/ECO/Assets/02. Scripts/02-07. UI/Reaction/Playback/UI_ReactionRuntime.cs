@@ -95,6 +95,12 @@ public class UI_ReactionRuntime
         return _signalPlayer.PlayAsync(signal, _context, _token, cancellationToken);
     }
 
+    /// <summary>재생해 둔 신호를 항목의 복귀 정책대로 되감는다.</summary>
+    public UniTask PlaySignalExitAsync(EUIReactionSignal signal, CancellationToken cancellationToken)
+    {
+        return _signalPlayer.PlayExitAsync(signal, _context, _token, cancellationToken);
+    }
+
     /// <summary>인스펙터 미리보기. 실제 입력 없이 한 상태만 켜 본다.</summary>
     public void PlayStatePreview(EUIReactionState state)
     {

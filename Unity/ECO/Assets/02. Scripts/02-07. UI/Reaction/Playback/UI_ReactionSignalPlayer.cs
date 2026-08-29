@@ -30,8 +30,22 @@ public class UI_ReactionSignalPlayer
     }
 
     /// <summary>호출부의 토큰과 Reactor의 활성 토큰을 함께 묶어, 어느 쪽이 끊겨도 멈춘다.</summary>
-    public async UniTask PlayAsync(EUIReactionSignal signal, UI_ReactionContext context,
+    public UniTask PlayAsync(EUIReactionSignal signal, UI_ReactionContext context,
         CancellationToken activeToken, CancellationToken cancellationToken)
+    {
+        return RunAsync(signal, context, activeToken, cancellationToken, false);
+    }
+
+    /// <summary>재생해 둔 신호를 되감는다. 팝업이 닫히기 전에 자식 연출을 먼저 물러나게 할 때 쓴다.</summary>
+    public UniTask PlayExitAsync(EUIReactionSignal signal, UI_ReactionContext context,
+        CancellationToken activeToken, CancellationToken cancellationToken)
+    {
+        return RunAsync(signal, context, activeToken, cancellationToken, true);
+    }
+
+    // 재생과 되감기는 잠금·취소·대기 처리가 같다. 델리게이트로 가르면 신호마다 클로저가 잡히므로 bool로 가른다.
+    private async UniTask RunAsync(EUIReactionSignal signal, UI_ReactionContext context,
+        CancellationToken activeToken, CancellationToken cancellationToken, bool isExit)
     {
         if (_entries == null)
         {
@@ -55,8 +69,15 @@ public class UI_ReactionSignalPlayer
 
         try
         {
-            UI_ReactionEntryScanner.CollectSignalTasks(_entries, signal, context, linked.Token,
-                _dispatcher, _tasks);
+            if (isExit)
+            {
+                UI_ReactionEntryScanner.CollectSignalExitTasks(_entries, signal, context, linked.Token, _tasks);
+            }
+            else
+            {
+                UI_ReactionEntryScanner.CollectSignalTasks(_entries, signal, context, linked.Token,
+                    _dispatcher, _tasks);
+            }
 
             if (0 < _tasks.Count)
             {
