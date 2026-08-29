@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
@@ -18,10 +20,18 @@ public abstract class UI_Popup : MonoBehaviour
     [SerializeField]
     private UI_ScaleAnimator _scaleAnimation = new UI_ScaleAnimator();
 
-    private UI_SpriteAnimator[] _spriteAnimators;
+    // 개폐 연출을 자기가 모는 자식들. 팝업 Hide보다 먼저 물러나야 해서 따로 들고 있는다.
+    // 파생 팝업이 base.Awake를 빠뜨려도 CloseAsync가 죽지 않도록 빈 배열로 시작한다.
+    private UI_Reactor[] _childReactors = Array.Empty<UI_Reactor>();
+
+    // UI_SpriteAnimator를 아직 쓰는 프리팹을 위한 경로다. 컴포넌트를 전부 걷어내면 함께 지운다.
+    private UI_SpriteAnimator[] _spriteAnimators = Array.Empty<UI_SpriteAnimator>();
+
+    private readonly List<UniTask> _exitTasks = new List<UniTask>();
 
     protected virtual void Awake()
     {
+        _childReactors = CollectChildReactors();
         _spriteAnimators = GetComponentsInChildren<UI_SpriteAnimator>(true);
     }
 
@@ -60,9 +70,9 @@ public abstract class UI_Popup : MonoBehaviour
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = true;
 
-        // 자식 스프라이트 애니메이터 역재생은 어느 경로든 먼저 끝내야 한다.
-        // 리액션은 한 신호 안에서 병렬로 도는 탓에, 이걸 Reactor로 옮기면 개폐 연출과 겹쳐 버린다.
-        await PlaySpriteAnimatorsReverseAsync();
+        // 자식 연출 되감기는 어느 경로든 먼저 끝내야 한다. 한 신호 안의 리액션은 병렬로 돌기 때문에,
+        // 팝업 Hide와 같은 신호에 실으면 개폐 연출과 겹친다.
+        await PlayChildrenExitAsync();
 
         if (this == null)
         {
@@ -100,25 +110,55 @@ public abstract class UI_Popup : MonoBehaviour
         Handler?.ClosePopup(this);
     }
 
-    private async UniTask PlaySpriteAnimatorsReverseAsync()
+    // 자기 Reactor는 뺀다. 팝업 개폐는 OpenAsync/CloseAsync가 직접 몰기 때문에 여기서 겹쳐 부르면 안 된다.
+    private UI_Reactor[] CollectChildReactors()
     {
-        if (_spriteAnimators == null || _spriteAnimators.Length <= 0)
-        {
-            return;
-        }
+        UI_Reactor[] found = GetComponentsInChildren<UI_Reactor>(true);
 
-        var tasks = new List<UniTask>();
-        foreach (var spriteAnimator in _spriteAnimators)
+        int count = 0;
+        for (int i = 0; i < found.Length; i++)
         {
-            if (spriteAnimator != null && spriteAnimator.isActiveAndEnabled)
+            if (found[i] != _reactor)
             {
-                tasks.Add(spriteAnimator.PlayReverseAsync(this.GetCancellationTokenOnDestroy()));
+                found[count++] = found[i];
             }
         }
 
-        if (0 < tasks.Count)
+        if (count == found.Length)
         {
-            await UniTask.WhenAll(tasks);
+            return found;
+        }
+
+        UI_Reactor[] children = new UI_Reactor[count];
+        Array.Copy(found, children, count);
+        return children;
+    }
+
+    private async UniTask PlayChildrenExitAsync()
+    {
+        _exitTasks.Clear();
+        CancellationToken token = this.GetCancellationTokenOnDestroy();
+
+        // Show를 되감는다. 같은 리액션 인스턴스가 처리하므로 아직 돌고 있던 정재생은 자동으로 끊긴다.
+        for (int i = 0; i < _childReactors.Length; i++)
+        {
+            if (_childReactors[i] != null)
+            {
+                _exitTasks.Add(_childReactors[i].PlaySignalExitAsync(EUIReactionSignal.Show, token));
+            }
+        }
+
+        for (int i = 0; i < _spriteAnimators.Length; i++)
+        {
+            if (_spriteAnimators[i] != null && _spriteAnimators[i].isActiveAndEnabled)
+            {
+                _exitTasks.Add(_spriteAnimators[i].PlayReverseAsync(token));
+            }
+        }
+
+        if (0 < _exitTasks.Count)
+        {
+            await UniTask.WhenAll(_exitTasks);
         }
     }
 }
