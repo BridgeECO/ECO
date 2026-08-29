@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 /// <summary>
 /// 스프라이트를 프레임 단위로 갈아 끼우는 재생 하나의 수명을 맡는다.
-/// 컴포넌트(UI_SpriteAnimator)와 리액션(UI_SpriteSequenceReaction)이 이 한 벌을 공유한다.
+/// 컴포넌트(UI_SpriteAnimator)와 리액션(UI_SpriteAnimationReaction)이 이 한 벌을 공유한다.
 /// </summary>
 public class UI_SpriteFrameRunner
 {

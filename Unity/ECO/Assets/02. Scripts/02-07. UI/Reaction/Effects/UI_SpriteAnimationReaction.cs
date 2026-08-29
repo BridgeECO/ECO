@@ -4,6 +4,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Scripting;
+using UnityEngine.Scripting.APIUpdating;
 using UnityEngine.UI;
 
 /// <summary>
@@ -12,7 +13,8 @@ using UnityEngine.UI;
 /// </summary>
 [Serializable]
 [Preserve]
-public class UI_SpriteSequenceReaction : UI_ReactionBase
+[MovedFrom(false, null, null, "UI_SpriteSequenceReaction")]
+public class UI_SpriteAnimationReaction : UI_ReactionBase
 {
     [SerializeField]
     private List<Sprite> _sprites = new List<Sprite>();

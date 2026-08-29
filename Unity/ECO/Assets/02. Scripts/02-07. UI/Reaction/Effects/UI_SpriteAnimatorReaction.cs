@@ -11,6 +11,8 @@ using UnityEngine.UI;
 /// </summary>
 [Serializable]
 [Preserve]
+// 연출을 UI_Reactor로 옮기면서 은퇴했다. SubclassSelectorDrawer가 이 표시를 보고 드롭다운에서 뺀다.
+[Obsolete("UI_SpriteAnimationReaction을 쓴다. UI_SpriteAnimator 컴포넌트를 걷어낼 때 이 클래스도 지운다.")]
 public class UI_SpriteAnimatorReaction : UI_ReactionBase
 {
     [SerializeField]
