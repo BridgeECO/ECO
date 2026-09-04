@@ -60,7 +60,7 @@ public class TutorialObject : MonoBehaviour, IResettable
     }
 
     // EventManager가 아직 없는 로드 순서에서도 구독이 성사되도록 한 번 더 시도한다.
-    // 전역 이벤트를 구독하는 조건(RepeatedFallCondition 등)도 같은 순서 문제를 겪으므로 함께 다시 건다.
+    // 전역 이벤트를 구독하는 조건(TC_RepeatedFall 등)도 같은 순서 문제를 겪으므로 함께 다시 건다.
     private void Start()
     {
         AddEventListeners();

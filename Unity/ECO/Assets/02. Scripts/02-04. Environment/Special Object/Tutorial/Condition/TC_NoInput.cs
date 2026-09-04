@@ -1,14 +1,17 @@
 using System;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
 /// <summary>
 /// 인식 범위 안에서 지정 시간 동안 아무 조작도 하지 않으면 만족한다.
 /// 무엇이든 입력하는 순간 다시 불만족으로 돌아가므로, 그 전이가 곧 안내를 거둘 신호가 된다.
 ///
-/// 클래스명 변경 시 직렬화된 참조가 끊긴다. [MovedFrom] 없이 리네임하지 말 것.
+/// 클래스명 변경 시 직렬화된 참조가 끊긴다. 리네임할 때는 [MovedFrom]에 이전 이름을 남긴다.
 /// </summary>
 [Serializable]
-public class NoInputForDurationCondition : TutorialConditionBase
+// 이름을 바꾸기 전 저장된 SerializeReference 참조를 잇는다.
+[MovedFrom(false, null, null, "NoInputForDurationCondition")]
+public class TC_NoInput : TutorialConditionBase
 {
     [SerializeField]
     private float _requiredSeconds = 3f;
