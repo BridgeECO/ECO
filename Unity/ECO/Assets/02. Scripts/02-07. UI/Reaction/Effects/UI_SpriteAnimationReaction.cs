@@ -4,6 +4,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Scripting;
+using UnityEngine.Scripting.APIUpdating;
 using UnityEngine.UI;
 
 /// <summary>
@@ -12,6 +13,8 @@ using UnityEngine.UI;
 /// </summary>
 [Serializable]
 [Preserve]
+// 이름을 바꾸기 전 저장된 SerializeReference 참조를 잇는다. 머지 안 된 작업물이 남아 있는 동안 유지한다.
+[MovedFrom(false, null, null, "UI_SpriteSequenceReaction")]
 public class UI_SpriteAnimationReaction : UI_ReactionBase
 {
     [SerializeField]
