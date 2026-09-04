@@ -24,15 +24,11 @@ public abstract class UI_Popup : MonoBehaviour
     // 파생 팝업이 base.Awake를 빠뜨려도 CloseAsync가 죽지 않도록 빈 배열로 시작한다.
     private UI_Reactor[] _childReactors = Array.Empty<UI_Reactor>();
 
-    // UI_SpriteAnimator를 아직 쓰는 프리팹을 위한 경로다. 컴포넌트를 전부 걷어내면 함께 지운다.
-    private UI_SpriteAnimator[] _spriteAnimators = Array.Empty<UI_SpriteAnimator>();
-
     private readonly List<UniTask> _exitTasks = new List<UniTask>();
 
     protected virtual void Awake()
     {
         _childReactors = CollectChildReactors();
-        _spriteAnimators = GetComponentsInChildren<UI_SpriteAnimator>(true);
     }
 
     public void SetHandler(UI_PopupHandler handler)
@@ -145,14 +141,6 @@ public abstract class UI_Popup : MonoBehaviour
             if (_childReactors[i] != null)
             {
                 _exitTasks.Add(_childReactors[i].PlaySignalExitAsync(EUIReactionSignal.Show, token));
-            }
-        }
-
-        for (int i = 0; i < _spriteAnimators.Length; i++)
-        {
-            if (_spriteAnimators[i] != null && _spriteAnimators[i].isActiveAndEnabled)
-            {
-                _exitTasks.Add(_spriteAnimators[i].PlayReverseAsync(token));
             }
         }
 
