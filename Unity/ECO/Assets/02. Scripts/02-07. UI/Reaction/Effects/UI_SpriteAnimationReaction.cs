@@ -4,6 +4,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Scripting;
+using UnityEngine.Scripting.APIUpdating;
 using UnityEngine.UI;
 
 /// <summary>
@@ -12,7 +13,9 @@ using UnityEngine.UI;
 /// </summary>
 [Serializable]
 [Preserve]
-public class UI_SpriteSequenceReaction : UI_ReactionBase
+// 이름을 바꾸기 전 저장된 SerializeReference 참조를 잇는다. 머지 안 된 작업물이 남아 있는 동안 유지한다.
+[MovedFrom(false, null, null, "UI_SpriteSequenceReaction")]
+public class UI_SpriteAnimationReaction : UI_ReactionBase
 {
     [SerializeField]
     private List<Sprite> _sprites = new List<Sprite>();
@@ -109,7 +112,11 @@ public class UI_SpriteSequenceReaction : UI_ReactionBase
             Image image = ResolveImage(context);
             if (image != null)
             {
+                // 역재생이 곧 복원이라 기준값으로 되돌리지 않는다. 0번 프레임까지 사라진 그림을
+                // 여기서 원본으로 되돌리면 팝업이 닫히기 직전에 다시 나타나 깜빡인다.
+                // 기준값은 비활성화 시점의 Deactivate가 화면 밖에서 되돌린다.
                 await Runner.PlayAsync(image, _sprites, BuildSettings(), false, cancellationToken);
+                return;
             }
         }
 

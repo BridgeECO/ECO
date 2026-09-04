@@ -91,6 +91,10 @@ public class UI_ReactionEntryDrawer : PropertyDrawer
 
             case EUIReactionTriggerKind.Signal:
                 _fieldPaths.Add("_signalTrigger");
+
+                // 신호를 되감을 수 있게 되면서 복귀 정책이 의미를 갖는다. 되감기를 쓰지 않는 신호는
+                // 이 값을 읽지 않으므로 남아 있어도 해가 없다.
+                _fieldPaths.Add("_exitPolicy");
                 break;
 
             default:

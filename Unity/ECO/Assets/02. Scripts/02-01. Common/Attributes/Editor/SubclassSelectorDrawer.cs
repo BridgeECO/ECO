@@ -118,6 +118,14 @@ public class SubclassSelectorDrawer : PropertyDrawer
                 continue;
             }
 
+            // 은퇴한 타입은 새로 고를 수 없게 감춘다. 클래스를 지우면 저장된 참조가 끊기므로 목록에서만 뺀다.
+            // 지금 그 타입을 쓰고 있는 항목에서는 남겨 둬야 무엇이 선택돼 있는지 보인다.
+            // 상속으로 조회하면 은퇴한 타입을 물려받은 새 타입까지 함께 사라진다.
+            if (type != currentType && type.IsDefined(typeof(ObsoleteAttribute), false))
+            {
+                continue;
+            }
+
             Type selectedType = type;
             menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(type.Name)), currentType == type,
                 () => SetValueType(serializedObject, propertyPath, selectedType));

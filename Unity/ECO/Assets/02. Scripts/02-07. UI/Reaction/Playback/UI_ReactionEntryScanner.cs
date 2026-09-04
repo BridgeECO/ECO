@@ -130,4 +130,31 @@ public static class UI_ReactionEntryScanner
             }
         }
     }
+
+    /// <summary>재생해 둔 신호를 항목의 복귀 정책대로 되감는다.</summary>
+    // 물러나는 쪽은 자리를 새로 잡지 않으므로 KillChannel을 부르지 않는다. 상태 연출이 쥔 자리를
+    // 여기서 놓아 버리면 신호가 끝난 뒤 RefreshStates가 그 자리를 되찾지 못한다.
+    public static void CollectSignalExitTasks(IReadOnlyList<UI_ReactionEntry> entries, EUIReactionSignal signal,
+        UI_ReactionContext context, CancellationToken token, List<UniTask> results)
+    {
+        for (int e = 0; e < entries.Count; e++)
+        {
+            UI_ReactionEntry entry = entries[e];
+            if (!entry.MatchesSignal(signal))
+            {
+                continue;
+            }
+
+            List<UI_ReactionBase> reactions = entry.Reactions;
+            for (int r = 0; r < reactions.Count; r++)
+            {
+                if (reactions[r] == null)
+                {
+                    continue;
+                }
+
+                results.Add(reactions[r].ExitAsync(context, entry.ExitPolicy, token));
+            }
+        }
+    }
 }

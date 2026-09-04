@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6528204916140679553}
   - component: {fileID: 6263017685569945331}
   - component: {fileID: 4646688733336300938}
-  - component: {fileID: 2923289581355267979}
+  - component: {fileID: 8705972222670593341}
   m_Layer: 0
   m_Name: P_UI_SaveItem_Down
   m_TagString: Untagged
@@ -76,7 +76,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &2923289581355267979
+--- !u!114 &8705972222670593341
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -85,22 +85,42 @@ MonoBehaviour:
   m_GameObject: {fileID: 8156512362052553439}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0213216c11e3f0408f1488ec31c4382, type: 3}
+  m_Script: {fileID: 11500000, guid: 12d356bb42a9ab841b99b3913ad90c35, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _targetImage: {fileID: 4646688733336300938}
-  _sprites:
-  - {fileID: 21300000, guid: 98f31c58789224342b5addbf952f4573, type: 3}
-  - {fileID: 21300000, guid: 48e0a2a9a99cdb3488eefbfbd322ac3e, type: 3}
-  - {fileID: 21300000, guid: d38ab34bf70c2a642bcb161c2faf7405, type: 3}
-  - {fileID: 21300000, guid: d7c6f0e724e283d4eaac489340eaa22d, type: 3}
-  - {fileID: 21300000, guid: 5e92860521623f54c9e5230987fe64a7, type: 3}
-  - {fileID: 21300000, guid: 121ec137510c5f145a8aac4a57a916e2, type: 3}
-  - {fileID: 21300000, guid: 84ec9cbed8d70274a953191e169a4916, type: 3}
-  - {fileID: 21300000, guid: f0900468baa455a43b83357266e60cb9, type: 3}
-  - {fileID: 21300000, guid: ae2f84907673fc84191406d6d80e3ee8, type: 3}
-  - {fileID: 21300000, guid: 55fde0b8896601240a75532b79ebae22, type: 3}
-  - {fileID: 21300000, guid: d52ea01e785ca484ca72170b061a70b1, type: 3}
-  _frameDelay: 0.0333333
-  _isLoop: 0
-  _loopInterval: 2
+  _entries:
+  - _label: "\uB4F1\uC7A5 \uC560\uB2C8\uBA54\uC774\uC158"
+    _isMuted: 0
+    _kind: 2
+    _stateTrigger: 0
+    _eventTrigger: 0
+    _signalTrigger: 0
+    _interruptPolicy: 0
+    _exitPolicy: 2
+    _reactions:
+    - rid: 914377620068499556
+  _isPlayShowOnEnable: 1
+  _previewState: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: 914377620068499556
+      type: {class: UI_SpriteAnimationReaction, ns: , asm: Assembly-CSharp}
+      data:
+        _target: {fileID: 0}
+        _sprites:
+        - {fileID: 21300000, guid: 98f31c58789224342b5addbf952f4573, type: 3}
+        - {fileID: 21300000, guid: 48e0a2a9a99cdb3488eefbfbd322ac3e, type: 3}
+        - {fileID: 21300000, guid: d38ab34bf70c2a642bcb161c2faf7405, type: 3}
+        - {fileID: 21300000, guid: d7c6f0e724e283d4eaac489340eaa22d, type: 3}
+        - {fileID: 21300000, guid: 5e92860521623f54c9e5230987fe64a7, type: 3}
+        - {fileID: 21300000, guid: 121ec137510c5f145a8aac4a57a916e2, type: 3}
+        - {fileID: 21300000, guid: 84ec9cbed8d70274a953191e169a4916, type: 3}
+        - {fileID: 21300000, guid: f0900468baa455a43b83357266e60cb9, type: 3}
+        - {fileID: 21300000, guid: ae2f84907673fc84191406d6d80e3ee8, type: 3}
+        - {fileID: 21300000, guid: 55fde0b8896601240a75532b79ebae22, type: 3}
+        - {fileID: 21300000, guid: d52ea01e785ca484ca72170b061a70b1, type: 3}
+        _frameInterval: 0.0333333
+        _isLoop: 0
+        _loopInterval: 2
+        _isIgnoreTimeScale: 1
