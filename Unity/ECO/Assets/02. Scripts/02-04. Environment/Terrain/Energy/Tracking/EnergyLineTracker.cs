@@ -37,10 +37,10 @@ public class EnergyLineTracker : MonoBehaviour
     private EnergyLineTrackingCameraLogic _cameraLogic;
     private EnergyLineTrackingFadeLogic _fadeLogic;
 
+    private readonly InputBlockLease _inputLease = new InputBlockLease();
+
+    private bool _isListenerAdded;
     private bool _isRunning;
-    // 자기가 건 입력 차단만 해제하기 위한 플래그.
-    // ForceCleanUp이 무조건 UnblockInput을 호출하면 다른 시스템(리스폰, 씬 전환)의 차단까지 풀 수 있다.
-    private bool _hasBlockedInput;
     private CancellationTokenSource _cts;
 
     private void Awake()
@@ -57,11 +57,14 @@ public class EnergyLineTracker : MonoBehaviour
 
     private void OnEnable()
     {
-        if (EventManager.Instance == null)
-        {
-            return;
-        }
-        EventManager.Instance.AddEventListener<EnergyLine>(EEventType.EnergyLineTrackingRequested, StartTracking);
+        AddEventListeners();
+    }
+
+    // EventManager가 아직 없는 로드 순서에서도 구독이 성사되도록 한 번 더 시도한다.
+    // 여기서 놓치면 트래킹 요청이 세션 내내 한 번도 도착하지 않는다.
+    private void Start()
+    {
+        AddEventListeners();
     }
 
     private void LateUpdate()
@@ -75,8 +78,25 @@ public class EnergyLineTracker : MonoBehaviour
         ForceCleanUp();
     }
 
+    private void AddEventListeners()
+    {
+        if (_isListenerAdded || EventManager.Instance == null)
+        {
+            return;
+        }
+
+        EventManager.Instance.AddEventListener<EnergyLine>(EEventType.EnergyLineTrackingRequested, StartTracking);
+        _isListenerAdded = true;
+    }
+
     private void RemoveEventListeners()
     {
+        if (!_isListenerAdded)
+        {
+            return;
+        }
+
+        _isListenerAdded = false;
         if (EventManager.HasInstance)
         {
             EventManager.Instance.RemoveEventListener<EnergyLine>(EEventType.EnergyLineTrackingRequested, StartTracking);
@@ -99,7 +119,7 @@ public class EnergyLineTracker : MonoBehaviour
     private async UniTaskVoid PlayTrackingSequenceAsync(EnergyLine targetLine, CancellationToken ct)
     {
         _isRunning = true;
-        BlockPlayerInput();
+        _inputLease.Acquire();
 
         try
         {
@@ -150,7 +170,7 @@ public class EnergyLineTracker : MonoBehaviour
     {
         _isRunning = false;
         _fadeLogic.Reset();
-        ReleasePlayerInput();
+        _inputLease.Release();
 
         _cts?.Dispose();
         _cts = null;
@@ -171,26 +191,6 @@ public class EnergyLineTracker : MonoBehaviour
         }
 
         _fadeLogic?.Reset();
-        ReleasePlayerInput();
-    }
-
-    private void BlockPlayerInput()
-    {
-        if (_hasBlockedInput)
-        {
-            return;
-        }
-        _hasBlockedInput = true;
-        InputHandler.BlockInput();
-    }
-
-    private void ReleasePlayerInput()
-    {
-        if (!_hasBlockedInput)
-        {
-            return;
-        }
-        _hasBlockedInput = false;
-        InputHandler.UnblockInput();
+        _inputLease.Release();
     }
 }

@@ -22,6 +22,7 @@ public class CameraRoomTransition : MonoBehaviour
     private float _defaultZValue;
 
     private CameraController _cameraController;
+    private bool _isListenerAdded;
     private bool _isTransitioning;
     private CancellationTokenSource _transitionCts;
     private Tweener _transitionTween;
@@ -37,11 +38,14 @@ public class CameraRoomTransition : MonoBehaviour
 
     private void OnEnable()
     {
-        if (EventManager.Instance == null)
-        {
-            return;
-        }
-        EventManager.Instance.AddEventListener(EEventType.RoomChanged, OnRoomChanged);
+        AddEventListeners();
+    }
+
+    // EventManager가 아직 없는 로드 순서에서도 구독이 성사되도록 한 번 더 시도한다.
+    // 여기서 놓치면 방 전환 연출이 세션 내내 한 번도 돌지 않는다.
+    private void Start()
+    {
+        AddEventListeners();
     }
 
     private void OnDisable()
@@ -54,8 +58,25 @@ public class CameraRoomTransition : MonoBehaviour
         StopTransition();
     }
 
+    private void AddEventListeners()
+    {
+        if (_isListenerAdded || EventManager.Instance == null)
+        {
+            return;
+        }
+
+        EventManager.Instance.AddEventListener(EEventType.RoomChanged, OnRoomChanged);
+        _isListenerAdded = true;
+    }
+
     private void RemoveEventListeners()
     {
+        if (!_isListenerAdded)
+        {
+            return;
+        }
+
+        _isListenerAdded = false;
         if (EventManager.HasInstance)
         {
             EventManager.Instance.RemoveEventListener(EEventType.RoomChanged, OnRoomChanged);
@@ -112,7 +133,10 @@ public class CameraRoomTransition : MonoBehaviour
     {
         Vector3 targetPosition = GetTargetPosition();
         _transitionTween = transform.DOMove(targetPosition, _roomTransitionDuration).SetEase(Ease.InOutSine);
-        await _transitionTween.ToUniTask(TweenCancelBehaviour.Kill, cancellationToken);
+
+        // Kill은 취소돼도 await가 정상 완료해, 끊긴 이전 전환이 CompleteTransition까지 밟고
+        // 진행 중인 새 전환의 _isTransitioning과 IsFollowingPlayer를 되돌려 놓는다.
+        await _transitionTween.ToUniTask(TweenCancelBehaviour.KillAndCancelAwait, cancellationToken);
     }
 
     private void CompleteTransition()

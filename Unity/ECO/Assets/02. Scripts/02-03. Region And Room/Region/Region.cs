@@ -157,6 +157,13 @@ public class Region : MonoBehaviourSingleton<Region>
             EventManager.Instance.BroadcastEvent(EEventType.RoomChanged);
             return;
         }
+
+        // 전환 연출을 건너뛰는 경로. InitCameraBounds와 달리 가드가 없어 NRE가 났다.
+        if (_cameraController == null)
+        {
+            return;
+        }
+
         _cameraController.SetRoomBounds(_currentRoom.MinBounds, _currentRoom.MaxBounds);
     }
 
