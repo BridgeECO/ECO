@@ -1,9 +1,14 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using VInspector;
 
 public class EnergySwitch : SpecialObjectBase
 {
+    // 발판형은 Interact()를 거치지 않고 SetState()로만 오므로 SpecialObjectBase.OnInteract가 발행되지 않는다.
+    // 스위치 종류를 가리지 않는 신호는 상태 전이뿐이라, 컷씬 트리거처럼 "눌린 순간"이 필요한 쪽이 이걸 구독한다.
+    public Action<bool> OnSwitchStateChanged;
+
     [Foldout("Hierarchy")]
     [SerializeField]
     private List<EnergyLine> _connectedLines = new List<EnergyLine>();
@@ -70,6 +75,10 @@ public class EnergySwitch : SpecialObjectBase
         {
             RequestTrackingIfNeeded();
         }
+
+        // 상태가 실제로 바뀐 경우에만 온다. 조기 반환 뒤에 두어 발판 재진입과
+        // ResetState의 중복 호출이 걸러진다.
+        OnSwitchStateChanged?.Invoke(_isOn);
     }
 
     // 최초 On 발동 시, UseTracking이 설정된 첫 번째 라인에 한해 트래킹을 요청한다.
