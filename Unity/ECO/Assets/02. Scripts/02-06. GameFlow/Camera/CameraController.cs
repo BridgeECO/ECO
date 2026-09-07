@@ -1,11 +1,17 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using System;
 using System.Threading;
 using UnityEngine;
 using VInspector;
 
 public class CameraController : MonoBehaviour
 {
+    // 방 경계가 바뀌면 클램프 결과가 함께 바뀐다. 카메라를 빌려 쓰는 쪽(컷씬 등)이
+    // 그 순간을 알아야 하는데, Region이 전환 연출을 건너뛰는 경로로 들어오면
+    // RoomChanged 이벤트가 발행되지 않아 바운드 변경만 조용히 일어난다.
+    public Action OnRoomBoundsChanged;
+
     // 플레이어와 같은 PersistentScene에 상주하므로 탐색 대신 인스펙터에서 직접 바인딩한다.
     [Foldout("Hierarchy")]
     [SerializeField]
@@ -91,6 +97,7 @@ public class CameraController : MonoBehaviour
     {
         _currentRoomMin = roomMin;
         _currentRoomMax = roomMax;
+        OnRoomBoundsChanged?.Invoke();
     }
 
     public Vector3 GetClampedPosition()
