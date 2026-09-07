@@ -13,6 +13,7 @@ using UnityEngine;
 public class TutorialConditionDrawer : PropertyDrawer
 {
     private const string EMPTY_LABEL = "(조건 선택)";
+    private const string TYPE_NAME_PREFIX = "TC_";
 
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
@@ -107,7 +108,7 @@ public class TutorialConditionDrawer : PropertyDrawer
 
             Type conditionType = type;
             bool isSelected = !string.IsNullOrEmpty(currentType) && currentType.EndsWith(type.Name, StringComparison.Ordinal);
-            menu.AddItem(new GUIContent(ObjectNames.NicifyVariableName(type.Name)), isSelected,
+            menu.AddItem(new GUIContent(ToDisplayName(type.Name)), isSelected,
                 () => SetConditionType(serializedObject, propertyPath, conditionType));
         }
 
@@ -167,6 +168,17 @@ public class TutorialConditionDrawer : PropertyDrawer
         if (0 <= namespaceSplit)
         {
             typeName = typeName.Substring(namespaceSplit + 1);
+        }
+
+        return ToDisplayName(typeName);
+    }
+
+    // 조건 리스트 안에서는 TC_ 접두사가 군더더기라 라벨에서만 뗀다.
+    private static string ToDisplayName(string typeName)
+    {
+        if (typeName.StartsWith(TYPE_NAME_PREFIX, StringComparison.Ordinal))
+        {
+            typeName = typeName.Substring(TYPE_NAME_PREFIX.Length);
         }
 
         return ObjectNames.NicifyVariableName(typeName);

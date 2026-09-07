@@ -1,15 +1,18 @@
 using System;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
 /// <summary>
 /// 인식 범위 안에서 지정 시간 동안 점프 입력이 한 번도 없으면 만족한다.
 /// 점프하는 순간 다시 불만족으로 돌아가므로, 안내가 표시된 뒤의 이 전이가
 /// 곧 "플레이어가 조작을 익혔다"는 신호가 되어 안내를 거둘 근거가 된다.
 ///
-/// 클래스명 변경 시 직렬화된 참조가 끊긴다. [MovedFrom] 없이 리네임하지 말 것.
+/// 클래스명 변경 시 직렬화된 참조가 끊긴다. 리네임할 때는 [MovedFrom]에 이전 이름을 남긴다.
 /// </summary>
 [Serializable]
-public class NoJumpForDurationCondition : TutorialConditionBase
+// 이름을 바꾸기 전 저장된 SerializeReference 참조를 잇는다.
+[MovedFrom(false, null, null, "NoJumpForDurationCondition")]
+public class TC_NoJump : TutorialConditionBase
 {
     [SerializeField]
     private float _requiredSeconds = 2f;

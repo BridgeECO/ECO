@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
 /// <summary>
 /// 인식 범위 안에서 지정한 스위치를 건드리지 않는 상태가 지정 시간 이상 이어지면 만족한다.
@@ -7,10 +8,12 @@ using UnityEngine;
 /// "조작"은 스위치의 켜짐/꺼짐이 바뀐 시점으로 본다. OnInteract는 발판형에서 발행되지 않아
 /// 상태 변화를 보는 쪽만이 스위치 종류를 가리지 않는다.
 ///
-/// 클래스명 변경 시 직렬화된 참조가 끊긴다. [MovedFrom] 없이 리네임하지 말 것.
+/// 클래스명 변경 시 직렬화된 참조가 끊긴다. 리네임할 때는 [MovedFrom]에 이전 이름을 남긴다.
 /// </summary>
 [Serializable]
-public class SwitchNotOperatedForDurationCondition : TutorialConditionBase
+// 이름을 바꾸기 전 저장된 SerializeReference 참조를 잇는다.
+[MovedFrom(false, null, null, "SwitchNotOperatedForDurationCondition")]
+public class TC_SwitchNotOperated : TutorialConditionBase
 {
     [SerializeField]
     private EnergySwitch _targetSwitch;

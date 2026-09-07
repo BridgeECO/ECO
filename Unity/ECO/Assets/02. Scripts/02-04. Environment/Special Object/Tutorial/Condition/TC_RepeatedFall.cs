@@ -1,16 +1,19 @@
 using System;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
 /// <summary>
 /// 이 오브젝트의 인식 범위에서 낙사한 횟수가 지정 횟수에 도달하면 만족한다.
 ///
-/// 만족이 단조 증가라 스스로 깨지지 않으므로, 안내를 거둘 조건(NoJumpForDurationCondition 등)과
+/// 만족이 단조 증가라 스스로 깨지지 않으므로, 안내를 거둘 조건(TC_NoJump 등)과
 /// 반드시 함께 써야 한다. 단독으로 두면 한 번 뜬 안내가 사라지지 않는다.
 ///
-/// 클래스명 변경 시 직렬화된 참조가 끊긴다. [MovedFrom] 없이 리네임하지 말 것.
+/// 클래스명 변경 시 직렬화된 참조가 끊긴다. 리네임할 때는 [MovedFrom]에 이전 이름을 남긴다.
 /// </summary>
 [Serializable]
-public class RepeatedFallCondition : TutorialConditionBase
+// 이름을 바꾸기 전 저장된 SerializeReference 참조를 잇는다.
+[MovedFrom(false, null, null, "RepeatedFallCondition")]
+public class TC_RepeatedFall : TutorialConditionBase
 {
     [SerializeField]
     private int _requiredFallCount = 2;

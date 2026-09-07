@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -7,6 +8,9 @@ using VInspector;
 /// <summary>
 /// 맵 고정 위치에 조작 안내를 띄우는 World Space UI.
 /// 인게임 로어를 반영하지 않는 시스템 메시지라 대화 UI(UI_Dialogue)와 분리한다.
+///
+/// 정적 안내는 스프라이트 한 장으로 충분하지만, 움직이는 안내가 필요하면 이미지 오브젝트에
+/// UI_Reactor를 얹어 프로젝트 표준 연출 시스템에 재생을 맡긴다.
 /// </summary>
 public class UI_Tutorial : MonoBehaviour
 {
@@ -19,6 +23,10 @@ public class UI_Tutorial : MonoBehaviour
 
     [SerializeField]
     private Image _tutorialImageDisplay;
+
+    // 이미지 오브젝트에 붙인 리액터. 애니메이션을 재생하는 안내에서만 할당한다.
+    [SerializeField]
+    private UI_Reactor _imageReactor;
 
     [Foldout("Settings")]
     [SerializeField]
@@ -42,6 +50,7 @@ public class UI_Tutorial : MonoBehaviour
     public void ShowTutorial(string text, Sprite image)
     {
         RefreshContent(text, image);
+        PlayImageReaction();
 
         if (_tutorialCanvasGroup == null)
         {
@@ -56,6 +65,8 @@ public class UI_Tutorial : MonoBehaviour
 
     public void HideTutorial()
     {
+        ExitImageReaction();
+
         if (_tutorialCanvasGroup == null)
         {
             return;
@@ -76,6 +87,7 @@ public class UI_Tutorial : MonoBehaviour
     public void HideTutorialImmediate()
     {
         KillAllTween();
+        StopImageReaction();
 
         if (_tutorialCanvasGroup == null)
         {
@@ -99,12 +111,45 @@ public class UI_Tutorial : MonoBehaviour
         }
 
         // 이미지는 선택 사항이다. 지정되지 않은 튜토리얼에서 빈 사각형이 남지 않도록 오브젝트째 끈다.
-        bool hasImage = image != null;
+        // 리액터가 있으면 스프라이트가 비어 있어도 애니메이션이 자리를 채우므로 켜 둔다.
+        bool hasImage = image != null || _imageReactor != null;
         _tutorialImageDisplay.gameObject.SetActive(hasImage);
-        if (hasImage)
+        if (image != null)
         {
             _tutorialImageDisplay.sprite = image;
         }
+    }
+
+    private void PlayImageReaction()
+    {
+        if (_imageReactor == null)
+        {
+            return;
+        }
+
+        _imageReactor.PlaySignalAsync(EUIReactionSignal.Show, this.GetCancellationTokenOnDestroy()).Forget();
+    }
+
+    private void ExitImageReaction()
+    {
+        if (_imageReactor == null)
+        {
+            return;
+        }
+
+        _imageReactor.PlaySignalExitAsync(EUIReactionSignal.Show, this.GetCancellationTokenOnDestroy()).Forget();
+    }
+
+    // 오브젝트를 끄면 UI_Reactor가 자기 토큰을 끊어 재생이 즉시 멈춘다.
+    // 그냥 두면 루프 애니메이션이 알파 0 뒤에서 계속 돈다.
+    private void StopImageReaction()
+    {
+        if (_imageReactor == null || _tutorialImageDisplay == null)
+        {
+            return;
+        }
+
+        _tutorialImageDisplay.gameObject.SetActive(false);
     }
 
     private void KillAllTween()
