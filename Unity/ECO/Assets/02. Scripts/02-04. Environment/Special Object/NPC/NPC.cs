@@ -21,6 +21,11 @@ public class NPC : SpecialObjectBase
     [SerializeField]
     private List<NPCEventSO> _specialEvents;
 
+    [Foldout("Hierarchy")]
+    [SerializeField]
+    [Tooltip("이벤트가 이름으로 지목할 수 있는 컷씬 목록입니다. ScriptableObject는 씬 오브젝트를 참조할 수 없습니다.")]
+    private List<CutsceneDirector> _cutscenes = new List<CutsceneDirector>();
+
     private PlayerInput _playerInput;
     private NPCSpecialEventQueue _specialEventQueue;
     private NPCEventExecutor _executor;
@@ -31,7 +36,7 @@ public class NPC : SpecialObjectBase
     {
         base.Awake();
         _specialEventQueue = new NPCSpecialEventQueue();
-        _executor = new NPCEventExecutor();
+        _executor = new NPCEventExecutor(_cutscenes);
         _flowRunner = new NPCEventFlowRunner(_uiNPCDialogue, _executor);
     }
 
@@ -51,7 +56,8 @@ public class NPC : SpecialObjectBase
 
     private void Update()
     {
-        if (_flowRunner.IsInteracting && Input.GetKeyDown(KeyCode.Escape))
+        // 컷씬 중의 ESC는 스킵이다. 여기서 받아 버리면 컷씬이 최종 상태 확정 없이 죽는다.
+        if (_flowRunner.IsInteracting && !CutsceneGate.IsActive && Input.GetKeyDown(KeyCode.Escape))
         {
             _flowRunner.CancelInteraction();
         }

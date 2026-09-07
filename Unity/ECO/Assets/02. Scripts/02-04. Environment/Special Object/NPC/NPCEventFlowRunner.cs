@@ -73,8 +73,10 @@ public class NPCEventFlowRunner
                 }
             }
 
-            _executor.Execute(nextEvent, playerInput);
-            isExecuted = true;
+            // 컷씬이 재생되는 동안 대화창이 화면에 남지 않게 먼저 닫는다.
+            // CloseAsync는 이미 닫혀 있으면 즉시 반환하므로 뒤의 호출과 중복 연출이 나지 않는다.
+            await CloseDialogueAsync();
+            isExecuted = await _executor.ExecuteAsync(nextEvent, playerInput, token);
             break;
         }
 

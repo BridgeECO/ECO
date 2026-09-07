@@ -135,6 +135,12 @@ public class UIManager : MonoBehaviourSingleton<UIManager>
 
     private void HandleEscapeInput()
     {
+        // 컷씬 중의 ESC는 스킵이다. 같은 프레임에 일시정지 메뉴까지 열리면 안 된다.
+        if (CutsceneGate.IsActive)
+        {
+            return;
+        }
+
         // 팝업이 열려있다면 최상단 팝업 닫기
         if (PopupHandler != null && PopupHandler.HasPopups)
         {
