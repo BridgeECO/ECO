@@ -40,6 +40,13 @@ public class PlayerCornerCorrector : MonoBehaviour
 
     private void UpdateCornerCorrection()
     {
+        // rigidbody.position을 직접 밀어내므로 linearVelocity를 0으로 눌러도 막히지 않는다.
+        // 컷씬은 천장이 낮은 자리에서 플레이어를 세우는 일이 잦아 이 경로가 상시 활성이다.
+        if (_motor.IsFrozen)
+        {
+            return;
+        }
+
         if (_motor.Velocity.y <= 0f)
         {
             return;

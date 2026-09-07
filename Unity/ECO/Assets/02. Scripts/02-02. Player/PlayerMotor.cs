@@ -16,7 +16,11 @@ public class PlayerMotor : MonoBehaviour
     public Vector2 ExternalVelocity { get; set; }
     // 스폰 시 플레이어는 오른쪽(Quaternion.identity)을 바라보므로 true로 초기화
     public bool IsForward { get; private set; } = true;
+
+    public bool IsFrozen => _isFrozen;
+
     private Rigidbody2D _rigidbody;
+    private bool _isFrozen;
 
     private void Awake()
     {
@@ -29,7 +33,9 @@ public class PlayerMotor : MonoBehaviour
 
     private void FixedUpdate()
     {
-        _rigidbody.linearVelocity = Velocity + ExternalVelocity;
+        // 동결은 매 물리 스텝 유지돼야 한다. ExternalVelocity는 플레이어를 태운 지형이
+        // FixedUpdate마다 다시 채우므로, 한 번 0을 대입하는 것만으로는 순서 경합에서 진다.
+        _rigidbody.linearVelocity = _isFrozen ? Vector2.zero : Velocity + ExternalVelocity;
     }
 
     private void CreatePhysicsMaterial2D()
@@ -42,6 +48,17 @@ public class PlayerMotor : MonoBehaviour
     public void SetFriction(bool enabled)
     {
         _rigidbody.sharedMaterial = enabled ? null : _frictionlessMaterial;
+    }
+
+    /// <summary>
+    /// 컷씬 동결. 해제할 때도 속도를 0으로 만든다. 동결 중에 남은 지형 속도가
+    /// 해제되는 프레임에 그대로 튀어나가는 것을 막는다.
+    /// </summary>
+    public void SetFrozen(bool isFrozen)
+    {
+        _isFrozen = isFrozen;
+        Velocity = Vector2.zero;
+        ExternalVelocity = Vector2.zero;
     }
 
     public void SetVelocity(Vector2 newVelocity)
