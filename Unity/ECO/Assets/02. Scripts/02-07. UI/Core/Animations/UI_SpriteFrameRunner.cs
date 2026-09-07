@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 /// <summary>
 /// 스프라이트를 프레임 단위로 갈아 끼우는 재생 하나의 수명을 맡는다.
+/// UI의 Image와 월드의 SpriteRenderer 양쪽에 쓴다.
 /// </summary>
 public class UI_SpriteFrameRunner
 {
@@ -20,10 +21,36 @@ public class UI_SpriteFrameRunner
     /// <summary>
     /// 이전 재생을 끊고 처음부터 돌린다. 무한 반복은 끝나지 않으므로 호출부가 기다리면 영영 풀리지 않는다.
     /// </summary>
-    public async UniTask PlayAsync(Image image, IReadOnlyList<Sprite> sprites,
+    public UniTask PlayAsync(Image image, IReadOnlyList<Sprite> sprites,
         UI_SpriteFrameSettings settings, bool isForward, CancellationToken cancellationToken)
     {
-        if (image == null || sprites == null || sprites.Count == 0)
+        if (image == null)
+        {
+            return UniTask.CompletedTask;
+        }
+
+        return PlayAsync(image, sprite => image.sprite = sprite, sprites, settings, isForward, cancellationToken);
+    }
+
+    /// <summary>월드 오브젝트용. 컷씬의 액터 연출이 이 경로를 쓴다.</summary>
+    public UniTask PlayAsync(SpriteRenderer spriteRenderer, IReadOnlyList<Sprite> sprites,
+        UI_SpriteFrameSettings settings, bool isForward, CancellationToken cancellationToken)
+    {
+        if (spriteRenderer == null)
+        {
+            return UniTask.CompletedTask;
+        }
+
+        return PlayAsync(spriteRenderer, sprite => spriteRenderer.sprite = sprite, sprites, settings, isForward,
+            cancellationToken);
+    }
+
+    // 대상 컴포넌트 타입만 다르고 재생 규칙은 같다. 파괴 여부를 봐야 하므로 setter와 함께 대상도 받는다.
+    private async UniTask PlayAsync(UnityEngine.Object target, Action<Sprite> setSprite,
+        IReadOnlyList<Sprite> sprites, UI_SpriteFrameSettings settings, bool isForward,
+        CancellationToken cancellationToken)
+    {
+        if (target == null || sprites == null || sprites.Count == 0)
         {
             return;
         }
@@ -46,7 +73,7 @@ public class UI_SpriteFrameRunner
             {
                 float cycleStartTime = settings.GetTime();
 
-                await PlayCycleAsync(image, sprites, settings, isForward, isLoop, token);
+                await PlayCycleAsync(target, setSprite, sprites, settings, isForward, isLoop, token);
 
                 if (!isLoop)
                 {
@@ -83,19 +110,20 @@ public class UI_SpriteFrameRunner
         IsPlaying = false;
     }
 
-    private static async UniTask PlayCycleAsync(Image image, IReadOnlyList<Sprite> sprites,
-        UI_SpriteFrameSettings settings, bool isForward, bool isLoop, CancellationToken token)
+    private static async UniTask PlayCycleAsync(UnityEngine.Object target, Action<Sprite> setSprite,
+        IReadOnlyList<Sprite> sprites, UI_SpriteFrameSettings settings, bool isForward, bool isLoop,
+        CancellationToken token)
     {
         DelayType delayType = settings.IsIgnoreTimeScale ? DelayType.UnscaledDeltaTime : DelayType.DeltaTime;
 
         for (int i = 0; i < sprites.Count; i++)
         {
-            if (image == null)
+            if (target == null)
             {
                 return;
             }
 
-            image.sprite = sprites[isForward ? i : sprites.Count - 1 - i];
+            setSprite(sprites[isForward ? i : sprites.Count - 1 - i]);
 
             // 단발 재생은 마지막 프레임 뒤에 기다리면 한 회차가 프레임 하나만큼 길어진다.
             // 반대로 반복 재생은 여기서 기다리지 않으면 다음 회차가 곧바로 덮어써, 마지막 프레임만
