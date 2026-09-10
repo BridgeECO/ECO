@@ -96,11 +96,18 @@ public class PlayerDataSO : ScriptableObject
     [SerializeField]
     private float _slipHorizontalSpeed;
 
+    [Header("Speed Correction")]
+    [Tooltip("공중에 남은 추가 속도 보정을 반대 방향 입력으로 상쇄할 때의 감쇄 속도 배율. 1이면 공중 이동 속도와 같은 속도로 감쇄하고, 높일수록 빠르게 정상 이동으로 복귀합니다.")]
+    [SerializeField, Range(0.1f, 5f)]
+    private float _airCorrectionDecayScale = 1f;
+
     public float GroundMoveSpeed { get => _groundMoveSpeed; }
 
     public float AirMoveSpeed { get => _airMoveSpeed; }
 
     public float AirDeceleration { get => _airDeceleration; }
+
+    public float AirCorrectionDecayRate { get => _airCorrectionDecayScale * _airMoveSpeed; }
 
     public float JumpHeight { get => _jumpHeight; }
 
