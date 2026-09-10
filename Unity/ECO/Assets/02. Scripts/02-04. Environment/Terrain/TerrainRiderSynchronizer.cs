@@ -28,10 +28,11 @@ public class TerrainRiderSynchronizer : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        // collision.contacts는 접근할 때마다 ContactPoint2D 배열을 새로 할당하므로 인덱스로 순회한다.
         bool isOnTop = false;
-        foreach (ContactPoint2D contact in collision.contacts)
+        for (int i = 0; i < collision.contactCount; i++)
         {
-            if (contact.normal.y < -0.5f)
+            if (collision.GetContact(i).normal.y < -0.5f)
             {
                 isOnTop = true;
                 break;
