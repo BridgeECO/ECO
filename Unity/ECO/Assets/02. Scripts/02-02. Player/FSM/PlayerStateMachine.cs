@@ -6,6 +6,7 @@ using UnityEngine;
 using VInspector;
 
 [RequireComponent(typeof(PlayerInput), typeof(PlayerSensor), typeof(PlayerMotor))]
+[RequireComponent(typeof(PlayerSpeedCorrector))]
 public class PlayerStateMachine : MonoBehaviour, IPlayerFSMContext
 {
     public Action<EPlayerState> OnStateChanged;
@@ -21,6 +22,7 @@ public class PlayerStateMachine : MonoBehaviour, IPlayerFSMContext
     public PlayerInput Input { get; private set; }
     public PlayerSensor Sensor { get; private set; }
     public PlayerMotor Motor { get; private set; }
+    public PlayerSpeedCorrector SpeedCorrector { get; private set; }
     public Animator Animator { get; private set; }
     public Transform Transform => transform;
     public CancellationToken DestroyToken => this.GetCancellationTokenOnDestroy();
@@ -39,6 +41,7 @@ public class PlayerStateMachine : MonoBehaviour, IPlayerFSMContext
         Sensor = GetComponent<PlayerSensor>();
         Motor = GetComponent<PlayerMotor>();
         Animator = GetComponent<Animator>();
+        SpeedCorrector = GetComponent<PlayerSpeedCorrector>();
         SoundHandler = new PlayerSoundHandler(Sensor);
 
         // 플레이어 루트 컴포넌트들의 조립을 SM이 담당한다.
@@ -48,6 +51,7 @@ public class PlayerStateMachine : MonoBehaviour, IPlayerFSMContext
         {
             playerLife.InitSoundHandler(SoundHandler);
         }
+        SpeedCorrector.InitPlayerData(_playerData);
 
         _states = new Dictionary<EPlayerState, IPlayerState>
         {
@@ -84,6 +88,10 @@ public class PlayerStateMachine : MonoBehaviour, IPlayerFSMContext
         DashCooldownTimer = Mathf.Max(0f, DashCooldownTimer - Time.deltaTime);
         Motor.SetFlip(Input.HorizontalInput);
         _currentState?.Update();
+
+        // State가 ChangeState를 부르면 CurrentPlayerState가 이 줄 전에 갱신된다. 그래서 밸트 위에서
+        // 점프한 바로 그 프레임에 공중 상태가 보이고, 지상에서 쌓아둔 보정이 그대로 공중으로 넘어간다.
+        SpeedCorrector.Refresh(CurrentPlayerState, Time.deltaTime);
 
         if (CurrentPlayerState == EPlayerState.Grounded)
         {
