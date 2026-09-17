@@ -103,6 +103,7 @@ public class CameraRoomTransition : MonoBehaviour
     private void InitTransition(Vector2 nextRoomMin, Vector2 nextRoomMax)
     {
         _isTransitioning = true;
+        _cameraController.SetBottomAnchored(false);
         _cameraController.IsFollowingPlayer = false;
         _cameraController.SetRoomBounds(nextRoomMin, nextRoomMax);
         OnRoomTransitionStarted?.Invoke();
