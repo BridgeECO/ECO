@@ -40,9 +40,8 @@ public class BossChasingCharacter : BossBase
         _terrainController.SetCurrentPath();
     }
 
-    protected override void FixedUpdate()
+    private void FixedUpdate()
     {
-        base.FixedUpdate();
         if (IsFrozen)
         {
             return;
@@ -78,6 +77,15 @@ public class BossChasingCharacter : BossBase
     {
         AnimationController.SetState(newState);
         SetPhysicsState();
+
+        if (newState == EBossState.Chasing)
+        {
+            CurrentSpeed = BossData.BaseSpeed;
+        }
+        else if (newState == EBossState.Berserk)
+        {
+            CurrentSpeed = BossData.CatchUpSpeed;
+        }
 
         if (newState != EBossState.Groggy)
         {
