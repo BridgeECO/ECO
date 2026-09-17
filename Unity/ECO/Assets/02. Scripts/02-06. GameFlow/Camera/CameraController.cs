@@ -25,6 +25,10 @@ public class CameraController : MonoBehaviour
 
     private float _halfCamHeight;
     private float _halfCamWidth;
+    private float _baseHalfCamHeight;
+    private bool _isBottomAnchored;
+    private float _bottomViewY;
+    private float _anchorTargetY;
     private Vector3 _velocity = Vector3.zero;
 
     private Camera _mainCamera;
@@ -68,6 +72,8 @@ public class CameraController : MonoBehaviour
         {
             Debug.LogError($"[CameraController] Main Camera를 찾을 수 없습니다. MainCamera 태그를 확인해 주세요.");
         }
+        UpdateCameraDimensions();
+        _baseHalfCamHeight = _halfCamHeight;
     }
 
     private void FollowPlayer()
@@ -95,8 +101,31 @@ public class CameraController : MonoBehaviour
 
     public Vector3 GetClampedPosition()
     {
-        float clampedX = ClampAxis(_followTarget.position.x, _currentRoomMin.x, _currentRoomMax.x, _halfCamWidth);
-        float clampedY = ClampAxis(_followTarget.position.y + _cameraYOffset, _currentRoomMin.y, _currentRoomMax.y, _halfCamHeight);
+        UpdateCameraDimensions();
+
+        float halfHeight = _isBottomAnchored ? GetPerspectiveHalfHeight() : _halfCamHeight;
+        float halfWidth = _isBottomAnchored ? halfHeight * _mainCamera.aspect : _halfCamWidth;
+
+        float clampedX = ClampAxis(
+            _followTarget.position.x,
+            _currentRoomMin.x,
+            _currentRoomMax.x,
+            halfWidth);
+
+        float targetY = _followTarget.position.y + _cameraYOffset;
+
+        if (_isBottomAnchored)
+        {
+            float targetHeightOffset = _followTarget.position.y - _anchorTargetY;
+            targetY = _bottomViewY + halfHeight + targetHeightOffset;
+        }
+
+        float clampedY = ClampAxis(
+            targetY,
+            _currentRoomMin.y,
+            _currentRoomMax.y,
+            halfHeight);
+
         return new Vector3(clampedX, clampedY, transform.position.z);
     }
     public Vector3 GetClampedPosition(Vector3 targetPos)
@@ -137,5 +166,27 @@ public class CameraController : MonoBehaviour
         IsFollowingPlayer = false;
 
         transform.position = Vector3.MoveTowards(transform.position, targetPosition, speed * Time.deltaTime);
+    }
+
+    public void SetBottomAnchored(bool isBottomAnchored)
+    {
+        if (_isBottomAnchored == isBottomAnchored)
+        {
+            return;
+        }
+
+        _isBottomAnchored = isBottomAnchored;
+
+        if (_isBottomAnchored)
+        {
+            _bottomViewY = transform.position.y - GetPerspectiveHalfHeight();
+            _anchorTargetY = _followTarget != null ? _followTarget.position.y : transform.position.y;
+        }
+    }
+    private float GetPerspectiveHalfHeight()
+    {
+        float distanceToGamePlane = Mathf.Abs(_mainCamera.transform.position.z);
+
+        return distanceToGamePlane * Mathf.Tan(_mainCamera.fieldOfView * 0.5f * Mathf.Deg2Rad);
     }
 }

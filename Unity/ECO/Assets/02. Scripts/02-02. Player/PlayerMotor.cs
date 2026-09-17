@@ -14,6 +14,11 @@ public class PlayerMotor : MonoBehaviour
 
     public Vector2 Velocity { get; private set; }
     public Vector2 ExternalVelocity { get; set; }
+
+    // 외부 요인이 거는 추가 속도 보정. ExternalVelocity는 TerrainRiderSynchronizer가 대입해 쓰는
+    // 채널이라, 공유하면 이동 발판 위에서 점프할 때 보정까지 같이 지워진다. 그래서 채널을 나눈다.
+    public float SpeedCorrectionX { get; private set; }
+
     // 스폰 시 플레이어는 오른쪽(Quaternion.identity)을 바라보므로 true로 초기화
     public bool IsForward { get; private set; } = true;
     private Rigidbody2D _rigidbody;
@@ -29,7 +34,9 @@ public class PlayerMotor : MonoBehaviour
 
     private void FixedUpdate()
     {
-        _rigidbody.linearVelocity = Velocity + ExternalVelocity;
+        Vector2 totalVelocity = Velocity + ExternalVelocity;
+        totalVelocity.x += SpeedCorrectionX;
+        _rigidbody.linearVelocity = totalVelocity;
     }
 
     private void CreatePhysicsMaterial2D()
@@ -57,6 +64,11 @@ public class PlayerMotor : MonoBehaviour
     public void SetVelocityY(float y)
     {
         Velocity = new Vector2(Velocity.x, y);
+    }
+
+    public void SetSpeedCorrectionX(float x)
+    {
+        SpeedCorrectionX = x;
     }
 
     // IL2CPP 빌드 최적화에서 Quaternion.Euler()의 부동소수점 정밀도 차이로 인해
@@ -89,6 +101,7 @@ public class PlayerMotor : MonoBehaviour
     {
         _rigidbody.position = position;
         Velocity = Vector2.zero;
+        SpeedCorrectionX = 0f;
         _rigidbody.linearVelocity = Vector2.zero;
         OnTeleported?.Invoke();
     }
