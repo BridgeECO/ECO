@@ -72,14 +72,15 @@ public class CameraZoomTrigger : MonoBehaviour
         {
             return;
         }
+        if (!TrySetCameraController())
+        {
+            return;
+        }
         _cameraController.SetBottomAnchored(true);
         if (_playerColliderCount == 0)
         {
             _playerTransform = playerBody.transform;
-            if (TrySetCameraController())
-            {
-                _originalCameraZ = _cameraController.transform.position.z;
-            }
+            _originalCameraZ = _cameraController.transform.position.z;
         }
 
         _playerColliderCount += 1;

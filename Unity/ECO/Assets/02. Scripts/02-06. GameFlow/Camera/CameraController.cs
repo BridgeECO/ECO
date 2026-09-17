@@ -28,6 +28,7 @@ public class CameraController : MonoBehaviour
     private float _baseHalfCamHeight;
     private bool _isBottomAnchored;
     private float _bottomViewY;
+    private float _anchorTargetY;
     private Vector3 _velocity = Vector3.zero;
 
     private Camera _mainCamera;
@@ -102,21 +103,21 @@ public class CameraController : MonoBehaviour
     {
         UpdateCameraDimensions();
 
-        float halfHeight = _isBottomAnchored
-        ? GetPerspectiveHalfHeight()
-        : _halfCamHeight;
+        float halfHeight = _isBottomAnchored ? GetPerspectiveHalfHeight() : _halfCamHeight;
+        float halfWidth = _isBottomAnchored ? halfHeight * _mainCamera.aspect : _halfCamWidth;
 
         float clampedX = ClampAxis(
             _followTarget.position.x,
             _currentRoomMin.x,
             _currentRoomMax.x,
-            _halfCamWidth);
+            halfWidth);
 
         float targetY = _followTarget.position.y + _cameraYOffset;
 
         if (_isBottomAnchored)
         {
-            targetY = _bottomViewY + halfHeight;
+            float targetHeightOffset = _followTarget.position.y - _anchorTargetY;
+            targetY = _bottomViewY + halfHeight + targetHeightOffset;
         }
 
         float clampedY = ClampAxis(
@@ -179,6 +180,7 @@ public class CameraController : MonoBehaviour
         if (_isBottomAnchored)
         {
             _bottomViewY = transform.position.y - GetPerspectiveHalfHeight();
+            _anchorTargetY = _followTarget != null ? _followTarget.position.y : transform.position.y;
         }
     }
     private float GetPerspectiveHalfHeight()
