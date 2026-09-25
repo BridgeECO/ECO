@@ -31,13 +31,12 @@ public abstract class BossBase : MonoBehaviour
     private bool _isResetting;
     private bool _isFrozen;
     private SpriteRenderer _spriteRenderer;
-    private BossChaseSpeedResolver _speedResolver;
 
     protected BossDataSO BossData => _bossData;
     protected BossAnimationController AnimationController => _animationController;
     protected EBossState CurrentState { get => _currentState; private set => _currentState = value; }
     protected Vector3 ResetPosition { get => _resetPosition; private set => _resetPosition = value; }
-    protected float CurrentSpeed { get; private set; }
+    protected float CurrentSpeed { get; set; }
     protected AudioSource SfxAudioSource => _sfxAudioSource;
     protected AudioSource SfxLoopAudioSource => _sfxLoopAudioSource;
     protected bool IsResetting => _isResetting;
@@ -59,7 +58,6 @@ public abstract class BossBase : MonoBehaviour
             BossManager.Instance.RegisterBoss(_bossType, this);
         }
 
-        _speedResolver = new BossChaseSpeedResolver(BossData);
     }
     
     protected virtual void Start()
@@ -76,22 +74,6 @@ public abstract class BossBase : MonoBehaviour
         {
             EventManager.Instance.AddEventListener(EEventType.PlayerDied, OnPlayerDied);
             EventManager.Instance.AddEventListener(EEventType.RespawnReset, OnRespawnReset);
-        }
-    }
-
-    protected virtual void FixedUpdate()
-    {
-        if (IsFrozen)
-        {
-            return;
-        }
-
-        if (CurrentState == EBossState.Chasing || CurrentState == EBossState.Berserk)
-        {
-            CurrentSpeed = _speedResolver.Resolve(
-                transform.position,
-                CurrentState,
-                CurrentSpeed);
         }
     }
 

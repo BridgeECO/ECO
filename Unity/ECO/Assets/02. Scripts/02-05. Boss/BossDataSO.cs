@@ -13,13 +13,6 @@ public class BossDataSO : ScriptableObject
     [Min(0f)]
     private float _catchUpSpeed;
 
-    [Tooltip("_catchUpSpeed로 변경이 시작되는 거리")]
-    [SerializeField]
-    private float _catchUpStartDistance;
-
-    [Tooltip("_catchUpSpeed이 끝나는 거리")]
-    [SerializeField]
-    private float _catchUpEndDistance;
 
     [SerializeField]
     [Min(0f)]
@@ -31,8 +24,6 @@ public class BossDataSO : ScriptableObject
 
     public float BaseSpeed => _baseSpeed;
     public float CatchUpSpeed => _catchUpSpeed;
-    public float CatchUpStartDistance => _catchUpStartDistance;
-    public float CatchUpEndDistance => _catchUpEndDistance;
     public float JumpSpeed => _jumpSpeed;
     public ESfxClip ShoutSfx => _ShoutSfx;
 }
