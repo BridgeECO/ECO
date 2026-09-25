@@ -842,7 +842,7 @@ PlayerSettings:
     PS4: DOTWEEN;UNITASK_DOTWEEN_SUPPORT
     PS5: DOTWEEN;UNITASK_DOTWEEN_SUPPORT
     QNX: DOTWEEN;UNITASK_DOTWEEN_SUPPORT
-    Standalone: WWISE_ADDRESSABLES_23_1_OR_LATER;DEBUG_BUILD;DOTWEEN;UNITASK_DOTWEEN_SUPPORT
+    Standalone: DEBUG_BUILD;DOTWEEN;UNITASK_DOTWEEN_SUPPORT
     VisionOS: DOTWEEN;UNITASK_DOTWEEN_SUPPORT
     WebGL: DOTWEEN;UNITASK_DOTWEEN_SUPPORT
     Windows Store Apps: DOTWEEN;UNITASK_DOTWEEN_SUPPORT
@@ -918,23 +918,7 @@ PlayerSettings:
   XboxOneIsContentPackage: 0
   XboxOneEnhancedXboxCompatibilityMode: 0
   XboxOneEnableGPUVariability: 1
-  XboxOneSockets:
-    WwiseCommandSocket:
-      m_Name: WwiseCommandSocket
-      m_Port: 24025
-      m_Protocol: 0
-      m_Usages: 00000000010000000400000007000000
-      m_TemplateName: WwiseCommand
-      m_SessionRequirment: 0
-      m_DeviceUsages: 00000000
-    WwiseDiscoverySocket:
-      m_Name: WwiseDiscoverySocket
-      m_Port: 24024
-      m_Protocol: 1
-      m_Usages: 00000000010000000400000007000000
-      m_TemplateName: WwiseDiscovery
-      m_SessionRequirment: 0
-      m_DeviceUsages: 00000000
+  XboxOneSockets: {}
   XboxOneSplashScreen: {fileID: 0}
   XboxOneAllowedProductIds: []
   XboxOnePersistentLocalStorageSize: 0
