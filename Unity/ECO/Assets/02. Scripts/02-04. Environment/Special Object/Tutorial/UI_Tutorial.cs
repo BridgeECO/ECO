@@ -51,6 +51,7 @@ public class UI_Tutorial : MonoBehaviour
     {
         RefreshContent(text, image);
         PlayImageReaction();
+        HideEmptyImage();
 
         if (_tutorialCanvasGroup == null)
         {
@@ -111,7 +112,7 @@ public class UI_Tutorial : MonoBehaviour
         }
 
         // 이미지는 선택 사항이다. 지정되지 않은 튜토리얼에서 빈 사각형이 남지 않도록 오브젝트째 끈다.
-        // 리액터가 있으면 스프라이트가 비어 있어도 애니메이션이 자리를 채우므로 켜 둔다.
+        // 리액터는 꺼진 오브젝트에서 재생하지 않으므로 일단 켠다. 재생 뒤에도 그림이 없으면 HideEmptyImage가 끈다.
         bool hasImage = image != null || _imageReactor != null;
         _tutorialImageDisplay.gameObject.SetActive(hasImage);
         if (image != null)
@@ -128,6 +129,19 @@ public class UI_Tutorial : MonoBehaviour
         }
 
         _imageReactor.PlaySignalAsync(EUIReactionSignal.Show, this.GetCancellationTokenOnDestroy()).Forget();
+    }
+
+    // 스프라이트가 없는 Image는 흰 사각형으로 그려진다. 리액터만 먼저 달고 프레임은 아트가 나오면
+    // 채우는 변형이 이 상태라, 재생을 건 뒤에도 비어 있으면 끈다.
+    // 스프라이트 애니메이션은 첫 프레임을 재생 호출 안에서 동기로 넣으므로 이 시점에 판단할 수 있다.
+    private void HideEmptyImage()
+    {
+        if (_tutorialImageDisplay == null || _tutorialImageDisplay.sprite != null)
+        {
+            return;
+        }
+
+        _tutorialImageDisplay.gameObject.SetActive(false);
     }
 
     private void ExitImageReaction()
