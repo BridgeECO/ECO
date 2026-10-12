@@ -19,7 +19,16 @@ public static class RegionEditorTools
             return;
         }
 
-        List<Room> sortedRooms = region.GetComponentsInChildren<Room>(true).OrderBy(GetRoomOrder).ToList();
+        // 목록 순서는 세이브 포인트 진행 순서라 방 번호순과 다를 수 있다. 전부 번호순으로 다시 정렬하면
+        // 수동으로 맞춘 순서가 조용히 되돌아가 세이브 포인트가 막히므로, 등록된 방은 순서를 유지하고 새 방만 뒤에 붙인다.
+        List<Room> childRooms = region.GetComponentsInChildren<Room>(true).ToList();
+        List<Room> orderedRooms = new List<Room>();
+        if (region.Rooms != null)
+        {
+            orderedRooms.AddRange(region.Rooms.Where(childRooms.Contains).Distinct());
+        }
+        int keptCount = orderedRooms.Count;
+        orderedRooms.AddRange(childRooms.Except(orderedRooms).OrderBy(GetRoomOrder));
 
         SerializedObject serializedObject = new SerializedObject(region);
         SerializedProperty roomsProperty = serializedObject.FindProperty("_rooms");
@@ -29,14 +38,14 @@ public static class RegionEditorTools
         }
 
         roomsProperty.ClearArray();
-        for (int i = 0; i < sortedRooms.Count; i++)
+        for (int i = 0; i < orderedRooms.Count; i++)
         {
             roomsProperty.InsertArrayElementAtIndex(i);
-            roomsProperty.GetArrayElementAtIndex(i).objectReferenceValue = sortedRooms[i];
+            roomsProperty.GetArrayElementAtIndex(i).objectReferenceValue = orderedRooms[i];
         }
         serializedObject.ApplyModifiedProperties();
         EditorSceneManager.MarkSceneDirty(region.gameObject.scene);
-        Debug.Log($"[Region] 자식 Room {sortedRooms.Count}개를 숫자로 정렬하여 자동 할당했습니다.", region);
+        Debug.Log($"[Region] 등록된 Room {keptCount}개의 순서를 유지하고, 새 Room {orderedRooms.Count - keptCount}개를 번호순으로 뒤에 추가했습니다.", region);
     }
 
     /// <summary>

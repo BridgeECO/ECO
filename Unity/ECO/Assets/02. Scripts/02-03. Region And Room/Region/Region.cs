@@ -12,6 +12,9 @@ public class Region : MonoBehaviourSingleton<Region>
     [SerializeField]
     private ERegions _regionType;
 
+    // 세이브 포인트 역행 판정(SavePoint.IsAheadOf)의 1차 기준이라 방 번호순이 아니라 세이브 포인트를 만나는 순서대로 둔다.
+    // 예: Scrap Nest는 SN_3 아래층 → SN_4 → SN_3 위층 순으로 지나가고 SN_3의 세이브 포인트가 위층에 있으므로 SN_4가 SN_3보다 앞이다.
+    [Tooltip("세이브 포인트를 만나는 순서대로 배치한다. 방 번호순과 다를 수 있다.")]
     [SerializeField]
     private List<Room> _rooms;
 
