@@ -46,7 +46,7 @@ public class UI_SpriteFrameRunner
             {
                 float cycleStartTime = settings.GetTime();
 
-                await PlayCycleAsync(image, sprites, settings, isForward, isLoop, token);
+                await PlayCycleAsync(image, sprites, settings, isForward, isLoop, cycleStartTime, token);
 
                 if (!isLoop)
                 {
@@ -84,10 +84,8 @@ public class UI_SpriteFrameRunner
     }
 
     private static async UniTask PlayCycleAsync(Image image, IReadOnlyList<Sprite> sprites,
-        UI_SpriteFrameSettings settings, bool isForward, bool isLoop, CancellationToken token)
+        UI_SpriteFrameSettings settings, bool isForward, bool isLoop, float cycleStartTime, CancellationToken token)
     {
-        DelayType delayType = settings.IsIgnoreTimeScale ? DelayType.UnscaledDeltaTime : DelayType.DeltaTime;
-
         for (int i = 0; i < sprites.Count; i++)
         {
             if (image == null)
@@ -105,18 +103,27 @@ public class UI_SpriteFrameRunner
                 return;
             }
 
-            await UniTask.Delay(TimeSpan.FromSeconds(settings.FrameInterval), delayType,
-                PlayerLoopTiming.Update, token);
+            // 장마다 간격만큼 새로 기다리면, 렌더 프레임 경계를 넘긴 자투리가 장마다 쌓인다.
+            // 60Hz에서 24fps 시퀀스(간격 약 0.042초)는 매 장이 3프레임(0.05초)씩 머물러 전체가 20% 길어진다.
+            // 회차 시작 시각 기준의 목표 시각까지만 기다리면 넘친 만큼 다음 장이 짧아져 전체 길이가 맞는다.
+            await WaitUntilAsync(settings, cycleStartTime + settings.FrameInterval * (i + 1), token);
         }
     }
 
     // 회차 시작 시각을 기준으로 재므로, 재생에 걸린 시간이 간격보다 길면 곧바로 다음 회차로 넘어간다.
-    private static async UniTask WaitNextCycleAsync(UI_SpriteFrameSettings settings, float cycleStartTime,
+    private static UniTask WaitNextCycleAsync(UI_SpriteFrameSettings settings, float cycleStartTime,
         CancellationToken token)
     {
-        float remaining = settings.LoopInterval - (settings.GetTime() - cycleStartTime);
+        return WaitUntilAsync(settings, cycleStartTime + settings.LoopInterval, token);
+    }
 
-        // 간격이 이미 지났어도 한 프레임은 양보해야 반복문이 프레임을 통째로 잡아먹지 않는다.
+    private static async UniTask WaitUntilAsync(UI_SpriteFrameSettings settings, float targetTime,
+        CancellationToken token)
+    {
+        float remaining = targetTime - settings.GetTime();
+
+        // 목표 시각이 이미 지났어도 한 프레임은 양보해야 걸어 둔 장이 한 번은 그려지고,
+        // 반복문이 프레임을 통째로 잡아먹지 않는다.
         if (remaining <= 0f)
         {
             await UniTask.Yield(PlayerLoopTiming.Update, token);
