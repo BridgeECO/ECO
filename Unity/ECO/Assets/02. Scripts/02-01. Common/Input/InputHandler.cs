@@ -5,6 +5,7 @@ public static class InputHandler
 {
     public static Action OnNavigateEvent;
     public static Action OnPointEvent;
+    public static Action OnEscapeOverride;
 
     // 리스폰·씬 전환·시네마틱 등 여러 시스템이 동시에 입력을 차단할 수 있으므로
     // bool 토글이 아닌 참조 카운팅으로 관리한다. (한쪽의 해제가 다른 쪽의 차단을 풀지 않도록)
@@ -34,6 +35,30 @@ public static class InputHandler
         _isUIMode = false;
     }
 
+    public static void SetEscapeOverride(Action escapeAction)
+    {
+        OnEscapeOverride = escapeAction;
+    }
+
+    public static void ClearEscapeOverride(Action escapeAction)
+    {
+        if (OnEscapeOverride == escapeAction)
+        {
+            OnEscapeOverride = null;
+        }
+    }
+
+    public static bool TryHandleEscapeOverride()
+    {
+        if (OnEscapeOverride == null)
+        {
+            return false;
+        }
+
+        OnEscapeOverride.Invoke();
+        return true;
+    }
+
     public static void TriggerNavigateEvent() => OnNavigateEvent?.Invoke();
     public static void TriggerPointEvent() => OnPointEvent?.Invoke();
 
@@ -44,6 +69,7 @@ public static class InputHandler
     {
         OnNavigateEvent = null;
         OnPointEvent = null;
+        OnEscapeOverride = null;
         _blockCount = 0;
         _isUIMode = false;
     }

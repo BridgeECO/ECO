@@ -31,6 +31,7 @@ public abstract class BossBase : MonoBehaviour
     private bool _isResetting;
     private bool _isFrozen;
     private SpriteRenderer _spriteRenderer;
+    private BossChaseSpeedResolver _speedResolver;
 
     protected BossDataSO BossData => _bossData;
     protected BossAnimationController AnimationController => _animationController;
@@ -58,6 +59,7 @@ public abstract class BossBase : MonoBehaviour
             BossManager.Instance.RegisterBoss(_bossType, this);
         }
 
+        _speedResolver = new BossChaseSpeedResolver(BossData);
     }
     
     protected virtual void Start()
@@ -102,6 +104,16 @@ public abstract class BossBase : MonoBehaviour
     public virtual void StartChase() => ChangeState(EBossState.Chasing);
     public virtual void StopChase() => ChangeState(EBossState.Idle);
     public virtual void StartGroggy() => ChangeState(EBossState.Groggy);
+
+    public void SetChaseTarget(Transform targetTransform)
+    {
+        _speedResolver.SetTarget(targetTransform);
+    }
+
+    protected void RefreshChaseSpeed()
+    {
+        CurrentSpeed = _speedResolver.Resolve(transform.position, CurrentState, CurrentSpeed);
+    }
 
     protected void ChangeState(EBossState newState)
     {

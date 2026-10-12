@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
-
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Collider2D))]
 public class BossChasingCharacter : BossBase
@@ -11,7 +10,6 @@ public class BossChasingCharacter : BossBase
     [Header("Battle Terrain")]
     [SerializeField]
     private List<FloorData> _floorDatas = new List<FloorData>();
-
     [Header("Berserk")]
     [SerializeField]
     [UnityEngine.Serialization.FormerlySerializedAs("_starBerserkAnimation")]
@@ -39,7 +37,6 @@ public class BossChasingCharacter : BossBase
         _terrainController = new BossBattleTerrainController(_floorDatas, _pathFollower);
         _terrainController.SetCurrentPath();
     }
-
     private void FixedUpdate()
     {
         if (IsFrozen)
@@ -58,7 +55,7 @@ public class BossChasingCharacter : BossBase
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (CurrentState == EBossState.Idle || CurrentState == EBossState.Groggy)
+        if (CurrentState == EBossState.Idle)
         {
             return;
         }
@@ -67,7 +64,6 @@ public class BossChasingCharacter : BossBase
             EventManager.Instance.BroadcastEvent(EEventType.PlayerDied);
         }
     }
-
     protected override void OnDestroy()
     {
         CancelTasks();
@@ -77,7 +73,6 @@ public class BossChasingCharacter : BossBase
     {
         AnimationController.SetState(newState);
         SetPhysicsState();
-
         if (newState == EBossState.Chasing)
         {
             CurrentSpeed = BossData.BaseSpeed;
@@ -86,7 +81,6 @@ public class BossChasingCharacter : BossBase
         {
             CurrentSpeed = BossData.CatchUpSpeed;
         }
-
         if (newState != EBossState.Groggy)
         {
             _groggyTimer.Cancel();
@@ -105,7 +99,6 @@ public class BossChasingCharacter : BossBase
             _chaseAudioController.StopChase();
         }
     }
-
     protected override void OnBossFrozen()
     {
         _rigidbody.linearVelocity = Vector2.zero;
@@ -122,7 +115,6 @@ public class BossChasingCharacter : BossBase
         _isLeft = false;
         SetFlip(false);
     }
-
     public async UniTask TransitionFloorAsync(
         Transform startPoint,
         Transform endPoint,
@@ -131,7 +123,6 @@ public class BossChasingCharacter : BossBase
     {
         _groggyTimer.Cancel();
         ChangeState(EBossState.ReadyToJump);
-
         using CancellationTokenSource linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
             cancellationToken,
             this.GetCancellationTokenOnDestroy());
@@ -159,9 +150,9 @@ public class BossChasingCharacter : BossBase
             _transitionMover.Cancel();
         }
     }
-
     private void ProcessChase()
     {
+        RefreshChaseSpeed();
         if (!_pathFollower.HasPath)
         {
             return;

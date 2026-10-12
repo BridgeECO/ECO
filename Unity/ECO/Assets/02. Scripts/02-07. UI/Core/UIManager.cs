@@ -135,6 +135,12 @@ public class UIManager : MonoBehaviourSingleton<UIManager>
 
     private void HandleEscapeInput()
     {
+        // Escape 키 입력을 처리할 때, 우선적으로 InputHandler의 EscapeOverride를 확인
+        if (InputHandler.TryHandleEscapeOverride())
+        {
+            return;
+        }
+
         // 팝업이 열려있다면 최상단 팝업 닫기
         if (PopupHandler != null && PopupHandler.HasPopups)
         {

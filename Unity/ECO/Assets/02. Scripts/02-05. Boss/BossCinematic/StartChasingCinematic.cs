@@ -31,13 +31,21 @@ public class StartChasingCinematic : BossCinematicBase
             return;
         }
 
-        using CancellationTokenSource linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
-            cancellationToken,
-            this.GetCancellationTokenOnDestroy());
+        CancellationToken destroyToken = this.GetCancellationTokenOnDestroy();
+
+        using CancellationTokenSource skipCts = new CancellationTokenSource();
+        using CancellationTokenSource linkedCts =
+            CancellationTokenSource.CreateLinkedTokenSource(
+                cancellationToken,
+                destroyToken,
+                skipCts.Token);
+
         CancellationToken linkedToken = linkedCts.Token;
+        Action skipAction = skipCts.Cancel;
 
         try
         {
+            InputHandler.SetEscapeOverride(skipAction);
             InputHandler.BlockInput();
 
             _camController.IsFollowingPlayer = false;
@@ -73,9 +81,15 @@ public class StartChasingCinematic : BossCinematicBase
         }
         catch (OperationCanceledException)
         {
+            bool isSkip = skipCts.IsCancellationRequested && !cancellationToken.IsCancellationRequested && !destroyToken.IsCancellationRequested;
+            if (isSkip)
+            {
+                CompleteSkippedCinematic(boss);
+            }
         }
         finally
         {
+            InputHandler.ClearEscapeOverride(skipAction);
             InputHandler.UnblockInput();
             if (_camController != null)
             {
@@ -92,5 +106,15 @@ public class StartChasingCinematic : BossCinematicBase
                 line.SetSwitchState(true);
             }
         }
+    }
+    private void CompleteSkippedCinematic(BossBase boss)
+    {
+        if (boss == null)
+        {
+            return;
+        }
+
+        ActivateEnergyLines();
+        boss.StartChase();
     }
 }
