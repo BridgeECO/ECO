@@ -32,11 +32,6 @@ public class BossTrigger : MonoBehaviour, IResettable
     [Tooltip("재생할 보스 시네마틱 컴포넌트.")]
     private BossCinematicBase _cinematicSequence;
 
-    [Foldout("Terrain Gimmicks")]
-    [SerializeField]
-    [Tooltip("보스전 시작 시 보스와 플레이어 참조를 전달할 거리 기반 지형 기믹입니다.")]
-    private BossDistanceTerrainActivation[] _distanceTerrainActivations = Array.Empty<BossDistanceTerrainActivation>();
-
     private bool _hasTriggered = false;
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -69,7 +64,7 @@ public class BossTrigger : MonoBehaviour, IResettable
 
         if (playerTransform != null)
         {
-            InitDistanceTerrainActivations(playerTransform);
+            _targetBoss.SetChaseTarget(playerTransform);
         }
 
         _hasTriggered = true;
@@ -77,22 +72,6 @@ public class BossTrigger : MonoBehaviour, IResettable
         CancellationToken triggerToken = this.GetCancellationTokenOnDestroy();
         CancellationToken bossToken = _targetBoss.GetCancellationTokenOnDestroy();
         StartCinematic(_targetBoss, triggerToken, bossToken).Forget();
-    }
-
-    private void InitDistanceTerrainActivations(Transform playerTransform)
-    {
-        for (int i = 0; i < _distanceTerrainActivations.Length; i++)
-        {
-            BossDistanceTerrainActivation terrainActivation =
-                _distanceTerrainActivations[i];
-
-            if (terrainActivation == null)
-            {
-                continue;
-            }
-
-            terrainActivation.InitBattleContext(_targetBoss, playerTransform);
-        }
     }
 
     private async UniTask StartCinematic(
