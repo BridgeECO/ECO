@@ -43,6 +43,8 @@ GameObject:
   - component: {fileID: 6987653045605628090}
   - component: {fileID: 2416428193729307387}
   - component: {fileID: 1847258533513119359}
+  - component: {fileID: 1296567141336610178}
+  - component: {fileID: 6853975998986855557}
   m_Layer: 0
   m_Name: P_SavePoint
   m_TagString: Untagged
@@ -110,8 +112,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: bf127d282b6f45848958117ea54f1894, type: 3}
-  m_Color: {r: 0.3, g: 0.85, b: 1, a: 0.85}
+  m_Sprite: {fileID: 21300000, guid: 91c1b9aeec4444e2876a90784d5c08b3, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -178,5 +180,41 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bf6e5e8d7d214884d9ae5c789626064e, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier:
   _respawnPoint: {fileID: 5203610967125700573}
+--- !u!95 &1296567141336610178
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5194798133072408534}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 423d3419327c4a5ba464c5e0f58f4445, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage:
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &6853975998986855557
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5194798133072408534}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f44657d71b542498ade756aa02ee4bc, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  _savePoint: {fileID: 1847258533513119359}
+  _animator: {fileID: 1296567141336610178}
