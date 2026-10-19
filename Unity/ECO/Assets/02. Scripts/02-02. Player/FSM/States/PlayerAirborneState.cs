@@ -44,7 +44,6 @@ public class PlayerAirborneState : IPlayerState
     public void Exit()
     {
         _sm.Animator.SetTrigger(AnimatorHash.Jump3);
-        _slip.Reset();
         _input.OnJumpReleased -= _jump.HandleOnReleased;
         _input.OnDashPressed -= HandleDashPressed;
     }
