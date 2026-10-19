@@ -26,10 +26,9 @@ public class PlayerMotor : MonoBehaviour
     private void Awake()
     {
         _rigidbody = GetComponent<Rigidbody2D>();
-        if (_frictionlessMaterial == null)
-        {
-            CreatePhysicsMaterial2D();
-        }
+        // 속도를 물리 프레임마다 직접 대입하므로 마찰이 할 일이 없다. 오히려 공중에서 벽 쪽으로 입력하면
+        // 벽과의 마찰이 상승 속도를 깎아 점프가 낮아지므로, 상태와 무관하게 마찰 없는 재질을 유지한다.
+        _rigidbody.sharedMaterial = _frictionlessMaterial;
     }
 
     private void FixedUpdate()
@@ -37,18 +36,6 @@ public class PlayerMotor : MonoBehaviour
         Vector2 totalVelocity = Velocity + ExternalVelocity;
         totalVelocity.x += SpeedCorrectionX;
         _rigidbody.linearVelocity = totalVelocity;
-    }
-
-    private void CreatePhysicsMaterial2D()
-    {
-        _frictionlessMaterial = new PhysicsMaterial2D();
-        _frictionlessMaterial.friction = 0f;
-        _frictionlessMaterial.bounciness = 0f;
-    }
-
-    public void SetFriction(bool enabled)
-    {
-        _rigidbody.sharedMaterial = enabled ? null : _frictionlessMaterial;
     }
 
     public void SetVelocity(Vector2 newVelocity)
@@ -95,6 +82,11 @@ public class PlayerMotor : MonoBehaviour
     public void AddVelocity(Vector2 addedVelocity)
     {
         Velocity += addedVelocity;
+    }
+
+    public void Lift(float height)
+    {
+        _rigidbody.position += new Vector2(0f, height);
     }
 
     public void Teleport(Vector2 position)

@@ -9,6 +9,7 @@ public class PlayerAirborneState : IPlayerState
     private PlayerDataSO _data;
     private PlayerJump _jump;
     private PlayerSlip _slip;
+    private PlayerPlatformSnap _platformSnap;
 
     public PlayerAirborneState(IPlayerFSMContext stateMachine, PlayerDataSO data)
     {
@@ -19,6 +20,7 @@ public class PlayerAirborneState : IPlayerState
         _data = data;
         _jump = new PlayerJump(stateMachine, _motor, data);
         _slip = new PlayerSlip(_sensor, _motor, data);
+        _platformSnap = new PlayerPlatformSnap(_sensor, _motor);
     }
 
     public void Enter()
@@ -35,6 +37,7 @@ public class PlayerAirborneState : IPlayerState
         HandleHorizontalMovement();
         _jump.CheckLateJump();
         _jump.HandleOnHold();
+        _platformSnap.Handle();
         _slip.Handle();
 
         ApplyGravity();
@@ -44,7 +47,6 @@ public class PlayerAirborneState : IPlayerState
     public void Exit()
     {
         _sm.Animator.SetTrigger(AnimatorHash.Jump3);
-        _slip.Reset();
         _input.OnJumpReleased -= _jump.HandleOnReleased;
         _input.OnDashPressed -= HandleDashPressed;
     }
@@ -89,7 +91,8 @@ public class PlayerAirborneState : IPlayerState
 
     private void CheckStateTransitions()
     {
-        if (_sensor.IsActuallyTouching && _motor.Velocity.y <= 0f)
+        // 발끝만 모서리에 닿은 채로 착지하면 다음 프레임에 바로 접지를 잃고 다시 공중이 되므로, 접지 판정도 함께 본다.
+        if (_sensor.IsActuallyTouching && _sensor.IsOnGround && _motor.Velocity.y <= 0f)
         {
             _sm.ChangeState(EPlayerState.Grounded);
             return;

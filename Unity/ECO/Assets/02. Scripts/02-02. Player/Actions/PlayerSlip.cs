@@ -17,19 +17,12 @@ public class PlayerSlip
     {
         if (!_sensor.IsSliding || _sensor.IsOnGround || 0f < _motor.Velocity.y)
         {
-            _motor.SetFriction(true);
             return;
         }
 
         float velocityX = _data.SlipHorizontalSpeed * GetSlipDirection();
-        _motor.SetFriction(false);
         _motor.SetVelocityX(velocityX);
         _motor.AddVelocity(Vector2.down * _data.SlipDownSpeed * Time.deltaTime);
-    }
-
-    public void Reset()
-    {
-        _motor.SetFriction(true);
     }
 
     private float GetSlipDirection()
