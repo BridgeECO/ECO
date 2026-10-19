@@ -39,7 +39,10 @@ public class UI_SaveSlotPopup : UI_Popup, IKeyboardControllable
     public override async UniTask OpenAsync()
     {
         await base.OpenAsync();
-        if (this == null)
+
+        // 여는 연출 도중 씬 전환(ClearAllPopups)이나 ESC로 이미 꺼졌다면 이어서 처리하지 않는다.
+        // 그대로 Push하면 화면에 없는 팝업이 키보드 최상단에 남아 타이틀 키 입력을 가로챈다.
+        if (this == null || !isActiveAndEnabled)
         {
             return;
         }
