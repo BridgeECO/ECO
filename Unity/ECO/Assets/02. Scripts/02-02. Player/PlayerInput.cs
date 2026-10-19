@@ -9,6 +9,12 @@ public class PlayerInput : MonoBehaviour
     public Action OnDashPressed;
     public Action OnDashReleased;
 
+    private Camera _mainCamera;
+    // 매 프레임 SceneTransitionManager를 조회하지 않도록 이벤트 통지로 캐싱한다.
+    // 매니저가 없는 테스트 씬에서도 입력이 동작해야 하므로 true로 시작한다.
+    // (플레이어 오브젝트 자체가 타이틀에서는 비활성이라 게임플레이 밖 오동작은 없다)
+    private bool _isGameplayScene = true;
+
     public float HorizontalInput { get; private set; }
     public float VerticalInput { get; private set; }
     public Vector2 MouseWorldPosition { get; private set; }
@@ -18,12 +24,6 @@ public class PlayerInput : MonoBehaviour
 
     [field: SerializeField]
     public bool IsWallSlideLocked { get; private set; }
-
-    private Camera _mainCamera;
-    // 매 프레임 SceneTransitionManager를 조회하지 않도록 이벤트 통지로 캐싱한다.
-    // 매니저가 없는 테스트 씬에서도 입력이 동작해야 하므로 true로 시작한다.
-    // (플레이어 오브젝트 자체가 타이틀에서는 비활성이라 게임플레이 밖 오동작은 없다)
-    private bool _isGameplayScene = true;
 
     #region Unity Lifecycle Methods
     private void Awake()
