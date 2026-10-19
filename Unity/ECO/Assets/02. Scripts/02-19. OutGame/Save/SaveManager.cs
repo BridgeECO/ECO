@@ -6,10 +6,10 @@ using UnityEngine;
 // Unity 생명주기와 씬 오브젝트에 의존하지 않으므로 MonoBehaviour가 아닌 POCO 싱글턴으로 관리한다.
 public class SaveManager : POCOSingleton<SaveManager>
 {
+    private const string SAVE_FILE_NAME_FORMAT = "saveData_{0}.json";
+
     public int CurrentSlotIndex { get; set; }
     public SaveData CurrentSaveData { get; private set; }
-
-    private const string SaveFileNameFormat = "saveData_{0}.json";
 
     public SaveManager()
     {
@@ -56,7 +56,7 @@ public class SaveManager : POCOSingleton<SaveManager>
 
     public void Save(int slotIndex, SaveDataDTO dto)
     {
-        if (dto == null)
+        if (dto is null)
         {
             return;
         }
@@ -93,7 +93,7 @@ public class SaveManager : POCOSingleton<SaveManager>
         string json = File.ReadAllText(filePath);
         SaveDataDTO dto = JsonConvert.DeserializeObject<SaveDataDTO>(json);
 
-        if (dto == null)
+        if (dto is null)
         {
             return null;
         }
@@ -102,7 +102,7 @@ public class SaveManager : POCOSingleton<SaveManager>
 
     private string GetSaveFilePath(int slotIndex)
     {
-        string fileName = string.Format(SaveFileNameFormat, slotIndex);
+        string fileName = string.Format(SAVE_FILE_NAME_FORMAT, slotIndex);
 #if UNITY_EDITOR
         return Path.Combine(Application.dataPath, "21. SaveFiles", fileName);
 #else
