@@ -14,6 +14,7 @@ public class PlayerInput : MonoBehaviour
     // 매니저가 없는 테스트 씬에서도 입력이 동작해야 하므로 true로 시작한다.
     // (플레이어 오브젝트 자체가 타이틀에서는 비활성이라 게임플레이 밖 오동작은 없다)
     private bool _isGameplayScene = true;
+    private PlayerHorizontalInput _horizontalInput = new PlayerHorizontalInput();
 
     public float HorizontalInput { get; private set; }
     public float VerticalInput { get; private set; }
@@ -95,7 +96,7 @@ public class PlayerInput : MonoBehaviour
     #region Input Processings
     private void UpdateHorizontalInput()
     {
-        HorizontalInput = Input.GetAxisRaw("Horizontal");
+        HorizontalInput = _horizontalInput.Read();
     }
 
     private void UpdateVerticalInput()
