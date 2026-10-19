@@ -37,6 +37,7 @@ public class SaveSlotPresenter
         }
 
         SaveManager.Instance.CurrentSlotIndex = _slotIndex;
+        SaveManager.Instance.SetCurrentSaveData(saveData);
         LifeManager.Instance.SetLifeToMax();
         SceneTransitionManager.Instance.TransitionToNewRegionAsync(saveData.SceneName).Forget();
         return true;

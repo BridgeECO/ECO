@@ -6,10 +6,10 @@ using UnityEngine;
 // Unity 생명주기와 씬 오브젝트에 의존하지 않으므로 MonoBehaviour가 아닌 POCO 싱글턴으로 관리한다.
 public class SaveManager : POCOSingleton<SaveManager>
 {
+    private const string SAVE_FILE_NAME_FORMAT = "saveData_{0}.json";
+
     public int CurrentSlotIndex { get; set; }
     public SaveData CurrentSaveData { get; private set; }
-
-    private const string SaveFileNameFormat = "saveData_{0}.json";
 
     public SaveManager()
     {
@@ -19,6 +19,13 @@ public class SaveManager : POCOSingleton<SaveManager>
     public void ResetCurrentSaveData()
     {
         CurrentSaveData = null;
+    }
+
+    // 이어하기를 확정한 시점에만 지정한다. Load가 이 값을 바꾸면 슬롯 목록을 새로 그리기만 해도
+    // 이어하기 대상이 마지막으로 읽은 슬롯으로 바뀌어, 새 게임이 다른 슬롯의 위치에서 시작된다.
+    public void SetCurrentSaveData(SaveData saveData)
+    {
+        CurrentSaveData = saveData;
     }
 
     // 도메인 리로드 비활성화 환경에서 플레이 세션 간 상태 잔류 방지
@@ -49,7 +56,7 @@ public class SaveManager : POCOSingleton<SaveManager>
 
     public void Save(int slotIndex, SaveDataDTO dto)
     {
-        if (dto == null)
+        if (dto is null)
         {
             return;
         }
@@ -86,18 +93,16 @@ public class SaveManager : POCOSingleton<SaveManager>
         string json = File.ReadAllText(filePath);
         SaveDataDTO dto = JsonConvert.DeserializeObject<SaveDataDTO>(json);
 
-        if (dto == null)
+        if (dto is null)
         {
             return null;
         }
-        SaveData saveData = new SaveData(dto.SceneName, dto.Region, dto.SavePointPosition);
-        CurrentSaveData = saveData;
-        return saveData;
+        return new SaveData(dto.SceneName, dto.Region, dto.SavePointPosition);
     }
 
     private string GetSaveFilePath(int slotIndex)
     {
-        string fileName = string.Format(SaveFileNameFormat, slotIndex);
+        string fileName = string.Format(SAVE_FILE_NAME_FORMAT, slotIndex);
 #if UNITY_EDITOR
         return Path.Combine(Application.dataPath, "21. SaveFiles", fileName);
 #else

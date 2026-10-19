@@ -33,21 +33,14 @@ public class PlayerInput : MonoBehaviour
 
     private void OnEnable()
     {
+        InitGameplayScene();
+
         // EventManager가 없는 테스트 씬에서도 플레이어가 동작해야 하므로 가드한다.
         if (EventManager.Instance == null)
         {
             return;
         }
         EventManager.Instance.AddEventListener<bool>(EEventType.GameplaySceneChanged, SetGameplayScene);
-    }
-
-    private void Start()
-    {
-        // 구독(OnEnable) 이전에 확정된 상태(에디터 멀티 씬 채택 등)를 한 번 동기화한다.
-        if (SceneTransitionManager.Instance != null)
-        {
-            _isGameplayScene = SceneTransitionManager.Instance.IsGameplayScene;
-        }
     }
 
     private void Update()
@@ -87,6 +80,16 @@ public class PlayerInput : MonoBehaviour
     private void SetGameplayScene(bool isGameplayScene)
     {
         _isGameplayScene = isGameplayScene;
+    }
+
+    // 꺼져 있는 동안에는 구독이 풀려 있어 GameplaySceneChanged를 받지 못한다. 씬 전환은 통지를 보낸 뒤에
+    // 플레이어를 켜므로, 최초 1회만 도는 Start가 아니라 켜질 때마다 현재 상태로 다시 맞춘다.
+    private void InitGameplayScene()
+    {
+        if (SceneTransitionManager.Instance != null)
+        {
+            SetGameplayScene(SceneTransitionManager.Instance.IsGameplayScene);
+        }
     }
 
     #region Input Processings

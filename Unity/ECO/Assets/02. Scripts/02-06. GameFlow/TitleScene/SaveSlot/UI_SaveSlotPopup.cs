@@ -17,7 +17,7 @@ public class UI_SaveSlotPopup : UI_Popup, IKeyboardControllable
     private CanvasGroup _panelCanvasGroup;
 
     [SerializeField]
-    private List<UI_SaveSlotItem> _slotItems;
+    private List<UI_SaveSlotItem> _slotItems = new List<UI_SaveSlotItem>();
 
     private int _selectedIndex = 0;
     // 열기 전에 SetMode로 지정한다. 팝업 핸들러가 모드 인자를 몰라도 되도록
@@ -31,6 +31,22 @@ public class UI_SaveSlotPopup : UI_Popup, IKeyboardControllable
         InitSlots();
     }
 
+    // CloseAsync를 거치지 않고 꺼지는 경로에서도 핸들러를 남기지 않는다. 매니저는 파괴된 핸들러만
+    // 걸러내므로, 살아 있지만 꺼져 있는 팝업은 그대로 입력을 받아 간다. Pop은 등록 플래그로 멱등이라
+    // CloseAsync가 이미 해제했더라도 안전하다.
+    private void OnDisable()
+    {
+        _registration.Pop(this);
+    }
+
+    private void OnDestroy()
+    {
+        for (int i = 0; i < _slotItems.Count; i++)
+        {
+            _slotItems[i].OnClicked -= OnSlotClicked;
+        }
+    }
+
     public void SetMode(ESlotPanelMode mode)
     {
         _mode = mode;
@@ -39,7 +55,10 @@ public class UI_SaveSlotPopup : UI_Popup, IKeyboardControllable
     public override async UniTask OpenAsync()
     {
         await base.OpenAsync();
-        if (this == null)
+
+        // 여는 연출 도중 씬 전환(ClearAllPopups)이나 ESC로 이미 꺼졌다면 이어서 처리하지 않는다.
+        // 그대로 Push하면 화면에 없는 팝업이 키보드 최상단에 남아 타이틀 키 입력을 가로챈다.
+        if (this == null || !isActiveAndEnabled)
         {
             return;
         }
@@ -55,30 +74,6 @@ public class UI_SaveSlotPopup : UI_Popup, IKeyboardControllable
         // 애니메이션 시작 전에 Pop하여 닫히는 도중 입력이 처리되지 않도록 함
         _registration.Pop(this);
         await base.CloseAsync();
-    }
-
-    // CloseAsync를 거치지 않고 꺼지는 경로에서도 핸들러를 남기지 않는다. 매니저는 파괴된 핸들러만
-    // 걸러내므로, 살아 있지만 꺼져 있는 팝업은 그대로 입력을 받아 간다. Pop은 등록 플래그로 멱등이라
-    // CloseAsync가 이미 해제했더라도 안전하다.
-    private void OnDisable()
-    {
-        _registration.Pop(this);
-    }
-
-    private void OnDestroy()
-    {
-        if (_slotItems is null)
-        {
-            return;
-        }
-
-        for (int i = 0; i < _slotItems.Count; i++)
-        {
-            if (_slotItems[i] != null)
-            {
-                _slotItems[i].OnClicked -= OnSlotClicked;
-            }
-        }
     }
 
     #region IKeyboardControllable
@@ -114,7 +109,7 @@ public class UI_SaveSlotPopup : UI_Popup, IKeyboardControllable
     #region Slot Management
     private void ChangeSelection(int offset)
     {
-        if (_slotItems == null || _slotItems.Count == 0)
+        if (_slotItems.Count == 0)
         {
             return;
         }
@@ -127,7 +122,7 @@ public class UI_SaveSlotPopup : UI_Popup, IKeyboardControllable
         {
             _selectedIndex = _slotItems.Count - 1;
         }
-        else if (_slotItems.Count<= _selectedIndex )
+        else if (_slotItems.Count <= _selectedIndex)
         {
             _selectedIndex = 0;
         }
@@ -137,11 +132,6 @@ public class UI_SaveSlotPopup : UI_Popup, IKeyboardControllable
 
     private void InitSlots()
     {
-        if (_slotItems == null)
-        {
-            return;
-        }
-
         for (int i = 0; i < _slotItems.Count; i++)
         {
             _slotItems[i].Init(i, ESlotPanelMode.Continue);
@@ -151,8 +141,11 @@ public class UI_SaveSlotPopup : UI_Popup, IKeyboardControllable
 
     private void OnSlotClicked(int slotIndex)
     {
+        // 카드를 누르는 순간 EventSystem 선택이 풀린다. 같은 슬롯을 다시 눌렀을 때도 버튼 포커스를
+        // 되살려야 이어서 누른 엔터가 버튼에 닿는다.
         if (_selectedIndex == slotIndex)
         {
+            _slotItems[_selectedIndex].SetSelected(true);
             return;
         }
 
