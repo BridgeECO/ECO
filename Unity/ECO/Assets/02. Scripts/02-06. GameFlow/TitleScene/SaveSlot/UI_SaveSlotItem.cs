@@ -245,28 +245,12 @@ public class UI_SaveSlotItem : MonoBehaviour, IPointerClickHandler
 
     private void OnClickDeleteBtn()
     {
-        DeleteSlotAsync().Forget();
-    }
-
-    private async UniTaskVoid DeleteSlotAsync()
-    {
-        var ct = this.GetCancellationTokenOnDestroy();
         _presenter.DeleteSlot();
         _hasSaveData = false;
+        RefreshRegionNameText(null);
 
-        if (_regionNameText != null)
-        {
-            _regionNameText.text = "빈 슬롯";
-        }
-
-        _continueButton.interactable = false;
-        _deleteButton.interactable = false;
-
-        if (UnityEngine.EventSystems.EventSystem.current != null)
-        {
-            UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
-        }
-
-        await UniTask.Delay(300, cancellationToken: ct);
+        // 버튼 활성과 포커스는 선택 규칙(SetSelected)으로 다시 계산한다. 새 게임 모드라면 빈 슬롯에서도
+        // 바로 새 게임을 시작할 수 있어야 하고, 지우기 버튼은 지울 데이터가 없어졌으니 꺼진다.
+        SetSelected(true);
     }
 }
