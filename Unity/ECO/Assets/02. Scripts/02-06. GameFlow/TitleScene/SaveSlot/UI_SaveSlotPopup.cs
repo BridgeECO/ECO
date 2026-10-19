@@ -154,8 +154,11 @@ public class UI_SaveSlotPopup : UI_Popup, IKeyboardControllable
 
     private void OnSlotClicked(int slotIndex)
     {
+        // 카드를 누르는 순간 EventSystem 선택이 풀린다. 같은 슬롯을 다시 눌렀을 때도 버튼 포커스를
+        // 되살려야 이어서 누른 엔터가 버튼에 닿는다.
         if (_selectedIndex == slotIndex)
         {
+            _slotItems[_selectedIndex].SetSelected(true);
             return;
         }
 
