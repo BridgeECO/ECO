@@ -10,6 +10,7 @@ using VInspector;
 /// 저장 슬롯 하나의 시각적 표현과 버튼 인터랙션을 담당한다.
 /// 선택 상태 변경 시 이어하기/선택 버튼과 지우기 버튼이 나타난다.
 /// Init(slotIndex, mode)로 패널 모드를 주입받아 버튼 동작을 분기한다.
+/// 버튼 쌍의 활성 상태와 키보드 포커스 이동은 UI_SaveSlotButtons가 맡는다.
 /// </summary>
 public class UI_SaveSlotItem : MonoBehaviour, IPointerClickHandler
 {
@@ -46,22 +47,23 @@ public class UI_SaveSlotItem : MonoBehaviour, IPointerClickHandler
     private bool _hasSaveData;
     private ESlotPanelMode _mode;
     private SaveSlotPresenter _presenter;
+    private UI_SaveSlotButtons _buttons;
 
     private void Awake()
     {
         _continueButton.onClick.AddListener(OnClickActionBtn);
         _deleteButton.onClick.AddListener(OnClickDeleteBtn);
+    }
 
-        // EventSystem 자동 네비게이션 끄기 (수동 제어)
-        Navigation noneNav = new Navigation { mode = Navigation.Mode.None };
-        _continueButton.navigation = noneNav;
-        _deleteButton.navigation = noneNav;
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        OnClicked?.Invoke(_slotIndex);
     }
 
     private void OnDestroy()
     {
-        if (_continueButton != null) { _continueButton.onClick.RemoveListener(OnClickActionBtn); }
-        if (_deleteButton != null) { _deleteButton.onClick.RemoveListener(OnClickDeleteBtn); }
+        _continueButton.onClick.RemoveListener(OnClickActionBtn);
+        _deleteButton.onClick.RemoveListener(OnClickDeleteBtn);
     }
 
     public void Init(int slotIndex, ESlotPanelMode mode)
@@ -69,107 +71,51 @@ public class UI_SaveSlotItem : MonoBehaviour, IPointerClickHandler
         _slotIndex = slotIndex;
         _mode = mode;
         _presenter = new SaveSlotPresenter(slotIndex, _newGameScene);
+        _slotNumberText.text = (slotIndex + 1).ToString();
 
-        if (_slotNumberText != null)
+        // 팝업의 Awake가 이 메서드를 부를 때는 슬롯의 Awake가 아직 돌지 않았을 수 있어 여기서 만든다.
+        if (_buttons is null)
         {
-            _slotNumberText.text = (slotIndex + 1).ToString();
+            _buttons = new UI_SaveSlotButtons(_continueButton, _continueButtonText, _deleteButton);
         }
 
-        RefreshButtonLabel();
+        _buttons.RefreshLabel(mode);
         LoadAndRefreshSlot();
         ResetToDeselectedState();
     }
 
     public void SetSelected(bool isSelected)
     {
-        if (isSelected)
+        if (!isSelected)
         {
-            _buttonContinueAndDelete.SetActive(true);
-            _verticalLayoutGroup.spacing = 30f;
-
-            // Continue 모드: 저장 데이터가 있을 때만 이어하기 활성화
-            // NewGame 모드: 항상 슬롯 선택 가능 (빈 슬롯도 선택 가능)
-            bool canAction = _mode == ESlotPanelMode.NewGame || _hasSaveData;
-            _continueButton.interactable = canAction;
-            _deleteButton.interactable = _hasSaveData;
-
-            FocusFirstInteractableButton(canAction);
+            ResetToDeselectedState();
+            return;
         }
-        else
-        {
-            _buttonContinueAndDelete.SetActive(false);
-            _verticalLayoutGroup.spacing = 10f;
-        }
+
+        _buttonContinueAndDelete.SetActive(true);
+        _verticalLayoutGroup.spacing = 30f;
+
+        // Continue 모드: 저장 데이터가 있을 때만 이어하기 활성화
+        // NewGame 모드: 항상 슬롯 선택 가능 (빈 슬롯도 선택 가능)
+        _buttons.Refresh(_mode == ESlotPanelMode.NewGame || _hasSaveData, _hasSaveData);
     }
 
     // 외부에서 상하 방향키 입력 시 호출
     public void MoveButtonSelection(int direction)
     {
-        if (UnityEngine.EventSystems.EventSystem.current == null)
-        {
-            return;
-        }
-
-        GameObject currentSelected = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject;
-
-        if (currentSelected == _continueButton.gameObject && direction == 1) // Down
-        {
-            if (_deleteButton != null && _deleteButton.interactable)
-            {
-                UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(_deleteButton.gameObject);
-            }
-        }
-        else if (currentSelected == _deleteButton.gameObject && direction == -1) // Up
-        {
-            if (_continueButton != null && _continueButton.interactable)
-            {
-                UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(_continueButton.gameObject);
-            }
-        }
+        _buttons.MoveSelection(direction);
     }
 
     // 외부에서 엔터/스페이스바 입력 시 호출
     public void PressSelectedButton()
     {
-        if (UnityEngine.EventSystems.EventSystem.current == null)
-        {
-            return;
-        }
-
-        GameObject currentSelected = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject;
-        if (currentSelected == _continueButton.gameObject)
+        if (_buttons.IsActionSelected)
         {
             OnClickActionBtn();
         }
-        else if (currentSelected == _deleteButton.gameObject)
+        else if (_buttons.IsDeleteSelected)
         {
             OnClickDeleteBtn();
-        }
-    }
-
-    private void RefreshButtonLabel()
-    {
-        if (_continueButtonText == null)
-        {
-            return;
-        }
-        _continueButtonText.text = _mode == ESlotPanelMode.NewGame ? "새 게임" : "이어하기";
-    }
-
-    private void FocusFirstInteractableButton(bool canAction)
-    {
-        if (UnityEngine.EventSystems.EventSystem.current == null)
-        {
-            return;
-        }
-
-        if (canAction && _continueButton != null)
-        {
-            UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(_continueButton.gameObject);
-        }
-        else
-        {
-            UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
         }
     }
 
@@ -182,25 +128,15 @@ public class UI_SaveSlotItem : MonoBehaviour, IPointerClickHandler
     private void LoadAndRefreshSlot()
     {
         SaveData saveData = _presenter.LoadSlotData();
-        _hasSaveData = saveData != null;
+        _hasSaveData = saveData is not null;
         RefreshRegionNameText(saveData);
     }
 
     private void RefreshRegionNameText(SaveData saveData)
     {
-        if (_regionNameText == null)
-        {
-            return;
-        }
-
         _regionNameText.text = _hasSaveData
             ? SaveSlotRegionNameMapper.GetRegionName(saveData.Region)
             : "빈 슬롯";
-    }
-
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        OnClicked?.Invoke(_slotIndex);
     }
 
     // 이어하기 또는 새 게임 버튼 클릭
@@ -237,7 +173,7 @@ public class UI_SaveSlotItem : MonoBehaviour, IPointerClickHandler
         {
             await _presenter.TryStartNewGameAsync(_hasSaveData, this.GetCancellationTokenOnDestroy());
         }
-        catch (System.OperationCanceledException)
+        catch (OperationCanceledException)
         {
             // 확인 팝업 대기 중 슬롯이 파괴된 경우다. 새 게임을 시작하지 않는다.
         }
