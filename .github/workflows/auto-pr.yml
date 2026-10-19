@@ -93,11 +93,40 @@ jobs:
             ALL_LABELS="$AI_LABELS,$USER_LABEL"
           fi
           
-          GH_TOKEN=$SELECT_TOKEN gh pr create \
+          PR_URL=$(GH_TOKEN=$SELECT_TOKEN gh pr create \
             --base main \
             --head ${{ github.ref_name }} \
             --title "$TITLE" \
             --body-file pr_body.md \
-            --label "$ALL_LABELS" \
-            --assignee "${{ github.actor }}" \
-            --draft
+            --draft)
+          echo "$PR_URL"
+          PR_NUMBER=$(basename "$PR_URL")
+
+          # gh pr create에 라벨과 담당자를 함께 넘기면 PR을 만든 직후 GraphQL 수정 요청을 한 번 더 보내는데,
+          # 이 요청이 GitHub 내부 오류로 간헐적으로 실패해 담당자가 빠지고 잡이 실패했다(#142, #143, #147, #150, #151).
+          # 생성과 분리해 잠시 기다린 뒤 REST API로 붙이고, 실패하면 다시 시도한다.
+          LABEL_ARGS=()
+          IFS=',' read -ra LABELS <<< "$ALL_LABELS"
+          for LABEL in "${LABELS[@]}"; do
+            # 등록되지 않은 사용자는 아이디가 라벨로 들어오므로 저장소에 있는 라벨만 추린다.
+            if grep -Fxq "$LABEL" labels.txt; then
+              LABEL_ARGS+=(-f "labels[]=$LABEL")
+            fi
+          done
+
+          apply_metadata() {
+            if [ ${#LABEL_ARGS[@]} -gt 0 ]; then
+              GH_TOKEN=$SELECT_TOKEN gh api --method POST "repos/${{ github.repository }}/issues/$PR_NUMBER/labels" "${LABEL_ARGS[@]}" > /dev/null || return 1
+            fi
+            GH_TOKEN=$SELECT_TOKEN gh api --method POST "repos/${{ github.repository }}/issues/$PR_NUMBER/assignees" -f "assignees[]=${{ github.actor }}" > /dev/null
+          }
+
+          for ATTEMPT in 1 2 3; do
+            sleep $((ATTEMPT * 3))
+            if apply_metadata; then
+              exit 0
+            fi
+            echo "::warning::라벨·담당자 지정 실패(${ATTEMPT}/3), 다시 시도합니다"
+          done
+          echo "::error::PR은 만들어졌지만 라벨·담당자를 붙이지 못했습니다. 직접 지정해 주세요: $PR_URL"
+          exit 1
