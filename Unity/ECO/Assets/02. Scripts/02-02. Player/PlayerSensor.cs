@@ -29,6 +29,7 @@ public class PlayerSensor : MonoBehaviour
     private Collider2D _lastPlatformCollider;
     private PlatformEffector2D _cachedEffector;
     private ContactFilter2D _contactFilter;
+    private PlayerGroundChecker _groundChecker;
 
 
     public bool IsOnGround { get; private set; }
@@ -41,6 +42,11 @@ public class PlayerSensor : MonoBehaviour
     public bool IsRightSlipColliderTouching { get; private set; }
     public float WallDirection { get; private set; }
     public bool IsActuallyTouching => _feetCollider.IsTouchingLayers(_terrainLayer) || _feetCollider.IsTouchingLayers(_platformLayer);
+
+    private void Awake()
+    {
+        _groundChecker = new PlayerGroundChecker(_feetCollider, _terrainLayer, _platformLayer);
+    }
 
     private void Start()
     {
@@ -56,23 +62,11 @@ public class PlayerSensor : MonoBehaviour
     private void UpdateSensors()
     {
         bool touchingPlatform = _feetCollider.IsTouchingLayers(_platformLayer);
-        UpdateOnGroundSensor(touchingPlatform);
+        IsOnGround = _groundChecker.CheckOnGround();
         UpdateOnPlatformSensor(touchingPlatform);
         UpdateBodySensor();
         UpdateWallSensor();
         UpdateSlipSensor();
-    }
-
-    private void UpdateOnGroundSensor(bool touchingPlatform)
-    {
-        // 지형 모서리가 둥글어서 생기는 미세한 틈새(V자 홈)에서도 접지 판정이 유지되도록 검사 영역을 아래로 약간 확장합니다.
-        Vector2 checkSize = _feetCollider.bounds.size;
-        checkSize.y += 0.1f;
-        Vector3 checkCenter = _feetCollider.bounds.center;
-        checkCenter.y -= 0.05f;
-
-        bool touchingTerrain = CheckOverlap(checkCenter, checkSize, _terrainLayer);
-        IsOnGround = touchingTerrain || touchingPlatform;
     }
 
     private void UpdateOnPlatformSensor(bool touchingPlatform)
@@ -132,12 +126,9 @@ public class PlayerSensor : MonoBehaviour
                 continue;
             }
 
-            if (((1 << col.gameObject.layer) & _platformLayer) != 0)
+            if (((1 << col.gameObject.layer) & _platformLayer) != 0 && PlayerUnderJump.IsPassingThrough(col))
             {
-                if (col.TryGetComponent(out PlatformEffector2D effector) && effector.rotationalOffset == 180f)
-                {
-                    continue;
-                }
+                continue;
             }
             return true;
         }
