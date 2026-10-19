@@ -59,6 +59,11 @@ public class PlayerSensor : MonoBehaviour
         HandleWallDirection();
     }
 
+    public bool TryGetPlatformLiftHeight(out float liftHeight)
+    {
+        return _groundChecker.TryGetPlatformLiftHeight(out liftHeight);
+    }
+
     private void UpdateSensors()
     {
         bool touchingPlatform = _feetCollider.IsTouchingLayers(_platformLayer);
@@ -111,7 +116,8 @@ public class PlayerSensor : MonoBehaviour
         LayerMask slipLayers = _terrainLayer | _platformLayer;
         IsLeftSlipColliderTouching = CheckSlipOverlap(_leftSlipCollider, slipLayers);
         IsRightSlipColliderTouching = CheckSlipOverlap(_rightSlipCollider, slipLayers);
-        IsSliding = IsLeftSlipColliderTouching || IsRightSlipColliderTouching;
+        // 양쪽 감지기가 모두 닿았다면 모서리가 아니라 평평한 면에 걸친 것이라 밀어낼 방향이 없다.
+        IsSliding = IsLeftSlipColliderTouching != IsRightSlipColliderTouching;
     }
 
     private bool CheckSlipOverlap(EdgeCollider2D slipCollider, LayerMask slipLayers)

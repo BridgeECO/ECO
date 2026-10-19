@@ -13,6 +13,7 @@ public class PlayerGroundChecker
     private Collider2D _feetCollider;
     private LayerMask _platformLayer;
     private ContactFilter2D _groundFilter;
+    private ContactFilter2D _platformFilter;
     private List<Collider2D> _overlapResults = new List<Collider2D>();
 
     public PlayerGroundChecker(Collider2D feetCollider, LayerMask terrainLayer, LayerMask platformLayer)
@@ -20,6 +21,7 @@ public class PlayerGroundChecker
         _feetCollider = feetCollider;
         _platformLayer = platformLayer;
         _groundFilter.SetLayerMask(terrainLayer | platformLayer);
+        _platformFilter.SetLayerMask(platformLayer);
     }
 
     // 발 좌우 절반 아래에 모두 지면이 있어야 선 것으로 본다. 한쪽만 걸쳤다면 무게중심이 모서리 밖으로 넘어간 것이니
@@ -45,6 +47,32 @@ public class PlayerGroundChecker
             }
         }
         return false;
+    }
+
+    // 발 높이 안에 걸린 일방향 발판 위로 발바닥을 올리는 데 필요한 높이를 구한다.
+    // 발바닥에 살짝 파묻힌 정도는 이미 서 있는 것이라 제외한다.
+    public bool TryGetPlatformLiftHeight(out float liftHeight)
+    {
+        Bounds feet = _feetCollider.bounds;
+        float minY = feet.min.y + PLATFORM_SINK_TOLERANCE;
+        float maxY = feet.max.y + PLATFORM_SINK_TOLERANCE;
+        Vector2 center = new Vector2(feet.center.x, (minY + maxY) * 0.5f);
+        Vector2 size = new Vector2(feet.size.x, maxY - minY);
+
+        float platformTopY = minY;
+        int count = Physics2D.OverlapBox(center, size, 0f, _platformFilter, _overlapResults);
+        for (int i = 0; i < count; i++)
+        {
+            Collider2D hit = _overlapResults[i];
+            float hitTopY = hit.bounds.max.y;
+            if (hitTopY <= maxY && !PlayerUnderJump.IsPassingThrough(hit))
+            {
+                platformTopY = Mathf.Max(platformTopY, hitTopY);
+            }
+        }
+
+        liftHeight = platformTopY - feet.min.y;
+        return minY < platformTopY;
     }
 
     // 일방향 발판은 아래에서 올라오는 발을 통과시키므로, 발바닥 아래에 있을 때만 딛고 선 것으로 본다.

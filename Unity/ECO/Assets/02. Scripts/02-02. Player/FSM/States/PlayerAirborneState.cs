@@ -9,6 +9,7 @@ public class PlayerAirborneState : IPlayerState
     private PlayerDataSO _data;
     private PlayerJump _jump;
     private PlayerSlip _slip;
+    private PlayerPlatformSnap _platformSnap;
 
     public PlayerAirborneState(IPlayerFSMContext stateMachine, PlayerDataSO data)
     {
@@ -19,6 +20,7 @@ public class PlayerAirborneState : IPlayerState
         _data = data;
         _jump = new PlayerJump(stateMachine, _motor, data);
         _slip = new PlayerSlip(_sensor, _motor, data);
+        _platformSnap = new PlayerPlatformSnap(_sensor, _motor);
     }
 
     public void Enter()
@@ -35,6 +37,7 @@ public class PlayerAirborneState : IPlayerState
         HandleHorizontalMovement();
         _jump.CheckLateJump();
         _jump.HandleOnHold();
+        _platformSnap.Handle();
         _slip.Handle();
 
         ApplyGravity();

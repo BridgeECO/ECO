@@ -84,6 +84,11 @@ public class PlayerMotor : MonoBehaviour
         Velocity += addedVelocity;
     }
 
+    public void Lift(float height)
+    {
+        _rigidbody.position += new Vector2(0f, height);
+    }
+
     public void Teleport(Vector2 position)
     {
         _rigidbody.position = position;
