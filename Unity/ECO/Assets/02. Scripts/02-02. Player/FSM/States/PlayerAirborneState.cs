@@ -88,7 +88,8 @@ public class PlayerAirborneState : IPlayerState
 
     private void CheckStateTransitions()
     {
-        if (_sensor.IsActuallyTouching && _motor.Velocity.y <= 0f)
+        // 발끝만 모서리에 닿은 채로 착지하면 다음 프레임에 바로 접지를 잃고 다시 공중이 되므로, 접지 판정도 함께 본다.
+        if (_sensor.IsActuallyTouching && _sensor.IsOnGround && _motor.Velocity.y <= 0f)
         {
             _sm.ChangeState(EPlayerState.Grounded);
             return;

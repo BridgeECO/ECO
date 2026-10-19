@@ -22,11 +22,19 @@ public class PlayerGroundChecker
         _groundFilter.SetLayerMask(terrainLayer | platformLayer);
     }
 
+    // 발 좌우 절반 아래에 모두 지면이 있어야 선 것으로 본다. 한쪽만 걸쳤다면 무게중심이 모서리 밖으로 넘어간 것이니
+    // 접지를 놓아 공중 상태의 미끄러짐이 밀어내게 한다. 발이 실제로 닿았는지는 둥근 모서리에 발끝만 걸려도 참이라
+    // 가장자리 판단에 쓸 수 없다.
     public bool CheckOnGround()
     {
         Bounds feet = _feetCollider.bounds;
-        Vector2 center = new Vector2(feet.center.x, feet.center.y - GROUND_CHECK_DEPTH * 0.5f);
-        Vector2 size = new Vector2(feet.size.x, feet.size.y + GROUND_CHECK_DEPTH);
+        return CheckGroundBelow(feet.min.x, feet.center.x, feet) && CheckGroundBelow(feet.center.x, feet.max.x, feet);
+    }
+
+    private bool CheckGroundBelow(float minX, float maxX, Bounds feet)
+    {
+        Vector2 center = new Vector2((minX + maxX) * 0.5f, feet.center.y - GROUND_CHECK_DEPTH * 0.5f);
+        Vector2 size = new Vector2(maxX - minX, feet.size.y + GROUND_CHECK_DEPTH);
 
         int count = Physics2D.OverlapBox(center, size, 0f, _groundFilter, _overlapResults);
         for (int i = 0; i < count; i++)
