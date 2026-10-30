@@ -31,6 +31,7 @@ public static class EnergyEditorTools
         invalidCount += ReportUnlinkedCores(cores, linkedCores);
         invalidCount += ReportDuplicateTerrains(cores);
         invalidCount += EnergySupplyValidator.Report(lines, sources, switches);
+        invalidCount += SnapPointValidator.Report(cores);
 
         if (invalidCount == 0)
         {
