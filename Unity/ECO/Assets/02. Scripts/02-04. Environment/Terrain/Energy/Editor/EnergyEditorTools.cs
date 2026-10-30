@@ -21,6 +21,7 @@ public static class EnergyEditorTools
         EnergyCore[] cores = room.GetComponentsInChildren<EnergyCore>(true);
         EnergySource[] sources = room.GetComponentsInChildren<EnergySource>(true);
         EnergySwitch[] switches = room.GetComponentsInChildren<EnergySwitch>(true);
+        EnergyDashboard[] dashboards = room.GetComponentsInChildren<EnergyDashboard>(true);
         HashSet<EnergyCore> linkedCores = new HashSet<EnergyCore>();
 
         int invalidCount = 0;
@@ -32,6 +33,7 @@ public static class EnergyEditorTools
         invalidCount += ReportDuplicateTerrains(cores);
         invalidCount += EnergySupplyValidator.Report(lines, sources, switches);
         invalidCount += SnapPointValidator.Report(cores);
+        invalidCount += EnergyDashboardValidator.Report(dashboards);
 
         if (invalidCount == 0)
         {

@@ -12,4 +12,10 @@ public enum EUIReactionSignal
 
     Damaged = 2,
     Healed = 3,
+
+    /// <summary>점등. 계기판의 코어침·에너지원침처럼 꺼져 있던 표시에 불이 들어올 때. 끌 때는 PlaySignalExitAsync로 되감는다.</summary>
+    LightOn = 4,
+
+    /// <summary>안착. 이동형 코어침의 테두리에 불이 들어올 때. 다시 움직이면 PlaySignalExitAsync로 되감는다.</summary>
+    Docked = 5,
 }
