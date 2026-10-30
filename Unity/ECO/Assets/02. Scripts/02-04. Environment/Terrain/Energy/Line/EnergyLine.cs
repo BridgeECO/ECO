@@ -1,9 +1,13 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using VInspector;
 
 public class EnergyLine : MonoBehaviour
 {
+    // 계기판의 에너지원침처럼 공급 여부를 보여 주는 쪽이 매 프레임 묻지 않도록 바뀔 때만 알린다.
+    public Action<bool> OnSupplyChanged;
+
     [Foldout("Hierarchy")]
     [SerializeField]
     private Transform _startPoint;
@@ -66,7 +70,7 @@ public class EnergyLine : MonoBehaviour
 
     public void SetSwitchState(bool isOn)
     {
-        IsSupplied = isOn;
+        SetSupplied(isOn);
         if (isOn)
         {
             _segmentController.StartNewSegment();
@@ -78,7 +82,7 @@ public class EnergyLine : MonoBehaviour
     // 처음부터 공급 중인 에너지원은 흘려보내는 연출 없이 선을 가득 채운 채로 시작한다.
     public void FillImmediately()
     {
-        IsSupplied = true;
+        SetSupplied(true);
         _segmentController.FillImmediately(_graph.MaxDistance);
     }
 
@@ -86,7 +90,7 @@ public class EnergyLine : MonoBehaviour
     // 펄스가 없어지면 EnergyLineView가 다음 LateUpdate에서 오버레이와 에너지구를 반납한다.
     public void ResetEnergy()
     {
-        IsSupplied = false;
+        SetSupplied(false);
         _segmentController.ClearImmediately();
         _nodeActivator.DeactivateAll();
     }
@@ -143,6 +147,17 @@ public class EnergyLine : MonoBehaviour
         {
             nodes[i].Init();
         }
+    }
+
+    private void SetSupplied(bool isSupplied)
+    {
+        if (IsSupplied == isSupplied)
+        {
+            return;
+        }
+
+        IsSupplied = isSupplied;
+        OnSupplyChanged?.Invoke(isSupplied);
     }
 
     private void InitGraph()
