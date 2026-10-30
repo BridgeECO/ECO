@@ -19,6 +19,8 @@ public static class EnergyEditorTools
 
         EnergyLine[] lines = room.GetComponentsInChildren<EnergyLine>(true);
         EnergyCore[] cores = room.GetComponentsInChildren<EnergyCore>(true);
+        EnergySource[] sources = room.GetComponentsInChildren<EnergySource>(true);
+        EnergySwitch[] switches = room.GetComponentsInChildren<EnergySwitch>(true);
         HashSet<EnergyCore> linkedCores = new HashSet<EnergyCore>();
 
         int invalidCount = 0;
@@ -28,7 +30,7 @@ public static class EnergyEditorTools
         }
         invalidCount += ReportUnlinkedCores(cores, linkedCores);
         invalidCount += ReportDuplicateTerrains(cores);
-        invalidCount += ReportMovableCores(cores);
+        invalidCount += EnergySupplyValidator.Report(lines, sources, switches);
 
         if (invalidCount == 0)
         {
@@ -135,37 +137,6 @@ public static class EnergyEditorTools
                 }
                 owners[terrain] = cores[i];
             }
-        }
-        return invalidCount;
-    }
-
-    // 이동형 코어침은 지형 하나의 스냅 상태를 보여 준다. 여러 지형을 함께 움직이려면 하나의 지형으로 묶어야 한다.
-    private static int ReportMovableCores(EnergyCore[] cores)
-    {
-        int invalidCount = 0;
-        for (int i = 0; i < cores.Length; i++)
-        {
-            if (!cores[i].IsMovableCore)
-            {
-                continue;
-            }
-
-            int terrainCount = 0;
-            IReadOnlyList<TerrainObject> terrains = cores[i].RegisteredTerrains;
-            for (int j = 0; j < terrains.Count; j++)
-            {
-                if (terrains[j] != null)
-                {
-                    terrainCount++;
-                }
-            }
-
-            if (terrainCount <= 1)
-            {
-                continue;
-            }
-            invalidCount++;
-            Debug.LogWarning($"[Energy] 이동형 코어 '{cores[i].name}'에 지형이 {terrainCount}개 등록되어 있습니다. 함께 움직일 지형은 하나로 묶어 등록하세요.", cores[i]);
         }
         return invalidCount;
     }
