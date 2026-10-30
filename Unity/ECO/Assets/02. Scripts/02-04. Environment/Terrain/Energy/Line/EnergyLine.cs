@@ -38,7 +38,6 @@ public class EnergyLine : MonoBehaviour
     private EnergyLineGraph _graph = new EnergyLineGraph();
     private EnergySegmentController _segmentController = new EnergySegmentController();
     private EnergyNodeActivator _nodeActivator = new EnergyNodeActivator();
-    private EnergyLineOverlayDrawer _overlayDrawer = new EnergyLineOverlayDrawer();
 
     public bool UseTracking => _useTracking;
     public bool IsSupplied { get; private set; }
@@ -56,12 +55,6 @@ public class EnergyLine : MonoBehaviour
     {
         _segmentController.UpdateSegments(Time.deltaTime, _graph.MaxDistance, _energySpeed);
         _nodeActivator.Refresh(_segmentController.ActiveSegments);
-        _overlayDrawer.Refresh(_segmentController.ActiveSegments, _graph.Paths);
-    }
-
-    private void OnDisable()
-    {
-        ReleaseVisuals();
     }
 
     private void OnDrawGizmos()
@@ -90,12 +83,12 @@ public class EnergyLine : MonoBehaviour
     }
 
     // 리스폰 리셋처럼 흘려보내는 연출 없이 즉시 비워야 할 때 쓴다. 공급 상태는 호출한 쪽이 다시 정한다.
+    // 펄스가 없어지면 EnergyLineView가 다음 LateUpdate에서 오버레이와 에너지구를 반납한다.
     public void ResetEnergy()
     {
         IsSupplied = false;
         _segmentController.ClearImmediately();
         _nodeActivator.DeactivateAll();
-        ReleaseVisuals();
     }
 
     // HeadDistance를 가장 긴 경로 위에서 보간하여 현재 에너지 구의 월드 포지션을 반환한다.
@@ -160,10 +153,5 @@ public class EnergyLine : MonoBehaviour
             Debug.LogWarning($"[EnergyLine] {name}의 {_graph.InvalidBranchIndices[i]}번 분기는 분기점이 앞선 경로 위에 없어 무시합니다.", this);
         }
         _nodeActivator.Init(_graph.Paths);
-    }
-
-    private void ReleaseVisuals()
-    {
-        _overlayDrawer.ReleaseAll();
     }
 }

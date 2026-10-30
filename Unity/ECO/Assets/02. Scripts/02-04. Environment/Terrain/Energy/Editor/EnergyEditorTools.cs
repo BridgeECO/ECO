@@ -94,7 +94,34 @@ public static class EnergyEditorTools
             invalidCount++;
             Debug.LogWarning($"[Energy] '{line.name}'에 코어 없이 선에 바로 물린 지형 노드가 {terrainNodeCount}개 있습니다. 새 규칙에서는 지형을 코어에 등록해야 합니다.", line);
         }
-        return invalidCount;
+        return invalidCount + ReportBaseLines(line, graph);
+    }
+
+    // 바탕선은 경로(메인과 유효한 분기)마다 하나씩 에디터에서 미리 만들어 둔다. 모자라면 그 분기는 에너지가 없을 때 보이지 않는다.
+    private static int ReportBaseLines(EnergyLine line, EnergyLineGraph graph)
+    {
+        EnergyLineView view = line.GetComponent<EnergyLineView>();
+        if (view == null)
+        {
+            Debug.LogWarning($"[Energy] '{line.name}'에 EnergyLineView가 없어 선이 화면에 그려지지 않습니다.", line);
+            return 1;
+        }
+
+        int baseLineCount = 0;
+        for (int i = 0; i < view.BaseLineRenderers.Count; i++)
+        {
+            if (view.BaseLineRenderers[i] != null)
+            {
+                baseLineCount++;
+            }
+        }
+
+        if (baseLineCount == graph.Paths.Count)
+        {
+            return 0;
+        }
+        Debug.LogWarning($"[Energy] '{line.name}'의 바탕선은 {baseLineCount}개인데 경로(메인과 분기)는 {graph.Paths.Count}개입니다. EnergyLineView의 '바탕선 맞추기' 버튼을 누르세요.", line);
+        return 1;
     }
 
     private static int ReportUnlinkedCores(EnergyCore[] cores, HashSet<EnergyCore> linkedCores)
