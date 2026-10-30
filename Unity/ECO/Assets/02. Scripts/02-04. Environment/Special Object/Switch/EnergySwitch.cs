@@ -5,6 +5,12 @@ using VInspector;
 public class EnergySwitch : SpecialObjectBase
 {
     [Foldout("Hierarchy")]
+    [Tooltip("이 스위치가 공급 여부를 정하는 에너지원입니다. 에너지선과 물리적으로 연결할 필요가 없습니다.")]
+    [SerializeField]
+    private List<EnergySource> _targetSources = new List<EnergySource>();
+
+    // 에너지원이 생기기 전 방식으로 선에 직접 물린 연결. 기존 룸을 변환 툴로 옮길 때까지만 남겨 둔다.
+    [HideInInspector]
     [SerializeField]
     private List<EnergyLine> _connectedLines = new List<EnergyLine>();
 
@@ -18,6 +24,8 @@ public class EnergySwitch : SpecialObjectBase
     private bool _hasTriggeredTracking = false;
 
     public bool IsOn => _isOn;
+    public IReadOnlyList<EnergySource> TargetSources => _targetSources;
+    public IReadOnlyList<EnergyLine> LegacyConnectedLines => _connectedLines;
 
     protected override void Awake()
     {
@@ -57,12 +65,19 @@ public class EnergySwitch : SpecialObjectBase
             SoundManager.Instance.PlayWorldSfx(ESfxClip.SE_Energy_Switch, transform);
         }
 
+        for (int i = 0; i < _targetSources.Count; i++)
+        {
+            if (_targetSources[i] != null)
+            {
+                _targetSources[i].SetSwitchSignal(this, _isOn);
+            }
+        }
+
         for (int i = 0; i < _connectedLines.Count; i++)
         {
-            EnergyLine line = _connectedLines[i];
-            if (line != null)
+            if (_connectedLines[i] != null)
             {
-                line.SetSwitchState(_isOn);
+                _connectedLines[i].SetSwitchState(_isOn);
             }
         }
 
@@ -92,14 +107,33 @@ public class EnergySwitch : SpecialObjectBase
         EventManager.Instance.BroadcastEvent(EEventType.EnergyLineTrackingRequested, trackingTarget);
     }
 
+    // 스위치는 선을 직접 모르므로, 대상 에너지원이 공급하는 선에서 찾는다.
     private EnergyLine FindFirstTrackingLine()
     {
-        for (int i = 0; i < _connectedLines.Count; i++)
+        for (int i = 0; i < _targetSources.Count; i++)
         {
-            EnergyLine line = _connectedLines[i];
-            if (line != null && line.UseTracking)
+            if (_targetSources[i] == null)
+            {
+                continue;
+            }
+
+            EnergyLine line = FindTrackingLine(_targetSources[i].ConnectedLines);
+            if (line != null)
             {
                 return line;
+            }
+        }
+
+        return FindTrackingLine(_connectedLines);
+    }
+
+    private EnergyLine FindTrackingLine(IReadOnlyList<EnergyLine> lines)
+    {
+        for (int i = 0; i < lines.Count; i++)
+        {
+            if (lines[i] != null && lines[i].UseTracking)
+            {
+                return lines[i];
             }
         }
         return null;
@@ -110,5 +144,14 @@ public class EnergySwitch : SpecialObjectBase
         base.ResetState();
         _hasTriggeredTracking = false;
         SetSwitchState(false);
+
+        // 선에 직접 물린 스위치는 리스폰 때 흘려보내는 연출 없이 선을 바로 비운다. 에너지원은 스스로 리셋된다.
+        for (int i = 0; i < _connectedLines.Count; i++)
+        {
+            if (_connectedLines[i] != null)
+            {
+                _connectedLines[i].ResetEnergy();
+            }
+        }
     }
 }

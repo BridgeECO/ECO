@@ -15,6 +15,8 @@ public static class InteractionFactory
                 return new ButtonOneShotTimerInteraction(target, buttonOneShotDuration);
             case EInteractionType.ButtonToggle:
                 return new ButtonToggleInteraction(target);
+            case EInteractionType.ButtonToggleLatched:
+                return new ButtonToggleInteraction(target, false);
             case EInteractionType.AutoPlay:
                 return new AutoPlayInteraction(target);
             case EInteractionType.PressurePlate:

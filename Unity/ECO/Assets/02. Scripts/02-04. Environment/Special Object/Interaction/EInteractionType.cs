@@ -4,5 +4,6 @@ public enum EInteractionType
     AutoPlay = 1,
     PressurePlate = 2,
     ButtonOneShotTimer = 3,
-    ButtonToggle = 4
+    ButtonToggle = 4,
+    ButtonToggleLatched = 5
 }

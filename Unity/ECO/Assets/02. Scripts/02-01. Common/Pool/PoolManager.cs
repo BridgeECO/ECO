@@ -6,6 +6,7 @@ using UnityEngine.Pool;
 internal class Pool
 {
     private GameObject _prefab;
+    private Transform _parent;
     private IObjectPool<GameObject> _pool;
 
     private Transform _root;
@@ -15,16 +16,20 @@ internal class Pool
         {
             if (_root == null)
             {
+                // 새 GameObject는 그 순간의 활성 씬, 즉 리전 씬에 생긴다.
+                // 부모를 매니저로 두지 않으면 리전이 바뀔 때 루트와 풀 오브젝트가 함께 파괴된다.
                 GameObject go = new GameObject() { name = $"{_prefab.name}Pool" };
                 _root = go.transform;
+                _root.SetParent(_parent, false);
             }
             return _root;
         }
     }
 
-    public Pool(GameObject prefab)
+    public Pool(GameObject prefab, Transform parent)
     {
         _prefab = prefab;
+        _parent = parent;
         _pool = new ObjectPool<GameObject>(OnCreate, OnGet, OnRelease, OnDestroy);
     }
 
@@ -128,7 +133,7 @@ public class PoolManager : MonoBehaviourSingleton<PoolManager>
 
     private void CreatePool(EPoolable type, GameObject go)
     {
-        _pools.Add(type, new Pool(go));
+        _pools.Add(type, new Pool(go, transform));
     }
 
     public void Clear()
