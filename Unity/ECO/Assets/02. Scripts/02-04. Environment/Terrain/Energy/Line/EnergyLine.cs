@@ -41,6 +41,7 @@ public class EnergyLine : MonoBehaviour
     private EnergyLineOverlayDrawer _overlayDrawer = new EnergyLineOverlayDrawer();
 
     public bool UseTracking => _useTracking;
+    public bool IsSupplied { get; private set; }
     public float TotalDistance => _graph.MaxDistance;
     public EnergyLineGraph Graph => _graph;
     public IReadOnlyList<EnergySegment> Segments => _segmentController.ActiveSegments;
@@ -72,6 +73,7 @@ public class EnergyLine : MonoBehaviour
 
     public void SetSwitchState(bool isOn)
     {
+        IsSupplied = isOn;
         if (isOn)
         {
             _segmentController.StartNewSegment();
@@ -80,9 +82,17 @@ public class EnergyLine : MonoBehaviour
         _segmentController.StopCurrentSegmentImmediately();
     }
 
+    // 처음부터 공급 중인 에너지원은 흘려보내는 연출 없이 선을 가득 채운 채로 시작한다.
+    public void FillImmediately()
+    {
+        IsSupplied = true;
+        _segmentController.FillImmediately(_graph.MaxDistance);
+    }
+
     // 리스폰 리셋처럼 흘려보내는 연출 없이 즉시 비워야 할 때 쓴다. 공급 상태는 호출한 쪽이 다시 정한다.
     public void ResetEnergy()
     {
+        IsSupplied = false;
         _segmentController.ClearImmediately();
         _nodeActivator.DeactivateAll();
         ReleaseVisuals();
