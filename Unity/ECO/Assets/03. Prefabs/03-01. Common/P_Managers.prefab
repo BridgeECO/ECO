@@ -36,6 +36,7 @@ Transform:
   - {fileID: 3987466288948149323}
   - {fileID: 6520768177306356353}
   - {fileID: 4425553337305133228}
+  - {fileID: 4092062157174381015}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1683545825420668491
@@ -223,6 +224,53 @@ MonoBehaviour:
   _lazyInitialization: 0
   _player: {fileID: 0}
   _canLoadTitleOnStart: 0
+--- !u!1 &2777183972199094466
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4092062157174381015}
+  - component: {fileID: 2277146000473572545}
+  m_Layer: 0
+  m_Name: PoolManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4092062157174381015
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2777183972199094466}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7579147376322705185}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2277146000473572545
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2777183972199094466}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2017313a1e545b3449dd4fb0b8c8ba8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _isDontDestroyOnLoad: 1
+  _lazyInitialization: 0
+  _poolInfos: []
 --- !u!1 &5389053093144498354
 GameObject:
   m_ObjectHideFlags: 0
