@@ -19,6 +19,10 @@ public class PathMoveTerrainGimmickSO : TerrainGimmickBaseSO
 
     public override bool IsMovementGimmick => true;
 
+    // 에디터에서는 런타임 김믹이 없으므로, 스냅포인트 기즈모와 검증 메뉴가 이 값으로 경로를 다시 구성한다.
+    public EPathEndBehaviour PathEndBehaviour => _pathEndBehaviour;
+    public bool IsReturningOnDeactivate => _isReturningOnDeactivate;
+
     public override TerrainGimmickBase CreateGimmick(TerrainGimmickEntry entry)
     {
         return new PathMoveTerrainGimmick(ActivationType, IsInverted, entry,

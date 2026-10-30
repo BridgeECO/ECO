@@ -25,6 +25,7 @@ public class TerrainObject : MonoBehaviour, IEnergyReceiver, IResettable
 
     public Rigidbody2D Rigidbody { get; set; }
     public Vector3 InitialPosition => _initialPosition;
+    public IReadOnlyList<TerrainGimmickEntry> GimmickEntries => _gimmickEntries;
 
     public bool HasMovementGimmick
     {
@@ -119,6 +120,22 @@ public class TerrainObject : MonoBehaviour, IEnergyReceiver, IResettable
     {
         _isEnergyActive = isActive;
         ApplyGimmicks();
+    }
+
+    // 스냅포인트 안착처럼 코어가 지형의 경로 이동을 직접 다뤄야 할 때 쓴다.
+    public bool TryGetPathMoveGimmick(out PathMoveTerrainGimmick pathMoveGimmick)
+    {
+        for (int i = 0; i < _runtimeGimmicks.Count; i++)
+        {
+            if (_runtimeGimmicks[i] is PathMoveTerrainGimmick gimmick)
+            {
+                pathMoveGimmick = gimmick;
+                return true;
+            }
+        }
+
+        pathMoveGimmick = null;
+        return false;
     }
 
     public void ResetState()

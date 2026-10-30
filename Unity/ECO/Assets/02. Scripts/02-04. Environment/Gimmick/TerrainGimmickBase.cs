@@ -9,7 +9,8 @@ public abstract class TerrainGimmickBase
 
     public EGimmickActivationType ActivationType => _activationType;
     public bool IsInverted => _isInverted;
-    protected bool IsActivated { get; private set; }
+    // 코어가 이번 신호로 멈춘 이동 지형을 가려내려면 바깥에서도 작동 여부를 읽어야 한다.
+    public bool IsActivated { get; private set; }
 
     // 김믹은 POCO라 소유 오브젝트 파괴를 스스로 감지할 수 없다.
     // 파생 김믹이 CTS를 만들 때 이 토큰과 연결해 씬 전환 시 태스크 누수를 방지한다.
