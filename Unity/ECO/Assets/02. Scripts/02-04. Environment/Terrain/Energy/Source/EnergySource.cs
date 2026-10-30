@@ -16,6 +16,10 @@ public class EnergySource : MonoBehaviour, IResettable
     [SerializeField]
     private SwitchSpriteView _spriteView = new SwitchSpriteView();
 
+    [Tooltip("공급음과 차단음을 반복 재생하다가 흐름이 끝나면 멈추는 전용 AudioSource입니다.")]
+    [SerializeField]
+    private AudioSource _sfxAudioSource;
+
     [Foldout("Settings")]
     [SerializeField]
     private EEnergySupplyPattern _supplyPattern = EEnergySupplyPattern.Always;
@@ -40,17 +44,22 @@ public class EnergySource : MonoBehaviour, IResettable
     private float _cutoffDuration = 3f;
 
     private EnergySupplyCycle _supplyCycle = new EnergySupplyCycle();
+    private EnergySupplyOutput _supplyOutput = new EnergySupplyOutput();
 
     // 기획서는 에너지원 하나에 스위치 하나를 전제한다. 여럿이 물리면 하나라도 작동 중일 때 작동한 것으로 본다.
     private List<Object> _operatingSwitches = new List<Object>();
 
     private bool _isDeviceActive;
-    private bool _isSupplying;
     private bool _isInitPending;
 
     public IReadOnlyList<EnergyLine> ConnectedLines => _connectedLines;
     public EEnergySupplyPattern SupplyPattern => _supplyPattern;
-    public bool IsSupplying => _isSupplying;
+    public bool IsSupplying => _supplyOutput.IsSupplying;
+
+    private void Awake()
+    {
+        _supplyOutput.Init(_connectedLines, _spriteView, _sfxAudioSource);
+    }
 
     private void OnEnable()
     {
@@ -66,6 +75,7 @@ public class EnergySource : MonoBehaviour, IResettable
             return;
         }
 
+        _supplyOutput.RefreshSfx();
         if (!_isDeviceActive || _supplyPattern != EEnergySupplyPattern.Periodic)
         {
             return;
@@ -80,7 +90,9 @@ public class EnergySource : MonoBehaviour, IResettable
     private void OnDisable()
     {
         _isDeviceActive = false;
-        RefreshSupply();
+
+        // 리전 언로드처럼 오브젝트가 꺼지면서 공급이 멈출 때는 차단 효과음을 내지 않는다.
+        RefreshSupply(false);
     }
 
     public void SetSwitchSignal(Object sender, bool isOperated)
@@ -118,44 +130,15 @@ public class EnergySource : MonoBehaviour, IResettable
     {
         _operatingSwitches.Clear();
         _isDeviceActive = _isActiveOnStart;
-        _isSupplying = false;
-        for (int i = 0; i < _connectedLines.Count; i++)
-        {
-            if (_connectedLines[i] != null)
-            {
-                _connectedLines[i].ResetEnergy();
-            }
-        }
+        _supplyOutput.ClearImmediately();
         _isInitPending = true;
     }
 
-    // 상시형과 차단형은 흘려보내는 연출 없이 가득 찬 선으로 시작하고, 주기형은 공급 구간부터 새로 흘려보낸다.
     private void ApplyInitialSupply()
     {
         _isInitPending = false;
         _supplyCycle.Init(_supplyDuration, _cutoffDuration);
-        _isSupplying = EvaluateSupply();
-        _spriteView.Refresh(_isSupplying);
-        if (!_isSupplying)
-        {
-            return;
-        }
-
-        for (int i = 0; i < _connectedLines.Count; i++)
-        {
-            EnergyLine line = _connectedLines[i];
-            if (line == null)
-            {
-                continue;
-            }
-
-            if (_supplyPattern == EEnergySupplyPattern.Periodic)
-            {
-                line.SetSwitchState(true);
-                continue;
-            }
-            line.FillImmediately();
-        }
+        _supplyOutput.SetInitialSupply(EvaluateSupply(), _supplyPattern == EEnergySupplyPattern.Periodic);
     }
 
     private bool EvaluateSupply()
@@ -177,7 +160,7 @@ public class EnergySource : MonoBehaviour, IResettable
         }
     }
 
-    private void RefreshSupply()
+    private void RefreshSupply(bool canPlaySfx = true)
     {
         // 초기 공급을 다시 걸기 전에는 신호만 기록한다. 같은 프레임에 리셋된 스위치가 공급을 먼저 바꾸지 않게 하려는 것이다.
         if (_isInitPending)
@@ -185,21 +168,7 @@ public class EnergySource : MonoBehaviour, IResettable
             return;
         }
 
-        bool isSupplying = EvaluateSupply();
-        if (_isSupplying == isSupplying)
-        {
-            return;
-        }
-
-        _isSupplying = isSupplying;
-        _spriteView.Refresh(_isSupplying);
-        for (int i = 0; i < _connectedLines.Count; i++)
-        {
-            if (_connectedLines[i] != null)
-            {
-                _connectedLines[i].SetSwitchState(_isSupplying);
-            }
-        }
+        _supplyOutput.SetSupplying(EvaluateSupply(), canPlaySfx);
     }
 
 #if UNITY_EDITOR
