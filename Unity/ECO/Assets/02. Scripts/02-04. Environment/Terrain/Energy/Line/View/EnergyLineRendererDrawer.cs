@@ -3,46 +3,46 @@ using UnityEngine;
 
 public class EnergyLineRendererDrawer
 {
-    public void UpdateSegmentRenderer(LineRenderer lineRenderer, List<Vector3> computedWaypoints, float startDist, float endDist)
+    // 펄스가 움직이는 동안 매 프레임 호출되므로 점 목록을 새로 만들지 않고 재사용한다.
+    private List<Vector3> _points = new List<Vector3>();
+
+    public void UpdateSegmentRenderer(LineRenderer lineRenderer, EnergyLineBranchPath path, float startDist, float endDist)
     {
-        if (computedWaypoints == null || computedWaypoints.Count < 2)
+        IReadOnlyList<Vector3> waypoints = path.Waypoints;
+        IReadOnlyList<float> distances = path.CumulativeDistances;
+        if (waypoints.Count < 2)
         {
             return;
         }
 
-        List<Vector3> points = new List<Vector3>();
-        float currentDist = 0f;
-
-        for (int i = 0; i < computedWaypoints.Count - 1; i++)
+        _points.Clear();
+        for (int i = 0; i < waypoints.Count - 1; i++)
         {
-            Vector3 p1 = computedWaypoints[i];
-            Vector3 p2 = computedWaypoints[i + 1];
-            float segLen = Vector3.Distance(p1, p2);
-            float nextDist = currentDist + segLen;
-
-            if (startDist <= nextDist && currentDist<= endDist )
+            float currentDist = distances[i];
+            float nextDist = distances[i + 1];
+            if (nextDist < startDist || endDist < currentDist)
             {
-                float localStart = Mathf.Max(0, startDist - currentDist);
-                float localEnd = Mathf.Min(segLen, endDist - currentDist);
-
-                float tStart = 0f < segLen ? localStart / segLen : 0f;
-                float tEnd = 0f < segLen ? localEnd / segLen : 1f;
-
-                Vector3 pointStart = Vector3.Lerp(p1, p2, tStart);
-                Vector3 pointEnd = Vector3.Lerp(p1, p2, tEnd);
-
-                if (points.Count == 0 || points[points.Count - 1] != pointStart)
-                {
-                    points.Add(pointStart);
-                }
-
-                points.Add(pointEnd);
+                continue;
             }
 
-            currentDist = nextDist;
+            float segLen = nextDist - currentDist;
+            float tStart = 0f < segLen ? Mathf.Max(0f, startDist - currentDist) / segLen : 0f;
+            float tEnd = 0f < segLen ? Mathf.Min(segLen, endDist - currentDist) / segLen : 1f;
+
+            Vector3 pointStart = Vector3.Lerp(waypoints[i], waypoints[i + 1], tStart);
+            Vector3 pointEnd = Vector3.Lerp(waypoints[i], waypoints[i + 1], tEnd);
+
+            if (_points.Count == 0 || _points[_points.Count - 1] != pointStart)
+            {
+                _points.Add(pointStart);
+            }
+            _points.Add(pointEnd);
         }
 
-        lineRenderer.positionCount = points.Count;
-        lineRenderer.SetPositions(points.ToArray());
+        lineRenderer.positionCount = _points.Count;
+        for (int i = 0; i < _points.Count; i++)
+        {
+            lineRenderer.SetPosition(i, _points[i]);
+        }
     }
 }

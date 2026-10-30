@@ -4,37 +4,20 @@ using UnityEngine;
 public class EnergySegmentController
 {
     private List<EnergySegment> _activeSegments = new List<EnergySegment>();
-    private EnergyLineRendererDrawer _lineDrawer = new EnergyLineRendererDrawer();
+
+    // 스위치를 조작할 때마다 세그먼트가 생기므로, 다 쓴 인스턴스를 모아 두었다가 재사용한다.
+    private Stack<EnergySegment> _segmentPool = new Stack<EnergySegment>();
+
     public IReadOnlyList<EnergySegment> ActiveSegments => _activeSegments;
 
-    public void StartNewSegment(GameObject prefab, Transform parent)
+    public void StartNewSegment()
     {
-        if (0 < _activeSegments.Count)
+        if (0 < _activeSegments.Count && !_activeSegments[_activeSegments.Count - 1].IsCuttingOff)
         {
-            EnergySegment lastSegment = _activeSegments[_activeSegments.Count - 1];
-            if (!lastSegment.IsCuttingOff && !lastSegment.IsWaitingToCutOff)
-            {
-                return;
-            }
+            return;
         }
 
-        EnergySegment newSegment = new EnergySegment
-        {
-            HeadDistance = 0f,
-            TailDistance = 0f,
-            IsCuttingOff = false,
-            IsWaitingToCutOff = false
-        };
-
-        if (prefab != null)
-        {
-            GameObject instance = Object.Instantiate(prefab, parent);
-            instance.SetActive(true);
-            newSegment.GameObjectInstance = instance;
-            instance.GetComponentsInChildren<LineRenderer>(true, newSegment.ChildLineRenderers);
-        }
-
-        _activeSegments.Add(newSegment);
+        _activeSegments.Add(RentSegment(0f));
     }
 
     // 즉시 꼬리 추적을 시작한다. 홀드 방식 스위치처럼 즉각적인 차단이 필요할 때 사용한다.
@@ -45,60 +28,59 @@ public class EnergySegmentController
             return;
         }
 
-        EnergySegment targetSegment = _activeSegments[_activeSegments.Count - 1];
-        if (targetSegment.IsCuttingOff)
-        {
-            return;
-        }
-
-        targetSegment.IsWaitingToCutOff = false;
-        targetSegment.IsCuttingOff = true;
+        _activeSegments[_activeSegments.Count - 1].IsCuttingOff = true;
     }
 
-    public void UpdateSegments(float deltaTime, float totalDistance, float energySpeed)
+    // 처음부터 공급 중인 선을 흘려보내는 연출 없이 가득 찬 상태로 만든다.
+    public void FillImmediately(float maxDistance)
     {
-        for (int i = _activeSegments.Count - 1; 0<= i ; i--)
+        ClearImmediately();
+        _activeSegments.Add(RentSegment(maxDistance));
+    }
+
+    public void ClearImmediately()
+    {
+        for (int i = _activeSegments.Count - 1; 0 <= i; i--)
+        {
+            ReturnSegment(i);
+        }
+    }
+
+    public void UpdateSegments(float deltaTime, float maxDistance, float energySpeed)
+    {
+        for (int i = _activeSegments.Count - 1; 0 <= i; i--)
         {
             EnergySegment segment = _activeSegments[i];
 
-            if (segment.HeadDistance < totalDistance)
+            if (segment.HeadDistance < maxDistance)
             {
-                segment.HeadDistance += energySpeed * deltaTime;
-                segment.HeadDistance = Mathf.Min(segment.HeadDistance, totalDistance);
+                segment.HeadDistance = Mathf.Min(segment.HeadDistance + energySpeed * deltaTime, maxDistance);
             }
 
             if (segment.IsCuttingOff)
             {
-                segment.TailDistance += energySpeed * deltaTime;
-                segment.TailDistance = Mathf.Min(segment.TailDistance, totalDistance);
+                segment.TailDistance = Mathf.Min(segment.TailDistance + energySpeed * deltaTime, maxDistance);
             }
 
-            if (totalDistance<= segment.TailDistance )
+            if (maxDistance <= segment.TailDistance)
             {
-                if (segment.GameObjectInstance != null)
-                {
-                    Object.Destroy(segment.GameObjectInstance);
-                }
-                
-                _activeSegments.RemoveAt(i);
+                ReturnSegment(i);
             }
         }
     }
 
-    public void RenderSegments(List<Vector3> computedWaypoints)
+    private EnergySegment RentSegment(float headDistance)
     {
-        foreach (EnergySegment segment in _activeSegments)
-        {
-            if (segment.ChildLineRenderers is not null)
-            {
-                foreach (var lr in segment.ChildLineRenderers)
-                {
-                    if (lr != null)
-                    {
-                        _lineDrawer.UpdateSegmentRenderer(lr, computedWaypoints, segment.TailDistance, segment.HeadDistance);
-                    }
-                }
-            }
-        }
+        EnergySegment segment = 0 < _segmentPool.Count ? _segmentPool.Pop() : new EnergySegment();
+        segment.HeadDistance = headDistance;
+        segment.TailDistance = 0f;
+        segment.IsCuttingOff = false;
+        return segment;
+    }
+
+    private void ReturnSegment(int index)
+    {
+        _segmentPool.Push(_activeSegments[index]);
+        _activeSegments.RemoveAt(index);
     }
 }
