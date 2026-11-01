@@ -65,6 +65,23 @@ public class EnergyLineGraph
         return false;
     }
 
+    // 계기판처럼 선이 지나는 코어를 차례대로 다룰 때 쓴다. 메인 경로, 분기 순서이고 경로 안에서는 노드 순서다.
+    public void CollectCoreNodes(List<EnergyPathNode> coreNodes)
+    {
+        coreNodes.Clear();
+        for (int p = 0; p < _paths.Count; p++)
+        {
+            IReadOnlyList<EnergyPathNode> nodes = _paths[p].Nodes;
+            for (int n = 0; n < nodes.Count; n++)
+            {
+                if (nodes[n].NodeType == EEnergyPathNodeType.EnergyCore && nodes[n].EnergyCore != null)
+                {
+                    coreNodes.Add(nodes[n]);
+                }
+            }
+        }
+    }
+
     private void AddPath(Transform owner, Transform startPoint, Transform endPoint, List<EnergyPathNode> nodes,
         float startDistance, int parentIndex, int resolution, float splineTension)
     {

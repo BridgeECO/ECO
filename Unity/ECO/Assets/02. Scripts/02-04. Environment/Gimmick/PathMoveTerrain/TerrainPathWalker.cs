@@ -18,6 +18,11 @@ public class TerrainPathWalker
     private bool _isMovingForward = true;
     private bool _isTeleportPending;
 
+    public bool IsMovingForward => _isMovingForward;
+
+    // 목표 지점을 TerrainPathMeasure의 꼭짓점 번호로 나타낸다. 최초 위치(-1번)를 쓰는 경로는 한 칸씩 밀린다.
+    public int TargetVertex => _currentIndex - GetMinIndex();
+
     public void InitPath(Vector2 initialPosition, EPathEndBehaviour endBehaviour)
     {
         _initialPosition = initialPosition;
@@ -42,6 +47,13 @@ public class TerrainPathWalker
         // 방향이 바뀌면 방금 떠나온 지점을 다시 목표로 잡게 되므로 인덱스를 한 칸 밀어준다.
         _isMovingForward = isForward;
         _currentIndex += isForward ? 1 : -1;
+    }
+
+    // 순회 밖에서 지형을 옮긴 뒤(스냅 안착) 진행 방향은 그대로 두고 목표 지점만 현재 위치에 맞춘다.
+    public void SetTargetVertex(int vertex)
+    {
+        _currentIndex = vertex + GetMinIndex();
+        _isTeleportPending = false;
     }
 
     public bool TryGetTargetPosition(List<Transform> waypoints, out Vector2 targetPosition)

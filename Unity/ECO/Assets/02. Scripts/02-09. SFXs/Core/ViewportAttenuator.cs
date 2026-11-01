@@ -24,8 +24,10 @@ public static class ViewportAttenuator
             return falloffCurve.Evaluate(1f);
         }
 
-        float dx = Mathf.Max(0f, -vp.x, vp.x - 1f);
-        float dy = Mathf.Max(0f, -vp.y, vp.y - 1f);
+        // 인자가 셋 이상인 Mathf.Max는 params float[] 오버로드라 부를 때마다 배열을 할당한다.
+        // 재생 중인 월드 SFX와 SoundEmitter가 매 프레임 부르는 경로이므로 두 인자 오버로드를 겹쳐 쓴다.
+        float dx = Mathf.Max(0f, Mathf.Max(-vp.x, vp.x - 1f));
+        float dy = Mathf.Max(0f, Mathf.Max(-vp.y, vp.y - 1f));
         float outOfViewDist = Mathf.Max(dx, dy);
 
         float normalizedDist = Mathf.Clamp01(outOfViewDist / falloffRange);
