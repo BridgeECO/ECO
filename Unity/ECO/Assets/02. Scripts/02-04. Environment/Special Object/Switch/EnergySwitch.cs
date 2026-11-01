@@ -9,11 +9,6 @@ public class EnergySwitch : SpecialObjectBase
     [SerializeField]
     private List<EnergySource> _targetSources = new List<EnergySource>();
 
-    // 에너지원이 생기기 전 방식으로 선에 직접 물린 연결. 기존 룸을 변환 툴로 옮길 때까지만 남겨 둔다.
-    [HideInInspector]
-    [SerializeField]
-    private List<EnergyLine> _connectedLines = new List<EnergyLine>();
-
     // 인라인 직렬화 뷰. 별도 컴포넌트 취득(GetComponent) 없이 인스펙터에서 함께 설정한다.
     [SerializeField]
     private SwitchSpriteView _spriteView = new SwitchSpriteView();
@@ -25,7 +20,6 @@ public class EnergySwitch : SpecialObjectBase
 
     public bool IsOn => _isOn;
     public IReadOnlyList<EnergySource> TargetSources => _targetSources;
-    public IReadOnlyList<EnergyLine> LegacyConnectedLines => _connectedLines;
 
     protected override void Awake()
     {
@@ -73,14 +67,6 @@ public class EnergySwitch : SpecialObjectBase
             }
         }
 
-        for (int i = 0; i < _connectedLines.Count; i++)
-        {
-            if (_connectedLines[i] != null)
-            {
-                _connectedLines[i].SetSwitchState(_isOn);
-            }
-        }
-
         if (_isOn)
         {
             RequestTrackingIfNeeded();
@@ -123,8 +109,7 @@ public class EnergySwitch : SpecialObjectBase
                 return line;
             }
         }
-
-        return FindTrackingLine(_connectedLines);
+        return null;
     }
 
     private EnergyLine FindTrackingLine(IReadOnlyList<EnergyLine> lines)
@@ -144,14 +129,5 @@ public class EnergySwitch : SpecialObjectBase
         base.ResetState();
         _hasTriggeredTracking = false;
         SetSwitchState(false);
-
-        // 선에 직접 물린 스위치는 리스폰 때 흘려보내는 연출 없이 선을 바로 비운다. 에너지원은 스스로 리셋된다.
-        for (int i = 0; i < _connectedLines.Count; i++)
-        {
-            if (_connectedLines[i] != null)
-            {
-                _connectedLines[i].ResetEnergy();
-            }
-        }
     }
 }
