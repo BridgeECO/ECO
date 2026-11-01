@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 
 /// <summary>
-/// 선 위의 코어(와 레거시 지형 노드)를 에너지가 흐르는 구간에 맞춰 켜고 끈다.
+/// 선 위의 코어를 에너지가 흐르는 구간에 맞춰 켜고 끈다.
 /// </summary>
 public class EnergyNodeActivator
 {

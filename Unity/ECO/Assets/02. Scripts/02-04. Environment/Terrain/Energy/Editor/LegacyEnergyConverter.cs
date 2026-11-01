@@ -25,10 +25,9 @@ public static class LegacyEnergyConverter
         Undo.SetCurrentGroupName($"Convert Legacy Energy ({room.name})");
         int undoGroup = Undo.GetCurrentGroup();
         int switchCount = LegacySwitchConverter.Convert(room);
-        int terrainNodeCount = LegacyTerrainNodeConverter.Convert(room);
         Undo.CollapseUndoOperations(undoGroup);
 
-        Debug.Log($"[Energy] '{room.name}' 변환 완료. 스위치 {switchCount}개를 에너지원 제어로, 지형 노드 {terrainNodeCount}개를 코어로 옮겼습니다.", room);
+        Debug.Log($"[Energy] '{room.name}' 변환 완료. 스위치 {switchCount}개를 에너지원 제어로 옮겼습니다.", room);
     }
 
     // 룸 프리팹 안의 스위치를 씬에서 고치면 변경이 룸 프리팹이 아니라 씬의 오버라이드로 남는다.

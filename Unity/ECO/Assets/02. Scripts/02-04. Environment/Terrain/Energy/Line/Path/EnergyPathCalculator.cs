@@ -42,9 +42,6 @@ public class EnergyPathCalculator
     {
         switch (node.NodeType)
         {
-            case EEnergyPathNodeType.Terrain:
-                AddTerrainKeyPoints(points, node);
-                break;
             case EEnergyPathNodeType.Waypoint:
                 AddWaypointKeyPoints(points, node);
                 break;
@@ -52,23 +49,6 @@ public class EnergyPathCalculator
                 AddEnergyCoreKeyPoints(points, node);
                 break;
         }
-    }
-
-    private void AddTerrainKeyPoints(List<Vector3> points, EnergyPathNode node)
-    {
-        if (node.Terrain == null)
-        {
-            return;
-        }
-
-        if (node.IsCaptured)
-        {
-            points.Add(node.StaticActivationPosition);
-            points.Add(node.StaticDeactivationPosition);
-            return;
-        }
-        AddKeyPoint(points, node.Terrain.ActivationPosition, node.Terrain.transform);
-        AddKeyPoint(points, node.Terrain.DeactivationPosition, node.Terrain.transform);
     }
 
     private void AddWaypointKeyPoints(List<Vector3> points, EnergyPathNode node)
@@ -148,8 +128,7 @@ public class EnergyPathCalculator
 
     private bool HasValidDualPoint(EnergyPathNode node)
     {
-        return (node.NodeType == EEnergyPathNodeType.Terrain && node.Terrain != null) ||
-        (node.NodeType == EEnergyPathNodeType.EnergyCore && node.EnergyCore != null);
+        return node.NodeType == EEnergyPathNodeType.EnergyCore && node.EnergyCore != null;
     }
 
     private float GetKeyDistance(Dictionary<int, float> distances, int index)
