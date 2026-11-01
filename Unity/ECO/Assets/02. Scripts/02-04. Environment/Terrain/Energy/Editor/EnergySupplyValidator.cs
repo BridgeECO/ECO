@@ -18,7 +18,7 @@ public static class EnergySupplyValidator
         }
         for (int i = 0; i < switches.Length; i++)
         {
-            invalidCount += CountSwitchTargets(switches[i], lineDrivers, sourceSwitchCounts);
+            invalidCount += CountSwitchTargets(switches[i], sourceSwitchCounts);
         }
 
         invalidCount += ReportLineDrivers(lines, lineDrivers);
@@ -48,8 +48,7 @@ public static class EnergySupplyValidator
         return 1;
     }
 
-    private static int CountSwitchTargets(EnergySwitch energySwitch, Dictionary<EnergyLine, int> lineDrivers,
-        Dictionary<EnergySource, int> sourceSwitchCounts)
+    private static int CountSwitchTargets(EnergySwitch energySwitch, Dictionary<EnergySource, int> sourceSwitchCounts)
     {
         int targetCount = 0;
         IReadOnlyList<EnergySource> sources = energySwitch.TargetSources;
@@ -61,17 +60,6 @@ public static class EnergySupplyValidator
             }
             targetCount++;
             sourceSwitchCounts[sources[i]] = sourceSwitchCounts.TryGetValue(sources[i], out int count) ? count + 1 : 1;
-        }
-
-        IReadOnlyList<EnergyLine> legacyLines = energySwitch.LegacyConnectedLines;
-        for (int i = 0; i < legacyLines.Count; i++)
-        {
-            if (legacyLines[i] == null)
-            {
-                continue;
-            }
-            targetCount++;
-            lineDrivers[legacyLines[i]] = lineDrivers.TryGetValue(legacyLines[i], out int count) ? count + 1 : 1;
         }
 
         if (0 < targetCount)

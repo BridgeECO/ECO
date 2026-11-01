@@ -68,7 +68,6 @@ public static class EnergyEditorTools
         }
 
         int coreCount = 0;
-        int terrainNodeCount = 0;
         for (int p = 0; p < graph.Paths.Count; p++)
         {
             IReadOnlyList<EnergyPathNode> nodes = graph.Paths[p].Nodes;
@@ -79,23 +78,13 @@ public static class EnergyEditorTools
                     coreCount++;
                     linkedCores.Add(nodes[n].EnergyCore);
                 }
-                else if (nodes[n].NodeType == EEnergyPathNodeType.Terrain && nodes[n].Terrain != null)
-                {
-                    terrainNodeCount++;
-                }
             }
         }
 
-        if (coreCount == 0 && terrainNodeCount == 0)
+        if (coreCount == 0)
         {
             invalidCount++;
             Debug.LogWarning($"[Energy] '{line.name}'이(가) 지나는 코어가 없습니다. 모든 에너지선은 코어를 하나 이상 지나야 합니다.", line);
-        }
-
-        if (0 < terrainNodeCount)
-        {
-            invalidCount++;
-            Debug.LogWarning($"[Energy] '{line.name}'에 코어 없이 선에 바로 물린 지형 노드가 {terrainNodeCount}개 있습니다. 새 규칙에서는 지형을 코어에 등록해야 합니다.", line);
         }
         return invalidCount + ReportBaseLines(line, graph);
     }

@@ -31,7 +31,6 @@ public class EnergyPathNodeDrawer : PropertyDrawer
             EditorGUI.indentLevel++;
 
             SerializedProperty nodeTypeProp = property.FindPropertyRelative("_nodeType");
-            SerializedProperty terrainProp = property.FindPropertyRelative("_terrain");
             SerializedProperty waypointProp = property.FindPropertyRelative("_waypoint");
             SerializedProperty energyCoreProp = property.FindPropertyRelative("_energyCore");
 
@@ -44,12 +43,9 @@ public class EnergyPathNodeDrawer : PropertyDrawer
 
             Rect valueRect = new Rect(position.x, y, position.width, EditorGUIUtility.singleLineHeight);
 
-            EEnergyPathNodeType nodeType = (EEnergyPathNodeType)nodeTypeProp.enumValueIndex;
-            if (nodeType == EEnergyPathNodeType.Terrain)
-            {
-                EditorGUI.PropertyField(valueRect, terrainProp);
-            }
-            else if (nodeType == EEnergyPathNodeType.EnergyCore)
+            // 열거형 값이 1부터 시작해 선언 순서(enumValueIndex)와 값이 다르므로 값으로 비교한다.
+            EEnergyPathNodeType nodeType = (EEnergyPathNodeType)nodeTypeProp.intValue;
+            if (nodeType == EEnergyPathNodeType.EnergyCore)
             {
                 EditorGUI.PropertyField(valueRect, energyCoreProp);
             }

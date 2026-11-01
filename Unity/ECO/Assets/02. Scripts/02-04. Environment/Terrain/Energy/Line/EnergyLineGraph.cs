@@ -128,8 +128,7 @@ public class EnergyLineGraph
 
             // 출구 지점을 따로 옮겨 두지 않은 코어는 두 판정 지점이 같은 거리에 놓인다.
             // 이때는 코어 크기만큼 더 지나야 에너지가 완전히 빠져나간 것으로 본다.
-            if (node.NodeType == EEnergyPathNodeType.EnergyCore &&
-                node.DeactivationEndDistance - node.ActivationCenterDistance < COINCIDENT_EXIT_EPSILON)
+            if (node.DeactivationEndDistance - node.ActivationCenterDistance < COINCIDENT_EXIT_EPSILON)
             {
                 node.DeactivationEndDistance = node.ActivationCenterDistance + node.EnergyCore.ExitRadius;
             }
@@ -139,8 +138,7 @@ public class EnergyLineGraph
     // 경로 계산기가 거리를 매기는 노드와 같은 조건이다.
     private bool IsReceiverNode(EnergyPathNode node)
     {
-        return (node.NodeType == EEnergyPathNodeType.Terrain && node.Terrain != null) ||
-               (node.NodeType == EEnergyPathNodeType.EnergyCore && node.EnergyCore != null);
+        return node.NodeType == EEnergyPathNodeType.EnergyCore && node.EnergyCore != null;
     }
 
     private void InitLongestChain()
