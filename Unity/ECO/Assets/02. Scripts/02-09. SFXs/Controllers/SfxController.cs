@@ -56,6 +56,11 @@ public class SfxController : MonoBehaviour
     /// <summary>플레이어 SFX를 유휴 슬롯에서 재생한다. 모든 슬롯이 사용 중이면 무시한다.</summary>
     public void PlayPlayerSfx(AudioClip clip)
     {
+        if (clip == null)
+        {
+            return;
+        }
+
         for (int i = 0; i < _maxPlayerSfxCount && i < _playerSources.Count; i++)
         {
             if (_playerSources[i].isPlaying)
@@ -88,18 +93,33 @@ public class SfxController : MonoBehaviour
 
     public void PlayUiSfx(AudioClip clip)
     {
+        if (clip == null)
+        {
+            return;
+        }
+
         _uiSource.PlayOneShot(clip);
     }
 
     /// <summary>worldPos 위치에서 월드 SFX를 재생한다. 화면 밖 거리에 따라 볼륨이 자동 감쇠되고 방향 패닝이 적용된다.</summary>
     public void PlayWorldSfx(AudioClip clip, Vector3 worldPos)
     {
+        if (clip == null)
+        {
+            return;
+        }
+
         _worldSfxPool.Play(clip, worldPos);
     }
 
     /// <summary>플레이어 SFX를 루프 모드로 재생한다. 이미 재생 중인 경우 무시한다.</summary>
     public void PlayLoopSfx(ESfxClip clip, AudioClip audioClip)
     {
+        if (audioClip == null)
+        {
+            return;
+        }
+
         _loopSfxPool.Play(clip, audioClip);
     }
 

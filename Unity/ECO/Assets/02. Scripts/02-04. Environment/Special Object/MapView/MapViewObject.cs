@@ -7,8 +7,9 @@ using VInspector;
 /// <summary>
 /// 상호작용 시 카메라를 지정한 지점으로 옮겨 넓은 구역을 한눈에 보여주는 오브젝트.
 /// 범위를 벗어나거나 상호작용 키를 다시 누르면 카메라가 플레이어에게 돌아온다.
-/// 스위치와 한 오브젝트에 함께 부착할 수 있으며, 이때는 양쪽 InteractionType을 모두
-/// ButtonToggle로 맞춰야 한 번의 입력에 두 동작의 켜짐/꺼짐 시점이 일치한다.
+/// 스위치와 한 오브젝트에 붙여 스위치를 누를 때 일시적으로 줌아웃할 수 있다. 스위치 종류별 InteractionType 조합은
+/// 발판은 양쪽 PressurePlate, 누르고 있기는 양쪽 ButtonPressAndHold, 상태 유지 토글은 스위치 ButtonToggleLatched와 조망 ButtonToggle이다.
+/// 토글은 범위를 벗어나면 조망만 끝나고 스위치는 켜진 채 남는다.
 /// </summary>
 public class MapViewObject : SpecialObjectBase
 {
@@ -96,13 +97,16 @@ public class MapViewObject : SpecialObjectBase
         StartView();
     }
 
+    // 발판은 Interact 없이 SetState(true)로만 켜므로 여기서도 조망을 시작한다. 둘 다 부르는 인터랙션은 같은 전환을 한 번 더 걸 뿐이다.
     protected override void SetState(bool isOn)
     {
         base.SetState(isOn);
-        if (!isOn)
+        if (isOn)
         {
-            StopView();
+            StartView();
+            return;
         }
+        StopView();
     }
 
     private void StartView()

@@ -12,9 +12,19 @@ public class PathMoveTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizab
 
     private TerrainPathWalker _walker = new TerrainPathWalker();
     private TerrainPathMover _mover = new TerrainPathMover();
+    private TerrainPathMeasure _measure = new TerrainPathMeasure();
+    private TerrainPathSettler _settler;
     private GimmickPathVisualizer _pathVisualizer;
     private CancellationTokenSource _walkCts;
     private bool _isInitialized;
+
+    // 비활성 시 역주행 복귀하는 지형은 멈추지 않으므로 스냅포인트에 안착시키지 않는다.
+    public bool CanSettle => _isInitialized && !_isReturningOnDeactivate && 2 <= _measure.VertexCount;
+    public bool IsSettling => _settler.IsSettling;
+    public bool IsDocked => _settler.IsDocked;
+    public bool IsMovingForward => _walker.IsMovingForward;
+    public float MoveSpeed => _entry.MoveSpeed;
+    public TerrainPathMeasure Measure => _measure;
 
     public PathMoveTerrainGimmick(EGimmickActivationType activationType, bool isInverted, TerrainGimmickEntry entry,
         EPathEndBehaviour endBehaviour, bool isReturningOnDeactivate, LineRenderer pathLinePrefab, bool isPathVisible)
@@ -25,6 +35,7 @@ public class PathMoveTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizab
         _isReturningOnDeactivate = isReturningOnDeactivate;
         _pathLinePrefab = pathLinePrefab;
         _isPathVisible = isPathVisible;
+        _settler = new TerrainPathSettler(_walker, _mover, _measure);
     }
 
     public override void OnDestroy(TerrainObject target)
@@ -45,6 +56,13 @@ public class PathMoveTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizab
     {
         _mover.EnsureComponents(target);
         EnsureInitialized(target);
+
+        // 이미 멈춰 안착 중이거나 안착을 마쳤다면, 같은 비활성 신호가 다시 와도 그 자리를 지킨다.
+        if (!isActivated && (_settler.IsSettling || _settler.IsDocked))
+        {
+            return;
+        }
+
         RenewToken();
 
         if (!HasValidWaypoints(target))
@@ -86,6 +104,18 @@ public class PathMoveTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizab
         _pathVisualizer?.Hide();
     }
 
+    public float GetCurrentDistance(TerrainObject target)
+    {
+        return _settler.GetCurrentDistance(target);
+    }
+
+    // 멈춘 지형을 경로 거리 targetDistance까지 옮긴다. 다시 켜지거나 리셋되면 순회 토큰과 함께 취소된다.
+    public void Settle(TerrainObject target, float targetDistance, float speed)
+    {
+        RenewToken();
+        _settler.SettleAsync(target, targetDistance, speed, _walkCts.Token).Forget();
+    }
+
     private void EnsureInitialized(TerrainObject target)
     {
         if (_isInitialized || _entry.Waypoints == null || _entry.Waypoints.Count == 0)
@@ -94,6 +124,7 @@ public class PathMoveTerrainGimmick : TerrainGimmickBase, IGimmickPathVisualizab
         }
 
         _walker.InitPath(target.Rigidbody.position, _endBehaviour);
+        _measure.InitPath(target.Rigidbody.position, _endBehaviour, _entry.Waypoints);
         _pathVisualizer = new GimmickPathVisualizer(_pathLinePrefab, _walker.GetPathStartPosition(_entry.Waypoints), _entry.Waypoints);
         _isInitialized = true;
     }
