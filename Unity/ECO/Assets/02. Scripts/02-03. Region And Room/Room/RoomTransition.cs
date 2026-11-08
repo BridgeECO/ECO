@@ -25,7 +25,7 @@ public class RoomTransition : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (!other.CompareTag(nameof(ETags.PlayerInteract)) || Time.time - _lastTriggerTime < 0.5f)
+        if (!other.CompareTag(nameof(ETags.Player)) || Time.time - _lastTriggerTime < 0.5f)
         {
             return;
         }
@@ -41,7 +41,7 @@ public class RoomTransition : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (!other.CompareTag(nameof(ETags.PlayerInteract)))
+        if (!other.CompareTag(nameof(ETags.Player)))
         {
             return;
         }

@@ -41,7 +41,7 @@ public abstract class SpecialObjectBase : MonoBehaviour, IResettable, IInteracti
 
     protected virtual void OnTriggerEnter2D(Collider2D other)
     {
-        string validTag = _interaction != null ? _interaction.ValidTag : nameof(ETags.PlayerInteract);
+        string validTag = _interaction != null ? _interaction.ValidTag : nameof(ETags.Player);
         if (!other.CompareTag(validTag))
         {
             return;
@@ -54,7 +54,7 @@ public abstract class SpecialObjectBase : MonoBehaviour, IResettable, IInteracti
 
     protected virtual void OnTriggerExit2D(Collider2D other)
     {
-        string validTag = _interaction != null ? _interaction.ValidTag : nameof(ETags.PlayerInteract);
+        string validTag = _interaction != null ? _interaction.ValidTag : nameof(ETags.Player);
         if (!other.CompareTag(validTag))
         {
             return;

@@ -14,5 +14,5 @@ public abstract class InteractionBase : IDisposable
     public abstract void OnTriggerExit2D(Collider2D other);
     public virtual void Dispose() { }
     
-    public virtual string ValidTag => nameof(ETags.PlayerInteract);
+    public virtual string ValidTag => nameof(ETags.Player);
 }
