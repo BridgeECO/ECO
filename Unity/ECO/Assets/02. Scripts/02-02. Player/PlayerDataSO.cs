@@ -49,8 +49,8 @@ public class PlayerDataSO : ScriptableObject
     [SerializeField, Range(0f, 1f)]
     private float _coyoteTime;
 
-    [Tooltip("절벽 끝에서 발이 떨어진 후 수평 이동 거리가 이 값을 초과하면 코요테 점프가 불가합니다 (블록 단위). 너무 높으면 허공에서 점프하는 것처럼 보일 수 있습니다.")]
-    [SerializeField, Range(0f, 0.5f)]
+    [Tooltip("절벽 끝에서 발이 떨어진 후 수평 이동 거리가 이 값을 초과하면 코요테 점프가 불가합니다 (블록 단위). 너무 높으면 허공에서 점프하는 것처럼 보일 수 있습니다. 달리다 떨어지면 이 거리가 코요테 시간보다 먼저 닿으므로, 실제 유예 시간은 이 값 ÷ 공중 이동 속도입니다.")]
+    [SerializeField, Range(0f, 1.5f)]
     private float _coyoteDistance;
 
     [Header("Dash & Hover")]
