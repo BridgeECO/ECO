@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class EnergyPathCalculator
 {
+    private const float COINCIDENT_EXIT_EPSILON = 0.001f;
+
     public void CalculatePathAndDistances(Transform start, Transform end, Transform defaultTransform, List<EnergyPathNode> pathNodes, int resolution, float tension, out List<Vector3> computedWaypoints, out float totalDistance)
     {
         List<Vector3> keyPoints = GetKeyPoints(start, end, defaultTransform, pathNodes);
@@ -35,7 +37,12 @@ public class EnergyPathCalculator
 
     private void AddKeyPoint(List<Vector3> targetList, Transform targetTransform, Transform fallbackTransform)
     {
-        targetList.Add(targetTransform != null ? targetTransform.position : fallbackTransform.position);
+        targetList.Add(GetPosition(targetTransform, fallbackTransform));
+    }
+
+    private Vector3 GetPosition(Transform targetTransform, Transform fallbackTransform)
+    {
+        return targetTransform != null ? targetTransform.position : fallbackTransform.position;
     }
 
     private void AddNodeKeyPoints(List<Vector3> points, EnergyPathNode node)
@@ -67,7 +74,19 @@ public class EnergyPathCalculator
             return;
         }
         AddKeyPoint(points, node.EnergyCore.ActivationPosition, node.EnergyCore.transform);
-        AddKeyPoint(points, node.EnergyCore.DeactivationPosition, node.EnergyCore.transform);
+        if (HasSeparateExit(node.EnergyCore))
+        {
+            AddKeyPoint(points, node.EnergyCore.DeactivationPosition, node.EnergyCore.transform);
+        }
+    }
+
+    // 입구와 출구가 같은 자리인 코어(P_EnergyCore 기본값)를 키포인트 두 개로 넣으면 길이 0인 구간이 생긴다.
+    // 그 구간 양 끝의 접선이 들어오는 방향과 나가는 방향으로 갈라져 곡선이 코어에서 꺾이므로, 이때는 한 점만 넣는다.
+    private bool HasSeparateExit(EnergyCore core)
+    {
+        Vector3 entry = GetPosition(core.ActivationPosition, core.transform);
+        Vector3 exit = GetPosition(core.DeactivationPosition, core.transform);
+        return COINCIDENT_EXIT_EPSILON * COINCIDENT_EXIT_EPSILON < (exit - entry).sqrMagnitude;
     }
 
     private Dictionary<int, float> ComputeSpline(List<Vector3> keyPoints, Vector3[] tangents, int resolution, float tension, List<Vector3> computedWaypoints, ref float totalDistance)
@@ -122,6 +141,13 @@ public class EnergyPathCalculator
         }
 
         node.ActivationCenterDistance = GetKeyDistance(keyPointDistances, keyIndex);
+        if (!HasSeparateExit(node.EnergyCore))
+        {
+            // 출구 거리는 EnergyLineGraph가 코어 반경만큼 뒤로 보정한다.
+            node.DeactivationEndDistance = node.ActivationCenterDistance;
+            return keyIndex + 1;
+        }
+
         node.DeactivationEndDistance = GetKeyDistance(keyPointDistances, keyIndex + 1);
         return keyIndex + 2;
     }
