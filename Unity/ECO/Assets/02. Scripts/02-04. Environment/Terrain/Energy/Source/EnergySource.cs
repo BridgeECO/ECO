@@ -45,11 +45,8 @@ public class EnergySource : MonoBehaviour, IResettable
 
     private EnergySupplyCycle _supplyCycle = new EnergySupplyCycle();
     private EnergySupplyOutput _supplyOutput = new EnergySupplyOutput();
+    private EnergySupplyRule _supplyRule = new EnergySupplyRule();
 
-    // 기획서는 에너지원 하나에 스위치 하나를 전제한다. 여럿이 물리면 하나라도 작동 중일 때 작동한 것으로 본다.
-    private List<Object> _operatingSwitches = new List<Object>();
-
-    private bool _isDeviceActive;
     private bool _isInitPending;
 
     public IReadOnlyList<EnergyLine> ConnectedLines => _connectedLines;
@@ -63,7 +60,7 @@ public class EnergySource : MonoBehaviour, IResettable
 
     private void OnEnable()
     {
-        _isDeviceActive = _isActiveOnStart;
+        _supplyRule.SetDeviceActive(_isActiveOnStart);
         _isInitPending = true;
     }
 
@@ -76,7 +73,7 @@ public class EnergySource : MonoBehaviour, IResettable
         }
 
         _supplyOutput.RefreshSfx();
-        if (!_isDeviceActive || _supplyPattern != EEnergySupplyPattern.Periodic)
+        if (!_supplyRule.IsDeviceActive || _supplyPattern != EEnergySupplyPattern.Periodic)
         {
             return;
         }
@@ -89,7 +86,7 @@ public class EnergySource : MonoBehaviour, IResettable
 
     private void OnDisable()
     {
-        _isDeviceActive = false;
+        _supplyRule.SetDeviceActive(false);
 
         // 리전 언로드처럼 오브젝트가 꺼지면서 공급이 멈출 때는 차단 효과음을 내지 않는다.
         RefreshSupply(false);
@@ -97,28 +94,18 @@ public class EnergySource : MonoBehaviour, IResettable
 
     public void SetSwitchSignal(Object sender, bool isOperated)
     {
-        bool isRegistered = _operatingSwitches.Contains(sender);
-        if (isOperated && !isRegistered)
-        {
-            _operatingSwitches.Add(sender);
-        }
-        else if (!isOperated && isRegistered)
-        {
-            _operatingSwitches.Remove(sender);
-        }
-
+        _supplyRule.SetSwitchSignal(sender, isOperated);
         RefreshSupply();
     }
 
     public void SetDeviceActive(bool isActive)
     {
-        if (_isDeviceActive == isActive)
+        if (!_supplyRule.SetDeviceActive(isActive))
         {
             return;
         }
 
-        _isDeviceActive = isActive;
-        if (_isDeviceActive)
+        if (isActive)
         {
             _supplyCycle.Restart();
         }
@@ -128,8 +115,7 @@ public class EnergySource : MonoBehaviour, IResettable
     // 같은 프레임에 리셋되는 스위치·지형과 순서가 엇갈려도 결과가 같도록, 선을 비운 뒤 다음 프레임에 초기 공급을 다시 건다.
     public void ResetState()
     {
-        _operatingSwitches.Clear();
-        _isDeviceActive = _isActiveOnStart;
+        _supplyRule.Reset(_isActiveOnStart);
         _supplyOutput.ClearImmediately();
         _isInitPending = true;
     }
@@ -143,21 +129,7 @@ public class EnergySource : MonoBehaviour, IResettable
 
     private bool EvaluateSupply()
     {
-        if (!_isDeviceActive)
-        {
-            return false;
-        }
-
-        switch (_supplyPattern)
-        {
-            case EEnergySupplyPattern.Periodic:
-                return _supplyCycle.IsSupplying;
-            case EEnergySupplyPattern.Switch:
-                bool isOperated = 0 < _operatingSwitches.Count;
-                return _isInverted ? !isOperated : isOperated;
-            default:
-                return true;
-        }
+        return _supplyRule.Evaluate(_supplyPattern, _isInverted, _supplyCycle.IsSupplying);
     }
 
     private void RefreshSupply(bool canPlaySfx = true)
