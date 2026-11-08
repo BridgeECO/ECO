@@ -17,7 +17,9 @@ public class EnergySupplyRule
         IsDeviceActive = isActiveOnStart;
     }
 
-    public void SetSwitchSignal(Object sender, bool isOperated)
+    // 꺼진 채 시작한 에너지원은 연결된 스위치가 처음 작동할 때 켜지고, 그 뒤로는 리셋 전까지 켜진 채 공급 패턴을 따른다.
+    // 이번 신호로 켜졌으면 true를 돌려준다.
+    public bool SetSwitchSignal(Object sender, bool isOperated)
     {
         bool isRegistered = _operatingSwitches.Contains(sender);
         if (isOperated && !isRegistered)
@@ -28,6 +30,8 @@ public class EnergySupplyRule
         {
             _operatingSwitches.Remove(sender);
         }
+
+        return isOperated && SetDeviceActive(true);
     }
 
     // 켜짐 상태가 실제로 바뀌었을 때만 true를 돌려준다.

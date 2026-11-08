@@ -24,7 +24,7 @@ public class EnergySource : MonoBehaviour, IResettable
     [SerializeField]
     private EEnergySupplyPattern _supplyPattern = EEnergySupplyPattern.Always;
 
-    [Tooltip("켜 두면 씬이 시작될 때부터 공급 규칙을 따릅니다. 끄면 SetDeviceActive(true)로 켤 때까지 공급하지 않습니다.")]
+    [Tooltip("끄면 처음에는 공급하지 않다가, 연결된 스위치가 처음 작동할 때부터 Supply Pattern을 따릅니다. 리스폰하면 다시 꺼진 채 시작합니다.")]
     [SerializeField]
     private bool _isActiveOnStart = true;
 
@@ -94,7 +94,10 @@ public class EnergySource : MonoBehaviour, IResettable
 
     public void SetSwitchSignal(Object sender, bool isOperated)
     {
-        _supplyRule.SetSwitchSignal(sender, isOperated);
+        if (_supplyRule.SetSwitchSignal(sender, isOperated))
+        {
+            _supplyCycle.Restart();
+        }
         RefreshSupply();
     }
 
