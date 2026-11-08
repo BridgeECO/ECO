@@ -6,8 +6,6 @@ public class PlayerSensor : MonoBehaviour
     [SerializeField]
     private BoxCollider2D _bodyCollider;
     [SerializeField]
-    private CircleCollider2D _interactionCollider;
-    [SerializeField]
     private Collider2D _feetCollider;
     [SerializeField]
     private EdgeCollider2D _leftSlipCollider;
@@ -19,8 +17,6 @@ public class PlayerSensor : MonoBehaviour
     private LayerMask _terrainLayer;
     [SerializeField]
     private LayerMask _platformLayer;
-    [SerializeField]
-    private LayerMask _interactionLayer;
 
     private const float WALL_CHECK_DISTANCE = 0.05f;
     private const float SLIP_CHECK_BOX_SIZE = 0.1f;
