@@ -96,19 +96,47 @@ public static class EnergySupplyValidator
         for (int i = 0; i < sources.Length; i++)
         {
             sourceSwitchCounts.TryGetValue(sources[i], out int switchCount);
-            bool isSwitchPattern = sources[i].SupplyPattern == EEnergySupplyPattern.Switch;
-
-            if (isSwitchPattern && switchCount == 0)
-            {
-                invalidCount++;
-                Debug.LogWarning($"[Energy] 스위치형 에너지원 '{sources[i].name}'을(를) 작동시키는 스위치가 없습니다.", sources[i]);
-            }
-            else if (1 < switchCount)
-            {
-                invalidCount++;
-                Debug.LogWarning($"[Energy] 에너지원 '{sources[i].name}'에 스위치 {switchCount}개가 연결되어 있습니다. 하나라도 작동 중이면 작동한 것으로 처리합니다.", sources[i]);
-            }
+            invalidCount += ReportSwitchCount(sources[i], switchCount);
+            invalidCount += ReportSwitchResponse(sources[i], switchCount);
         }
         return invalidCount;
+    }
+
+    private static int ReportSwitchCount(EnergySource source, int switchCount)
+    {
+        if (source.SupplyPattern == EEnergySupplyPattern.Switch && switchCount == 0)
+        {
+            Debug.LogWarning($"[Energy] 스위치형 에너지원 '{source.name}'을(를) 작동시키는 스위치가 없습니다.", source);
+            return 1;
+        }
+
+        if (1 < switchCount)
+        {
+            Debug.LogWarning($"[Energy] 에너지원 '{source.name}'에 스위치 {switchCount}개가 연결되어 있습니다. 하나라도 작동 중이면 작동한 것으로 처리합니다.", source);
+            return 1;
+        }
+        return 0;
+    }
+
+    // 스위치형이 아닌 에너지원은 꺼진 채 시작할 때만 스위치에 반응한다. 스위치가 처음 작동하면 켜지고 그 뒤로는 패턴대로 공급한다.
+    private static int ReportSwitchResponse(EnergySource source, int switchCount)
+    {
+        if (source.SupplyPattern == EEnergySupplyPattern.Switch)
+        {
+            return 0;
+        }
+
+        if (!source.IsActiveOnStart && switchCount == 0)
+        {
+            Debug.LogWarning($"[Energy] 에너지원 '{source.name}'은(는) Is Active On Start가 꺼져 있는데 작동시키는 스위치가 없어 켜지지 않습니다.", source);
+            return 1;
+        }
+
+        if (source.IsActiveOnStart && 0 < switchCount)
+        {
+            Debug.LogWarning($"[Energy] 에너지원 '{source.name}'은(는) Supply Pattern이 {source.SupplyPattern}이고 Is Active On Start가 켜져 있어 연결된 스위치에 반응하지 않습니다.", source);
+            return 1;
+        }
+        return 0;
     }
 }
