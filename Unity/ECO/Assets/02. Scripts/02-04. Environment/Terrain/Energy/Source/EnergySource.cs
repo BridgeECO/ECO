@@ -51,6 +51,7 @@ public class EnergySource : MonoBehaviour, IResettable
 
     public IReadOnlyList<EnergyLine> ConnectedLines => _connectedLines;
     public EEnergySupplyPattern SupplyPattern => _supplyPattern;
+    public bool IsActiveOnStart => _isActiveOnStart;
     public bool IsSupplying => _supplyOutput.IsSupplying;
 
     private void Awake()
