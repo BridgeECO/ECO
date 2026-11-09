@@ -5,4 +5,5 @@ public enum EPoolable
     EnergyLineOverlay,
     EnergyOrb,
     DashboardGaugeSegment,
+    PlayerHitEffect,
 }

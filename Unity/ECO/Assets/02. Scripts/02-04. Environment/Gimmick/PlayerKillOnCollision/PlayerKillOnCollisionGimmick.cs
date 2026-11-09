@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class PlayerKillOnCollisionGimmick : TerrainGimmickBase
 {
+    // 트리거 콜백은 들어온 상대만 알려 주므로, 피격 이펙트 위치를 잡을 이 지형의 콜라이더를 기억해 둔다.
+    private Collider2D _terrainCollider;
+
     public PlayerKillOnCollisionGimmick(EGimmickActivationType activationType, bool isInverted)
         : base(activationType, isInverted)
     {
@@ -9,10 +12,10 @@ public class PlayerKillOnCollisionGimmick : TerrainGimmickBase
 
     protected override void ApplyGimmick(TerrainObject target, bool isActivated)
     {
-        Collider2D terrainCollider = target.GetComponent<Collider2D>();
-        if (terrainCollider != null)
+        _terrainCollider = target.GetComponent<Collider2D>();
+        if (_terrainCollider != null)
         {
-            terrainCollider.isTrigger = isActivated;
+            _terrainCollider.isTrigger = isActivated;
         }
     }
 
@@ -29,6 +32,6 @@ public class PlayerKillOnCollisionGimmick : TerrainGimmickBase
         {
             return;
         }
-        playerLife.InstantKill(EPlayerDeathCause.KillGimmick);
+        playerLife.InstantKill(EPlayerDeathCause.KillGimmick, other, _terrainCollider);
     }
 }
