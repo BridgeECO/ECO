@@ -103,15 +103,11 @@ public class PlayerLife : MonoBehaviour
         }
         _isDying = true;
         _soundHandler?.PlayDeathSfx();
+        _hitEffectSpawner.SpawnAtContact(playerCollider, killer);
 
-        // 기획서 목숨 차감 표에 낙사는 피격으로 올라 있지 않아 이펙트를 띄우지 않는다.
         if (cause == EPlayerDeathCause.Fall)
         {
             BroadcastFall();
-        }
-        else
-        {
-            _hitEffectSpawner.SpawnAtContact(playerCollider, killer);
         }
 
         LifeManager.Instance.InstantKill();
@@ -145,7 +141,7 @@ public class PlayerLife : MonoBehaviour
     // 보스 접촉과 리스폰 버튼은 PlayerLife를 거치지 않고 사망시키므로 사망 표시를 여기서도 세운다.
     private void OnPlayerDied()
     {
-        // 즉사·피해로 여기서 시작한 사망이면 닿은 자리에 이펙트를 이미 띄웠다(낙사는 띄우지 않는다).
+        // 즉사·피해로 여기서 시작한 사망이면 닿은 자리에 이펙트를 이미 띄웠다.
         bool isStartedHere = _isDying || _isTakingDamage;
         _isDying = true;
         if (isStartedHere)
