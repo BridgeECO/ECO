@@ -5,22 +5,16 @@ using Cysharp.Threading.Tasks;
 
 public class PlayerLife : MonoBehaviour
 {
-    private SpriteRenderer _spriteRenderer;
     private PlayerSoundHandler _soundHandler;
+    private PlayerInvincibility _invincibility;
     private readonly HashSet<Collider2D> _activeObstacles = new();
 
-    private const float DURATION_INVINCIBILITY = 2f;
-    private const float SPEED_FLICKER = 8f;
-
-    private float _invincibilityTimer;
-    private bool _isInvincible;
     // PlayerDied부터 PlayerRespawned까지 참이다. 그사이에 들어온 즉사·피해는 이미 시작된 사망에 딸린 것이라 버린다.
     private bool _isDying;
 
     private void Awake()
     {
-        _spriteRenderer = GetComponent<SpriteRenderer>();
-        _isInvincible = false;
+        _invincibility = new PlayerInvincibility(GetComponent<SpriteRenderer>());
     }
 
     private void OnEnable()
@@ -35,18 +29,10 @@ public class PlayerLife : MonoBehaviour
 
     private void Update()
     {
-        if (!_isInvincible)
+        if (_invincibility.Tick(Time.deltaTime))
         {
-            return;
+            TakeLingeringDamage();
         }
-
-        _invincibilityTimer -= Time.deltaTime;
-        if (_invincibilityTimer <= 0f)
-        {
-            StopInvincibility();
-            return;
-        }
-        UpdateSpriteAlpha();
     }
 
     private void OnDisable()
@@ -127,27 +113,13 @@ public class PlayerLife : MonoBehaviour
 
     private void TakeDamage()
     {
-        if (_isInvincible || _isDying)
+        if (_invincibility.IsInvincible || _isDying)
         {
             return;
         }
-        BeginInvincibility();
-        LifeManager.Instance.TakeDamage();
-    }
-
-    private void UpdateSpriteAlpha()
-    {
-        float alpha = Mathf.PingPong(Time.time * SPEED_FLICKER, 1f);
-        Color color = _spriteRenderer.color;
-        color.a = alpha;
-        _spriteRenderer.color = color;
-    }
-
-    private void BeginInvincibility()
-    {
         _soundHandler?.PlayDamageSfx();
-        _isInvincible = true;
-        _invincibilityTimer = DURATION_INVINCIBILITY;
+        _invincibility.Begin();
+        LifeManager.Instance.TakeDamage();
     }
 
     // 보스 접촉과 리스폰 버튼은 PlayerLife를 거치지 않고 사망시키므로 사망 표시를 여기서도 세운다.
@@ -166,17 +138,13 @@ public class PlayerLife : MonoBehaviour
     private async UniTaskVoid StopInvincibilityAsync(CancellationToken cancellationToken)
     {
         await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
-        StopInvincibility();
+        _invincibility.Stop();
+        TakeLingeringDamage();
     }
 
-    private void StopInvincibility()
+    // 무적이 풀릴 때까지 장애물에 닿아 있었다면 다시 피해를 입는다.
+    private void TakeLingeringDamage()
     {
-        _isInvincible = false;
-        _invincibilityTimer = 0f;
-        Color color = _spriteRenderer.color;
-        color.a = 1f;
-        _spriteRenderer.color = color;
-
         CleanActiveObstacles();
         if (_activeObstacles.Count > 0)
         {
