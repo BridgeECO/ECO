@@ -6,7 +6,7 @@ using UnityEngine;
 public class LifeManager : POCOSingleton<LifeManager>
 {
     private const int MAX_LIFE = 3;
-    private const int RESPAWN_LIFE = 2;
+    private const int RESPAWN_LIFE = 3;
 
     private int _currentLife = MAX_LIFE;
 
