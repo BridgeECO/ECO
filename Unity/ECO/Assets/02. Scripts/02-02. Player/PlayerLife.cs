@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 
@@ -27,12 +28,6 @@ public class PlayerLife : MonoBehaviour
             return;
         }
         EventManager.Instance.AddEventListener(EEventType.PlayerRespawned, OnPlayerRespawned);
-    }
-
-    // 플레이어 루트의 조립자(PlayerStateMachine.Awake)가 주입한다.
-    public void InitSoundHandler(PlayerSoundHandler soundHandler)
-    {
-        _soundHandler = soundHandler;
     }
 
     private void Update()
@@ -65,6 +60,12 @@ public class PlayerLife : MonoBehaviour
         }
     }
 
+    // 플레이어 루트의 조립자(PlayerStateMachine.Awake)가 주입한다.
+    public void InitSoundHandler(PlayerSoundHandler soundHandler)
+    {
+        _soundHandler = soundHandler;
+    }
+
     public void RelayTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag(nameof(ETags.Obstacle)))
@@ -79,23 +80,13 @@ public class PlayerLife : MonoBehaviour
 
         if (other.CompareTag(nameof(ETags.InstantKill)))
         {
-            _soundHandler?.PlayDeathSfx();
-
-            // 리스폰 연쇄(PlayerDied → RespawnAsync → ResetRoom)보다 먼저 알려야
-            // 구독자가 리셋되기 전에 낙사를 집계할 수 있다.
-            if (EventManager.HasInstance)
-            {
-                EventManager.Instance.BroadcastEvent(EEventType.PlayerInstantKilled);
-            }
-
-            LifeManager.Instance.InstantKill();
+            InstantKill();
             return;
         }
 
         if (other.CompareTag(nameof(ETags.Obstacle)))
         {
-            BeginInvincibility();
-            LifeManager.Instance.TakeDamage();
+            TakeDamage();
         }
     }
 
@@ -105,6 +96,26 @@ public class PlayerLife : MonoBehaviour
         {
             _activeObstacles.Remove(other);
         }
+    }
+
+    private void InstantKill()
+    {
+        _soundHandler?.PlayDeathSfx();
+
+        // 리스폰 연쇄(PlayerDied → RespawnAsync → ResetRoom)보다 먼저 알려야
+        // 구독자가 리셋되기 전에 낙사를 집계할 수 있다.
+        if (EventManager.HasInstance)
+        {
+            EventManager.Instance.BroadcastEvent(EEventType.PlayerInstantKilled);
+        }
+
+        LifeManager.Instance.InstantKill();
+    }
+
+    private void TakeDamage()
+    {
+        BeginInvincibility();
+        LifeManager.Instance.TakeDamage();
     }
 
     private void UpdateSpriteAlpha()
@@ -125,12 +136,12 @@ public class PlayerLife : MonoBehaviour
     private void OnPlayerRespawned()
     {
         _activeObstacles.Clear();
-        StopInvincibilityAsync().Forget();
+        StopInvincibilityAsync(this.GetCancellationTokenOnDestroy()).Forget();
     }
 
-    private async UniTaskVoid StopInvincibilityAsync()
+    private async UniTaskVoid StopInvincibilityAsync(CancellationToken cancellationToken)
     {
-        await UniTask.Yield();
+        await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
         StopInvincibility();
     }
 
@@ -145,8 +156,7 @@ public class PlayerLife : MonoBehaviour
         CleanActiveObstacles();
         if (_activeObstacles.Count > 0)
         {
-            BeginInvincibility();
-            LifeManager.Instance.TakeDamage();
+            TakeDamage();
         }
     }
 
