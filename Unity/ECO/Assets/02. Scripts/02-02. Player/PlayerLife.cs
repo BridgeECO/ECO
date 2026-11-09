@@ -14,6 +14,8 @@ public class PlayerLife : MonoBehaviour
 
     private float _invincibilityTimer;
     private bool _isInvincible;
+    // PlayerDied부터 PlayerRespawned까지 참이다. 그사이에 들어온 즉사·피해는 이미 시작된 사망에 딸린 것이라 버린다.
+    private bool _isDying;
 
     private void Awake()
     {
@@ -27,6 +29,7 @@ public class PlayerLife : MonoBehaviour
         {
             return;
         }
+        EventManager.Instance.AddEventListener(EEventType.PlayerDied, OnPlayerDied);
         EventManager.Instance.AddEventListener(EEventType.PlayerRespawned, OnPlayerRespawned);
     }
 
@@ -49,6 +52,7 @@ public class PlayerLife : MonoBehaviour
     private void OnDisable()
     {
         _activeObstacles.Clear();
+        _isDying = false;
         RemoveEventListeners();
     }
 
@@ -56,6 +60,7 @@ public class PlayerLife : MonoBehaviour
     {
         if (EventManager.HasInstance)
         {
+            EventManager.Instance.RemoveEventListener(EEventType.PlayerDied, OnPlayerDied);
             EventManager.Instance.RemoveEventListener(EEventType.PlayerRespawned, OnPlayerRespawned);
         }
     }
@@ -71,22 +76,13 @@ public class PlayerLife : MonoBehaviour
         if (other.CompareTag(nameof(ETags.Obstacle)))
         {
             _activeObstacles.Add(other);
-        }
-
-        if (_isInvincible)
-        {
+            TakeDamage();
             return;
         }
 
         if (other.CompareTag(nameof(ETags.InstantKill)))
         {
-            InstantKill();
-            return;
-        }
-
-        if (other.CompareTag(nameof(ETags.Obstacle)))
-        {
-            TakeDamage();
+            InstantKill(EPlayerDeathCause.Fall);
         }
     }
 
@@ -98,22 +94,43 @@ public class PlayerLife : MonoBehaviour
         }
     }
 
-    private void InstantKill()
+    /// <summary>
+    /// 즉사 판정. 남은 목숨과 데미지 무적에 관계없이 사망시킨다.
+    /// </summary>
+    public void InstantKill(EPlayerDeathCause cause)
     {
+        // 여러 콜라이더가 한 스텝에 함께 닿거나 리스폰 페이드 중에 다시 닿아도 사망은 한 번만 처리한다.
+        if (_isDying)
+        {
+            return;
+        }
+        _isDying = true;
         _soundHandler?.PlayDeathSfx();
 
-        // 리스폰 연쇄(PlayerDied → RespawnAsync → ResetRoom)보다 먼저 알려야
-        // 구독자가 리셋되기 전에 낙사를 집계할 수 있다.
-        if (EventManager.HasInstance)
+        if (cause == EPlayerDeathCause.Fall)
         {
-            EventManager.Instance.BroadcastEvent(EEventType.PlayerInstantKilled);
+            BroadcastFall();
         }
 
         LifeManager.Instance.InstantKill();
     }
 
+    // 리스폰 연쇄(PlayerDied → RespawnAsync → ResetRoom)보다 먼저 알려야
+    // 구독자가 리셋되기 전에 낙사를 집계할 수 있다.
+    private void BroadcastFall()
+    {
+        if (EventManager.HasInstance)
+        {
+            EventManager.Instance.BroadcastEvent(EEventType.PlayerInstantKilled);
+        }
+    }
+
     private void TakeDamage()
     {
+        if (_isInvincible || _isDying)
+        {
+            return;
+        }
         BeginInvincibility();
         LifeManager.Instance.TakeDamage();
     }
@@ -133,8 +150,15 @@ public class PlayerLife : MonoBehaviour
         _invincibilityTimer = DURATION_INVINCIBILITY;
     }
 
+    // 보스 접촉과 리스폰 버튼은 PlayerLife를 거치지 않고 사망시키므로 사망 표시를 여기서도 세운다.
+    private void OnPlayerDied()
+    {
+        _isDying = true;
+    }
+
     private void OnPlayerRespawned()
     {
+        _isDying = false;
         _activeObstacles.Clear();
         StopInvincibilityAsync(this.GetCancellationTokenOnDestroy()).Forget();
     }
