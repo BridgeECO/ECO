@@ -129,6 +129,7 @@ GameObject:
   - component: {fileID: 6754039644612557562}
   - component: {fileID: 7638663563288020855}
   - component: {fileID: 5369868439554784722}
+  - component: {fileID: 5866741016968105490}
   m_Layer: 0
   m_Name: P_Player
   m_TagString: Player
@@ -364,6 +365,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 740e48b1174748fe8b364e517a9a8abd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5866741016968105490
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5432847474108508918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d34ed591730f85b408010d9e137edfe9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _bodyCollider: {fileID: 7007658605278046237}
+  _playerLife: {fileID: 6754039644612557562}
+  _terrainLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  _insetMargin: 0.02
+  _requiredOverlapSteps: 1
 --- !u!1 &7368091525517128637
 GameObject:
   m_ObjectHideFlags: 0
