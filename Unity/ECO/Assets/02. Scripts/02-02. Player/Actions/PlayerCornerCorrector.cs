@@ -51,7 +51,7 @@ public class PlayerCornerCorrector : MonoBehaviour
 
     private void UpdateCornerCorrection()
     {
-        if (_motor.Velocity.y <= 0f)
+        if (GetRisingSpeed() <= 0f)
         {
             return;
         }
@@ -77,6 +77,14 @@ public class PlayerCornerCorrector : MonoBehaviour
         {
             ApplyCorrection(-1f);
         }
+    }
+
+    // 점프로 오를 때뿐 아니라 움직이는 지형에 실려 오를 때도 머리가 천장에 부딪히므로, 타고 있는 지형이 실어 올리는 속도를 더한다.
+    // 실려 오르다 한쪽 구역만 걸리면 점프 때처럼 옆으로 밀어 모서리를 빠져나가게 하고, 가운데 구역이 걸리면
+    // 플레이어 스스로는 멈출 수 없으니 압사 판정(PlayerCrushDetector)이 끼임으로 처리한다.
+    private float GetRisingSpeed()
+    {
+        return _motor.Velocity.y + _motor.ExternalVelocity.y;
     }
 
     private bool IsProbeHitting(float centerX, float width, float bodyTop)
