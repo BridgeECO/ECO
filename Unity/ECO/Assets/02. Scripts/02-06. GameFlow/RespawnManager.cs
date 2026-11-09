@@ -67,7 +67,8 @@ public class RespawnManager : MonoBehaviourSingleton<RespawnManager>
     private void OnSavePointReached(SavePoint savePoint)
     {
         // 리스폰은 플레이어를 세이브 포인트 트리거 위로 텔레포트시키므로 페이드 도중 재발동한다.
-        // 막지 않으면 리스폰 라이프(2개)가 즉시 최대치로 덮어써져 하트 연출이 튄다.
+        // 막지 않으면 리스폰 목숨이 곧바로 최대치로 덮어써진다. 지금은 둘 다 3개라 티가 나지 않지만,
+        // 리스폰 목숨을 최대치보다 적게 바꾸면 하트 연출이 튄다.
         if (IsRespawning)
         {
             return;
