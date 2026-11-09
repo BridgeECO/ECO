@@ -2,8 +2,9 @@ using UnityEngine;
 using VInspector;
 
 /// <summary>
-/// 움직이는 지형이 플레이어를 벽이나 천장으로 밀어붙이거나 몸 위에서 지형이 켜져 지형이 몸통 안으로 들어오면
-/// 지형 사이에 끼인 것으로 보고 즉사시킨다.
+/// 지형이 몸통 안으로 들어와 빠져나가지 못하면 지형 사이에 끼인 것으로 보고 즉사시킨다. 움직이는 지형이 벽이나 천장으로
+/// 밀어붙이는 경우와, 몸 위에서 켜진 지형이 빠질 곳 없이 누르는 경우다. 켜진 지형이라도 빈자리가 있어
+/// 물리 엔진이 밀어내는 중이면 끼임으로 보지 않는다.
 /// </summary>
 // 다른 스크립트의 FixedUpdate보다 먼저 돌아 직전 물리 스텝이 정리한 상태만 본다. 모서리 보정은 FixedUpdate에서
 // 강체 위치를 직접 옮기는데, 좁은 통로에서는 몸통을 옆벽 안으로 0.1가량 넣었다가 이어지는 물리 스텝이 밀어낸다.
@@ -11,6 +12,13 @@ using VInspector;
 [DefaultExecutionOrder(-1)]
 public class PlayerCrushDetector : MonoBehaviour
 {
+    // 몸통 안에 함께 들어올 수 있는 지형 수. 미는 지형과 벽, 타고 있는 지형과 천장처럼 둘이 보통이라 여유를 둔다.
+    private const int OVERLAP_CAPACITY = 4;
+
+    // 겹친 깊이가 한 스텝에 이만큼 넘게 줄면 물리 엔진이 몸을 밀어내 빠져나가는 중으로 본다. 측정에서 밀려나는 겹침은
+    // 한 스텝에 0.37 이상 줄었고, 빠질 곳 없이 끼인 겹침은 처음 한 번 0.013 이하로 줄고 그대로였다.
+    private const float ESCAPE_DEPTH_PER_STEP = 0.1f;
+
     [Foldout("Hierarchy")]
     [SerializeField]
     private Collider2D _bodyCollider;
@@ -29,18 +37,17 @@ public class PlayerCrushDetector : MonoBehaviour
     [SerializeField]
     private float _insetMargin = 0.02f;
 
-    // 지형이 몸통 안에 이만큼의 물리 스텝 동안 이어서 있어야 즉사시킨다. 몸을 덮으며 켜진 지형은 바로 다음 물리 스텝에
-    // 플레이어를 옆으로 밀어내 한 스텝만 겹쳐 보이므로, 2 이상으로 올리면 이 경우를 놓친다.
-    // 착지·대시는 강체가 연속 충돌 검사(Continuous)라 몸통 안으로 들어오지 않아 거를 필요가 없다.
+    // 빠져나가지 못하는 겹침이 이만큼의 물리 스텝 동안 이어지면 즉사시킨다. 처음 겹친 스텝에서는 다음 스텝에 밀려날지
+    // 알 수 없으므로 2 이상이어야 한다. 움직이는 지형에 끼면 처음 겹친 다음 스텝에 겹침이 더 깊어져 바로 걸린다.
     [SerializeField]
-    [Min(1)]
-    private int _requiredOverlapSteps = 1;
+    [Min(2)]
+    private int _requiredOverlapSteps = 2;
 
-    // 끼였는지와 피격 이펙트를 띄울 지형 하나만 알면 되므로 결과 버퍼는 1칸이다.
     // 매 물리 스텝 조회하므로 리스트 대신 결과 개수가 고정되는 배열을 미리 할당해 재사용한다.
-    private readonly Collider2D[] _overlapResults = new Collider2D[1];
+    private readonly Collider2D[] _overlapResults = new Collider2D[OVERLAP_CAPACITY];
     private ContactFilter2D _terrainFilter;
     private int _overlapSteps;
+    private float _previousDepth;
 
     private void Awake()
     {
@@ -54,7 +61,7 @@ public class PlayerCrushDetector : MonoBehaviour
 
     private void OnDisable()
     {
-        _overlapSteps = 0;
+        ResetOverlap();
     }
 
     private void InitTerrainFilter()
@@ -70,24 +77,33 @@ public class PlayerCrushDetector : MonoBehaviour
         // 사망부터 부활까지는 리스폰 텔레포트·방 초기화로 지형과 잠깐 겹칠 수 있고, 이미 시작된 사망을 다시 셀 이유도 없다.
         if (IsRespawning())
         {
-            _overlapSteps = 0;
+            ResetOverlap();
             return;
         }
 
-        if (!TryFindCrushingTerrain(out Collider2D crushingTerrain))
+        float depth = MeasureDeepestOverlap(out Collider2D crushingTerrain);
+        if (depth <= 0f)
         {
-            _overlapSteps = 0;
+            ResetOverlap();
             return;
         }
 
-        _overlapSteps++;
+        bool isEscaping = depth < _previousDepth - ESCAPE_DEPTH_PER_STEP;
+        _previousDepth = depth;
+        _overlapSteps = isEscaping ? 0 : _overlapSteps + 1;
         if (_overlapSteps < _requiredOverlapSteps)
         {
             return;
         }
 
-        _overlapSteps = 0;
+        ResetOverlap();
         _playerLife.InstantKill(EPlayerDeathCause.Crush, _bodyCollider, crushingTerrain);
+    }
+
+    private void ResetOverlap()
+    {
+        _overlapSteps = 0;
+        _previousDepth = 0f;
     }
 
     private bool IsRespawning()
@@ -95,12 +111,25 @@ public class PlayerCrushDetector : MonoBehaviour
         return RespawnManager.HasInstance && RespawnManager.Instance.IsRespawning;
     }
 
-    private bool TryFindCrushingTerrain(out Collider2D crushingTerrain)
+    // 몸통 안으로 들어온 지형 가운데 가장 깊이 겹친 지형과 그 깊이를 구한다. 들어온 지형이 없으면 0이다.
+    // 깊이는 두 콜라이더를 떼어 놓는 데 필요한 최소 거리라, 미는 쪽과 받치는 쪽 중 어느 지형이 더 파고들어도 커진다.
+    private float MeasureDeepestOverlap(out Collider2D deepestTerrain)
     {
+        deepestTerrain = null;
         Bounds body = _bodyCollider.bounds;
         Vector2 innerSize = new Vector2(body.size.x - _insetMargin * 2f, body.size.y - _insetMargin * 2f);
         int count = Physics2D.OverlapBox(body.center, innerSize, 0f, _terrainFilter, _overlapResults);
-        crushingTerrain = _overlapResults[0];
-        return 0 < count;
+
+        float deepest = 0f;
+        for (int i = 0; i < count; i++)
+        {
+            float depth = -Physics2D.Distance(_bodyCollider, _overlapResults[i]).distance;
+            if (deepest < depth)
+            {
+                deepest = depth;
+                deepestTerrain = _overlapResults[i];
+            }
+        }
+        return deepest;
     }
 }
