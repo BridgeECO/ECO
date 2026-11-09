@@ -6,8 +6,6 @@ public class PlayerSensor : MonoBehaviour
     [SerializeField]
     private BoxCollider2D _bodyCollider;
     [SerializeField]
-    private CircleCollider2D _interactionCollider;
-    [SerializeField]
     private Collider2D _feetCollider;
     [SerializeField]
     private EdgeCollider2D _leftSlipCollider;
@@ -19,11 +17,13 @@ public class PlayerSensor : MonoBehaviour
     private LayerMask _terrainLayer;
     [SerializeField]
     private LayerMask _platformLayer;
-    [SerializeField]
-    private LayerMask _interactionLayer;
 
     private const float WALL_CHECK_DISTANCE = 0.05f;
     private const float SLIP_CHECK_BOX_SIZE = 0.1f;
+
+    // 벽과 몸통 접촉은 몸통 아래쪽(머리를 합치기 전 몸통 높이 1.1 / 2.1)만 본다. 머리 높이까지 보면 벽 아래 끝을 지날 때
+    // 머리만 걸친 채 벽타기가 이어지고, 벽 방향 레이가 빗나가는 높이와 판정이 끝나는 높이가 어긋나 좌우 결과가 달라진다.
+    private const float WALL_CHECK_HEIGHT_RATIO = 1.1f / 2.1f;
 
     private Collider2D[] _overlapResults = new Collider2D[4];
     private Collider2D _lastPlatformCollider;
@@ -102,13 +102,23 @@ public class PlayerSensor : MonoBehaviour
 
     private void UpdateBodySensor()
     {
-        IsBodyTouching = CheckOverlap(_bodyCollider.bounds.center, _bodyCollider.bounds.size, _terrainLayer);
+        Bounds wallCheckBounds = GetWallCheckBounds();
+        IsBodyTouching = CheckOverlap(wallCheckBounds.center, wallCheckBounds.size, _terrainLayer);
     }
 
     private void UpdateWallSensor()
     {
-        IsWallTouching = CheckOverlap(_bodyCollider.bounds.center,
-        (Vector2)_bodyCollider.bounds.size + new Vector2(WALL_CHECK_DISTANCE * 2f, 0f), _terrainLayer);
+        Bounds wallCheckBounds = GetWallCheckBounds();
+        IsWallTouching = CheckOverlap(wallCheckBounds.center,
+        (Vector2)wallCheckBounds.size + new Vector2(WALL_CHECK_DISTANCE * 2f, 0f), _terrainLayer);
+    }
+
+    private Bounds GetWallCheckBounds()
+    {
+        Bounds bodyBounds = _bodyCollider.bounds;
+        float height = bodyBounds.size.y * WALL_CHECK_HEIGHT_RATIO;
+        Vector3 center = new Vector3(bodyBounds.center.x, bodyBounds.min.y + height * 0.5f, bodyBounds.center.z);
+        return new Bounds(center, new Vector3(bodyBounds.size.x, height, bodyBounds.size.z));
     }
 
     private void UpdateSlipSensor()
@@ -162,8 +172,9 @@ public class PlayerSensor : MonoBehaviour
             WallDirection = 0f;
             return;
         }
+        Bounds wallCheckBounds = GetWallCheckBounds();
         bool isWallRight = Physics2D.Raycast
-            (_bodyCollider.bounds.center, Vector2.right, _bodyCollider.bounds.extents.x + WALL_CHECK_DISTANCE, _terrainLayer);
+            (wallCheckBounds.center, Vector2.right, wallCheckBounds.extents.x + WALL_CHECK_DISTANCE, _terrainLayer);
         WallDirection = (isWallRight) ? 1f : -1f;
     }
 }

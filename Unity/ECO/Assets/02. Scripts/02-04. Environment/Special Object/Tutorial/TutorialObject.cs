@@ -77,7 +77,7 @@ public class TutorialObject : MonoBehaviour, IResettable
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (!other.CompareTag(nameof(ETags.PlayerInteract)))
+        if (!other.CompareTag(nameof(ETags.Player)))
         {
             return;
         }
@@ -99,7 +99,7 @@ public class TutorialObject : MonoBehaviour, IResettable
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (!other.CompareTag(nameof(ETags.PlayerInteract)))
+        if (!other.CompareTag(nameof(ETags.Player)))
         {
             return;
         }

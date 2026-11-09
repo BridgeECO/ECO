@@ -15,7 +15,7 @@ public class GimmickTriggerZone : MonoBehaviour, IResettable
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (!other.CompareTag(nameof(ETags.PlayerInteract)))
+        if (!other.CompareTag(nameof(ETags.Player)))
         {
             return;
         }
