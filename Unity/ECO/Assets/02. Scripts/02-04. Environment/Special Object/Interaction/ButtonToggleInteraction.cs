@@ -7,11 +7,14 @@ using UnityEngine;
 /// 키를 떼도 상태가 유지되므로, 플레이어가 이동하는 동안 계속 유지되어야 하는 연출에 사용한다.
 /// isTurnedOffOnExit를 끄면 범위를 벗어나도 꺼지지 않는다(스위치형 에너지 스위치).
 /// </summary>
-public class ButtonToggleInteraction : InteractionBase
+public class ButtonToggleInteraction : ButtonInteractionBase
 {
     private readonly bool _isTurnedOffOnExit;
     private bool _isInteracting = false;
     private IDisposable _inputDisposable;
+
+    // 범위를 벗어나도 유지되는 토글은 켜짐이 다루는 동안의 작동이 아니라 대상의 상태라 선택을 고정하지 않는다.
+    public override bool IsEngaged => _isTurnedOffOnExit && _isInteracting;
 
     public ButtonToggleInteraction(IInteractionTarget target, bool isTurnedOffOnExit = true) : base(target)
     {

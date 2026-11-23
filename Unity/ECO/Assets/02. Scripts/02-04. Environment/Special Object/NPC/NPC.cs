@@ -59,7 +59,7 @@ public class NPC : SpecialObjectBase
 
     protected override void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag(nameof(ETags.Player)))
+        if (IsValidInteractor(other))
         {
             _playerInput = other.GetComponentInParent<PlayerInput>();
         }
@@ -68,7 +68,7 @@ public class NPC : SpecialObjectBase
 
     protected override void OnTriggerExit2D(Collider2D other)
     {
-        if (other.CompareTag(nameof(ETags.Player)))
+        if (IsValidInteractor(other))
         {
             _playerInput = null;
         }

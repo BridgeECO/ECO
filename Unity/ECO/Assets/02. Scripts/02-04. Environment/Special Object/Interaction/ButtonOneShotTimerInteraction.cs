@@ -1,15 +1,17 @@
-﻿using System;
+using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using R3;
 using UnityEngine;
 
-public class ButtonOneShotTimerInteraction : InteractionBase
+public class ButtonOneShotTimerInteraction : ButtonInteractionBase
 {
     private readonly float _activeDuration;
     private bool _isInteracting = false;
     private IDisposable _inputDisposable;
     private CancellationTokenSource _cts;
+
+    public override bool IsEngaged => _isInteracting;
 
     public ButtonOneShotTimerInteraction(IInteractionTarget target, float activeDuration) : base(target)
     {

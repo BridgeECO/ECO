@@ -26,6 +26,13 @@ public class PlayerKillOnCollisionGimmick : TerrainGimmickBase
             return;
         }
 
+        // 플레이어 상호작용 범위(PlayerInteract 태그)는 같은 강체에 붙은 감지용 원이라 몸에 닿은 것이 아니다.
+        // 강체로 플레이어를 찾는 판정은 이 태그를 걸러야 한다.
+        if (other.CompareTag(nameof(ETags.PlayerInteract)))
+        {
+            return;
+        }
+
         // 몸통(Player 태그)보다 발·미끄러짐 콜라이더가 먼저 닿아도 그 스텝에 죽도록 태그 대신 붙은 강체로 플레이어를 찾는다.
         Rigidbody2D attachedRigidbody = other.attachedRigidbody;
         if (attachedRigidbody == null || !attachedRigidbody.TryGetComponent(out PlayerLife playerLife))
