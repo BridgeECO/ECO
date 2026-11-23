@@ -15,4 +15,6 @@ public abstract class InteractionBase : IDisposable
     public virtual void Dispose() { }
     
     public virtual string ValidTag => nameof(ETags.Player);
+    public virtual bool IsSelectionRequired => false;
+    public virtual bool IsEngaged => false;
 }
