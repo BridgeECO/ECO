@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// 벨트 지형 위에 선 플레이어를 추적하고, 벨트 위에 있는 동안 벨트 방향 추가 속도 보정을 건다.
+/// 벨트 지형에 닿은 플레이어를 추적하고, 윗면에 선 동안 가로, 몸통이 옆면에 닿은 동안 세로 방향 추가 속도 보정을 건다(세로를 실을지는 플레이어 쪽 보정이 상태로 정한다).
 /// 발이 윗면에 닿았을 때뿐 아니라, 지상 상태인 플레이어의 접지 판정이 이 벨트만 지면으로 보는 동안도 벨트 위로 본다.
 /// 기믹이 런타임에 붙이고 InitBelt로 회전 방향과 세기를 넘긴다.
 /// </summary>
@@ -9,13 +9,10 @@ public class ConveyorBeltRiderDetector : MonoBehaviour
 {
     private Collider2D _beltCollider;
     private ConveyorBeltSurfaceResolver _surfaceResolver;
+    private ConveyorBeltRider _rider = new ConveyorBeltRider();
     private float _speed;
     private bool _isBeltActive;
     private int _sourceId;
-
-    private Collider2D _riderFeet;
-    private PlayerSpeedCorrector _riderCorrector;
-    private PlayerStateMachine _riderStateMachine;
     private bool _isCorrectionApplied;
     private bool _isContactStale;
 
@@ -23,6 +20,11 @@ public class ConveyorBeltRiderDetector : MonoBehaviour
     {
         _beltCollider = GetComponent<Collider2D>();
         _sourceId = GetInstanceID();
+    }
+
+    private void OnEnable()
+    {
+        _rider.OnRiderTeleported += HandleRiderTeleported;
     }
 
     // OnCollisionStay2D는 충돌 콜백 재사용이 꺼져 있어 스텝마다 Collision2D를 할당하므로, 타고 내릴 때만 콜백을 받고
@@ -34,27 +36,33 @@ public class ConveyorBeltRiderDetector : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // 몸통·미끄러짐 콜라이더가 옆면에 닿은 것은 탑승이 아니다. 이미 추적 중인 발이 다시 닿은 것도 무시한다.
-        if (_riderFeet == null && collision.collider.CompareTag(nameof(ETags.PlayerFeet))
-            && TryGetRiderStateMachine(collision.collider, out PlayerStateMachine stateMachine))
-        {
-            TrackRider(collision.collider, stateMachine);
-        }
+        _rider.TrackContact(collision.collider);
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        // 발이 떨어져도 접지 판정이 아직 이 벨트 위로 보면 탑승이 이어지므로, 그때 놓는 일은 FixedUpdate가 맡는다.
-        if (collision.collider != _riderFeet || IsStandingWithoutContact(_riderFeet, _riderStateMachine, out _))
+        Collider2D other = collision.collider;
+        if (other == _rider.Body)
         {
-            return;
+            _rider.ForgetBody();
         }
-        ReleaseRider();
+        // 발이 떨어져도 접지 판정이 아직 이 벨트 위로 보면 탑승이 이어지므로, 그때 놓는 일은 FixedUpdate가 맡는다.
+        else if (other == _rider.Feet && !IsStandingWithoutContact(_rider.Feet, _rider.StateMachine, out _))
+        {
+            _rider.ForgetFeet();
+            RemoveCorrection();
+        }
+
+        if (!_rider.HasRider)
+        {
+            ReleaseRider();
+        }
     }
 
     private void OnDisable()
     {
         ReleaseRider();
+        _rider.OnRiderTeleported -= HandleRiderTeleported;
     }
 
     public void InitBelt(EConveyorBeltDirection direction, float speed)
@@ -75,16 +83,22 @@ public class ConveyorBeltRiderDetector : MonoBehaviour
     // 플레이어가 먼저 파괴됐으면 걷을 보정도 없다.
     public void RemoveCorrection()
     {
-        if (_riderCorrector != null)
+        if (_rider.Corrector != null)
         {
-            _riderCorrector.RemoveCorrection(_sourceId);
+            _rider.Corrector.RemoveCorrection(_sourceId);
         }
         _isCorrectionApplied = false;
     }
 
+    // 윗면(발) 두 갈래를 옆면(몸통)보다 먼저 본다. 둥근 모서리에서는 윗면 필터와 옆면 필터가 함께 참일 수 있는데, 그때는 윗면이 이긴다.
+    // 소스 ID는 벨트마다 하나라 면이 바뀌면 같은 항목의 방향만 덮어쓴다.
     private void RefreshCorrection()
     {
-        if (_riderFeet == null && !TryTrackFloatingRider())
+        if (_rider.Feet == null)
+        {
+            TryTrackFloatingRider();
+        }
+        if (!_rider.HasRider)
         {
             return;
         }
@@ -103,20 +117,31 @@ public class ConveyorBeltRiderDetector : MonoBehaviour
             return;
         }
 
-        if (_surfaceResolver.TryResolveCorrection(_riderFeet, _beltCollider, out ESpeedCorrectionDirection direction))
+        bool isBeltBelow = false;
+        if (_rider.Feet != null)
         {
-            ApplyCorrection(direction);
-            return;
+            if (_surfaceResolver.TryResolveCorrection(_rider.Feet, _beltCollider, out ESpeedCorrectionDirection topDirection))
+            {
+                ApplyCorrection(topDirection);
+                return;
+            }
+
+            if (IsStandingWithoutContact(_rider.Feet, _rider.StateMachine, out isBeltBelow))
+            {
+                ApplyCorrection(_surfaceResolver.ResolveTopSurfaceDirection());
+                return;
+            }
         }
 
-        if (IsStandingWithoutContact(_riderFeet, _riderStateMachine, out bool isBeltBelow))
+        if (_rider.Body != null
+            && _surfaceResolver.TryResolveSideCorrection(_rider.Body, _beltCollider, out ESpeedCorrectionDirection sideDirection))
         {
-            ApplyCorrection(_surfaceResolver.ResolveTopSurfaceDirection());
+            ApplyCorrection(sideDirection);
             return;
         }
 
         RemoveCorrection();
-        if (!isBeltBelow && !_riderFeet.IsTouching(_beltCollider))
+        if (!_rider.TryKeepTouching(_beltCollider, isBeltBelow))
         {
             ReleaseRider();
         }
@@ -133,54 +158,32 @@ public class ConveyorBeltRiderDetector : MonoBehaviour
             && (isBeltBelow || _isCorrectionApplied);
     }
 
-    // 떠 있는 탑승자에게는 충돌 콜백이 오지 않으므로, 추적 중인 탑승자가 없을 때 윗면 바로 위에 들어온 발을 찾아 잡는다.
-    private bool TryTrackFloatingRider()
+    // 떠 있는 탑승자에게는 충돌 콜백이 오지 않으므로, 추적 중인 발이 없을 때 윗면 바로 위에 들어온 발을 찾아 잡는다.
+    private void TryTrackFloatingRider()
     {
         if (!_isBeltActive || IsRespawning() || !_surfaceResolver.TryFindFeetAbove(_beltCollider, out Collider2D feet))
         {
-            return false;
+            return;
         }
 
-        if (!TryGetRiderStateMachine(feet, out PlayerStateMachine stateMachine) || !IsStandingWithoutContact(feet, stateMachine, out _))
+        if (!_rider.TryGetOwner(feet, out PlayerStateMachine stateMachine) || !IsStandingWithoutContact(feet, stateMachine, out _))
         {
-            return false;
+            return;
         }
 
-        TrackRider(feet, stateMachine);
-        return true;
-    }
-
-    private bool TryGetRiderStateMachine(Collider2D feet, out PlayerStateMachine stateMachine)
-    {
-        stateMachine = null;
-        Rigidbody2D riderRigidbody = feet.attachedRigidbody;
-        return riderRigidbody != null && riderRigidbody.TryGetComponent(out stateMachine);
-    }
-
-    private void TrackRider(Collider2D feet, PlayerStateMachine stateMachine)
-    {
-        _riderFeet = feet;
-        _riderStateMachine = stateMachine;
-        _riderCorrector = stateMachine.SpeedCorrector;
-        _riderStateMachine.Motor.OnTeleported += HandleRiderTeleported;
+        _rider.TrackFeet(feet, stateMachine);
     }
 
     private void ApplyCorrection(ESpeedCorrectionDirection direction)
     {
-        _riderCorrector.SetCorrection(_sourceId, _speed, direction);
+        _rider.Corrector.SetCorrection(_sourceId, _speed, direction);
         _isCorrectionApplied = true;
     }
 
     private void ReleaseRider()
     {
         RemoveCorrection();
-        if (_riderStateMachine != null)
-        {
-            _riderStateMachine.Motor.OnTeleported -= HandleRiderTeleported;
-        }
-        _riderFeet = null;
-        _riderCorrector = null;
-        _riderStateMachine = null;
+        _rider.Release();
         _isContactStale = false;
     }
 
@@ -190,8 +193,5 @@ public class ConveyorBeltRiderDetector : MonoBehaviour
         _isContactStale = true;
     }
 
-    private bool IsRespawning()
-    {
-        return RespawnManager.HasInstance && RespawnManager.Instance.IsRespawning;
-    }
+    private bool IsRespawning() => RespawnManager.HasInstance && RespawnManager.Instance.IsRespawning;
 }
