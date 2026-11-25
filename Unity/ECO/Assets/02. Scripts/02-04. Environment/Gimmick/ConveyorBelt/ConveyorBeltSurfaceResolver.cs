@@ -2,8 +2,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 탑승자의 발이 벨트 윗면에 받쳐 있는지 가리고, 그 면이 벨트 회전 방향으로 움직이는 쪽을 추가 속도 보정 방향으로 바꾼다.
-/// 발이 실제로 닿은 면과, 플레이어 접지 판정이 지면으로 보는 발 아래 영역을 함께 본다. 매 물리 스텝 불리므로 할당하지 않는다.
+/// 탑승자가 벨트의 어느 면에 닿아 있는지 가리고, 그 면이 벨트 회전 방향으로 움직이는 쪽을 추가 속도 보정 방향으로 바꾼다.
+/// 윗면은 발로 보며, 발이 실제로 닿은 면과 플레이어 접지 판정이 지면으로 보는 발 아래 영역을 함께 본다.
+/// 옆면은 몸통으로 보고 위, 아래 중 하나를 고른다. 매 물리 스텝 불리므로 할당하지 않는다.
 /// </summary>
 public class ConveyorBeltSurfaceResolver
 {
@@ -15,6 +16,8 @@ public class ConveyorBeltSurfaceResolver
 
     private EConveyorBeltDirection _direction;
     private ContactFilter2D _topSurfaceFilter;
+    private ContactFilter2D _rightSideFilter;
+    private ContactFilter2D _leftSideFilter;
     private ContactFilter2D _solidFilter;
     private List<Collider2D> _overlapResults = new List<Collider2D>();
 
@@ -22,6 +25,13 @@ public class ConveyorBeltSurfaceResolver
     {
         _direction = direction;
         _topSurfaceFilter.SetNormalAngle(90f - MAX_SUPPORT_SLOPE_ANGLE, 90f + MAX_SUPPORT_SLOPE_ANGLE);
+
+        // 옆면은 윗면이 아닌 나머지 가로 쪽이다(오른쪽 옆면 법선 -45~45도, 왼쪽 옆면 135~225도). 경계 각 45, 135도는 윗면 필터와
+        // 겹치지만, 감지가 윗면을 먼저 보므로 둥근 모서리에서 둘 다 참이어도 윗면이 이긴다.
+        _rightSideFilter.SetNormalAngle(MAX_SUPPORT_SLOPE_ANGLE, 360f - MAX_SUPPORT_SLOPE_ANGLE);
+        _rightSideFilter.useOutsideNormalAngle = true;
+        _leftSideFilter.SetNormalAngle(180f - MAX_SUPPORT_SLOPE_ANGLE, 180f + MAX_SUPPORT_SLOPE_ANGLE);
+
         // 프로젝트 설정에서 쿼리가 트리거도 잡으므로(queriesHitTriggers) 압력판 같은 트리거를 뺀다.
         _solidFilter.useTriggers = false;
     }
@@ -38,11 +48,34 @@ public class ConveyorBeltSurfaceResolver
         return true;
     }
 
-    // 지금 밀어 주는 면은 윗면 하나라 바깥 법선이 위쪽이다.
+    // 윗면의 바깥 법선은 위쪽이다.
     public ESpeedCorrectionDirection ResolveTopSurfaceDirection()
     {
         Vector2 tangent = GetSurfaceTangent(Vector2.up);
         return 0f < tangent.x ? ESpeedCorrectionDirection.Right : ESpeedCorrectionDirection.Left;
+    }
+
+    // 옆면은 세로로만 민다. 비스듬한 옆면도 바깥 법선을 수평(오른쪽 옆면 = 오른쪽, 왼쪽 옆면 = 왼쪽)으로 보고 위, 아래 중 하나를 고른다.
+    public bool TryResolveSideCorrection(Collider2D riderBody, Collider2D belt, out ESpeedCorrectionDirection direction)
+    {
+        direction = ESpeedCorrectionDirection.Up;
+        Vector2 outwardNormal;
+        if (riderBody.IsTouching(belt, _rightSideFilter))
+        {
+            outwardNormal = Vector2.right;
+        }
+        else if (riderBody.IsTouching(belt, _leftSideFilter))
+        {
+            outwardNormal = Vector2.left;
+        }
+        else
+        {
+            return false;
+        }
+
+        Vector2 tangent = GetSurfaceTangent(outwardNormal);
+        direction = 0f < tangent.y ? ESpeedCorrectionDirection.Up : ESpeedCorrectionDirection.Down;
+        return true;
     }
 
     // 벨트 윗면에 닿아 있지 않은 발 아래를 플레이어 접지 판정과 같은 영역(발 가운데 절반 폭, 발 아래 깊이 0.1)으로 본다.
@@ -95,7 +128,7 @@ public class ConveyorBeltSurfaceResolver
     }
 
     // 시계방향으로 도는 벨트의 면은 바깥 법선 n을 시계방향으로 90도 돌린 접선 (n.y, -n.x) 쪽으로 움직인다.
-    // 윗면(n = 위)은 오른쪽, 오른쪽 옆면(n = 오른쪽)은 아래쪽이다. 반시계방향은 그 반대다.
+    // 윗면(n = 위)은 오른쪽, 오른쪽 옆면(n = 오른쪽)은 아래쪽, 왼쪽 옆면(n = 왼쪽)은 위쪽이다. 반시계방향은 그 반대다.
     private Vector2 GetSurfaceTangent(Vector2 outwardNormal)
     {
         Vector2 clockwiseTangent = new Vector2(outwardNormal.y, -outwardNormal.x);
