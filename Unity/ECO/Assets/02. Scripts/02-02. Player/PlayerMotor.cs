@@ -19,6 +19,9 @@ public class PlayerMotor : MonoBehaviour
     // 채널이라, 공유하면 이동 발판 위에서 점프할 때 보정까지 같이 지워진다. 그래서 채널을 나눈다.
     public float SpeedCorrectionX { get; private set; }
 
+    // 세로 보정(벨트 옆면). 벽타기 상태가 매 프레임 Velocity.y를 미끄러짐 속도로 덮어쓰므로, 그 값에 더해지도록 따로 둔다.
+    public float SpeedCorrectionY { get; private set; }
+
     // 스폰 시 플레이어는 오른쪽(Quaternion.identity)을 바라보므로 true로 초기화
     public bool IsForward { get; private set; } = true;
     private Rigidbody2D _rigidbody;
@@ -35,6 +38,7 @@ public class PlayerMotor : MonoBehaviour
     {
         Vector2 totalVelocity = Velocity + ExternalVelocity;
         totalVelocity.x += SpeedCorrectionX;
+        totalVelocity.y += SpeedCorrectionY;
         _rigidbody.linearVelocity = totalVelocity;
     }
 
@@ -56,6 +60,11 @@ public class PlayerMotor : MonoBehaviour
     public void SetSpeedCorrectionX(float x)
     {
         SpeedCorrectionX = x;
+    }
+
+    public void SetSpeedCorrectionY(float y)
+    {
+        SpeedCorrectionY = y;
     }
 
     // IL2CPP 빌드 최적화에서 Quaternion.Euler()의 부동소수점 정밀도 차이로 인해
@@ -94,6 +103,7 @@ public class PlayerMotor : MonoBehaviour
         _rigidbody.position = position;
         Velocity = Vector2.zero;
         SpeedCorrectionX = 0f;
+        SpeedCorrectionY = 0f;
         _rigidbody.linearVelocity = Vector2.zero;
         OnTeleported?.Invoke();
     }

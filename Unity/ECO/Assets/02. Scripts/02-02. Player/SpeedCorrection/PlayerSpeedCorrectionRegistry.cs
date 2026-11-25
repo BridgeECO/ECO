@@ -14,6 +14,23 @@ public class PlayerSpeedCorrectionRegistry
 
     public int CorrectionCount => _correctionCount;
 
+    // 세로 보정(벨트 옆면)만 걸려 있을 때 공중 가로 보정이 "소스가 아직 붙어 있다"로 읽혀 감쇄를 멈추지 않도록 가로 소스만 센다.
+    public int HorizontalCorrectionCount
+    {
+        get
+        {
+            int count = 0;
+            for (int i = 0; i < _correctionCount; i++)
+            {
+                if (IsHorizontal(_corrections[i].Direction))
+                {
+                    count++;
+                }
+            }
+            return count;
+        }
+    }
+
     // 같은 소스가 여러 콜라이더로 중복 등록해도 항목이 하나만 남도록 덮어쓴다.
     public void SetCorrection(int sourceId, float magnitude, ESpeedCorrectionDirection direction)
     {
@@ -64,8 +81,18 @@ public class PlayerSpeedCorrectionRegistry
         return sum;
     }
 
+    public float ResolveVerticalSum()
+    {
+        float sum = 0f;
+        for (int i = 0; i < _correctionCount; i++)
+        {
+            sum += ResolveVerticalValue(_corrections[i]);
+        }
+        return sum;
+    }
+
     // 좌측 보정은 왼쪽 이동을 세기만큼 빠르게, 오른쪽 이동을 세기만큼 느리게 만든다.
-    // 부호를 붙여 풀면 두 경우 모두 속도에 -세기를 더한 것과 같아, 방향 3종이 가산항 하나로 환원된다.
+    // 부호를 붙여 풀면 두 경우 모두 속도에 -세기를 더한 것과 같아, 가로 방향 3종이 가산항 하나로 환원된다.
     private float ResolveValue(PlayerSpeedCorrection correction, float horizontalInput)
     {
         switch (correction.Direction)
@@ -74,12 +101,35 @@ public class PlayerSpeedCorrectionRegistry
                 return -correction.Magnitude;
             case ESpeedCorrectionDirection.Right:
                 return correction.Magnitude;
-            default:
+            case ESpeedCorrectionDirection.Both:
                 // 양방향은 이동 방향 쪽으로 세기를 더한다. Mathf.Sign(0f)이 1f라 가만히 선 플레이어를
                 // 밀어버리므로 부호 함수 대신 입력을 그대로 곱한다.
                 // PlayerInput.HorizontalInput이 GetAxisRaw라 -1/0/1로 양자화된 덕분에 성립한다.
                 return horizontalInput * correction.Magnitude;
+            default:
+                // 위, 아래는 세로 합(ResolveVerticalSum)에만 들어간다.
+                return 0f;
         }
+    }
+
+    private float ResolveVerticalValue(PlayerSpeedCorrection correction)
+    {
+        switch (correction.Direction)
+        {
+            case ESpeedCorrectionDirection.Up:
+                return correction.Magnitude;
+            case ESpeedCorrectionDirection.Down:
+                return -correction.Magnitude;
+            default:
+                return 0f;
+        }
+    }
+
+    private bool IsHorizontal(ESpeedCorrectionDirection direction)
+    {
+        return direction == ESpeedCorrectionDirection.Left
+            || direction == ESpeedCorrectionDirection.Right
+            || direction == ESpeedCorrectionDirection.Both;
     }
 
     private int IndexOf(int sourceId)

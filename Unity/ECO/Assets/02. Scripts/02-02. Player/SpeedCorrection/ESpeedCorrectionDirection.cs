@@ -2,5 +2,7 @@ public enum ESpeedCorrectionDirection
 {
     Left,
     Right,
-    Both
+    Both,
+    Up,
+    Down
 }
