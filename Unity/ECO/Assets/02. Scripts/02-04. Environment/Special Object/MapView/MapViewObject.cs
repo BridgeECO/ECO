@@ -1,5 +1,3 @@
-using System;
-using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using VInspector;
@@ -46,13 +44,12 @@ public class MapViewObject : SpecialObjectBase
              "XY만 사용하며 Z는 위 Camera Z 값이 결정합니다.")]
     private Transform _viewPoint;
 
-    private MapViewCamera _mapViewCamera;
-    private CancellationTokenSource _viewCts;
+    private MapViewSession _viewSession;
 
     protected override void Awake()
     {
         base.Awake();
-        _mapViewCamera = new MapViewCamera();
+        _viewSession = new MapViewSession(this.GetCancellationTokenOnDestroy());
     }
 
     private void OnEnable()
@@ -117,76 +114,22 @@ public class MapViewObject : SpecialObjectBase
             return;
         }
 
-        if (!_mapViewCamera.TryBind())
-        {
-            return;
-        }
-
-        RestartViewCts();
-        EnterViewAsync(_viewCts.Token).Forget();
+        _viewSession.StartView(_viewPoint.position, _cameraZ, _enterDuration);
     }
 
     private void StopView()
     {
-        if (!_mapViewCamera.IsViewing)
-        {
-            return;
-        }
-
-        RestartViewCts();
-        ExitViewAsync(_viewCts.Token).Forget();
+        _viewSession.StopView(_exitDuration);
     }
 
     private void StopViewImmediate()
     {
-        CancelViewCts();
-        _mapViewCamera?.StopImmediate();
-    }
-
-    private async UniTaskVoid EnterViewAsync(CancellationToken cancellationToken)
-    {
-        try
-        {
-            await _mapViewCamera.EnterAsync(_viewPoint.position, _cameraZ, _enterDuration, cancellationToken);
-        }
-        catch (OperationCanceledException)
-        {
-        }
-    }
-
-    private async UniTaskVoid ExitViewAsync(CancellationToken cancellationToken)
-    {
-        try
-        {
-            await _mapViewCamera.ExitAsync(_exitDuration, cancellationToken);
-        }
-        catch (OperationCanceledException)
-        {
-        }
-    }
-
-    private void RestartViewCts()
-    {
-        CancelViewCts();
-        _viewCts = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
-    }
-
-    private void CancelViewCts()
-    {
-        if (_viewCts is null)
-        {
-            return;
-        }
-
-        _viewCts.Cancel();
-        _viewCts.Dispose();
-        _viewCts = null;
+        _viewSession?.StopImmediate();
     }
 
     private void OnRoomChanged()
     {
-        CancelViewCts();
-        _mapViewCamera?.AbandonForRoomTransition();
+        _viewSession?.AbandonForRoomTransition();
     }
 
     private void RemoveEventListeners()
