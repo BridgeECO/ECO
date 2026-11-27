@@ -18,6 +18,7 @@ public class MapViewCamera
 
     private CameraController _cameraController;
     private Transform _cameraTransform;
+    private CameraRoomTransition _roomTransition;
     private Tweener _moveTween;
     private float _originalZ;
 
@@ -47,12 +48,16 @@ public class MapViewCamera
         }
 
         _cameraTransform = _cameraController.transform;
+        // 방 전환 연출이 없는 씬도 있어 없으면 대기 없이 진행한다.
+        _roomTransition = _cameraController.GetComponent<CameraRoomTransition>();
         return true;
     }
 
     // 조망 지점에서는 XY만 쓰고, 얼마나 물러나 볼지는 cameraZ가 결정한다.
     public async UniTask EnterAsync(Vector3 viewWorldPosition, float cameraZ, float duration, CancellationToken cancellationToken)
     {
+        await WaitRoomTransitionEndAsync(cancellationToken);
+
         // 조망 중 재진입 시 이미 물러난 Z를 원본으로 덮어쓰지 않도록 최초 1회만 기록한다.
         if (!IsViewing)
         {
@@ -115,6 +120,22 @@ public class MapViewCamera
 
         KillMoveTween();
         IsViewing = false;
+    }
+
+    // 방 전환 연출과 조망이 같은 카메라 트랜스폼에 DOMove를 겹쳐 걸면, 늦게 끝나는 전환이 완료 때
+    // 추적을 다시 켜 조망 화면을 덮는다. 그래서 전환이 끝난 뒤에 조망을 시작한다.
+    // 완료 이벤트 대신 상태를 읽는 것은, 전환이 도중에 다시 시작되면 완료 신호가 오지 않는 경로가 있어서다.
+    private async UniTask WaitRoomTransitionEndAsync(CancellationToken cancellationToken)
+    {
+        if (_roomTransition == null)
+        {
+            return;
+        }
+
+        while (_roomTransition.IsTransitioning)
+        {
+            await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
+        }
     }
 
     private Vector3 GetReturnPosition()
