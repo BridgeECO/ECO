@@ -47,10 +47,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _isDontDestroyOnLoad: 0
   _lazyInitialization: 0
-  _regionType: 1
+  _regionType: 3
   _rooms:
-  - {fileID: 0}
-  _initialSpawnPoint: {fileID: 0}
+  - {fileID: 1579414377834048454}
+  _initialSpawnPoint: {fileID: 6149467024960420195}
 --- !u!1001 &7158971367553200292
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -108,8 +108,24 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4f8a0225a3140fb45886d181d9d2f8ce, type: 3}
+--- !u!114 &1579414377834048454 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8553166396090096482, guid: 4f8a0225a3140fb45886d181d9d2f8ce, type: 3}
+  m_PrefabInstance: {fileID: 7158971367553200292}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2efb35d16e0d9444d91bb24db058018f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &5887296972792524520 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3668788693343444556, guid: 4f8a0225a3140fb45886d181d9d2f8ce, type: 3}
+  m_PrefabInstance: {fileID: 7158971367553200292}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &6149467024960420195 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3895205943084648903, guid: 4f8a0225a3140fb45886d181d9d2f8ce, type: 3}
   m_PrefabInstance: {fileID: 7158971367553200292}
   m_PrefabAsset: {fileID: 0}
